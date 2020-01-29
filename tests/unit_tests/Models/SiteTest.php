@@ -5,12 +5,14 @@ namespace Pantheon\Terminus\UnitTests\Models;
 use League\Container\Container;
 use Pantheon\Terminus\Collections\Branches;
 use Pantheon\Terminus\Collections\Environments;
+use Pantheon\Terminus\Collections\Plans;
 use Pantheon\Terminus\Collections\SiteOrganizationMemberships;
 use Pantheon\Terminus\Collections\SiteUserMemberships;
 use Pantheon\Terminus\Collections\Tags;
 use Pantheon\Terminus\Collections\Workflows;
 use Pantheon\Terminus\Exceptions\TerminusException;
 use Pantheon\Terminus\Models\NewRelic;
+use Pantheon\Terminus\Models\Plan;
 use Pantheon\Terminus\Models\Redis;
 use Pantheon\Terminus\Models\Site;
 use Pantheon\Terminus\Models\Solr;
@@ -44,6 +46,14 @@ class SiteTest extends ModelTestCase
      * @var SiteOrganizationMemberships
      */
     protected $org_memberships;
+    /**
+     * @var Plan
+     */
+    protected $plan;
+    /**
+     * @var Plans
+     */
+    protected $plans;
     /**
      * @var Redis
      */
@@ -96,6 +106,12 @@ class SiteTest extends ModelTestCase
         $this->org_memberships = $this->getMockBuilder(SiteOrganizationMemberships::class)
             ->disableOriginalConstructor()
             ->getMock();
+        $this->plan = $this->getMockBuilder(Plan::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $this->plans = $this->getMockBuilder(Plans::class)
+            ->disableOriginalConstructor()
+            ->getMock();
         $this->redis = $this->getMockBuilder(Redis::class)
             ->disableOriginalConstructor()
             ->getMock();
@@ -121,6 +137,8 @@ class SiteTest extends ModelTestCase
         $this->container->add(Environments::class, $this->environments);
         $this->container->add(SiteOrganizationMemberships::class, $this->org_memberships);
         $this->container->add(NewRelic::class, $this->new_relic);
+        $this->container->add(Plan::class, $this->plan);
+        $this->container->add(Plans::class, $this->plans);
         $this->container->add(Redis::class, $this->redis);
         $this->container->add(SiteUserMemberships::class, $this->user_memberships);
         $this->container->add(Solr::class, $this->solr);
@@ -192,7 +210,10 @@ class SiteTest extends ModelTestCase
     public function testDashboardUrl()
     {
         $this->configSet(['dashboard_protocol' => 'https', 'dashboard_host' => 'dashboard.pantheon.io',]);
-        $this->assertEquals("https://dashboard.pantheon.io/sites/" . $this->site_data->id, $this->model->dashboardUrl());
+        $this->assertEquals(
+            "https://dashboard.pantheon.io/sites/" . $this->site_data->id,
+            $this->model->dashboardUrl()
+        );
     }
 
     /**
@@ -200,14 +221,13 @@ class SiteTest extends ModelTestCase
      */
     public function testDelete()
     {
-        $this->request->expects($this->once())
-            ->method('request')
-            ->with(
-                $this->equalTo("sites/{$this->model->id}"),
-                $this->equalTo(['method' => 'delete',])
-            );
+        $this->workflows->expects($this->once())
+            ->method('create')
+            ->with()
+            ->willReturn($this->workflow);
+
         $out = $this->model->delete();
-        $this->assertNull($out);
+        $this->assertEquals($this->workflow, $out);
     }
 
     /**
@@ -380,6 +400,24 @@ class SiteTest extends ModelTestCase
     }
 
     /**
+     * Tests Site::getPlan()
+     */
+    public function testGetPlan()
+    {
+        $plan = $this->model->getPlan();
+        $this->assertEquals($this->plan, $plan);
+    }
+
+    /**
+     * Tests Site::getPlans()
+     */
+    public function testGetPlans()
+    {
+        $plans = $this->model->getPlans();
+        $this->assertEquals($this->plans, $plans);
+    }
+
+    /**
      * Tests Site::getReferences()
      */
     public function testGetReferences()
@@ -424,6 +462,27 @@ class SiteTest extends ModelTestCase
     }
 
     /**
+     * Tests Site::isFrozen()
+     */
+    public function testIsFrozen()
+    {
+        $frozen = $this->model->isFrozen();
+        $this->assertEquals(false, $frozen);
+
+        $this->model->set('frozen', null);
+        $frozen = $this->model->isFrozen();
+        $this->assertEquals(false, $frozen);
+
+        $this->model->set('frozen', true);
+        $frozen = $this->model->isFrozen();
+        $this->assertEquals(true, $frozen);
+
+        $this->model->set('frozen', 'yes');
+        $frozen = $this->model->isFrozen();
+        $this->assertEquals(true, $frozen);
+    }
+
+    /**
      * Tests Site::removePaymentMethod()
      */
     public function testRemovePaymentMethod()
@@ -458,30 +517,31 @@ class SiteTest extends ModelTestCase
             'created' => '682641540',
             'framework' => 'framework name',
             'organization' => 'organization name',
-            'service_level' => 'service level',
-            'php_version' => '75',
+            'plan_name' => 'plan name',
             'holder_type' => 'holder type',
             'holder_id' => 'holder id',
             'owner' => 'owner id',
             'frozen' => 'yes',
+            'last_frozen_at' => '1682641540',
         ];
         $expected_data = [
             'id' => $this->model->id,
             'name' => 'site name',
             'label' => 'site label',
-            'created' => '1991-08-19 22:39:00',
+            'created' => '682641540',
             'framework' => 'framework name',
             'organization' => 'organization name',
-            'service_level' => 'service level',
+            'plan_name' => 'plan name',
             'upstream' => '***UPSTREAM***',
-            'php_version' => '7.5',
             'holder_type' => 'holder type',
             'holder_id' => 'holder id',
             'owner' => 'owner id',
-            'frozen' => 'true',
+            'frozen' => true,
             'memberships' => implode(',', $this->model->memberships),
             'tags' => implode(',', $tags),
-            'max_num_cdes' => null,
+            'max_num_cdes' => 0,
+            'last_frozen_at' => '1682641540',
+            'region' => null,
         ];
 
         $this->request->expects($this->once())
@@ -493,64 +553,7 @@ class SiteTest extends ModelTestCase
             ->method('ids')
             ->with()
             ->willReturn($tags);
-
-        $returned_data = $this->model->fetch()->serialize();
-        $this->assertEquals($expected_data, $returned_data);
-    }
-
-    /**
-     * Tests Site::serialize() when the given datetime is not a Unix timestamp
-     */
-    public function testSerializeNotTimestamp()
-    {
-        $this->configSet(['date_format' => 'Y-m-d H:i:s',]);
-        $this->model->tags = $this->getMockBuilder(Tags::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $this->model->memberships = ['membership1', 'membership2',];
-        $tags = ['tag1', 'tag2',];
-        $data = (object)[
-            'id' => $this->model->id,
-            'name' => 'site name',
-            'label' => 'site label',
-            'created' => 'August 19, 1991 10:39PM',
-            'framework' => 'framework name',
-            'organization' => 'organization name',
-            'service_level' => 'service level',
-            'php_version' => '75',
-            'holder_type' => 'holder type',
-            'holder_id' => 'holder id',
-            'owner' => 'owner id',
-            'frozen' => 'yes',
-        ];
-        $expected_data = [
-            'id' => $this->model->id,
-            'name' => 'site name',
-            'label' => 'site label',
-            'created' => '1991-08-19 22:39:00',
-            'framework' => 'framework name',
-            'organization' => 'organization name',
-            'service_level' => 'service level',
-            'upstream' => '***UPSTREAM***',
-            'php_version' => '7.5',
-            'holder_type' => 'holder type',
-            'holder_id' => 'holder id',
-            'owner' => 'owner id',
-            'frozen' => 'true',
-            'memberships' => implode(',', $this->model->memberships),
-            'tags' => implode(',', $tags),
-            'max_num_cdes' => null,
-        ];
-
-        $this->request->expects($this->once())
-            ->method('request')
-            ->with($this->equalTo("sites/{$this->model->id}?site_state=true"))
-            ->willReturn(compact('data'));
-        $this->upstream->method('__toString')->willReturn('***UPSTREAM***');
-        $this->model->tags->expects($this->once())
-            ->method('ids')
-            ->with()
-            ->willReturn($tags);
+        $this->model->setConfig($this->config);
 
         $returned_data = $this->model->fetch()->serialize();
         $this->assertEquals($expected_data, $returned_data);
@@ -583,7 +586,11 @@ class SiteTest extends ModelTestCase
         $container = $this->getMockBuilder(Container::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $attributes = (object)['id' => 'site_id', 'upstream' => (object)['product_id' => 'product id',],];
+        $attributes = (object)[
+            'id' => 'site_id',
+            'product' => (object)['id' => 'product id',],
+            'upstream' => (object)['product_id' => 'product id',],
+        ];
         $site = new Site($attributes);
         $site->setContainer($container);
         $upstream = $this->getMockBuilder(SiteUpstream::class)
@@ -594,7 +601,10 @@ class SiteTest extends ModelTestCase
             ->method('get')
             ->with(
                 $this->equalTo(SiteUpstream::class),
-                $this->equalTo([$attributes->upstream, compact('site'),])
+                $this->equalTo([
+                    (object)array_merge((array)$attributes->product, (array)$attributes->upstream),
+                    compact('site'),
+                ])
             )
             ->willReturn($upstream);
 

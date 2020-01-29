@@ -79,6 +79,7 @@ class PaymentMethodsTest extends UserOwnedCollectionTest
             'a' => (object)[
                 'label' => 'Visa - 1111',
                 'id' => 'a',
+                'filename' => ''
             ],
             'b' => (object)[
                 'label' => 'Visa - 2222',
@@ -102,12 +103,12 @@ class PaymentMethodsTest extends UserOwnedCollectionTest
         }
 
         $methods = $this->getMockBuilder(PaymentMethods::class)
-            ->setMethods(['getMembers'])
+            ->setMethods(['all'])
             ->enableOriginalConstructor()
             ->setConstructorArgs([['user' => $user,],])
             ->getMock();
         $methods->expects($this->any())
-            ->method('getMembers')
+            ->method('all')
             ->willReturn($models);
         return $methods;
     }

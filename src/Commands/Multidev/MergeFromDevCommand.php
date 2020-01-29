@@ -3,6 +3,7 @@
 namespace Pantheon\Terminus\Commands\Multidev;
 
 use Pantheon\Terminus\Commands\TerminusCommand;
+use Pantheon\Terminus\Commands\WorkflowProcessingTrait;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 
@@ -13,6 +14,7 @@ use Pantheon\Terminus\Site\SiteAwareTrait;
 class MergeFromDevCommand extends TerminusCommand implements SiteAwareInterface
 {
     use SiteAwareTrait;
+    use WorkflowProcessingTrait;
 
     /**
      * Merges code commits from the Dev environment into a Multidev environment.
@@ -31,10 +33,7 @@ class MergeFromDevCommand extends TerminusCommand implements SiteAwareInterface
     public function mergeFromDev($site_env, $options = ['updatedb' => false,])
     {
         list(, $env) = $this->getSiteEnv($site_env);
-        $workflow = $env->mergeFromDev(['updatedb' => $options['updatedb'],]);
-        while (!$workflow->checkProgress()) {
-            // @TODO: Add Symfony progress bar to indicate that something is happening.
-        }
+        $this->processWorkflow($env->mergeFromDev(['updatedb' => $options['updatedb'],]));
         $this->log()->notice('Merged the dev environment into {env}.', ['env' => $env->id,]);
     }
 }

@@ -2,6 +2,9 @@
 
 namespace Pantheon\Terminus\Commands;
 
+use League\Container\ContainerAwareInterface;
+use League\Container\ContainerAwareTrait;
+use Pantheon\Terminus\Config\ConfigAwareTrait;
 use Pantheon\Terminus\Session\SessionAwareInterface;
 use Pantheon\Terminus\Session\SessionAwareTrait;
 use Pantheon\Terminus\Style\TerminusStyle;
@@ -10,7 +13,6 @@ use Psr\Log\LoggerAwareTrait;
 use Psr\Log\LoggerInterface;
 use Robo\Contract\IOAwareInterface;
 use Robo\Contract\ConfigAwareInterface;
-use Robo\Common\ConfigAwareTrait;
 use Robo\Common\IO;
 
 /**
@@ -21,10 +23,12 @@ abstract class TerminusCommand implements
     IOAwareInterface,
     LoggerAwareInterface,
     ConfigAwareInterface,
+    ContainerAwareInterface,
     SessionAwareInterface
 {
     use LoggerAwareTrait;
     use ConfigAwareTrait;
+    use ContainerAwareTrait;
     use IO {
         io as roboIo;
     }

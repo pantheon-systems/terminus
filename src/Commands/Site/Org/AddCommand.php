@@ -3,6 +3,7 @@
 namespace Pantheon\Terminus\Commands\Site\Org;
 
 use Pantheon\Terminus\Commands\TerminusCommand;
+use Pantheon\Terminus\Commands\WorkflowProcessingTrait;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 
@@ -13,6 +14,7 @@ use Pantheon\Terminus\Site\SiteAwareTrait;
 class AddCommand extends TerminusCommand implements SiteAwareInterface
 {
     use SiteAwareTrait;
+    use WorkflowProcessingTrait;
 
     /**
      * Associates a supporting organization with a site.
@@ -36,9 +38,7 @@ class AddCommand extends TerminusCommand implements SiteAwareInterface
             'Adding {org} as a supporting organization to {site}.',
             ['site' => $site->getName(), 'org' => $org->getName(),]
         );
-        while (!$workflow->checkProgress()) {
-            // @TODO: Add Symfony progress bar to indicate that something is happening.
-        }
+        $this->processWorkflow($workflow);
         $this->log()->notice($workflow->getMessage());
     }
 }

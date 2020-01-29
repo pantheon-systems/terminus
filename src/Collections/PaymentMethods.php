@@ -12,7 +12,7 @@ use Pantheon\Terminus\Models\PaymentMethod;
  */
 class PaymentMethods extends UserOwnedCollection
 {
-    public static $pretty_name = 'payment methods';
+    const PRETTY_NAME = 'payment methods';
     /**
      * @var string
      */
@@ -32,7 +32,7 @@ class PaymentMethods extends UserOwnedCollection
      */
     public function get($id)
     {
-        $payment_methods = $this->getMembers();
+        $payment_methods = $this->all();
         if (isset($payment_methods[$id])) {
             return $payment_methods[$id];
         }
@@ -44,7 +44,7 @@ class PaymentMethods extends UserOwnedCollection
                 'Could not locate a payment method identified by {id} on this account.',
                 compact('id')
             );
-        } else if (count($matches) > 1) {
+        } elseif (count($matches) > 1) {
             throw new TerminusException('More than one payment method matched {id}.', compact('id'));
         }
         return array_shift($matches);

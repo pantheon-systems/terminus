@@ -5,13 +5,14 @@ namespace Pantheon\Terminus\UnitTests\Friends\Organization;
 use Pantheon\Terminus\Collections\SiteOrganizationMemberships;
 use Pantheon\Terminus\Models\SiteOrganizationMembership;
 use Pantheon\Terminus\Models\Organization;
+use Pantheon\Terminus\UnitTests\TerminusTestCase;
 
 /**
  * Class PluralTest
  * Testing class for Pantheon\Terminus\Friends\OrganizationsTrait & Pantheon\Terminus\Friends\OrganizationsInterface
  * @package Pantheon\Terminus\UnitTests\Friends\Organization
  */
-class PluralTest extends \PHPUnit_Framework_TestCase
+class PluralTest extends TerminusTestCase
 {
     /**
      * @var SiteOrganizationMemberships

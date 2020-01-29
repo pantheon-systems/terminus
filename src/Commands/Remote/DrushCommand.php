@@ -22,15 +22,19 @@ class DrushCommand extends SSHBaseCommand
      * @command remote:drush
      * @aliases drush
      *
-     * @param string $site_env_id Site & environment in the format `site-name.env`
+     * @param string $site_env Site & environment in the format `site-name.env`
      * @param array $drush_command Drush command
+     * @param array $options Commandline options
+     * @option progress Allow progress bar to be used (tty mode only)
      * @return string Command output
      *
      * @usage <site>.<env> -- <command> Runs the Drush command <command> remotely on <site>'s <env> environment.
+     * @usage <site>.<env> --progress -- <command> Runs a Drush command with a progress bar
      */
-    public function drushCommand($site_env_id, array $drush_command)
+    public function drushCommand($site_env, array $drush_command, array $options = ['progress' => false])
     {
-        $this->prepareEnvironment($site_env_id);
+        $this->prepareEnvironment($site_env);
+        $this->setProgressAllowed($options['progress']);
         return $this->executeCommand($drush_command);
     }
 }

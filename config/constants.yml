@@ -7,21 +7,26 @@
 ---
 
 # App
-TERMINUS_VERSION: '1.5.1-dev'
+TERMINUS_VERSION: '2.3.1-dev'
 
 # Connectivity
-TERMINUS_HOST:     'terminus.pantheon.io'
-TERMINUS_PORT:     443
-TERMINUS_PROTOCOL: 'https'
-TERMINUS_SSH_HOST: null
+TERMINUS_HOST:      'terminus.pantheon.io'
+TERMINUS_HOST_CERT: null
+TERMINUS_PORT:      443
+TERMINUS_PROTOCOL:  'https'
+TERMINUS_SSH_HOST:  null
+
+# Settings
+TERMINUS_TIMEOUT: 86400
 
 # User Prompts
 TERMINUS_DASHBOARD_HOST:     'dashboard.pantheon.io'
 TERMINUS_DASHBOARD_PROTOCOL: 'https'
 
 # Localization
-TERMINUS_DATE_FORMAT: 'Y-m-d H:i:s'
-TERMINUS_TIME_ZONE:   'UTC'
+TERMINUS_DATE_FORMAT:     'Y-m-d H:i:s'
+TERMINUS_MONETARY_FORMAT: '$%01.2f'
+TERMINUS_TIME_ZONE:       'UTC'
 
 # File Storage
 TERMINUS_CACHE_DIR:         '[[ TERMINUS_USER_HOME ]]/.terminus/cache'
@@ -35,6 +40,9 @@ TERMINUS_USER: null
 TERMINUS_SITE: null
 TERMINUS_ENV:  null
 TERMINUS_ORG:  null
+
+# Region
+TERMINUS_COMMAND_SITE_OPTIONS_REGION: null
 
 # Testing
 TERMINUS_TEST_MODE:    false

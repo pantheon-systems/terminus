@@ -4,7 +4,6 @@ namespace Pantheon\Terminus\UnitTests\Commands\MachineToken;
 
 use Pantheon\Terminus\Commands\MachineToken\ListCommand;
 use Robo\Config;
-use Pantheon\Terminus\Collections\MachineTokens;
 use Pantheon\Terminus\Models\MachineToken;
 
 /**
@@ -20,6 +19,7 @@ class MachineTokensListCommandTest extends MachineTokenCommandTest
     protected function setUp()
     {
         parent::setUp();
+        $this->machine_tokens->method('getCollectedClass')->willReturn(MachineToken::class);
 
         $this->command = new ListCommand(new Config());
         $this->command->setSession($this->session);

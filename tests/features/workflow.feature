@@ -12,6 +12,12 @@ Feature: View site workflow information
     When I run "terminus workflow:list [[test_site_name]]"
     Then I should see a table with the headers: Workflow ID, Environment, Workflow, User, Status, Started At, Finished At, Time Elapsed
 
+  @vcr workflow-list-empty.yml
+  Scenario: List workflows when none have been run
+    When I run "terminus workflow:list [[test_site_name]]"
+    Then I should see a table with the headers: Workflow ID, Environment, Workflow, User, Status, Started At, Finished At, Time Elapsed
+    And I should get the warning: "No workflows have been run on [[test_site_name]]."
+
   @vcr workflow-info-status.yml
   Scenario: Show a specific Workflow's status
     When I run "terminus workflow:info:status [[test_site_name]] --id=11111111-1111-1111-1111-111111111111"

@@ -3,18 +3,26 @@
 namespace Pantheon\Terminus\Models;
 
 use Pantheon\Terminus\Collections\TerminusCollection;
+use Pantheon\Terminus\Config\ConfigAwareTrait;
 use Pantheon\Terminus\Request\RequestAwareInterface;
 use Pantheon\Terminus\Request\RequestAwareTrait;
+use Robo\Contract\ConfigAwareInterface;
 
 /**
  * Class TerminusModel
  * @package Pantheon\Terminus\Models
  */
-abstract class TerminusModel implements RequestAwareInterface
+abstract class TerminusModel implements ConfigAwareInterface, RequestAwareInterface
 {
+    use ConfigAwareTrait;
     use RequestAwareTrait;
 
-    public static $pretty_name = 'terminus model';
+    const PRETTY_NAME = 'terminus model';
+
+    /**
+     * @var array
+     */
+    public static $date_attributes = [];
     /**
      * @var string
      */
@@ -82,28 +90,6 @@ abstract class TerminusModel implements RequestAwareInterface
     }
 
     /**
-     * Checks whether the model has an attribute
-     *
-     * @param string $attribute Name of the attribute key
-     * @return boolean True if attribute exists, false otherwise
-     */
-    public function has($attribute)
-    {
-        return isset($this->attributes->$attribute);
-    }
-
-    /**
-     * Sets an attribute
-     *
-     * @param string $attribute Name of the attribute key
-     * @param mixed $value The value to assign to the attribute
-     */
-    public function set($attribute, $value)
-    {
-        $this->attributes->$attribute = $value;
-    }
-
-    /**
      * Returns the fields by which this model can be found.
      *
      * @return array
@@ -124,6 +110,17 @@ abstract class TerminusModel implements RequestAwareInterface
     }
 
     /**
+     * Checks whether the model has an attribute
+     *
+     * @param string $attribute Name of the attribute key
+     * @return boolean True if attribute exists, false otherwise
+     */
+    public function has($attribute)
+    {
+        return isset($this->attributes->$attribute);
+    }
+
+    /**
      * Formats the object into an associative array for output
      *
      * @return array Associative array of data for output
@@ -131,6 +128,27 @@ abstract class TerminusModel implements RequestAwareInterface
     public function serialize()
     {
         return (array)$this->attributes;
+    }
+
+    /**
+     * Sets an attribute
+     *
+     * @param string $attribute Name of the attribute key
+     * @param mixed $value The value to assign to the attribute
+     */
+    public function set($attribute, $value)
+    {
+        $this->attributes->$attribute = $value;
+    }
+
+    /**
+     * Unsets an attribute
+     *
+     * @param string $attribute Name of the attribute key
+     */
+    public function unsetAttribute($attribute)
+    {
+        unset($this->attributes->$attribute);
     }
 
     /**

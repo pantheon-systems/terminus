@@ -3,6 +3,7 @@
 namespace Pantheon\Terminus\Commands\Env;
 
 use Pantheon\Terminus\Commands\TerminusCommand;
+use Pantheon\Terminus\Commands\WorkflowProcessingTrait;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 
@@ -13,6 +14,7 @@ use Pantheon\Terminus\Site\SiteAwareTrait;
 class CommitCommand extends TerminusCommand implements SiteAwareInterface
 {
     use SiteAwareTrait;
+    use WorkflowProcessingTrait;
 
     /**
      * Commits code changes on a development environment.
@@ -46,10 +48,7 @@ class CommitCommand extends TerminusCommand implements SiteAwareInterface
             return;
         }
 
-        $workflow = $env->commitChanges($options['message']);
-        while (!$workflow->checkProgress()) {
-            // @TODO: Add Symfony progress bar to indicate that something is happening.
-        }
+        $this->processWorkflow($env->commitChanges($options['message']));
         $this->log()->notice('Your code was committed.');
     }
 }

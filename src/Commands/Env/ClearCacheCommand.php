@@ -3,6 +3,7 @@
 namespace Pantheon\Terminus\Commands\Env;
 
 use Pantheon\Terminus\Commands\TerminusCommand;
+use Pantheon\Terminus\Commands\WorkflowProcessingTrait;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 
@@ -13,6 +14,7 @@ use Pantheon\Terminus\Site\SiteAwareTrait;
 class ClearCacheCommand extends TerminusCommand implements SiteAwareInterface
 {
     use SiteAwareTrait;
+    use WorkflowProcessingTrait;
 
     /**
      * Clears caches for the environment.
@@ -29,10 +31,7 @@ class ClearCacheCommand extends TerminusCommand implements SiteAwareInterface
     public function clearCache($site_env)
     {
         list($site, $env) = $this->getUnfrozenSiteEnv($site_env);
-        $workflow = $env->clearCache();
-        while (!$workflow->checkProgress()) {
-            // @TODO: Add Symfony progress bar to indicate that something is happening.
-        }
+        $this->processWorkflow($env->clearCache());
         $this->log()->notice('Caches cleared on {site}.{env}.', ['site' => $site->get('name'), 'env' => $env->id,]);
     }
 }

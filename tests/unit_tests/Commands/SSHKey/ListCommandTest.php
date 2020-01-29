@@ -4,6 +4,7 @@ namespace Pantheon\Terminus\UnitTests\Commands\SSHKey;
 
 use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
 use Pantheon\Terminus\Commands\SSHKey\ListCommand;
+use Pantheon\Terminus\Models\SSHKey;
 
 /**
  * Class ListCommandTest
@@ -18,6 +19,7 @@ class ListCommandTest extends SSHKeyCommandTest
     protected function setUp()
     {
         parent::setUp();
+        $this->ssh_keys->method('getCollectedClass')->willReturn(SSHKey::class);
 
         $this->command = new ListCommand($this->getConfig());
         $this->command->setSession($this->session);
@@ -34,7 +36,7 @@ class ListCommandTest extends SSHKeyCommandTest
 
         $this->logger->expects($this->once())
             ->method('log')
-            ->with($this->equalTo('warning'), $this->equalTo('You have no ssh keys.'));
+            ->with($this->equalTo('warning'), $this->equalTo('You have no SSH keys.'));
 
         $out = $this->command->listSSHKeys();
         $this->assertInstanceOf(RowsOfFields::class, $out);

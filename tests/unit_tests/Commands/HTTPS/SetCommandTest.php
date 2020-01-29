@@ -5,6 +5,7 @@ namespace Pantheon\Terminus\UnitTests\HTTPS;
 use Pantheon\Terminus\Commands\HTTPS\SetCommand;
 use Pantheon\Terminus\Models\Workflow;
 use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
+use Pantheon\Terminus\UnitTests\Commands\WorkflowProgressTrait;
 
 /**
  * Class SetCommandTest
@@ -13,6 +14,8 @@ use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
  */
 class SetCommandTest extends CommandTestCase
 {
+    use WorkflowProgressTrait;
+
     /**
      * @var Workflow
      */
@@ -29,10 +32,6 @@ class SetCommandTest extends CommandTestCase
             ->disableOriginalConstructor()
             ->getMock();
         // workflow succeeded
-        $this->workflow->expects($this->once())
-            ->method('checkProgress')
-            ->with()
-            ->willReturn(true);
         $this->workflow->expects($this->once())
             ->method('getMessage')
             ->with()
@@ -63,8 +62,10 @@ class SetCommandTest extends CommandTestCase
 
 
         $this->command = new SetCommand();
+        $this->command->setContainer($this->getContainer());
         $this->command->setSites($this->sites);
         $this->command->setLogger($this->logger);
+        $this->expectWorkflowProcessing();
     }
 
     /**

@@ -6,6 +6,7 @@ use Pantheon\Terminus\Commands\Redis\EnableCommand;
 use Pantheon\Terminus\Models\Workflow;
 use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
 use Pantheon\Terminus\Models\Redis;
+use Pantheon\Terminus\UnitTests\Commands\WorkflowProgressTrait;
 
 /**
  * Class EnableCommandTest
@@ -14,6 +15,8 @@ use Pantheon\Terminus\Models\Redis;
  */
 class EnableCommandTest extends CommandTestCase
 {
+    use WorkflowProgressTrait;
+
     /**
      * Tests the redis:enable command
      */
@@ -23,7 +26,6 @@ class EnableCommandTest extends CommandTestCase
             ->disableOriginalConstructor()
             ->getMock();
         // workflow succeeded
-        $workflow->expects($this->once())->method('checkProgress')->willReturn(true);
         $workflow->expects($this->once())->method('getMessage')->willReturn('successful workflow');
 
         $this->redis = $this->getMockBuilder(Redis::class)
@@ -47,9 +49,11 @@ class EnableCommandTest extends CommandTestCase
                 $this->equalTo('successful workflow')
             );
 
-        $command = new EnableCommand();
-        $command->setSites($this->sites);
-        $command->setLogger($this->logger);
-        $command->enable('mysite');
+        $this->command = new EnableCommand();
+        $this->command->setContainer($this->getContainer());
+        $this->command->setSites($this->sites);
+        $this->command->setLogger($this->logger);
+        $this->expectWorkflowProcessing();
+        $this->command->enable('mysite');
     }
 }

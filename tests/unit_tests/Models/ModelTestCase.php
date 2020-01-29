@@ -2,14 +2,15 @@
 
 namespace Pantheon\Terminus\UnitTests\Models;
 
-use Robo\Config;
+use Pantheon\Terminus\Config\TerminusConfig;
 use Pantheon\Terminus\Request\Request;
+use Pantheon\Terminus\UnitTests\TerminusTestCase;
 
 /**
  * Class ModelTestCase
  * @package Pantheon\Terminus\UnitTests\Models
  */
-abstract class ModelTestCase extends \PHPUnit_Framework_TestCase
+abstract class ModelTestCase extends TerminusTestCase
 {
     /**
      * @var TerminusCollection
@@ -41,7 +42,7 @@ abstract class ModelTestCase extends \PHPUnit_Framework_TestCase
      */
     protected function setUp()
     {
-        $this->config = $this->getMockBuilder(Config::class)
+        $this->config = $this->getMockBuilder(TerminusConfig::class)
           ->disableOriginalConstructor()
           ->getMock();
         $this->request = $this->getMockBuilder(Request::class)

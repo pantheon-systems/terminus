@@ -3,6 +3,7 @@
 namespace Pantheon\Terminus\Commands\HTTPS;
 
 use Pantheon\Terminus\Commands\TerminusCommand;
+use Pantheon\Terminus\Commands\WorkflowProcessingTrait;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 
@@ -13,6 +14,7 @@ use Pantheon\Terminus\Site\SiteAwareTrait;
 class RemoveCommand extends TerminusCommand implements SiteAwareInterface
 {
     use SiteAwareTrait;
+    use WorkflowProcessingTrait;
 
     /**
      * Disables HTTPS and removes the SSL certificate from the environment.
@@ -34,11 +36,7 @@ class RemoveCommand extends TerminusCommand implements SiteAwareInterface
         // Converge the environment bindings to get the settings to take effect.
         $workflow = $env->convergeBindings();
         $this->log()->notice("HTTPS has been disabled and the environment's bindings will now be converged.");
-
-        // Wait for the workflow to complete.
-        while (!$workflow->checkProgress()) {
-            // @TODO: Add Symfony progress bar to indicate that something is happening.
-        }
+        $this->processWorkflow($workflow);
         $this->log()->notice($workflow->getMessage());
     }
 }

@@ -4,6 +4,7 @@ namespace Pantheon\Terminus\UnitTests\Commands\Domain;
 
 use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
 use Pantheon\Terminus\Commands\Domain\ListCommand;
+use Pantheon\Terminus\Models\Domain;
 
 /**
  * Class ListCommandTest
@@ -31,6 +32,7 @@ class ListCommandTest extends DomainTest
     {
         $dummy_info = ['123' => ['domain' => 'domain', 'zone' => 'zone']];
 
+        $this->domains->method('getCollectedClass')->willReturn(Domain::class);
         $this->domains->expects($this->once())
             ->method('serialize')
             ->with()

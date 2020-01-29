@@ -4,6 +4,7 @@ namespace Pantheon\Terminus\Commands\Lock;
 
 use Consolidation\OutputFormatters\StructuredData\PropertyList;
 use Pantheon\Terminus\Commands\TerminusCommand;
+use Pantheon\Terminus\Commands\StructuredListTrait;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 
@@ -14,6 +15,7 @@ use Pantheon\Terminus\Site\SiteAwareTrait;
 class InfoCommand extends TerminusCommand implements SiteAwareInterface
 {
     use SiteAwareTrait;
+    use StructuredListTrait;
 
     /**
      * Displays HTTP basic authentication status and configuration for the environment.
@@ -35,6 +37,6 @@ class InfoCommand extends TerminusCommand implements SiteAwareInterface
     public function info($site_env)
     {
         list(, $env) = $this->getSiteEnv($site_env);
-        return new PropertyList($env->getLock()->serialize());
+        return $this->getPropertyList($env->getLock());
     }
 }

@@ -4,6 +4,7 @@ namespace Pantheon\Terminus\UnitTests\Commands\Site\Team;
 
 use Pantheon\Terminus\Commands\Site\Team\RoleCommand;
 use Pantheon\Terminus\Exceptions\TerminusException;
+use Pantheon\Terminus\UnitTests\Commands\WorkflowProgressTrait;
 
 /**
  * Class RoleCommandTest
@@ -12,6 +13,8 @@ use Pantheon\Terminus\Exceptions\TerminusException;
  */
 class RoleCommandTest extends TeamCommandTest
 {
+    use WorkflowProgressTrait;
+
     /**
      * @inheritdoc
      */
@@ -21,6 +24,8 @@ class RoleCommandTest extends TeamCommandTest
         $this->command = new RoleCommand($this->getConfig());
         $this->command->setLogger($this->logger);
         $this->command->setSites($this->sites);
+        $this->command->setContainer($this->getContainer());
+        $this->expectWorkflowProcessing();
     }
 
     /**
@@ -37,10 +42,6 @@ class RoleCommandTest extends TeamCommandTest
             ->method('setRole')
             ->with('admin')
             ->willReturn($this->workflow);
-        $this->workflow->expects($this->once())
-            ->method('checkProgress')
-            ->with()
-            ->willReturn(true);
         $this->workflow->expects($this->once())
             ->method('getMessage')
             ->with()
@@ -67,8 +68,6 @@ class RoleCommandTest extends TeamCommandTest
             ->willReturn(false);
         $this->user_membership->expects($this->never())
             ->method('setRole');
-        $this->workflow->expects($this->never())
-            ->method('checkProgress');
         $this->workflow->expects($this->never())
             ->method('getMessage');
         $this->logger->expects($this->never())

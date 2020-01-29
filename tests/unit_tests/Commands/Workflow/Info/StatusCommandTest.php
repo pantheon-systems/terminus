@@ -3,7 +3,6 @@
 namespace Pantheon\Terminus\UnitTests\Commands\Workflow\Info;
 
 use Consolidation\OutputFormatters\StructuredData\PropertyList;
-use Pantheon\Terminus\UnitTests\Commands\Workflow\WorkflowCommandTest;
 use Pantheon\Terminus\Commands\Workflow\Info\StatusCommand;
 
 /**
@@ -11,14 +10,22 @@ use Pantheon\Terminus\Commands\Workflow\Info\StatusCommand;
  * Testing class for Pantheon\Terminus\Commands\Workflow\Info\StatusCommand
  * @package Pantheon\Terminus\UnitTests\Commands\Workflow\Info
  */
-class StatusCommandTest extends WorkflowCommandTest
+class StatusCommandTest extends InfoCommandTest
 {
+    /**
+     * @var array
+     */
+    protected $data;
+
     /**
      * @inheritdoc
      */
     protected function setUp()
     {
         parent::setUp();
+
+        $this->data = ['id' => '12345', 'details' => 'test',];
+
         $this->command = new StatusCommand($this->getConfig());
         $this->command->setLogger($this->logger);
         $this->command->setSites($this->sites);
@@ -30,16 +37,12 @@ class StatusCommandTest extends WorkflowCommandTest
     public function testLatestStatusCommand()
     {
         $this->workflows->expects($this->once())
-            ->method('fetch')
-            ->willReturn($this->workflows);
-
-        $this->workflows->expects($this->once())
             ->method('all')
             ->willReturn([$this->workflow,]);
-
         $this->workflow->expects($this->once())
             ->method('serialize')
-            ->willReturn(['id' => '12345', 'details' => 'test']);
+            ->with()
+            ->willReturn($this->data);
 
         $out = $this->command->status('mysite', ['id' => null,]);
         $this->assertInstanceOf(PropertyList::class, $out);
@@ -51,16 +54,13 @@ class StatusCommandTest extends WorkflowCommandTest
     public function testWorkflowIDStatusCommand()
     {
         $this->workflows->expects($this->once())
-            ->method('fetch')
-            ->willReturn($this->workflows);
-        $this->workflows->expects($this->once())
             ->method('get')
             ->with($this->equalTo('12345'))
             ->willReturn($this->workflow);
-
         $this->workflow->expects($this->once())
             ->method('serialize')
-            ->willReturn(['id' => '12345', 'details' => 'test']);
+            ->with()
+            ->willReturn($this->data);
 
         $out = $this->command->status('mysite', ['id' => '12345',]);
         $this->assertInstanceOf(PropertyList::class, $out);

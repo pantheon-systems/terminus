@@ -5,7 +5,7 @@
     "license": "MIT",
     "extra": {
         "terminus": {
-            "compatible-version": "1.*"
+            "compatible-version": "2.*"
         }
     }
 }

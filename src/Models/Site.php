@@ -6,10 +6,11 @@ use League\Container\ContainerAwareInterface;
 use League\Container\ContainerAwareTrait;
 use Pantheon\Terminus\Friends\OrganizationsInterface;
 use Pantheon\Terminus\Friends\OrganizationsTrait;
-use Robo\Common\ConfigAwareTrait;
-use Robo\Contract\ConfigAwareInterface;
 use Pantheon\Terminus\Collections\Branches;
 use Pantheon\Terminus\Collections\Environments;
+use Pantheon\Terminus\Collections\Plans;
+use Pantheon\Terminus\Collections\SiteAuthorizations;
+use Pantheon\Terminus\Collections\SiteMetrics;
 use Pantheon\Terminus\Collections\SiteOrganizationMemberships;
 use Pantheon\Terminus\Collections\SiteUserMemberships;
 use Pantheon\Terminus\Collections\Workflows;
@@ -19,13 +20,17 @@ use Pantheon\Terminus\Exceptions\TerminusException;
  * Class Site
  * @package Pantheon\Terminus\Models
  */
-class Site extends TerminusModel implements ConfigAwareInterface, ContainerAwareInterface, OrganizationsInterface
+class Site extends TerminusModel implements ContainerAwareInterface, OrganizationsInterface
 {
-    use ConfigAwareTrait;
     use ContainerAwareTrait;
     use OrganizationsTrait;
 
-    public static $pretty_name = 'site';
+    const PRETTY_NAME = 'site';
+
+    /**
+     * @var array
+     */
+    public static $date_attributes = ['created', 'last_frozen_at',];
     /**
      * @var string
      */
@@ -47,6 +52,14 @@ class Site extends TerminusModel implements ConfigAwareInterface, ContainerAware
      */
     protected $org_memberships;
     /**
+     * @var Plan
+     */
+    protected $plan;
+    /**
+     * @var Plans
+     */
+    protected $plans;
+    /**
      * @var Redis
      */
     protected $redis;
@@ -59,13 +72,17 @@ class Site extends TerminusModel implements ConfigAwareInterface, ContainerAware
      */
     protected $user_memberships;
     /**
-     * @var Workflows
+     * @var SiteAuthorizations
      */
-    private $workflows;
+    private $authorizations;
     /**
      * @var array
      */
     private $features;
+    /**
+     * @var Workflows
+     */
+    private $workflows;
 
     /**
      * Add a payment method to the given site
@@ -117,9 +134,7 @@ class Site extends TerminusModel implements ConfigAwareInterface, ContainerAware
      */
     public function delete()
     {
-        $this->request()->request("sites/{$this->id}", ['method' => 'delete',]);
-        //TODO: Change this function to use a workflow. The workflow returned always gets 404 on status check.
-        //return $this->workflows->create('delete_site');
+        return $this->getWorkflows()->create('delete_site');
     }
 
     /**
@@ -134,16 +149,15 @@ class Site extends TerminusModel implements ConfigAwareInterface, ContainerAware
     }
 
     /**
-     * Creates a new site for migration
-     *
-     * @param string $upstream_id The UUID for the product to deploy.
-     * @return Workflow
+     * @return SiteAuthorizations
      */
-    public function setUpstream($upstream_id)
+    public function getAuthorizations()
     {
-        return $this->getWorkflows()->create('switch_upstream', ['params' => ['upstream_id' => $upstream_id,],]);
+        if (empty($this->authorizations)) {
+            $this->authorizations = $this->getContainer()->get(SiteAuthorizations::class, [['site' => $this,],]);
+        }
+        return $this->authorizations;
     }
-
 
     /**
      * @return Branches
@@ -222,19 +236,34 @@ class Site extends TerminusModel implements ConfigAwareInterface, ContainerAware
     public function getOrganizationMemberships()
     {
         if (empty($this->user_memberships)) {
-            $this->org_memberships = $this->getContainer()->get(SiteOrganizationMemberships::class, [['site' => $this,],]);
+            $this->org_memberships = $this->getContainer()->get(
+                SiteOrganizationMemberships::class,
+                [['site' => $this,],]
+            );
         }
         return $this->org_memberships;
     }
 
     /**
-     * Returns the PHP version of this site.
-     *
-     * @return null|string
+     * @return Plan
      */
-    public function getPHPVersion()
+    public function getPlan()
     {
-        return !is_null($php_ver = $this->get('php_version')) ? substr($php_ver, 0, 1) . '.' . substr($php_ver, 1) : null;
+        if (empty($this->plan)) {
+            $this->plan = $this->getContainer()->get(Plan::class, [null, ['site' => $this,],]);
+        }
+        return $this->plan;
+    }
+
+    /**
+     * @return Plans
+     */
+    public function getPlans()
+    {
+        if (empty($this->plans)) {
+            $this->plans = $this->getContainer()->get(Plans::class, [['site' => $this,],]);
+        }
+        return $this->plans;
     }
 
     /**
@@ -257,6 +286,17 @@ class Site extends TerminusModel implements ConfigAwareInterface, ContainerAware
     }
 
     /**
+     * @return SiteMetrics
+     */
+    public function getSiteMetrics()
+    {
+        if (empty($this->site_metrics)) {
+            $this->site_metrics = $this->getContainer()->get(SiteMetrics::class, [['site' => $this,],]);
+        }
+        return $this->site_metrics;
+    }
+
+    /**
      * @return Solr
      */
     public function getSolr()
@@ -272,7 +312,8 @@ class Site extends TerminusModel implements ConfigAwareInterface, ContainerAware
      */
     public function getUpstream()
     {
-        if (is_null($upstream_data = $this->get('upstream'))
+        $upstream_data = (object)array_merge((array)$this->get('upstream'), (array)$this->get('product'));
+        if (empty((array)$upstream_data)
             && !is_null($settings = $this->get('settings'))
             && isset($settings->upstream)
         ) {
@@ -304,6 +345,16 @@ class Site extends TerminusModel implements ConfigAwareInterface, ContainerAware
     }
 
     /**
+     * Returns whether the site is frozen or not.
+     *
+     * @return boolean
+     */
+    public function isFrozen()
+    {
+        return !empty($this->get('frozen'));
+    }
+
+    /**
      * Remove this site's payment method
      *
      * @return Workflow
@@ -322,22 +373,22 @@ class Site extends TerminusModel implements ConfigAwareInterface, ContainerAware
     {
         $settings = $this->get('settings');
 
-        $created_date = is_numeric($created = $this->get('created')) ? $created : strtotime($created);
         $data = [
             'id' => $this->id,
             'name' => $this->get('name'),
             'label' => $this->get('label'),
-            'created' => date($this->getConfig()->get('date_format'), $created_date),
+            'created' => $this->get('created'),
             'framework' => $this->get('framework'),
             'organization' => $this->get('organization'),
-            'service_level' => $this->get('service_level'),
+            'plan_name' => $this->get('plan_name'),
             'max_num_cdes' => $settings ? $settings->max_num_cdes : 0,
             'upstream' => (string)$this->getUpstream(),
-            'php_version' => $this->getPHPVersion(),
             'holder_type' => $this->get('holder_type'),
             'holder_id' => $this->get('holder_id'),
             'owner' => $this->get('owner'),
-            'frozen' => is_null($this->get('frozen')) ? 'false' : 'true',
+            'region' => $this->get('preferred_zone_label'),
+            'frozen' => $this->isFrozen(),
+            'last_frozen_at' => $this->get('last_frozen_at'),
         ];
         if (isset($this->tags)) {
             $data['tags'] = implode(',', $this->tags->ids());
@@ -361,7 +412,20 @@ class Site extends TerminusModel implements ConfigAwareInterface, ContainerAware
     }
 
     /**
+     * Creates a new site for migration
+     *
+     * @param string $upstream_id The UUID for the product to deploy.
+     * @return Workflow
+     */
+    public function setUpstream($upstream_id)
+    {
+        return $this->getWorkflows()->create('switch_upstream', ['params' => ['upstream_id' => $upstream_id,],]);
+    }
+
+    /**
      * Update service level
+     *
+     * @deprecated 2.0.0 This is no longer the appropriate way to change a site's plan. Use $this->getPlans()->set().
      *
      * @param string $service_level Level to set service on site to
      * @return Workflow

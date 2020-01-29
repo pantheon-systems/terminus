@@ -6,6 +6,7 @@ use Pantheon\Terminus\Commands\Import\SiteCommand;
 use Pantheon\Terminus\Exceptions\TerminusException;
 use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
 use Pantheon\Terminus\Models\Workflow;
+use Pantheon\Terminus\UnitTests\Commands\WorkflowProgressTrait;
 
 /**
  * Class SiteCommandTest
@@ -14,6 +15,8 @@ use Pantheon\Terminus\Models\Workflow;
  */
 class SiteCommandTest extends CommandTestCase
 {
+    use WorkflowProgressTrait;
+
     /**
      * @var Workflow
      */
@@ -31,9 +34,11 @@ class SiteCommandTest extends CommandTestCase
             ->getMock();
 
         $this->command = new SiteCommand($this->getConfig());
+        $this->command->setContainer($this->getContainer());
         $this->command->setSites($this->sites);
         $this->command->setLogger($this->logger);
         $this->command->setInput($this->input);
+        $this->expectWorkflowProcessing();
     }
     
     /**
@@ -48,37 +53,12 @@ class SiteCommandTest extends CommandTestCase
             ->method('import')
             ->with($this->equalTo($url))
             ->willReturn($this->workflow);
-        $this->workflow->expects($this->once())
-            ->method('checkProgress')
-            ->with()
-            ->willReturn(true);
         $this->logger->expects($this->once())
             ->method('log')
             ->with(
                 $this->equalTo('notice'),
                 $this->equalTo('Imported site onto Pantheon')
             );
-
-        $out = $this->command->import('dummy-site', $url);
-        $this->assertNull($out);
-    }
-
-    /**
-     * Exercises site:import command when declining the confirmation
-     *
-     * @todo Remove this when removing TerminusCommand::confirm()
-     */
-    public function testSiteImportConfirmationDecline()
-    {
-        $url = 'a-valid-url';
-
-        $this->expectConfirmation(false);
-        $this->environment->expects($this->never())
-            ->method('import');
-        $this->workflow->expects($this->never())
-            ->method('checkProgress');
-        $this->logger->expects($this->never())
-            ->method('log');
 
         $out = $this->command->import('dummy-site', $url);
         $this->assertNull($out);
@@ -96,12 +76,11 @@ class SiteCommandTest extends CommandTestCase
             ->method('import')
             ->with($this->equalTo($url))
             ->willReturn($this->workflow);
-        $this->workflow->expects($this->once())
-            ->method('checkProgress')
-            ->with()
-            ->will($this->throwException(new \Exception('Successfully queued import_site')));
         $this->logger->expects($this->never())
             ->method('log');
+        $this->progress_bar->method('cycle')
+            ->with()
+            ->will($this->throwException(new \Exception('Successfully queued import_site')));
 
         $this->setExpectedException(TerminusException::class, 'Site import failed');
 
@@ -122,12 +101,11 @@ class SiteCommandTest extends CommandTestCase
             ->method('import')
             ->with($this->equalTo($url))
             ->willReturn($this->workflow);
-        $this->workflow->expects($this->once())
-            ->method('checkProgress')
-            ->with()
-            ->will($this->throwException(new \Exception($message)));
         $this->logger->expects($this->never())
             ->method('log');
+        $this->progress_bar->method('cycle')
+            ->with()
+            ->will($this->throwException(new \Exception($message)));
 
         $this->setExpectedException(\Exception::class, $message);
 

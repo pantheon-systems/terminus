@@ -4,6 +4,7 @@ namespace Pantheon\Terminus\UnitTests\Commands\Env;
 
 use Pantheon\Terminus\Commands\Env\DeployCommand;
 use Pantheon\Terminus\Exceptions\TerminusException;
+use Pantheon\Terminus\UnitTests\Commands\WorkflowProgressTrait;
 
 /**
  * Class DeployCommandTest
@@ -12,6 +13,8 @@ use Pantheon\Terminus\Exceptions\TerminusException;
  */
 class DeployCommandTest extends EnvCommandTest
 {
+    use WorkflowProgressTrait;
+
     /**
      * @inheritdoc
      */
@@ -19,8 +22,10 @@ class DeployCommandTest extends EnvCommandTest
     {
         parent::setUp();
         $this->command = new DeployCommand($this->getConfig());
+        $this->command->setContainer($this->getContainer());
         $this->command->setLogger($this->logger);
         $this->command->setSites($this->sites);
+        $this->expectWorkflowProcessing();
     }
 
     /**
@@ -41,7 +46,6 @@ class DeployCommandTest extends EnvCommandTest
             ->willReturn($this->workflow)
             ->with([
                 'updatedb' => 0,
-                'clear_cache' => 0,
                 'annotation' => 'Deploy from Terminus',
                 'clone_database' => [
                     'from_environment' => 'live'
@@ -50,15 +54,11 @@ class DeployCommandTest extends EnvCommandTest
                     'from_environment' => 'live'
                 ]
             ]);
-        $this->workflow->expects($this->once())
-            ->method('checkProgress')
-            ->with()
-            ->willReturn(true);
 
         // Run the deploy.
         $this->command->deploy(
             "mysite.{$this->environment->id}",
-            ['sync-content' => true, 'note' => 'Deploy from Terminus', 'cc' => false, 'updatedb' => false,]
+            ['sync-content' => true, 'note' => 'Deploy from Terminus', 'updatedb' => false,]
         );
     }
 
@@ -102,25 +102,40 @@ class DeployCommandTest extends EnvCommandTest
             ->willReturn($this->workflow)
             ->with([
                 'updatedb' => 1,
-                'clear_cache' => 1,
                 'annotation' => 'Deploy from Terminus',
             ]);
-        $this->workflow->expects($this->once())
-            ->method('checkProgress')
-            ->with()
-            ->willReturn(true);
 
         // Run the deploy.
         $this->command->deploy(
             "mysite.{$this->environment->id}",
-            ['sync-content' => true, 'note' => 'Deploy from Terminus', 'cc' => true, 'updatedb' => true,]
+            ['sync-content' => true, 'note' => 'Deploy from Terminus', 'updatedb' => true,]
         );
     }
 
     /**
-     * Tests the env:deploy command when the environment is uninitialized
+     * Tests the env:deploy command when the environment is uninitialized and a deploy message is supplied
      */
-    public function testDeployUninitialized()
+    public function testDeployUninitializedWithMessage()
+    {
+        $this->environment->id = 'uninitialized';
+        $note = 'Never running from a real fight';
+
+        $this->environment->expects($this->once())
+            ->method('isInitialized')
+            ->willReturn(false);
+        $this->environment->expects($this->once())
+            ->method('initializeBindings')
+            ->with(['annotation' => $note,])
+            ->willReturn($this->workflow);
+
+        // Run the deploy.
+        $this->command->deploy("mysite.{$this->environment->id}", compact('note'));
+    }
+
+    /**
+     * Tests the env:deploy command when the environment is uninitialized and no deploy message is given
+     */
+    public function testDeployUninitializedWithoutMessage()
     {
         $this->environment->id = 'uninitialized';
 
@@ -129,12 +144,8 @@ class DeployCommandTest extends EnvCommandTest
             ->willReturn(false);
         $this->environment->expects($this->once())
             ->method('initializeBindings')
-            ->willReturn($this->workflow)
-            ->with();
-        $this->workflow->expects($this->once())
-            ->method('checkProgress')
             ->with()
-            ->willReturn(true);
+            ->willReturn($this->workflow);
 
         // Run the deploy.
         $this->command->deploy("mysite.{$this->environment->id}");
@@ -162,8 +173,9 @@ class DeployCommandTest extends EnvCommandTest
             ->willReturn($site_name);
         $this->environment->expects($this->never())
             ->method('deploy');
-        $this->workflow->expects($this->never())
-            ->method('checkProgress');
+        $this->site->expects($this->once())
+            ->method('isFrozen')
+            ->willReturn(false);
 
         $this->setExpectedException(
             TerminusException::class,
@@ -173,7 +185,7 @@ class DeployCommandTest extends EnvCommandTest
         // Run the deploy.
         $this->command->deploy(
             "$site_name.{$this->environment->id}",
-            ['sync-content' => true, 'note' => 'Deploy from Terminus', 'cc' => false, 'updatedb' => false,]
+            ['sync-content' => true, 'note' => 'Deploy from Terminus', 'updatedb' => false,]
         );
     }
 }

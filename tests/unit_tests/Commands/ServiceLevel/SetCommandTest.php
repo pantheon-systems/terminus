@@ -5,6 +5,7 @@ namespace Pantheon\Terminus\UnitTests\Commands\ServiceLevel;
 use Pantheon\Terminus\Commands\ServiceLevel\SetCommand;
 use Pantheon\Terminus\Models\Workflow;
 use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
+use Pantheon\Terminus\UnitTests\Commands\WorkflowProgressTrait;
 
 /**
  * Class SetCommandTest
@@ -13,6 +14,8 @@ use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
  */
 class SetCommandTest extends CommandTestCase
 {
+    use WorkflowProgressTrait;
+
     /**
      * Tests the service-level:set command
      */
@@ -22,7 +25,6 @@ class SetCommandTest extends CommandTestCase
             ->disableOriginalConstructor()
             ->getMock();
         // workflow succeeded
-        $workflow->expects($this->once())->method('checkProgress')->willReturn(true);
         $workflow->expects($this->once())->method('getMessage')->willReturn('successful workflow');
 
         $this->logger->expects($this->at(0))
@@ -42,9 +44,11 @@ class SetCommandTest extends CommandTestCase
             ->with('free')
             ->willReturn($workflow);
 
-        $command = new SetCommand();
-        $command->setSites($this->sites);
-        $command->setLogger($this->logger);
-        $command->set('my-site', 'free');
+        $this->command = new SetCommand();
+        $this->command->setSites($this->sites);
+        $this->command->setLogger($this->logger);
+        $this->command->setContainer($this->getContainer());
+        $this->expectWorkflowProcessing();
+        $this->command->set('my-site', 'free');
     }
 }

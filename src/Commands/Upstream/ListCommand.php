@@ -4,6 +4,7 @@ namespace Pantheon\Terminus\Commands\Upstream;
 
 use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
 use Pantheon\Terminus\Commands\TerminusCommand;
+use Pantheon\Terminus\Commands\StructuredListTrait;
 
 /**
  * Class ListCommand
@@ -11,8 +12,13 @@ use Pantheon\Terminus\Commands\TerminusCommand;
  */
 class ListCommand extends TerminusCommand
 {
+    use StructuredListTrait;
+
     /**
      * Displays the list of upstreams accessible to the currently logged-in user.
+     *
+     * @authorize
+     * @filter-output
      *
      * @command upstream:list
      * @aliases upstreams
@@ -26,8 +32,8 @@ class ListCommand extends TerminusCommand
      *     framework: Framework
      *     organization: Organization
      * @option all Show all upstreams
-     * @option framework Framework filter
-     * @option name Name filter
+     * @option framework DEPRECATED Framework filter
+     * @option name DEPRECATED Name filter
      * @option org Organization filter; "all" or an organization's name, label, or ID
      * @return RowsOfFields
      *
@@ -49,9 +55,7 @@ class ListCommand extends TerminusCommand
         $upstreams = $this->filterByName($upstreams, $options);
         $upstreams = $this->filterForCoreCustom($upstreams, $options);
 
-        $data = $upstreams->serialize();
-        usort($data, $this->sortFunction($options));
-        return new RowsOfFields($data);
+        return $this->getRowsOfFields($upstreams, ['sort' => $this->sortFunction($options)]);
     }
 
     /**

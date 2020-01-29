@@ -2,10 +2,10 @@
 
 namespace Pantheon\Terminus\Collections;
 
+use Pantheon\Terminus\Config\ConfigAwareTrait;
 use Pantheon\Terminus\DataStore\DataStoreAwareInterface;
 use Pantheon\Terminus\DataStore\DataStoreAwareTrait;
 use Pantheon\Terminus\Models\SavedToken;
-use Robo\Common\ConfigAwareTrait;
 use Robo\Contract\ConfigAwareInterface;
 
 /**
@@ -17,7 +17,7 @@ class SavedTokens extends TerminusCollection implements ConfigAwareInterface, Da
     use ConfigAwareTrait;
     use DataStoreAwareTrait;
 
-    public static $pretty_name = 'tokens';
+    const PRETTY_NAME = 'tokens';
     /**
      * @var string
      */
@@ -63,7 +63,7 @@ class SavedTokens extends TerminusCollection implements ConfigAwareInterface, Da
      */
     public function deleteAll()
     {
-        foreach ($this->getMembers() as $token) {
+        foreach ($this->all() as $token) {
             $token->delete();
         }
     }
@@ -71,12 +71,15 @@ class SavedTokens extends TerminusCollection implements ConfigAwareInterface, Da
     /**
      * @inheritdoc
      */
-    protected function getCollectionData($options = [])
+    public function getData()
     {
-        $tokens = [];
-        foreach ($this->getDataStore()->keys() as $key) {
-            $tokens[] = (object)$this->getDataStore()->get($key);
+        if (empty(parent::getData())) {
+            $tokens = [];
+            foreach ($this->getDataStore()->keys() as $key) {
+                $tokens[] = (object)$this->getDataStore()->get($key);
+            }
+            $this->setData($tokens);
         }
-        return $tokens;
+        return parent::getData();
     }
 }

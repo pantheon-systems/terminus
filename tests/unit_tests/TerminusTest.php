@@ -1,14 +1,13 @@
 <?php
 
-namespace Pantheon\Terminus;
+namespace Pantheon\Terminus\UnitTests;
 
-use Consolidation\OutputFormatters\Formatters\FormatterInterface;
 use League\Container\ContainerInterface;
 use Robo\Config;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class TerminusTest extends \PHPUnit_Framework_TestCase
+class TerminusTest extends TerminusTestCase
 {
     /**
      * @var Robo\Config

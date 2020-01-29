@@ -2,6 +2,7 @@
 
 namespace Pantheon\Terminus\Commands\Backup;
 
+use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
 use Pantheon\Terminus\Request\RequestAwareInterface;
 use Pantheon\Terminus\Request\RequestAwareTrait;
 
@@ -34,7 +35,7 @@ class GetCommand extends SingleBackupCommand implements RequestAwareInterface
      */
     public function get($site_env, array $options = ['file' => null, 'element' => 'files', 'to' => null,])
     {
-        $backup_url = $this->getBackup($site_env, $options)->getUrl();
+        $backup_url = $this->getBackup($site_env, $options)->getArchiveURL();
         if (!isset($options['to']) || is_null($save_path = $options['to'])) {
             return $backup_url;
         }

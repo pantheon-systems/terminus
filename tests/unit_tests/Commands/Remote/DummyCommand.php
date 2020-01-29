@@ -3,7 +3,6 @@
 namespace Pantheon\Terminus\UnitTests\Commands\Remote;
 
 use Pantheon\Terminus\Commands\Remote\SSHBaseCommand;
-use Symfony\Component\Console\Input\InputInterface;
 
 /**
  * Class DummyCommand
@@ -21,14 +20,5 @@ class DummyCommand extends SSHBaseCommand
     {
         $this->prepareEnvironment($site_env_id);
         return $this->executeCommand($dummy_args);
-    }
-
-    /**
-     * @param InputInterface $input
-     * @return bool|null
-     */
-    public function useUseTty($input)
-    {
-        return $this->useTty($input);
     }
 }

@@ -4,6 +4,7 @@ namespace Pantheon\Terminus\Commands\Site\Org;
 
 use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
 use Pantheon\Terminus\Commands\TerminusCommand;
+use Pantheon\Terminus\Commands\StructuredListTrait;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 
@@ -14,11 +15,13 @@ use Pantheon\Terminus\Site\SiteAwareTrait;
 class ListCommand extends TerminusCommand implements SiteAwareInterface
 {
     use SiteAwareTrait;
+    use StructuredListTrait;
 
     /**
      * Displays the list of supporting organizations associated with a site.
      *
      * @authorize
+     * @filter-output
      *
      * @command site:org:list
      * @aliases site:orgs
@@ -34,11 +37,9 @@ class ListCommand extends TerminusCommand implements SiteAwareInterface
      */
     public function listOrgs($site_id)
     {
-        $orgs = $this->getSite($site_id)->getOrganizationMemberships()->serialize();
-
-        if (empty($orgs)) {
-            $this->log()->notice('This site has no supporting organizations.');
-        }
-        return new RowsOfFields($orgs);
+        return $this->getRowsOfFields(
+            $this->getSite($site_id)->getOrganizationMemberships(),
+            ['message' => 'This site has no supporting organizations.',]
+        );
     }
 }

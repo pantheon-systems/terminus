@@ -15,11 +15,11 @@ use Pantheon\Terminus\Session\SessionAwareTrait;
  * Class Workflows
  * @package Pantheon\Terminus\Collections
  */
-class Workflows extends TerminusCollection implements SessionAwareInterface
+class Workflows extends APICollection implements SessionAwareInterface
 {
     use SessionAwareTrait;
 
-    public static $pretty_name = 'workflows';
+    const PRETTY_NAME = 'workflows';
     /**
      * @var string
      */
@@ -153,13 +153,12 @@ class Workflows extends TerminusCollection implements SessionAwareInterface
     /**
      * Fetches workflow data hydrated with operations
      *
-     * @param array $options Additional information for the request
      * @return void
      */
-    public function fetchWithOperations($options = [])
+    public function fetchWithOperations()
     {
-        $options = array_merge($options, ['fetch_args' => ['query' => ['hydrate' => 'operations',],],]);
-        $this->fetch($options);
+        $this->setFetchArgs(['query' => ['hydrate' => 'operations',],]);
+        $this->fetch();
     }
 
     /**

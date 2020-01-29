@@ -7,6 +7,7 @@ use Pantheon\Terminus\Models\Workflow;
 use Pantheon\Terminus\UnitTests\Commands\Org\Site\OrgSiteCommandTest;
 use Pantheon\Terminus\Collections\SiteOrganizationMemberships;
 use Pantheon\Terminus\Models\SiteOrganizationMembership;
+use Pantheon\Terminus\UnitTests\Commands\WorkflowProgressTrait;
 
 /**
  * Class RemoveCommandTest
@@ -15,6 +16,8 @@ use Pantheon\Terminus\Models\SiteOrganizationMembership;
  */
 class RemoveCommandTest extends OrgSiteCommandTest
 {
+    use WorkflowProgressTrait;
+
     /**
      * @var SiteOrganizationMemberships
      */
@@ -49,9 +52,11 @@ class RemoveCommandTest extends OrgSiteCommandTest
             ->willReturn($this->site_name);
 
         $this->command = new RemoveCommand($this->getConfig());
+        $this->command->setContainer($this->getContainer());
         $this->command->setSites($this->sites);
         $this->command->setLogger($this->logger);
         $this->command->setSession($this->session);
+        $this->expectWorkflowProcessing();
     }
 
     /**
@@ -64,9 +69,6 @@ class RemoveCommandTest extends OrgSiteCommandTest
             ->getMock();
 
         // workflow succeeded
-        $workflow->expects($this->once())
-            ->method('checkProgress')
-            ->willReturn(true);
         $workflow->expects($this->once())
             ->method('getMessage')
             ->willReturn('successful workflow');

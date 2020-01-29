@@ -3,6 +3,7 @@
 namespace Pantheon\Terminus\Commands\Site\Team;
 
 use Pantheon\Terminus\Commands\TerminusCommand;
+use Pantheon\Terminus\Commands\WorkflowProcessingTrait;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 use Pantheon\Terminus\Exceptions\TerminusException;
@@ -14,6 +15,7 @@ use Pantheon\Terminus\Exceptions\TerminusException;
 class RoleCommand extends TerminusCommand implements SiteAwareInterface
 {
     use SiteAwareTrait;
+    use WorkflowProcessingTrait;
 
     /**
      * Updates a user's role on a site's team.
@@ -35,9 +37,7 @@ class RoleCommand extends TerminusCommand implements SiteAwareInterface
             throw new TerminusException('This site does not have its change-management option enabled.');
         }
         $workflow = $site->getUserMemberships()->get($member)->setRole($role);
-        while (!$workflow->checkProgress()) {
-            // @TODO: Add Symfony progress bar to indicate that something is happening.
-        }
+        $this->processWorkflow($workflow);
         $this->log()->notice($workflow->getMessage());
     }
 }

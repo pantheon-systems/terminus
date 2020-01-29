@@ -4,6 +4,7 @@ namespace Pantheon\Terminus\Commands\Domain;
 
 use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
 use Pantheon\Terminus\Commands\TerminusCommand;
+use Pantheon\Terminus\Commands\StructuredListTrait;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 
@@ -14,20 +15,23 @@ use Pantheon\Terminus\Site\SiteAwareTrait;
 class ListCommand extends TerminusCommand implements SiteAwareInterface
 {
     use SiteAwareTrait;
+    use StructuredListTrait;
 
     /**
      * Displays domains associated with the environment.
      *
      * @authorize
+     * @filter-output
      *
      * @command domain:list
      * @aliases domains
      *
      * @field-labels
-     *     domain: Domain
-     *     dns_zone_name: DNS Zone Name
-     *     key: Key
+     *     id: Domain/ID
+     *     type: Type
+     *     primary: Is Primary
      *     deletable: Is Deletable
+     *     status: status
      * @return RowsOfFields
      *
      * @param string $site_env Site & environment in the format `site-name.env`
@@ -37,6 +41,6 @@ class ListCommand extends TerminusCommand implements SiteAwareInterface
     public function listDomains($site_env)
     {
         list(, $env) = $this->getSiteEnv($site_env);
-        return new RowsOfFields($env->getDomains()->serialize());
+        return $this->getRowsOfFields($env->getDomains());
     }
 }

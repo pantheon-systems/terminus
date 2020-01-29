@@ -4,6 +4,7 @@ namespace Pantheon\Terminus\UnitTests\Commands\Lock;
 
 use Pantheon\Terminus\Commands\Lock\EnableCommand;
 use Pantheon\Terminus\Models\Workflow;
+use Pantheon\Terminus\UnitTests\Commands\WorkflowProgressTrait;
 
 /**
  * Class EnableCommandTest
@@ -12,6 +13,8 @@ use Pantheon\Terminus\Models\Workflow;
  */
 class EnableCommandTest extends LockCommandTest
 {
+    use WorkflowProgressTrait;
+
     /**
      * @inheritdoc
      */
@@ -20,8 +23,10 @@ class EnableCommandTest extends LockCommandTest
         parent::setUp();
 
         $this->command = new EnableCommand($this->getConfig());
+        $this->command->setContainer($this->getContainer());
         $this->command->setSites($this->sites);
         $this->command->setLogger($this->logger);
+        $this->expectWorkflowProcessing();
     }
     /**
      * Tests the lock:enable command
@@ -39,10 +44,6 @@ class EnableCommandTest extends LockCommandTest
             ->method('enable')
             ->with($this->equalTo(['username' => $username, 'password' => $password,]))
             ->willReturn($workflow);
-        $workflow->expects($this->once())
-            ->method('checkProgress')
-            ->with()
-            ->willReturn(true);
         $this->site->expects($this->once())
             ->method('get')
             ->with($this->equalTo('name'))

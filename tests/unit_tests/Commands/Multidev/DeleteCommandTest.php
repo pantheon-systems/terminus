@@ -4,7 +4,7 @@ namespace Pantheon\Terminus\UnitTests\Commands\Multidev;
 
 use Pantheon\Terminus\Commands\Multidev\DeleteCommand;
 use Pantheon\Terminus\Exceptions\TerminusException;
-use Symfony\Component\Console\Input\Input;
+use Pantheon\Terminus\UnitTests\Commands\WorkflowProgressTrait;
 
 /**
  * Class DeleteCommandTest
@@ -13,6 +13,8 @@ use Symfony\Component\Console\Input\Input;
  */
 class DeleteCommandTest extends MultidevCommandTest
 {
+    use WorkflowProgressTrait;
+
     /**
      * @inheritdoc
      */
@@ -22,10 +24,13 @@ class DeleteCommandTest extends MultidevCommandTest
 
         $this->environment->method('delete')->willReturn($this->workflow);
 
-        $this->command = new DeleteCommand($this->getConfig());
+        $this->command = new DeleteCommand();
+        $this->command->setConfig($this->getConfig());
+        $this->command->setContainer($this->getContainer());
         $this->command->setLogger($this->logger);
         $this->command->setSites($this->sites);
         $this->command->setInput($this->input);
+        $this->expectWorkflowProcessing();
     }
 
     /**
@@ -39,10 +44,6 @@ class DeleteCommandTest extends MultidevCommandTest
         $this->environment->expects($this->once())
             ->method('delete')
             ->with();
-        $this->workflow->expects($this->once())
-            ->method('checkProgress')
-            ->with()
-            ->willReturn(true);
         $this->logger->expects($this->once())
             ->method('log')
             ->with(
@@ -50,27 +51,6 @@ class DeleteCommandTest extends MultidevCommandTest
                 $this->equalTo("Deleted the multidev environment {env}."),
                 $this->equalTo(['env' => $this->environment->id,])
             );
-
-        $out = $this->command->deleteMultidev("site.{$this->environment->id}");
-        $this->assertNull($out);
-    }
-
-    /**
-     * Tests the multidev:create command when declining the confirmation
-     *
-     * @todo Remove this when removing TerminusCommand::confirm()
-     */
-    public function testMultidevDeleteConfirmationDecline()
-    {
-        $this->environment->id = 'multipass';
-
-        $this->expectConfirmation(false);
-        $this->environment->expects($this->never())
-            ->method('delete');
-        $this->workflow->expects($this->never())
-            ->method('checkProgress');
-        $this->logger->expects($this->never())
-            ->method('log');
 
         $out = $this->command->deleteMultidev("site.{$this->environment->id}");
         $this->assertNull($out);
@@ -88,10 +68,6 @@ class DeleteCommandTest extends MultidevCommandTest
             ->method('delete')
             ->with($this->equalTo(['delete_branch' => true,]))
             ->willReturn($this->workflow);
-        $this->workflow->expects($this->once())
-            ->method('checkProgress')
-            ->with()
-            ->willReturn(true);
         $this->logger->expects($this->once())
             ->method('log')
             ->with(
@@ -121,8 +97,7 @@ class DeleteCommandTest extends MultidevCommandTest
             ->method('delete')
             ->with($this->equalTo(['delete_branch' => false,]))
             ->willReturn($this->workflow);
-        $this->workflow->expects($this->once())
-            ->method('checkProgress')
+        $this->progress_bar->method('cycle')
             ->with()
             ->will($this->throwException(new TerminusException($message, ['env' => $this->environment->id,])));
 

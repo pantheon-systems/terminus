@@ -2,6 +2,7 @@
 
 namespace Pantheon\Terminus\Commands\Upstream\Updates;
 
+use Pantheon\Terminus\Commands\WorkflowProcessingTrait;
 use Pantheon\Terminus\Exceptions\TerminusException;
 
 /**
@@ -10,6 +11,7 @@ use Pantheon\Terminus\Exceptions\TerminusException;
  */
 class ApplyCommand extends UpdatesCommand
 {
+    use WorkflowProcessingTrait;
 
     /**
      * Applies upstream updates to a site's development environment.
@@ -52,9 +54,7 @@ class ApplyCommand extends UpdatesCommand
                 isset($options['accept-upstream']) ? $options['accept-upstream'] : false
             );
 
-            while (!$workflow->checkProgress()) {
-                // @TODO: Add Symfony progress bar to indicate that something is happening.
-            }
+            $this->processWorkflow($workflow);
             $this->log()->notice($workflow->getMessage());
         } else {
             $this->log()->warning('There are no available updates for this site.');

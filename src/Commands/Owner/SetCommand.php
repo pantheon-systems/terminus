@@ -3,6 +3,7 @@
 namespace Pantheon\Terminus\Commands\Owner;
 
 use Pantheon\Terminus\Commands\TerminusCommand;
+use Pantheon\Terminus\Commands\WorkflowProcessingTrait;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
@@ -14,6 +15,7 @@ use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
 class SetCommand extends TerminusCommand implements SiteAwareInterface
 {
     use SiteAwareTrait;
+    use WorkflowProcessingTrait;
 
     /**
      * Change the owner of a site
@@ -37,14 +39,10 @@ class SetCommand extends TerminusCommand implements SiteAwareInterface
                 'The new owner must be added with "terminus site:team:add" before promoting.'
             );
         }
-        $workflow = $site->setOwner($user->id);
-        while (!$workflow->checkProgress()) {
-            // @TODO: Add Symfony progress bar to indicate that something is happening.
-        }
-
+        $this->processWorkflow($site->setOwner($user->id));
         $this->log()->notice(
             'Promoted {user} to owner of {site}',
-            ['user' => $user->getName(), 'site' => $site->getName(),]
+            ['user' => $owner, 'site' => $site->getName(),]
         );
     }
 }

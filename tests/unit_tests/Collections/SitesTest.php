@@ -5,7 +5,6 @@ namespace Pantheon\Terminus\UnitTests\Collections;
 use League\Container\Container;
 use Pantheon\Terminus\Collections\SiteOrganizationMemberships;
 use Pantheon\Terminus\Collections\Sites;
-use Pantheon\Terminus\Collections\SiteUserMemberships;
 use Pantheon\Terminus\Collections\Tags;
 use Pantheon\Terminus\Collections\Workflows;
 use Pantheon\Terminus\Exceptions\TerminusException;
@@ -182,6 +181,27 @@ class SitesTest extends CollectionTestCase
         ]);
         $this->collection->filterByOwner('person2');
         $this->assertEquals($this->collection->all(), ['22222222-2222-2222-2222-222222222222' => $this->site2,]);
+    }
+
+    public function testFilterByPlanName()
+    {
+        $this->collection = $this->makeSitesFetchable($this->collection);
+
+        $this->site1->expects($this->once())
+            ->method('get')
+            ->with($this->equalTo('plan_name'))
+            ->willReturn('Basic');
+        $this->site2->expects($this->once())
+            ->method('get')
+            ->with($this->equalTo('plan_name'))
+            ->willReturn('Sandbox');
+
+        $this->assertEquals($this->collection->all(), [
+            '11111111-1111-1111-1111-111111111111' => $this->site1,
+            '22222222-2222-2222-2222-222222222222' => $this->site2,
+        ]);
+        $this->collection->filterByPlanName('basic');
+        $this->assertEquals($this->collection->all(), ['11111111-1111-1111-1111-111111111111' => $this->site1,]);
     }
 
     public function testFilterByTag()

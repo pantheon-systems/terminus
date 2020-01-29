@@ -5,6 +5,7 @@ namespace Pantheon\Terminus\UnitTests\Commands\Import;
 use Pantheon\Terminus\Commands\Import\DatabaseCommand;
 use Pantheon\Terminus\Models\Workflow;
 use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
+use Pantheon\Terminus\UnitTests\Commands\WorkflowProgressTrait;
 
 /**
  * Class DatabaseCommandTest
@@ -13,6 +14,8 @@ use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
  */
 class DatabaseCommandTest extends CommandTestCase
 {
+    use WorkflowProgressTrait;
+
     /**
      * @var Workflow
      */
@@ -30,9 +33,11 @@ class DatabaseCommandTest extends CommandTestCase
             ->getMock();
 
         $this->command = new DatabaseCommand($this->getConfig());
+        $this->command->setContainer($this->getContainer());
         $this->command->setSites($this->sites);
         $this->command->setLogger($this->logger);
         $this->command->setInput($this->input);
+        $this->expectWorkflowProcessing();
     }
     
     /**
@@ -46,48 +51,17 @@ class DatabaseCommandTest extends CommandTestCase
 
         $this->expectConfirmation();
         $this->environment->expects($this->once())
-            ->method('importDatabase')
-            ->with($this->equalTo($valid_url))
-            ->willReturn($this->workflow);
-        $this->workflow->expects($this->once())
-            ->method('checkProgress')
-            ->with()
-            ->willReturn(true);
-        $this->site->expects($this->once())
-            ->method('get')
-            ->with($this->equalTo('name'))
-            ->willReturn($site_name);
+          ->method('importDatabase')
+          ->with($this->equalTo($valid_url))
+          ->willReturn($this->workflow);
+        $this->site->expects($this->any())
+          ->method('get')
+          ->willReturn(null);
         $this->logger->expects($this->once())
-            ->method('log')->with(
-                $this->equalTo('notice'),
-                $this->equalTo('Imported database to {site}.{env}.'),
-                $this->equalTo(['site' => $site_name, 'env' => $this->environment->id,])
-            );
-
-        $out = $this->command->import("$site_name.{$this->environment->id}", $valid_url);
-        $this->assertNull($out);
-    }
-
-    /**
-     * Exercises import:database command when declining the confirmation
-     *
-     * @todo Remove this when removing TerminusCommand::confirm()
-     */
-    public function testImportConfirmationDecline()
-    {
-        $site_name = 'site_name';
-        $this->environment->id = 'env_id';
-        $valid_url = 'a_valid_url';
-
-        $this->expectConfirmation(false);
-        $this->environment->expects($this->never())
-            ->method('importDatabase');
-        $this->workflow->expects($this->never())
-            ->method('checkProgress');
-        $this->site->expects($this->never())
-            ->method('get');
-        $this->logger->expects($this->never())
-            ->method('log');
+          ->method('log')->with(
+              $this->equalTo('notice'),
+              $this->equalTo('Imported database to {site}.{env}.')
+          );
 
         $out = $this->command->import("$site_name.{$this->environment->id}", $valid_url);
         $this->assertNull($out);

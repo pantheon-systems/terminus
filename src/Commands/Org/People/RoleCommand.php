@@ -3,6 +3,7 @@
 namespace Pantheon\Terminus\Commands\Org\People;
 
 use Pantheon\Terminus\Commands\TerminusCommand;
+use Pantheon\Terminus\Commands\WorkflowProcessingTrait;
 
 /**
  * Class RoleCommand
@@ -10,6 +11,8 @@ use Pantheon\Terminus\Commands\TerminusCommand;
  */
 class RoleCommand extends TerminusCommand
 {
+    use WorkflowProcessingTrait;
+
     /**
      * Changes a user's role within an organization.
      *
@@ -28,10 +31,7 @@ class RoleCommand extends TerminusCommand
     {
         $org = $this->session()->getUser()->getOrganizationMemberships()->get($organization)->getOrganization();
         $membership = $org->getUserMemberships()->fetch()->get($member);
-        $workflow = $membership->setRole($role);
-        while (!$workflow->checkProgress()) {
-            // @TODO: Remove Symfony progress bar to indicate that something is happening.
-        }
+        $this->processWorkflow($membership->setRole($role));
         $this->log()->notice(
             "{member}'s role has been changed to {role} in the {org} organization.",
             [

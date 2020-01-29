@@ -26,12 +26,18 @@ Feature: Adding domains to an environment
   @vcr domain-list.yml
   Scenario: Listing all domains belonging to an environment
     When I run "terminus domain:list [[test_site_name]].live"
-    Then I should get: "---------------------------------- ----------------- ---------------------------------- --------------"
-    And I should get: "Domain                             DNS Zone Name     Key                                Is Deletable"
-    And I should get: "---------------------------------- ----------------- ---------------------------------- --------------"
-    And I should get: "testdomain.com                                       testdomain.com                     1"
-    And I should get: "live-[[test_site_name]].[[php_site_domain]]   [[php_site_domain]]   live-[[test_site_name]].[[php_site_domain]]"
-    And I should get: "---------------------------------- ----------------- ---------------------------------- --------------"
+    Then I should see a table with rows like:
+    """
+      Domain/ID
+      Type
+      Is Deletable
+    """
+
+  @vcr domain-list-empty.yml
+  Scenario: Listing all domains belonging to an environment
+    When I run "terminus domain:list [[test_site_name]].live"
+    Then I should get the warning: "You have no domains."
+    And I should have "0" records
 
   @vcr domain-lookup.yml
   Scenario: Looking up a domain belonging to [[test_site_name]]
@@ -55,11 +61,12 @@ Feature: Adding domains to an environment
   @vcr domain-dns.yml
   Scenario: Looking up the DNS recommendations for [[test_site_name]]
     When I run "terminus domain:dns [[test_site_name]].dev"
-    Then I should get: "-------------------- ------------- ---------------------------------- ---------------------------------- --------"
-    And I should get: "Name                 Record Type   Recommended Value                  Detected Value                     Status"
-    And I should get: "-------------------- ------------- ---------------------------------- ---------------------------------- --------"
-    And I should get: "www.behat-tests.me   CNAME         live-behat-tests.pantheonsite.io   live-behat-tests.pantheonsite.io   okay"
-    And I should get: "behat-tests.me       A             23.185.0.2                         23.185.0.2                         okay"
-    And I should get: "behat-tests.me       AAAA          2620:12a:8000::2                   2620:12a:8000::2                   okay"
-    And I should get: "behat-tests.me       AAAA          2620:12a:8001::2                   2620:12a:8001::2                   okay"
-    And I should get: "-------------------- ------------- ---------------------------------- ---------------------------------- --------"
+    Then I should get: "-------------------- ------------- ---------------------------------- ---------------------------------- -------- ------------------------"
+    And I should get: "Domain               Record Type   Recommended Value                  Detected Value                     Status   Status Message"
+    And I should get: "-------------------- ------------- ---------------------------------- ---------------------------------- -------- ------------------------"
+    And I should get: "www.[[test_site_name]].me   CNAME         live-[[test_site_name]].[[php_site_domain]]   live-[[test_site_name]].[[php_site_domain]]   okay     Correct value detected"
+    And I should get: "[[test_site_name]].me       A             23.185.0.2                         23.185.0.2                         okay     Correct value detected"
+    And I should get: "[[test_site_name]].me       AAAA          2620:12a:8000::2                   2620:12a:8000::2                   okay     Correct value detected"
+    And I should get: "[[test_site_name]].me       AAAA          2620:12a:8001::2                   2620:12a:8001::2                   okay     Correct value detected"
+    And I should get: "-------------------- ------------- ---------------------------------- ---------------------------------- -------- ------------------------"
+

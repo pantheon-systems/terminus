@@ -38,7 +38,7 @@ trait SiteAwareTrait
     /**
      * Look up a site by id.
      *
-     * @param Site $site_id Either a site's UUID or its name
+     * @param string $site_id Either a site's UUID or its name
      * @return mixed
      */
     public function getSite($site_id)
@@ -90,8 +90,7 @@ trait SiteAwareTrait
     }
 
     /**
-     * Get the site and environment with the given IDs, provided the site is not frozen when the environment is either
-     * test or live.
+     * Get the site and environment with the given IDs, provided the site is not frozen.
      *
      * @TODO This should be moved to the input/validation stage when that is available.
      *
@@ -104,8 +103,11 @@ trait SiteAwareTrait
     {
         list($site, $env) = $this->getSiteEnv($site_env_id, $default_env);
 
-        if (in_array($env->id, ['test', 'live',]) && !is_null($site->get('frozen'))) {
-            throw new TerminusException('This site is frozen. Its test and live environments are unavailable.');
+        if ($site->isFrozen()) {
+            throw new TerminusException(
+                'This site is frozen. Its test and live environments and many commands will be '
+                . 'unavailable while it remains frozen.'
+            );
         }
 
         return [$site, $env,];

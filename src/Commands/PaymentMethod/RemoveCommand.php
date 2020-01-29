@@ -3,6 +3,7 @@
 namespace Pantheon\Terminus\Commands\PaymentMethod;
 
 use Pantheon\Terminus\Commands\TerminusCommand;
+use Pantheon\Terminus\Commands\WorkflowProcessingTrait;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 
@@ -13,6 +14,7 @@ use Pantheon\Terminus\Site\SiteAwareTrait;
 class RemoveCommand extends TerminusCommand implements SiteAwareInterface
 {
     use SiteAwareTrait;
+    use WorkflowProcessingTrait;
 
     /**
      * Disassociates the active payment method from a site.
@@ -29,11 +31,7 @@ class RemoveCommand extends TerminusCommand implements SiteAwareInterface
     public function remove($site_name)
     {
         $site = $this->getSite($site_name);
-        $workflow = $site->removePaymentMethod();
-        while (!$workflow->checkProgress()) {
-            // @TODO: Add Symfony progress bar to indicate that something is happening.
-        }
-
+        $this->processWorkflow($site->removePaymentMethod());
         $this->log()->notice(
             'The payment method for the {site} site has been removed.',
             ['site' => $site->get('name'),]

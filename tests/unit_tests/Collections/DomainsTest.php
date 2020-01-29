@@ -4,7 +4,6 @@ namespace Pantheon\Terminus\UnitTests\Collections;
 
 use Pantheon\Terminus\Collections\Domains;
 use Pantheon\Terminus\Collections\Workflows;
-use Pantheon\Terminus\Models\Domain;
 use Pantheon\Terminus\Models\Environment;
 use Pantheon\Terminus\Models\Site;
 use Pantheon\Terminus\Models\Workflow;
@@ -29,6 +28,10 @@ class DomainsTest extends CollectionTestCase
      */
     protected $site;
     /**
+     * @var string
+     */
+    protected $url;
+    /**
      * @var Workflows
      */
     protected $workflows;
@@ -48,6 +51,7 @@ class DomainsTest extends CollectionTestCase
             ->disableOriginalConstructor()
             ->getMock();
         $this->site->id = 'site id';
+        $this->url = "sites/{$this->site->id}/environments/{$this->environment->id}/domains";
         $this->workflow = $this->getMockBuilder(Workflow::class)
             ->disableOriginalConstructor()
             ->getMock();
@@ -70,44 +74,35 @@ class DomainsTest extends CollectionTestCase
      */
     public function testCreate()
     {
+        $domain = 'dev.example.com';
         $this->request->expects($this->once())
             ->method('request')
-            ->with("sites/{$this->site->id}/environments/{$this->environment->id}/domains/dev.example.com", ['method' => 'put']);
+            ->with("{$this->url}/$domain", ['method' => 'put',]);
 
-        $this->collection->create('dev.example.com');
+        $this->assertNull($this->collection->create($domain));
     }
 
     /**
-     * Tests the Domains::has(string) function
+     * Tests the Domains::fetchWithRecommendations() function
      */
-    public function testHas()
+    public function testFetchWithRecommendations()
     {
-        $data = [
-            'foo.net' => (object)[],
-            'bar.org' => (object)[],
+        $dummy_data = [
+            (object)['id' => 'domain.com', 'type' => 'custom',]
         ];
         $this->request->expects($this->once())
             ->method('request')
             ->with(
-                $this->equalTo("sites/{$this->site->id}/environments/{$this->environment->id}/domains"),
-                $this->equalTo(['options' => ['method' => 'get',],])
+                $this->url,
+                [
+                    'options' => ['method' => 'get',],
+                    'query' => ['hydrate' => ['as_list', 'recommendations',],],
+                ]
             )
-            ->willReturn(compact('data'));
-        $i = 0;
-        foreach ($data as $domain_str => $obj) {
-            $domain = $this->getMockBuilder(Domain::class)
-                ->disableOriginalConstructor()
-                ->getMock();
-            $domain->id = $domain_str;
-            $domain->method('getReferences')->willReturn([$domain_str,]);
-            $this->container->expects($this->at($i))
-                ->method('get')
-                ->with(Domain::class, [$obj, ['id' => $domain_str, 'collection' => $this->collection,],])
-                ->willReturn($domain);
-            $i++;
-        }
+            ->willReturn(['data' => $dummy_data,]);
 
-        $this->assertTrue($this->collection->has('foo.net'));
-        $this->assertFalse($this->collection->has('hello.world'));
+        $out = $this->collection->fetchWithRecommendations();
+        $this->assertEquals($this->collection, $out);
+        $this->assertEquals($this->collection->getData(), $dummy_data);
     }
 }

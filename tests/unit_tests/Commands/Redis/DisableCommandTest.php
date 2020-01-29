@@ -6,6 +6,7 @@ use Pantheon\Terminus\Commands\Redis\DisableCommand;
 use Pantheon\Terminus\Models\Workflow;
 use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
 use Pantheon\Terminus\Models\Redis;
+use Pantheon\Terminus\UnitTests\Commands\WorkflowProgressTrait;
 
 /**
  * Class DisableCommandTest
@@ -14,6 +15,8 @@ use Pantheon\Terminus\Models\Redis;
  */
 class DisableCommandTest extends CommandTestCase
 {
+    use WorkflowProgressTrait;
+
     /**
      * Tests the redis:disable command
      */
@@ -23,7 +26,6 @@ class DisableCommandTest extends CommandTestCase
             ->disableOriginalConstructor()
             ->getMock();
         // workflow succeeded
-        $workflow->expects($this->once())->method('checkProgress')->willReturn(true);
         $workflow->expects($this->once())->method('getMessage')->willReturn('successful workflow');
 
         $this->redis = $this->getMockBuilder(Redis::class)
@@ -47,9 +49,11 @@ class DisableCommandTest extends CommandTestCase
                 $this->equalTo('successful workflow')
             );
 
-        $command = new DisableCommand();
-        $command->setSites($this->sites);
-        $command->setLogger($this->logger);
-        $command->disable('mysite');
+        $this->command = new DisableCommand();
+        $this->command->setContainer($this->getContainer());
+        $this->command->setSites($this->sites);
+        $this->command->setLogger($this->logger);
+        $this->expectWorkflowProcessing();
+        $this->command->disable('mysite');
     }
 }

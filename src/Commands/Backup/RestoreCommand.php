@@ -2,6 +2,7 @@
 
 namespace Pantheon\Terminus\Commands\Backup;
 
+use Pantheon\Terminus\Commands\WorkflowProcessingTrait;
 use Pantheon\Terminus\Exceptions\TerminusException;
 
 /**
@@ -10,6 +11,8 @@ use Pantheon\Terminus\Exceptions\TerminusException;
  */
 class RestoreCommand extends SingleBackupCommand
 {
+    use WorkflowProcessingTrait;
+
     /**
      * Restores a specific backup or the latest backup.
      *
@@ -38,9 +41,7 @@ class RestoreCommand extends SingleBackupCommand
 
         $workflow = $backup->restore();
         try {
-            while (!$workflow->checkProgress()) {
-                // @TODO: Add Symfony progress bar to indicate that something is happening.
-            }
+            $this->processWorkflow($workflow);
             $this->log()->notice('Restored the backup to {env}.', ['env' => $env->id,]);
         } catch (\Exception $e) {
             $message = $workflow->getMessage();

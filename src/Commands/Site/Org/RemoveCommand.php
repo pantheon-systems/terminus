@@ -3,6 +3,7 @@
 namespace Pantheon\Terminus\Commands\Site\Org;
 
 use Pantheon\Terminus\Commands\TerminusCommand;
+use Pantheon\Terminus\Commands\WorkflowProcessingTrait;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 use Pantheon\Terminus\Exceptions\TerminusException;
@@ -14,6 +15,7 @@ use Pantheon\Terminus\Exceptions\TerminusException;
 class RemoveCommand extends TerminusCommand implements SiteAwareInterface
 {
     use SiteAwareTrait;
+    use WorkflowProcessingTrait;
 
     /**
      * Disassociates a supporting organization from a site.
@@ -41,9 +43,7 @@ class RemoveCommand extends TerminusCommand implements SiteAwareInterface
             'Removing {org} as a supporting organization from {site}.',
             ['site' => $site->getName(), 'org' => $org->getName()]
         );
-        while (!$workflow->checkProgress()) {
-            // @TODO: Remove Symfony progress bar to indicate that something is happening.
-        }
+        $this->processWorkflow($workflow);
         $this->log()->notice($workflow->getMessage());
     }
 }

@@ -11,7 +11,7 @@ use Pantheon\Terminus\Models\Domain;
  */
 class Domains extends EnvironmentOwnedCollection
 {
-    public static $pretty_name = 'domains';
+    const PRETTY_NAME = 'domains';
     /**
      * @var string
      */
@@ -29,23 +29,19 @@ class Domains extends EnvironmentOwnedCollection
      */
     public function create($domain)
     {
-        $url = $this->replaceUrlTokens("{$this->url}/") . rawurlencode($domain);
+        $url = $this->getUrl() . '/' . rawurlencode($domain);
         $this->request->request($url, ['method' => 'put',]);
     }
 
     /**
-     * Does the Domains collection contain the given domain?
+     * Fetches domain data hydrated with recommendations
      *
-     * @param $domain
-     * @return bool True if the domain exists in the collection.
+     * @param array $options Additional information for the request
+     * @return void
      */
-    public function has($domain)
+    public function fetchWithRecommendations($options = [])
     {
-        try {
-            $this->get($domain);
-            return true;
-        } catch (TerminusNotFoundException $e) {
-            return false;
-        }
+        $this->setFetchArgs(['query' => ['hydrate' => ['as_list', 'recommendations',],],]);
+        return $this->fetch();
     }
 }

@@ -4,6 +4,7 @@ namespace Pantheon\Terminus\UnitTests\Commands\Org\People;
 
 use Pantheon\Terminus\Commands\Org\People\RemoveCommand;
 use Pantheon\Terminus\Models\Workflow;
+use Pantheon\Terminus\UnitTests\Commands\WorkflowProgressTrait;
 
 /**
  * Class RemoveCommandTest
@@ -12,6 +13,8 @@ use Pantheon\Terminus\Models\Workflow;
  */
 class RemoveCommandTest extends OrgPeopleCommandTest
 {
+    use WorkflowProgressTrait;
+
     /**
      * @inheritdoc
      */
@@ -20,8 +23,10 @@ class RemoveCommandTest extends OrgPeopleCommandTest
         parent::setUp();
 
         $this->command = new RemoveCommand($this->getConfig());
+        $this->command->setContainer($this->getContainer());
         $this->command->setLogger($this->logger);
         $this->command->setSession($this->session);
+        $this->expectWorkflowProcessing();
     }
 
     /**
@@ -44,9 +49,6 @@ class RemoveCommandTest extends OrgPeopleCommandTest
             ->method('delete')
             ->with()
             ->willReturn($workflow);
-        $workflow->expects($this->once())
-            ->method('checkProgress')
-            ->willReturn(true);
         $this->organization->expects($this->once())
             ->method('getName')
             ->with()

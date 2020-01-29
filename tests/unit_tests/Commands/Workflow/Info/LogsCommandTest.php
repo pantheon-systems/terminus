@@ -2,7 +2,7 @@
 
 namespace Pantheon\Terminus\UnitTests\Commands\Workflow\Info;
 
-use Pantheon\Terminus\UnitTests\Commands\Workflow\WorkflowCommandTest;
+use Pantheon\Terminus\Models\WorkflowOperation;
 use Pantheon\Terminus\Commands\Workflow\Info\LogsCommand;
 
 /**
@@ -10,8 +10,17 @@ use Pantheon\Terminus\Commands\Workflow\Info\LogsCommand;
  * Testing class for Pantheon\Terminus\Commands\Workflow\Info\LogsCommand
  * @package Pantheon\Terminus\UnitTests\Commands\Workflow\Info
  */
-class LogsCommandTest extends WorkflowCommandTest
+class LogsCommandTest extends InfoCommandTest
 {
+    /**
+     * @var WorkflowOperation
+     */
+    protected $operation;
+    /**
+     * @var string
+     */
+    protected $site_name;
+
     /**
      * @inheritdoc
      */
@@ -19,10 +28,15 @@ class LogsCommandTest extends WorkflowCommandTest
     {
         parent::setUp();
 
-        $this->workflows->expects($this->once())
-            ->method('fetch')
+        $this->operation = $this->getMockBuilder(WorkflowOperation::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $this->site_name = 'Site Name';
+
+        $this->workflow->expects($this->once())
+            ->method('getOperations')
             ->with()
-            ->willReturn($this->workflows);
+            ->willReturn($this->operations);
 
         $this->command = new LogsCommand($this->getConfig());
         $this->command->setLogger($this->logger);
@@ -34,34 +48,36 @@ class LogsCommandTest extends WorkflowCommandTest
      */
     public function testLatestLogsCommand()
     {
-        $site_name = 'site name';
-
+        $this->site->expects($this->once())
+            ->method('getName')
+            ->with()
+            ->willReturn($this->site_name);
         $this->workflows->expects($this->once())
             ->method('all')
             ->with()
             ->willReturn([$this->workflow,]);
-        $this->workflow->expects($this->once())
-            ->method('operations')
+        $this->operations->expects($this->once())
+            ->method('all')
             ->with()
-            ->willReturn([$this->operation, $this->operation,]);
-        $this->operation->expects($this->any())
-            ->method('has')
-            ->with($this->equalTo('log_output'))
+            ->willReturn([$this->operation,]);
+        $this->operation->expects($this->at(0))
+            ->method('get')
+            ->with('log_output')
             ->willReturn(true);
-        $this->site->expects($this->once())
-            ->method('getName')
-            ->with()
-            ->willReturn($site_name);
-        $this->logger->expects($this->at(0))
+        $this->logger->expects($this->once())
             ->method('log')
             ->with(
                 $this->equalTo('notice'),
                 $this->equalTo('Showing latest workflow on {site}.'),
-                $this->equalTo(['site' => $site_name,])
+                $this->equalTo(['site' => $this->site_name,])
             );
+        $this->operation->expects($this->at(1))
+            ->method('__toString')
+            ->with()
+            ->willReturn($this->expected_logs);
 
-        $out = $this->command->logs($site_name);
-        $this->assertEquals($out, $this->expected_logs);
+        $out = $this->command->logs($this->site_name);
+        $this->assertEquals($this->expected_logs, $out);
     }
 
     /**
@@ -69,23 +85,31 @@ class LogsCommandTest extends WorkflowCommandTest
      */
     public function testWorkflowIDLogsCommand()
     {
+        $this->workflow->id = '12345';
+
+        $this->site->expects($this->never())
+            ->method('getName');
         $this->workflows->expects($this->once())
             ->method('get')
-            ->with($this->equalTo('12345'))
+            ->with($this->equalTo($this->workflow->id))
             ->willReturn($this->workflow);
-        $this->workflow->expects($this->once())
-            ->method('operations')
+        $this->operations->expects($this->once())
+            ->method('all')
             ->with()
-            ->willReturn([$this->operation, $this->operation,]);
-        $this->operation->expects($this->any())
-            ->method('has')
-            ->with($this->equalTo('log_output'))
+            ->willReturn([$this->operation,]);
+        $this->operation->expects($this->at(0))
+            ->method('get')
+            ->with('log_output')
             ->willReturn(true);
+        $this->operation->expects($this->at(1))
+            ->method('__toString')
+            ->with()
+            ->willReturn($this->expected_logs);
         $this->logger->expects($this->never())
             ->method('log');
 
-        $out = $this->command->logs('mysite', ['id' => '12345',]);
-        $this->assertEquals($out, $this->expected_logs);
+        $out = $this->command->logs($this->site_name, ['id' => $this->workflow->id,]);
+        $this->assertEquals($this->expected_logs, $out);
     }
 
     /**
@@ -93,28 +117,26 @@ class LogsCommandTest extends WorkflowCommandTest
      */
     public function testLatestNoOperations()
     {
-        $site_name = 'site name';
-
+        $this->site->expects($this->once())
+            ->method('getName')
+            ->with()
+            ->willReturn($this->site_name);
         $this->workflows->expects($this->once())
             ->method('all')
             ->with()
             ->willReturn([$this->workflow,]);
-        $this->workflow->expects($this->once())
-            ->method('operations')
+        $this->operations->expects($this->once())
+            ->method('all')
             ->with()
             ->willReturn([]);
         $this->operation->expects($this->never())
             ->method('has');
-        $this->site->expects($this->once())
-            ->method('getName')
-            ->with()
-            ->willReturn($site_name);
         $this->logger->expects($this->at(0))
             ->method('log')
             ->with(
                 $this->equalTo('notice'),
                 $this->equalTo('Showing latest workflow on {site}.'),
-                $this->equalTo(['site' => $site_name,])
+                $this->equalTo(['site' => $this->site_name,])
             );
         $this->logger->expects($this->at(1))
             ->method('log')
@@ -123,8 +145,8 @@ class LogsCommandTest extends WorkflowCommandTest
                 $this->equalTo('Workflow does not contain any operations.')
             );
 
-        $out = $this->command->logs($site_name);
-        $this->assertNull($out);
+        $out = $this->command->logs($this->site_name);
+        $this->assertEmpty($out);
     }
 
     /**
@@ -132,31 +154,22 @@ class LogsCommandTest extends WorkflowCommandTest
      */
     public function testLatestNoLogs()
     {
-        $site_name = 'site name';
-
+        $this->site->expects($this->once())
+            ->method('getName')
+            ->with()
+            ->willReturn($this->site_name);
         $this->workflows->expects($this->once())
             ->method('all')
             ->with()
             ->willReturn([$this->workflow,]);
-        $this->workflow->expects($this->once())
-            ->method('operations')
+        $this->operations->expects($this->once())
+            ->method('all')
             ->with()
-            ->willReturn([$this->operation, $this->operation,]);
-        $this->operation->expects($this->any())
-            ->method('has')
-            ->with($this->equalTo('log_output'))
+            ->willReturn([$this->operation,]);
+        $this->operation->expects($this->at(0))
+            ->method('get')
+            ->with('log_output')
             ->willReturn(false);
-        $this->site->expects($this->once())
-            ->method('getName')
-            ->with()
-            ->willReturn($site_name);
-        $this->logger->expects($this->at(0))
-            ->method('log')
-            ->with(
-                $this->equalTo('notice'),
-                $this->equalTo('Showing latest workflow on {site}.'),
-                $this->equalTo(['site' => $site_name,])
-            );
         $this->logger->expects($this->at(1))
             ->method('log')
             ->with(
@@ -164,7 +177,7 @@ class LogsCommandTest extends WorkflowCommandTest
                 $this->equalTo('Workflow operations did not contain any logs.')
             );
 
-        $out = $this->command->logs($site_name);
+        $out = $this->command->logs($this->site_name);
         $this->assertEmpty($out);
     }
 }

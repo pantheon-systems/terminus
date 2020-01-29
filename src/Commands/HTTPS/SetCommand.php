@@ -3,6 +3,7 @@
 namespace Pantheon\Terminus\Commands\HTTPS;
 
 use Pantheon\Terminus\Commands\TerminusCommand;
+use Pantheon\Terminus\Commands\WorkflowProcessingTrait;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 
@@ -13,6 +14,7 @@ use Pantheon\Terminus\Site\SiteAwareTrait;
 class SetCommand extends TerminusCommand implements SiteAwareInterface
 {
     use SiteAwareTrait;
+    use WorkflowProcessingTrait;
 
     /**
      * Enables HTTPS and/or updates the SSL certificate for the environment.
@@ -27,10 +29,8 @@ class SetCommand extends TerminusCommand implements SiteAwareInterface
      * @param string $private_key File containing the private key
      * @option string $intermediate-certificate File containing the CA intermediate certificate(s)
      *
-     * @usage https:set <site>.<env> <cert_file> <key_file>
-     *    Enables HTTPS for <site>'s <env> environment using the SSL certificate at <cert_file> and private key at <key_file>.
-     * @usage https:set <site>.<env> <cert> <key> --intermediate-certificate=<int_cert_file>
-     *    Enables HTTPS for <site>'s <env> environment using the SSL certificate at <cert_file>, private key at <key_file> and intermediate certificate(s) at <int_cert_file>.
+     * @usage <site>.<env> <cert_file> <key_file> Enables HTTPS for <site>'s <env> environment using the SSL certificate at <cert_file> and private key at <key_file>.
+     * @usage <site>.<env> <cert> <key> --intermediate-certificate=<int_cert_file> Enables HTTPS for <site>'s <env> environment using the SSL certificate at <cert_file>, private key at <key_file> and intermediate certificate(s) at <int_cert_file>.
      */
     public function set($site_env, $certificate, $private_key, $options = ['intermediate-certificate' => null,])
     {
@@ -52,9 +52,7 @@ class SetCommand extends TerminusCommand implements SiteAwareInterface
 
         // Wait for the workflow to complete.
         $this->log()->notice('SSL certificate updated. Converging loadbalancer.');
-        while (!$workflow->checkProgress()) {
-            // @TODO: Add Symfony progress bar to indicate that something is happening.
-        }
+        $this->processWorkflow($workflow);
         $this->log()->notice($workflow->getMessage());
     }
 }

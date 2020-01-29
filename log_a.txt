@@ -1,0 +1,11 @@
+ --------------------- ------------- ----------------------------------- ----------------------------------- ----------------- 
+  Name                  Record Type   Recommended Value                   Detected Value                      Status           
+ --------------------- ------------- ----------------------------------- ----------------------------------- ----------------- 
+  www.tesladethray.me   CNAME         live-tesladethray.pantheonsite.io   live-tesladethray.pantheonsite.io   okay             
+  notarealdomain.com    A             23.185.0.2                          69.163.225.240                      action_required  
+  notarealdomain.com    AAAA          2620:12a:8000::2                                                        action_required  
+  notarealdomain.com    AAAA          2620:12a:8001::2                                                        action_required  
+  tesladethray.me       A             23.185.0.2                          23.185.0.2                          okay             
+  tesladethray.me       AAAA          2620:12a:8000::2                    2620:12a:8000::2                    okay             
+  tesladethray.me       AAAA          2620:12a:8001::2                    2620:12a:8001::2                    okay             
+ --------------------- ------------- ----------------------------------- ----------------------------------- ----------------- 

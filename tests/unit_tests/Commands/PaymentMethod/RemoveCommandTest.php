@@ -5,6 +5,7 @@ namespace Pantheon\Terminus\UnitTests\Commands\PaymentMethod;
 use Pantheon\Terminus\Commands\PaymentMethod\RemoveCommand;
 use Pantheon\Terminus\Models\Workflow;
 use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
+use Pantheon\Terminus\UnitTests\Commands\WorkflowProgressTrait;
 
 /**
  * Class RemoveCommandTest
@@ -13,6 +14,7 @@ use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
  */
 class RemoveCommandTest extends CommandTestCase
 {
+    use WorkflowProgressTrait;
     /**
      * @inheritdoc
      */
@@ -21,8 +23,10 @@ class RemoveCommandTest extends CommandTestCase
         parent::setUp();
 
         $this->command = new RemoveCommand($this->getConfig());
+        $this->command->setContainer($this->getContainer());
         $this->command->setLogger($this->logger);
         $this->command->setSites($this->sites);
+        $this->expectWorkflowProcessing();
     }
 
     /**
@@ -40,10 +44,6 @@ class RemoveCommandTest extends CommandTestCase
             ->method('removePaymentMethod')
             ->with()
             ->willReturn($workflow);
-        $workflow->expects($this->once())
-            ->method('checkProgress')
-            ->with()
-            ->willReturn(true);
         $this->site->expects($this->once())
             ->method('get')
             ->with($this->equalTo('name'))

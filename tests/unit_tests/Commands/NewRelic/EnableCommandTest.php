@@ -4,6 +4,7 @@ namespace Pantheon\Terminus\UnitTests\Commands\NewRelic;
 
 use Pantheon\Terminus\Commands\NewRelic\EnableCommand;
 use Pantheon\Terminus\Models\Workflow;
+use Pantheon\Terminus\UnitTests\Commands\WorkflowProgressTrait;
 
 /**
  * Class EnableCommandTest
@@ -12,6 +13,8 @@ use Pantheon\Terminus\Models\Workflow;
  */
 class EnableCommandTest extends NewRelicCommandTest
 {
+    use WorkflowProgressTrait;
+
     /**
      * @inheritdoc
      */
@@ -20,8 +23,10 @@ class EnableCommandTest extends NewRelicCommandTest
         parent::setUp();
 
         $this->command = new EnableCommand();
+        $this->command->setContainer($this->getContainer());
         $this->command->setSites($this->sites);
         $this->command->setLogger($this->logger);
+        $this->expectWorkflowProcessing();
     }
 
     public function testEnable()
@@ -30,10 +35,6 @@ class EnableCommandTest extends NewRelicCommandTest
             ->disableOriginalConstructor()
             ->getMock();
         // workflow succeeded
-        $workflow->expects($this->once())
-            ->method('checkProgress')
-            ->with()
-            ->willReturn(true);
         $workflow->expects($this->once())
             ->method('getMessage')
             ->with()

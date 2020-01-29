@@ -7,13 +7,14 @@ use Pantheon\Terminus\Collections\Workflows;
 use Pantheon\Terminus\Models\Organization;
 use Pantheon\Terminus\Models\Site;
 use Pantheon\Terminus\Models\Workflow;
+use Pantheon\Terminus\UnitTests\TerminusTestCase;
 
 /**
  * Class SiteOrganizationMembershipsTest
  * Testing class for Pantheon\Terminus\Collections\SiteOrganizationMemberships
  * @package Pantheon\Terminus\UnitTests\Collections
  */
-class SiteOrganizationMembershipsTest extends \PHPUnit_Framework_TestCase
+class SiteOrganizationMembershipsTest extends TerminusTestCase
 {
     /**
      * @var SiteOrganizationMemberships

@@ -3,6 +3,7 @@
 namespace Pantheon\Terminus\Commands\Site;
 
 use Consolidation\OutputFormatters\StructuredData\PropertyList;
+use Pantheon\Terminus\Commands\StructuredListTrait;
 
 /**
  * Class LookupCommand
@@ -10,6 +11,8 @@ use Consolidation\OutputFormatters\StructuredData\PropertyList;
  */
 class LookupCommand extends SiteCommand
 {
+    use StructuredListTrait;
+
     /**
      * Displays the UUID of a site given its name.
      *
@@ -29,6 +32,6 @@ class LookupCommand extends SiteCommand
      */
     public function lookup($site_name)
     {
-        return new PropertyList($this->sites()->get($site_name)->serialize());
+        return $this->getPropertyList($this->sites()->get($site_name));
     }
 }

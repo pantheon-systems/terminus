@@ -2,9 +2,15 @@
 
 namespace Pantheon\Terminus\Helpers;
 
+use League\Container\ContainerAwareInterface;
+use League\Container\ContainerAwareTrait;
+use Pantheon\Terminus\Config\ConfigAwareTrait;
 use Pantheon\Terminus\Exceptions\TerminusException;
-use Robo\Common\ConfigAwareTrait;
+use Pantheon\Terminus\ProgressBars\ProcessProgressBar;
+use Robo\Common\IO;
 use Robo\Contract\ConfigAwareInterface;
+use Robo\Contract\IOAwareInterface;
+use Symfony\Component\Console\Output\ConsoleOutputInterface;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Process\Process;
@@ -16,14 +22,13 @@ use Symfony\Component\Process\Process;
  *
  * @package Pantheon\Terminus\Helpers
  */
-class LocalMachineHelper implements ConfigAwareInterface
+class LocalMachineHelper implements ConfigAwareInterface, ContainerAwareInterface, IOAwareInterface
 {
     use ConfigAwareTrait;
-
-    /**
-     * @var integer The number of seconds to wait on a command until it times out
-     */
-    const TIMEOUT = 3600;
+    use ContainerAwareTrait;
+    use IO {
+        io as roboIo;
+    }
 
     /**
      * Executes the given command on the local machine and return the exit code and output.
@@ -31,10 +36,10 @@ class LocalMachineHelper implements ConfigAwareInterface
      * @param string $cmd The command to execute
      * @return array The command output and exit_code
      */
-    public function exec($cmd)
+    public function exec($cmd, $callback = null)
     {
         $process = $this->getProcess($cmd);
-        $process->run();
+        $process->run($callback);
         return ['output' => $process->getOutput(), 'exit_code' => $process->getExitCode(),];
     }
 
@@ -43,12 +48,13 @@ class LocalMachineHelper implements ConfigAwareInterface
      *
      * @param string $cmd The command to execute
      * @param callable $callback A function to run while waiting for the process to complete
-     * @param boolean $useTty Whether to allocate a tty when running. Null to autodetect.
+     * @param bool $progressIndicatorAllowed Allow the progress bar to be used (if in tty mode only)
      * @return array The command output and exit_code
      */
-    public function execInteractive($cmd, $callback = null, $useTty = null)
+    public function execute($cmd, $callback = null, $progressIndicatorAllowed = false)
     {
         $process = $this->getProcess($cmd);
+        $useTty = $this->useTty();
         // Set tty mode if the user is running terminus iteractively.
         if (function_exists('posix_isatty')) {
             if (!isset($useTty)) {
@@ -59,8 +65,13 @@ class LocalMachineHelper implements ConfigAwareInterface
             }
         }
         $process->setTty($useTty);
-        $process->start();
-        $process->wait($callback);
+        // Use '$useTty' as a sort of 'isInteractive' indicator.
+        if ($useTty && $progressIndicatorAllowed) {
+            $this->getProgressBar($process)->cycle($callback);
+        } else {
+            $process->start();
+            $process->wait($callback);
+        }
         return ['output' => $process->getOutput(), 'exit_code' => $process->getExitCode(),];
     }
 
@@ -82,6 +93,18 @@ class LocalMachineHelper implements ConfigAwareInterface
     public function getFinder()
     {
         return new Finder();
+    }
+
+    /**
+     * Returns a ProcessProgressBar
+     *
+     * @param Process $process
+     * @return ProcessProgressBar
+     */
+    public function getProgressBar(Process $process)
+    {
+        $process->start();
+        return $this->getContainer()->get(ProcessProgressBar::class, [$this->output(), $process,]);
     }
 
     /**
@@ -125,6 +148,24 @@ class LocalMachineHelper implements ConfigAwareInterface
     }
 
     /**
+     * Determine whether the use of a tty is appropriate.
+     *
+     * @return bool|null
+     */
+    public function useTty()
+    {
+        // If we are not in interactive mode, then never use a tty.
+        if (!$this->input()->isInteractive()) {
+            return false;
+        }
+        // If we are in interactive mode (or at least the user did not
+        // specify -n / --no-interaction), then also prevent the use
+        // of a tty if stdout is redirected.
+        // Otherwise, let the local machine helper decide whether to use a tty.
+        return (function_exists('posix_isatty') && !posix_isatty(STDOUT)) ? false : null;
+    }
+
+    /**
      * Writes to a file on the local system.
      *
      * @param string $filename Name of the file to write to
@@ -156,7 +197,8 @@ class LocalMachineHelper implements ConfigAwareInterface
     protected function getProcess($cmd)
     {
         $process = new Process($cmd);
-        $process->setTimeout(self::TIMEOUT);
+        $config = $this->getConfig();
+        $process->setTimeout($config->get('timeout'));
         return $process;
     }
 }

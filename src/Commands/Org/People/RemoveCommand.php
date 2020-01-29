@@ -3,6 +3,7 @@
 namespace Pantheon\Terminus\Commands\Org\People;
 
 use Pantheon\Terminus\Commands\TerminusCommand;
+use Pantheon\Terminus\Commands\WorkflowProcessingTrait;
 
 /**
  * Class RemoveCommand
@@ -10,6 +11,8 @@ use Pantheon\Terminus\Commands\TerminusCommand;
  */
 class RemoveCommand extends TerminusCommand
 {
+    use WorkflowProcessingTrait;
+
     /**
      * Removes a user from an organization.
      *
@@ -27,10 +30,7 @@ class RemoveCommand extends TerminusCommand
     {
         $org = $this->session()->getUser()->getOrganizationMemberships()->get($organization)->getOrganization();
         $membership = $org->getUserMemberships()->fetch()->get($member);
-        $workflow = $membership->delete();
-        while (!$workflow->checkProgress()) {
-            // @TODO: Remove Symfony progress bar to indicate that something is happening.
-        }
+        $this->processWorkflow($membership->delete());
         $this->log()->notice(
             '{member} has been removed from the {org} organization.',
             ['member' => $membership->getUser()->getName(), 'org' => $org->getName(),]

@@ -4,6 +4,7 @@ namespace Pantheon\Terminus\UnitTests\Commands\Org\People;
 
 use Pantheon\Terminus\Commands\Org\People\RoleCommand;
 use Pantheon\Terminus\Models\Workflow;
+use Pantheon\Terminus\UnitTests\Commands\WorkflowProgressTrait;
 
 /**
  * Class RoleCommandTest
@@ -12,6 +13,8 @@ use Pantheon\Terminus\Models\Workflow;
  */
 class RoleCommandTest extends OrgPeopleCommandTest
 {
+    use WorkflowProgressTrait;
+
     /**
      * @inheritdoc
      */
@@ -20,8 +23,10 @@ class RoleCommandTest extends OrgPeopleCommandTest
         parent::setUp();
 
         $this->command = new RoleCommand($this->getConfig());
+        $this->command->setContainer($this->getContainer());
         $this->command->setLogger($this->logger);
         $this->command->setSession($this->session);
+        $this->expectWorkflowProcessing();
     }
 
     /**
@@ -45,9 +50,6 @@ class RoleCommandTest extends OrgPeopleCommandTest
             ->method('setRole')
             ->with($this->equalTo($role))
             ->willReturn($workflow);
-        $workflow->expects($this->once())
-            ->method('checkProgress')
-            ->willReturn(true);
         $this->organization->expects($this->once())
             ->method('getName')
             ->with()

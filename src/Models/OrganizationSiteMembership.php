@@ -14,13 +14,16 @@ use Pantheon\Terminus\Friends\SiteJoinTrait;
  * Class OrganizationSiteMembership
  * @package Pantheon\Terminus\Models
  */
-class OrganizationSiteMembership extends TerminusModel implements ContainerAwareInterface, OrganizationInterface, SiteJoinInterface
+class OrganizationSiteMembership extends TerminusModel implements
+    ContainerAwareInterface,
+    OrganizationInterface,
+    SiteJoinInterface
 {
     use ContainerAwareTrait;
     use OrganizationTrait;
     use SiteJoinTrait;
 
-    public static $pretty_name = 'organization-site membership';
+    const PRETTY_NAME = 'organization-site membership';
     /**
      * @var Tags
      */

@@ -4,20 +4,22 @@ namespace Pantheon\Terminus\Models;
 
 use Pantheon\Terminus\Friends\EnvironmentInterface;
 use Pantheon\Terminus\Friends\EnvironmentTrait;
-use Robo\Common\ConfigAwareTrait;
-use Robo\Contract\ConfigAwareInterface;
 use Pantheon\Terminus\Exceptions\TerminusException;
 
 /**
  * Class Backup
  * @package Pantheon\Terminus\Models
  */
-class Backup extends TerminusModel implements ConfigAwareInterface, EnvironmentInterface
+class Backup extends TerminusModel implements EnvironmentInterface
 {
-    use ConfigAwareTrait;
     use EnvironmentTrait;
 
-    public static $pretty_name = 'backup';
+    const PRETTY_NAME = 'backup';
+
+    /**
+     * @var array
+     */
+    public static $date_attributes = ['date', 'expiry',];
 
     /**
      * Determines whether the backup has been completed or not
@@ -28,11 +30,32 @@ class Backup extends TerminusModel implements ConfigAwareInterface, EnvironmentI
     {
         return (
             ($this->get('size') != 0)
-            && (
-                ($this->get('finish_time') != null)
-                || ($this->get('timestamp') != null)
-            )
+            && ($this->has('finish_time') || $this->has('timestamp'))
         );
+    }
+
+    /**
+     * Gets the URL of a backup's archive
+     *
+     * @return string
+     */
+    public function getArchiveURL()
+    {
+        if (!$this->has('archive_url')) {
+            $env = $this->getEnvironment();
+            $path = sprintf(
+                'sites/%s/environments/%s/backups/catalog/%s/%s/s3token',
+                $env->getSite()->id,
+                $env->id,
+                $this->get('folder'),
+                $this->get('type')
+            );
+            // The API makes this is necessary.
+            $options = ['method' => 'post', 'form_params' => ['method' => 'get',],];
+            $response = $this->request()->request($path, $options);
+            $this->set('archive_url', $response['data']->url);
+        }
+        return $this->get('archive_url');
     }
 
     /**
@@ -117,26 +140,6 @@ class Backup extends TerminusModel implements ConfigAwareInterface, EnvironmentI
     }
 
     /**
-     * Gets the URL of a backup
-     *
-     * @return string
-     */
-    public function getUrl()
-    {
-        $env = $this->getEnvironment();
-        $path = sprintf(
-            'sites/%s/environments/%s/backups/catalog/%s/%s/s3token',
-            $env->getSite()->id,
-            $env->id,
-            $this->get('folder'),
-            $this->get('type')
-        );
-        $options  = ['method' => 'post', 'form_params' => ['method' => 'get',],];
-        $response = $this->request()->request($path, $options);
-        return $response['data']->url;
-    }
-
-    /**
      * Restores this backup
      *
      * @return Workflow
@@ -177,13 +180,14 @@ class Backup extends TerminusModel implements ConfigAwareInterface, EnvironmentI
      */
     public function serialize()
     {
-        $date_format = $this->getConfig()->get('date_format');
         return [
             'file'      => $this->get('filename'),
             'size'      => $this->getSizeInMb(),
-            'date'      => date($date_format, $this->getDate()),
-            'expiry'    => date($date_format, $this->getExpiry()),
+            'date'      => $this->getDate(),
+            'expiry'    => $this->getExpiry(),
             'initiator' => $this->getInitiator(),
+            'url'       => $this->get('archive_url'),
+            'type'      => $this->get('type'),
         ];
     }
 

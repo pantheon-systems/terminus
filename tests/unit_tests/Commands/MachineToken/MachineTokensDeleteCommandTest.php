@@ -1,11 +1,11 @@
 <?php
+
 namespace Pantheon\Terminus\UnitTests\Commands\MachineToken;
 
 use Pantheon\Terminus\Commands\MachineToken\DeleteCommand;
 use Robo\Config;
 use Pantheon\Terminus\Models\MachineToken;
 use Pantheon\Terminus\Exceptions\TerminusException;
-use Symfony\Component\Console\Input\Input;
 
 /**
  * Class MachineTokenDeleteCommandTest
@@ -49,25 +49,6 @@ class MachineTokenDeleteCommandTest extends MachineTokenCommandTest
         $this->token->expects($this->once())
             ->method('delete')
             ->willReturn(['status_code' => 200,]);
-
-        $out = $this->command->delete('123');
-        $this->assertNull($out);
-    }
-
-    /**
-     * Tests the machine-token:delete command when declining the confirmation
-     *
-     * @todo Remove this when removing TerminusCommand::confirm()
-     */
-    public function testMachineTokenDeleteConfirmationDecline()
-    {
-        $this->machine_tokens->expects($this->once())
-            ->method('get')
-            ->with($this->equalTo('123'))
-            ->willReturn($this->token);
-        $this->expectConfirmation(false);
-        $this->token->expects($this->never())
-            ->method('delete');
 
         $out = $this->command->delete('123');
         $this->assertNull($out);

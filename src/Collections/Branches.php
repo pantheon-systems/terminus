@@ -10,7 +10,7 @@ use Pantheon\Terminus\Models\Branch;
  */
 class Branches extends SiteOwnedCollection
 {
-    public static $pretty_name = 'branches';
+    const PRETTY_NAME = 'branches';
     /**
      * @var string
      */
@@ -25,12 +25,13 @@ class Branches extends SiteOwnedCollection
     protected $url = 'sites/{site_id}/code-tips';
 
     /**
-     * @inheritdoc
+     * Fetches from API and instantiates its model instances with data it assembled from the request
+     *
+     * @return Branches $this
      */
-    public function fetch(array $options = [])
+    public function fetch()
     {
-        $data = isset($options['data']) ? $options['data'] : $this->getCollectionData($options);
-        foreach ($data as $id => $sha) {
+        foreach ($this->getData() as $id => $sha) {
             $this->add((object)['id' => $id, 'sha' => $sha,]);
         }
         return $this;

@@ -11,7 +11,7 @@ use Pantheon\Terminus\Models\SSHKey;
  */
 class SSHKeys extends UserOwnedCollection
 {
-    public static $pretty_name = 'SSH keys';
+    const PRETTY_NAME = 'SSH keys';
     /**
      * @var string
      */
@@ -64,13 +64,11 @@ class SSHKeys extends UserOwnedCollection
     /**
      * Fetches model data from API and instantiates its model instances
      *
-     * @param array $options params to pass to url request
      * @return SSHKeys $this
      */
-    public function fetch(array $options = [])
+    public function fetch()
     {
-        $data = isset($options['data']) ? $options['data'] : $this->getCollectionData($options);
-        if (!is_null($data)) {
+        if (!is_null($data = $this->getData())) {
             foreach ($data as $uuid => $ssh_key) {
                 $model_data = (object)['id' => $uuid, 'key' => $ssh_key,];
                 $this->add($model_data);

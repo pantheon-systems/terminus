@@ -3,8 +3,9 @@
 namespace Pantheon\Terminus\UnitTests\Config;
 
 use Pantheon\Terminus\Config\EnvConfig;
+use Pantheon\Terminus\UnitTests\TerminusTestCase;
 
-class EnvConfigTest extends \PHPUnit_Framework_TestCase
+class EnvConfigTest extends TerminusTestCase
 {
     public function testReadEnv()
     {

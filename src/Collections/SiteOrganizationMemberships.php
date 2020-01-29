@@ -2,6 +2,7 @@
 
 namespace Pantheon\Terminus\Collections;
 
+use Pantheon\Terminus\Friends\OrganizationsTrait;
 use Pantheon\Terminus\Models\Organization;
 use Pantheon\Terminus\Models\SiteOrganizationMembership;
 use Pantheon\Terminus\Models\Workflow;
@@ -12,6 +13,8 @@ use Pantheon\Terminus\Models\Workflow;
  */
 class SiteOrganizationMemberships extends SiteOwnedCollection
 {
+    use OrganizationsTrait;
+
     /**
      * @var string
      */

@@ -66,22 +66,7 @@ class EnvironmentsTest extends CollectionTestCase
      */
     public function testCreate()
     {
-        $to_env_string = 'to env';
-        $from_env = $this->getMockBuilder(Environment::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $from_env->id = 'from env id';
-        $workflows = $this->getMockBuilder(Workflows::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $workflow = $this->getMockBuilder(Workflow::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        $this->site->expects($this->once())
-            ->method('getWorkflows')
-            ->with()
-            ->willReturn($workflows);
+        list($from_env, $to_env_string, $workflow, $workflows) = $this->makeCreateMocks();
         $workflows->expects($this->once())
             ->method('create')
             ->with(
@@ -90,12 +75,9 @@ class EnvironmentsTest extends CollectionTestCase
                     'params' => [
                         'environment_id' => $to_env_string,
                         'deploy' => [
+                            'annotation' => "Create the \"{$to_env_string}\" environment.",
                             'clone_database' => ['from_environment' => $from_env->id,],
                             'clone_files' => ['from_environment' => $from_env->id,],
-                            'annotation' => sprintf(
-                                'Create the "%s" environment.',
-                                $to_env_string
-                            ),
                         ],
                     ],
                 ])
@@ -103,6 +85,59 @@ class EnvironmentsTest extends CollectionTestCase
             ->willReturn($workflow);
 
         $out = $this->collection->create($to_env_string, $from_env);
+        $this->assertEquals($out, $workflow);
+    }
+
+    /**
+     * Tests the Environments::create(string, Environment, ['no-db' => true,]) function
+     */
+    public function testCreateNoDb()
+    {
+        list($from_env, $to_env_string, $workflow, $workflows) = $this->makeCreateMocks();
+        $workflows->expects($this->once())
+            ->method('create')
+            ->with(
+                $this->equalTo('create_cloud_development_environment'),
+                $this->equalTo([
+                    'params' => [
+                        'environment_id' => $to_env_string,
+                        'deploy' => [
+                            'annotation' => "Create the \"{$to_env_string}\" environment.",
+                            'clone_files' => ['from_environment' => $from_env->id,],
+                        ],
+                    ],
+                ])
+            )
+            ->willReturn($workflow);
+
+        $out = $this->collection->create($to_env_string, $from_env, ['no-db' => true,]);
+        $this->assertEquals($out, $workflow);
+    }
+
+
+    /**
+     * Tests the Environments::create(string, Environment, ['no-files' => true,]) function
+     */
+    public function testCreateNoFiles()
+    {
+        list($from_env, $to_env_string, $workflow, $workflows) = $this->makeCreateMocks();
+        $workflows->expects($this->once())
+            ->method('create')
+            ->with(
+                $this->equalTo('create_cloud_development_environment'),
+                $this->equalTo([
+                    'params' => [
+                        'environment_id' => $to_env_string,
+                        'deploy' => [
+                            'annotation' => "Create the \"{$to_env_string}\" environment.",
+                            'clone_database' => ['from_environment' => $from_env->id,],
+                        ],
+                    ],
+                ])
+            )
+            ->willReturn($workflow);
+
+        $out = $this->collection->create($to_env_string, $from_env, ['no-files' => true,]);
         $this->assertEquals($out, $workflow);
     }
 
@@ -136,8 +171,7 @@ class EnvironmentsTest extends CollectionTestCase
     public function testSerializeFrozen()
     {
         $this->site->expects($this->once())
-            ->method('get')
-            ->with($this->equalTo('frozen'))
+            ->method('isFrozen')
             ->willReturn(true);
         $this->makeEnvironmentsFetchable();
         $expected = array_map(function ($data) {
@@ -154,9 +188,8 @@ class EnvironmentsTest extends CollectionTestCase
     public function testSerializeUnfrozen()
     {
         $this->site->expects($this->once())
-            ->method('get')
-            ->with($this->equalTo('frozen'))
-            ->willReturn(null);
+            ->method('isFrozen')
+            ->willReturn(false);
         $this->makeEnvironmentsFetchable();
         $expected = array_map(function ($env) {
             return (array)$env;
@@ -197,5 +230,39 @@ class EnvironmentsTest extends CollectionTestCase
             $this->environments[$env->id] = $env;
             $i++;
         }
+    }
+
+    /**
+     * Sets up the tests for the Environments::create(string, Environment, array) function
+     * @return array In the order:
+     *     Environment $from_env
+     *     string $to_env_id
+     *     Workflow $workflow
+     *     Workflows $workflows
+     */
+    protected function makeCreateMocks()
+    {
+        $from_env = $this->getMockBuilder(Environment::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $from_env->id = 'from env id';
+        $workflows = $this->getMockBuilder(Workflows::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $workflow = $this->getMockBuilder(Workflow::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $this->site->expects($this->once())
+            ->method('getWorkflows')
+            ->with()
+            ->willReturn($workflows);
+
+        return [
+            $from_env,
+            'to env',
+            $workflow,
+            $workflows,
+        ];
     }
 }

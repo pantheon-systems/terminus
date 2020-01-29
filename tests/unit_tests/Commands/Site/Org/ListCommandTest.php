@@ -27,6 +27,7 @@ class ListCommandTest extends CommandTestCase
         $this->org_memberships = $this->getMockBuilder(SiteOrganizationMemberships::class)
             ->disableOriginalConstructor()
             ->getMock();
+        $this->org_memberships->method('getCollectedClass')->willReturn(SiteOrganizationMembership::class);
         $this->site->method('getOrganizationMemberships')->willReturn($this->org_memberships);
 
         $this->command = new ListCommand($this->getConfig());
@@ -64,7 +65,7 @@ class ListCommandTest extends CommandTestCase
 
         $this->logger->expects($this->at(0))
             ->method('log')->with(
-                $this->equalTo('notice'),
+                $this->equalTo('warning'),
                 $this->equalTo('This site has no supporting organizations.')
             );
 

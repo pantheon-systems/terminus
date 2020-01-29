@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<ruleset name="TerminusStandard">
+    <description>PSR2 with comments having no max line length.</description>
+    <rule ref="Generic.Files.LineLength">
+        <properties>
+            <property name="absoluteLineLimit" value="120"/>
+            <property name="ignoreComments" value="true"/>
+            <property name="lineLimit" value="120"/>
+        </properties>
+    </rule>
+    <rule ref="PSR2" />
+</ruleset>

@@ -3,6 +3,7 @@
 namespace Pantheon\Terminus\UnitTests\Commands\Multidev;
 
 use Pantheon\Terminus\Commands\Multidev\CreateCommand;
+use Pantheon\Terminus\UnitTests\Commands\WorkflowProgressTrait;
 
 /**
  * Class CreateCommandTest
@@ -11,6 +12,8 @@ use Pantheon\Terminus\Commands\Multidev\CreateCommand;
  */
 class CreateCommandTest extends MultidevCommandTest
 {
+    use WorkflowProgressTrait;
+
     /**
      * @inheritdoc
      */
@@ -19,9 +22,11 @@ class CreateCommandTest extends MultidevCommandTest
         parent::setUp();
 
         $this->command = new CreateCommand($this->getConfig());
+        $this->command->setContainer($this->getContainer());
         $this->command->setLogger($this->logger);
         $this->command->setSites($this->sites);
         $this->environments->method('create')->willReturn($this->workflow);
+        $this->expectWorkflowProcessing();
     }
 
     /**
@@ -33,10 +38,6 @@ class CreateCommandTest extends MultidevCommandTest
         $this->environment->id = 'dev';
 
         $this->workflow->method('isSuccessful')
-            ->with()
-            ->willReturn(true);
-        $this->workflow->expects($this->once())
-            ->method('checkProgress')
             ->with()
             ->willReturn(true);
         $this->workflow->expects($this->once())
@@ -61,10 +62,6 @@ class CreateCommandTest extends MultidevCommandTest
         $multidev_name = 'multipass';
         $this->environment->id = 'dev';
 
-        $this->workflow->expects($this->once())
-            ->method('checkProgress')
-            ->with()
-            ->willReturn(true);
         $this->workflow->expects($this->once())
             ->method('getMessage')
             ->with()

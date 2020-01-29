@@ -3,6 +3,7 @@
 namespace Pantheon\Terminus\Commands\PaymentMethod;
 
 use Pantheon\Terminus\Commands\TerminusCommand;
+use Pantheon\Terminus\Commands\WorkflowProcessingTrait;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 
@@ -13,6 +14,7 @@ use Pantheon\Terminus\Site\SiteAwareTrait;
 class AddCommand extends TerminusCommand implements SiteAwareInterface
 {
     use SiteAwareTrait;
+    use WorkflowProcessingTrait;
 
     /**
      * Associates an existing payment method with a site.
@@ -31,11 +33,7 @@ class AddCommand extends TerminusCommand implements SiteAwareInterface
     {
         $site = $this->getSite($site_name);
         $pm = $this->session()->getUser()->getPaymentMethods()->fetch()->get($payment_method);
-        $workflow = $site->addPaymentMethod($pm->id);
-        while (!$workflow->checkProgress()) {
-            // @TODO: Add Symfony progress bar to indicate that something is happening.
-        }
-
+        $this->processWorkflow($site->addPaymentMethod($pm->id));
         $this->log()->notice(
             '{method} has been applied to the {site} site.',
             ['method' => $pm->get('label'), 'site' => $site->get('name'),]

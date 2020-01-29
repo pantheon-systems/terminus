@@ -87,7 +87,10 @@ class UserTest extends ModelTestCase
             );
         $this->model->setConfig($config);
 
-        $this->assertEquals("https://dashboard.pantheon.io/users/{$this->user_data['id']}#sites", $this->model->dashboardUrl());
+        $this->assertEquals(
+            "https://dashboard.pantheon.io/users/{$this->user_data['id']}#sites",
+            $this->model->dashboardUrl()
+        );
     }
 
     /**

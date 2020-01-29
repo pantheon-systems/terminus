@@ -22,6 +22,7 @@ class FeatureContext implements Context
     private $parameters;
     private $output;
     private $start_time;
+    private $environment_variables = [];
 
     const DEFAULT_PLUGIN_DIR_NAME = 'default';
 
@@ -101,6 +102,7 @@ class FeatureContext implements Context
     {
         $this->setCassetteName($event);
         $this->plugin_dir_name = self::DEFAULT_PLUGIN_DIR_NAME;
+        $this->environment_variables = [];
     }
 
     /**
@@ -112,6 +114,7 @@ class FeatureContext implements Context
     public function selectPluginDir($dir_name)
     {
         $this->plugin_dir_name = $dir_name;
+        $this->iRun('terminus self:clear-cache');
     }
 
     /**
@@ -613,8 +616,21 @@ class FeatureContext implements Context
     }
 
     /**
+     * @When I set the environment variable :arg1 to :arg2
+     *
+     * @param [string] $var  Environment variable name
+     * @param [string] $value Environment variable value
+     * @return [void]
+     */
+    public function iSetTheEnvironmentVariableTo($var, $value)
+    {
+        $this->environment_variables[$var] = $value;
+    }
+
+    /**
      * @When /^I run "([^"]*)"$/
      * @When /^I run: (.*)$/
+     * @When /^I run:$/
      * Runs command and saves output
      *
      * @param [string] $command To be entered as CL stdin
@@ -644,6 +660,13 @@ class FeatureContext implements Context
         $plugins = $this->plugin_dir . DIRECTORY_SEPARATOR . $this->plugin_dir_name;
         // Pass the cache directory to the command so that tests don't poison the user's cache.
         $command = "TERMINUS_TEST_MODE=1 TERMINUS_CACHE_DIR=$this->cache_dir TERMINUS_TOKENS_DIR=$this->cache_token_dir TERMINUS_PLUGINS_DIR=$plugins $command";
+
+        // Insert any envrionment variables defined for this scenario
+        foreach ($this->environment_variables as $var => $value) {
+            $var = $this->replacePlaceholders($var);
+            $value = $this->replacePlaceholders($value);
+            $command = "{$var}={$value} $command";
+        }
 
         ob_start();
         passthru($command . ' 2>&1');
@@ -675,6 +698,21 @@ class FeatureContext implements Context
     {
         $i_have_this = $this->iShouldGetOneOfTheFollowing($string);
         return $i_have_this;
+    }
+
+    /**
+     * @Then /^I should get the warning:$/
+     * @Then /^I should get the warning "([^"]*)"$/
+     * @Then /^I should get the warning: "([^"]*)"$/
+     * Checks the output for the given string that it is a warning with the given string
+     *
+     * @param [string] $string Content which ought not be in the output
+     * @return [boolean] $i_have_this True if $string exists in output
+     * @throws Exception
+     */
+    public function iShouldGetTheWarning($string)
+    {
+        return $this->iShouldGet("[warning] $string");
     }
 
     /**
@@ -712,7 +750,7 @@ class FeatureContext implements Context
      * @return boolean true if all of the rows are present in the output
      * @throws \Exception
      */
-    public function shouldSeeATableWithRows($rows)
+    public function iShouldSeeATableWithRows($rows)
     {
         $lines = explode("\n", $rows);
         foreach ($lines as $line) {
@@ -721,6 +759,36 @@ class FeatureContext implements Context
             }
         }
 
+        return true;
+    }
+
+    /**
+     * Checks the output for a table with the given number of rows
+     *
+     * @Then I should see a table with :num_rows row
+     * @Then I should see a table with :num_rows rows
+     * @Then that table should have :num_rows row
+     * @Then that table should have :num_rows rows
+     *
+     * @param integer $num Number of rows to be found in the table
+     * @return boolean true if all of the given number of rows are present
+     * @throws \Exception
+     */
+    public function iShouldSeeATableWithSoManyRows($num)
+    {
+        $lines = explode("\n", $this->output);
+        $boundaries = [];
+        foreach ($lines as $key => $line) {
+            if (strpos(trim($line), '---') === 0) {
+                $boundaries[] = $key;
+            }
+        }
+        $row_count = (count($boundaries) < 3) ? 0 : ($boundaries[2] - $boundaries[1] - 1);
+
+        $num_rows = ($num === 'no') ? 0 : (integer)$num;
+        if ($num_rows !== $row_count) {
+            throw new \Exception("The table had $row_count rows, not $num_rows.");
+        }
         return true;
     }
 
@@ -735,7 +803,7 @@ class FeatureContext implements Context
      * @return bool True if message is the correct type and exists in output if given
      * @throws \Exception
      */
-    public function shouldSeeATypeOfMessage($type, $message = null)
+    public function iShouldSeeATypeOfMessage($type, $message = null)
     {
         $expected_message = "[$type]";
         if (!empty($message)) {
@@ -863,6 +931,30 @@ class FeatureContext implements Context
     }
 
     /**
+     * Checks the output against a a type of message.
+     *
+     * @Then /^I should not see a (notice|warning)$/
+     * @Then /^I should not see an (error)$/
+     *
+     * @param $type string One of the standard logging levels
+     * @return bool True if message is the expected type in output is not given
+     * @throws \Exception
+     */
+    public function iShouldNotSeeATypeOfMessage($type, $message = null)
+    {
+        try {
+            $this->iShouldSeeATypeOfMessage($type, $message);
+        } catch (\Exception $e) {
+            $exception_message = $e->getMessage();
+            if ((strpos($exception_message, $type) !== false)) {
+                return true;
+            }
+            throw $e;
+        }
+        throw new \Exception("Expected no $type in message: $this->output");
+    }
+
+    /**
      * Ensures that a user is not on a site's team
      * @Given /^"([^"]*)" is a member of the team on "([^"]*)"$/
      *
@@ -971,11 +1063,8 @@ class FeatureContext implements Context
 
         foreach ($unformatted_tags as $tag) {
             $tag_elements = explode(' ', $tag);
-            $index        = null;
-            if (count($tag_elements < 1)) {
-                $index = array_shift($tag_elements);
-            }
-            if (count($tag_elements == 1)) {
+            $index = array_shift($tag_elements);
+            if (count($tag_elements) == 1) {
                 $tag_elements = array_shift($tag_elements);
             }
             $tags[$index] = $tag_elements;

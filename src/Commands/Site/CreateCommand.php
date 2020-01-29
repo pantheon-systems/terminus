@@ -2,17 +2,16 @@
 
 namespace Pantheon\Terminus\Commands\Site;
 
-use League\Container\ContainerAwareInterface;
-use League\Container\ContainerAwareTrait;
+use Pantheon\Terminus\Commands\WorkflowProcessingTrait;
 use Pantheon\Terminus\Exceptions\TerminusException;
 
 /**
  * Class CreateCommand
  * @package Pantheon\Terminus\Commands\Site
  */
-class CreateCommand extends SiteCommand implements ContainerAwareInterface
+class CreateCommand extends SiteCommand
 {
-    use ContainerAwareTrait;
+    use WorkflowProcessingTrait;
 
     /**
      * Creates a new site.
@@ -25,12 +24,14 @@ class CreateCommand extends SiteCommand implements ContainerAwareInterface
      * @param string $label Site label
      * @param string $upstream_id Upstream name or UUID
      * @option org Organization name, label, or ID
+     * @option region Specify the service region where the site should be
+     *   created. See documentation for valid regions.
      *
      * @usage <site> <label> <upstream> Creates a new site named <site>, human-readably labeled <label>, using code from <upstream>.
      * @usage <site> <label> <upstream> --org=<org> Creates a new site named <site>, human-readably labeled <label>, using code from <upstream>, associated with <organization>.
      */
 
-    public function create($site_name, $label, $upstream_id, $options = ['org' => null,])
+    public function create($site_name, $label, $upstream_id, $options = ['org' => null, 'region' => null,])
     {
         if ($this->sites()->nameIsTaken($site_name)) {
             throw new TerminusException('The site name {site_name} is already taken.', compact('site_name'));
@@ -38,8 +39,15 @@ class CreateCommand extends SiteCommand implements ContainerAwareInterface
 
         $workflow_options = [
             'label' => $label,
-            'site_name' => $site_name
+            'site_name' => $site_name,
         ];
+        // If the user specified a region, then include it in the workflow
+        // options. We'll allow the API to decide whether the region is valid.
+        $region = isset($options['region']) ? $options['region'] : $this->config->get('command_site_options_region');
+        if ($region) {
+            $workflow_options['preferred_zone'] = $region;
+        }
+
         $user = $this->session()->getUser();
 
         // Locate upstream
@@ -54,17 +62,12 @@ class CreateCommand extends SiteCommand implements ContainerAwareInterface
         // Create the site
         $this->log()->notice('Creating a new site...');
         $workflow = $this->sites()->create($workflow_options);
-        while (!$workflow->checkProgress()) {
-            // @TODO: Add Symfony progress bar to indicate that something is happening.
-        }
+        $this->processWorkflow($workflow);
 
         // Deploy the upstream
         if ($site = $this->getSite($workflow->get('waiting_for_task')->site_id)) {
             $this->log()->notice('Deploying CMS...');
-            $workflow = $site->deployProduct($upstream->id);
-            while (!$workflow->checkProgress()) {
-                // @TODO: Add Symfony progress bar to indicate that something is happening.
-            }
+            $this->processWorkflow($site->deployProduct($upstream->id));
             $this->log()->notice('Deployed CMS');
         }
     }

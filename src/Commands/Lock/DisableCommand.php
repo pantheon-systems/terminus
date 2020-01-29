@@ -3,6 +3,7 @@
 namespace Pantheon\Terminus\Commands\Lock;
 
 use Pantheon\Terminus\Commands\TerminusCommand;
+use Pantheon\Terminus\Commands\WorkflowProcessingTrait;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 
@@ -13,6 +14,7 @@ use Pantheon\Terminus\Site\SiteAwareTrait;
 class DisableCommand extends TerminusCommand implements SiteAwareInterface
 {
     use SiteAwareTrait;
+    use WorkflowProcessingTrait;
 
     /**
      * Disables HTTP basic authentication on the environment.
@@ -28,10 +30,7 @@ class DisableCommand extends TerminusCommand implements SiteAwareInterface
     public function disable($site_env)
     {
         list($site, $env) = $this->getSiteEnv($site_env);
-        $workflow = $env->getLock()->disable();
-        while (!$workflow->checkProgress()) {
-            // @TODO: Remove Symfony progress bar to indicate that something is happening.
-        }
+        $this->processWorkflow($env->getLock()->disable());
         $this->log()->notice(
             '{site}.{env} has been unlocked.',
             ['site' => $site->get('name'), 'env' => $env->id,]

@@ -1,0 +1,34 @@
+{
+  "alias": "terminus.phar",
+  "chmod": "0755",
+  "compactors": [],
+  "directories": ["assets", "bin", "config", "src", "templates"],
+  "files": ["README.md"],
+  "finder": [
+    {
+      "exclude": [
+        "behat",
+        "phpunit",
+        "php_codesniffer",
+        "php-vcr",
+        "prophecy",
+        "test",
+        "tests",
+        "Test",
+        "Tests",
+        "Tester"
+      ],
+      "in": "vendor",
+      "name": "*.php"
+    },
+    {
+      "in": "vendor/consolidation/annotated-command/src",
+      "name": "*.php"
+    }
+  ],
+  "git-commit": "git-commit",
+  "git-version": "git-version",
+  "output": "terminus.phar",
+  "main": "bin/terminus",
+  "stub": true
+}

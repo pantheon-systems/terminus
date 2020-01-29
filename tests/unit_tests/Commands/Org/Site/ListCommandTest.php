@@ -40,7 +40,7 @@ class ListCommandTest extends OrgSiteCommandTest
 
         $this->logger->expects($this->once())
             ->method('log')
-            ->with($this->equalTo('notice'), $this->equalTo('This organization has no sites.'));
+            ->with($this->equalTo('warning'), $this->equalTo('This organization has no sites.'));
 
         $out = $this->command->listSites($this->organization->id);
         $this->assertInstanceOf('Consolidation\OutputFormatters\StructuredData\RowsOfFields', $out);
@@ -90,7 +90,7 @@ class ListCommandTest extends OrgSiteCommandTest
         $this->logger->expects($this->never())
             ->method('log');
 
-        $out = $this->command->listSites($this->organization->id, compact('tag'));
+        $out = $this->command->listSites($this->organization->id, ['tag' => $tag, 'upstream' => null,]);
         $this->assertInstanceOf('Consolidation\OutputFormatters\StructuredData\RowsOfFields', $out);
         $this->assertEquals($data, $out->getArrayCopy());
     }

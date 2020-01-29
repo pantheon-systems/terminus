@@ -3,6 +3,7 @@
 namespace Pantheon\Terminus\Commands\Import;
 
 use Pantheon\Terminus\Commands\TerminusCommand;
+use Pantheon\Terminus\Commands\WorkflowProcessingTrait;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 
@@ -13,6 +14,7 @@ use Pantheon\Terminus\Site\SiteAwareTrait;
 class FilesCommand extends TerminusCommand implements SiteAwareInterface
 {
     use SiteAwareTrait;
+    use WorkflowProcessingTrait;
 
     /**
      * Imports a database archive to the environment.
@@ -35,10 +37,7 @@ class FilesCommand extends TerminusCommand implements SiteAwareInterface
             return;
         }
 
-        $workflow = $env->importFiles($url);
-        while (!$workflow->checkProgress()) {
-            // @TODO: Add Symfony progress bar to indicate that something is happening.
-        }
+        $this->processWorkflow($env->importFiles($url));
         $this->log()->notice(
             'Imported files to {site}.{env}.',
             ['site' => $site->get('name'), 'env' => $env->id,]

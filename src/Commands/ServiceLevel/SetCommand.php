@@ -3,6 +3,7 @@
 namespace Pantheon\Terminus\Commands\ServiceLevel;
 
 use Pantheon\Terminus\Commands\TerminusCommand;
+use Pantheon\Terminus\Commands\WorkflowProcessingTrait;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 
@@ -13,9 +14,12 @@ use Pantheon\Terminus\Site\SiteAwareTrait;
 class SetCommand extends TerminusCommand implements SiteAwareInterface
 {
     use SiteAwareTrait;
+    use WorkflowProcessingTrait;
 
     /**
      * Upgrades or downgrades a site's service level.
+     *
+     * @deprecated 2.0.0 This will be removed in the future. Please use plan:set and plan:list instead.
      *
      * @authorize
      *
@@ -31,9 +35,7 @@ class SetCommand extends TerminusCommand implements SiteAwareInterface
         $site = $this->getSite($site_id);
         $workflow = $site->updateServiceLevel($level);
         $this->log()->notice('Setting plan of "{site_id}" to "{level}".', compact('site_id', 'level'));
-        while (!$workflow->checkProgress()) {
-            // @TODO: Add Symfony progress bar to indicate that something is happening.
-        }
+        $this->processWorkflow($workflow);
         $this->log()->notice($workflow->getMessage());
     }
 }

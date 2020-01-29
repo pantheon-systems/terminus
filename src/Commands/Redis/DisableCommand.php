@@ -3,6 +3,7 @@
 namespace Pantheon\Terminus\Commands\Redis;
 
 use Pantheon\Terminus\Commands\TerminusCommand;
+use Pantheon\Terminus\Commands\WorkflowProcessingTrait;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 
@@ -13,6 +14,7 @@ use Pantheon\Terminus\Site\SiteAwareTrait;
 class DisableCommand extends TerminusCommand implements SiteAwareInterface
 {
     use SiteAwareTrait;
+    use WorkflowProcessingTrait;
 
     /**
      * Disables Redis add-on for a site.
@@ -31,10 +33,7 @@ class DisableCommand extends TerminusCommand implements SiteAwareInterface
         $site->getRedis()->disable();
         $this->log()->notice('Redis disabled. Converging bindings.');
         $workflow = $site->converge();
-        // Wait for the workflow to complete.
-        while (!$workflow->checkProgress()) {
-            // @TODO: Add Symfony progress bar to indicate that something is happening.
-        }
+        $this->processWorkflow($workflow);
         $this->log()->notice($workflow->getMessage());
     }
 }

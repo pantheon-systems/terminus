@@ -4,6 +4,7 @@ namespace Pantheon\Terminus\Commands\Branch;
 
 use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
 use Pantheon\Terminus\Commands\TerminusCommand;
+use Pantheon\Terminus\Commands\StructuredListTrait;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 
@@ -13,12 +14,14 @@ use Pantheon\Terminus\Site\SiteAwareTrait;
  */
 class ListCommand extends TerminusCommand implements SiteAwareInterface
 {
+    use StructuredListTrait;
     use SiteAwareTrait;
 
     /**
      * Displays list of git branches for a site.
      *
      * @authorize
+     * @filter-output
      *
      * @command branch:list
      * @aliases branches
@@ -34,6 +37,6 @@ class ListCommand extends TerminusCommand implements SiteAwareInterface
      */
     public function listBranches($site_id)
     {
-        return new RowsOfFields($this->getSite($site_id)->getBranches()->serialize());
+        return $this->getRowsOfFields($this->getSite($site_id)->getBranches());
     }
 }

@@ -3,6 +3,7 @@
 namespace Pantheon\Terminus\Commands\Site\Team;
 
 use Pantheon\Terminus\Commands\TerminusCommand;
+use Pantheon\Terminus\Commands\WorkflowProcessingTrait;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 
@@ -13,6 +14,7 @@ use Pantheon\Terminus\Site\SiteAwareTrait;
 class RemoveCommand extends TerminusCommand implements SiteAwareInterface
 {
     use SiteAwareTrait;
+    use WorkflowProcessingTrait;
 
     /**
      * Removes a user from a site's team.
@@ -30,9 +32,15 @@ class RemoveCommand extends TerminusCommand implements SiteAwareInterface
     public function remove($site_id, $member)
     {
         $workflow = $this->getSite($site_id)->getUserMemberships()->get($member)->delete();
-        while (!$workflow->checkProgress()) {
-            // @TODO: Add Symfony progress bar to indicate that something is happening.
+        try {
+            $this->processWorkflow($workflow);
+            $message = $workflow->getMessage();
+        } catch (\Exception $e) {
+            if ($e->getCode() !== 404) {
+                throw $e;
+            }
+            $message = 'Removed your user from site team';
         }
-        $this->log()->notice($workflow->getMessage());
+        $this->log()->notice($message);
     }
 }

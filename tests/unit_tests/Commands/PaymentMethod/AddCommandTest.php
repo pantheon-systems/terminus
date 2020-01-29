@@ -9,6 +9,7 @@ use Pantheon\Terminus\Models\User;
 use Pantheon\Terminus\Models\Workflow;
 use Pantheon\Terminus\Session\Session;
 use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
+use Pantheon\Terminus\UnitTests\Commands\WorkflowProgressTrait;
 
 /**
  * Class AddCommandTest
@@ -17,6 +18,8 @@ use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
  */
 class AddCommandTest extends CommandTestCase
 {
+    use WorkflowProgressTrait;
+
     /**
      * @var Session
      */
@@ -69,9 +72,11 @@ class AddCommandTest extends CommandTestCase
             ->willReturn($this->payment_methods);
 
         $this->command = new AddCommand($this->getConfig());
+        $this->command->setContainer($this->getContainer());
         $this->command->setSession($this->session);
         $this->command->setLogger($this->logger);
         $this->command->setSites($this->sites);
+        $this->expectWorkflowProcessing();
     }
 
     /**
@@ -94,10 +99,6 @@ class AddCommandTest extends CommandTestCase
             ->method('addPaymentMethod')
             ->with($this->equalTo($this->payment_method->id))
             ->willReturn($workflow);
-        $workflow->expects($this->once())
-            ->method('checkProgress')
-            ->with()
-            ->willReturn(true);
         $this->payment_method->expects($this->once())
             ->method('get')
             ->with($this->equalTo('label'))

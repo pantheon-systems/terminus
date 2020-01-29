@@ -10,13 +10,16 @@ use Pantheon\Terminus\Friends\OrganizationJoinTrait;
 use Pantheon\Terminus\Friends\SiteInterface;
 use Pantheon\Terminus\Friends\SiteTrait;
 
-class SiteOrganizationMembership extends TerminusModel implements ContainerAwareInterface, OrganizationJoinInterface, SiteInterface
+class SiteOrganizationMembership extends TerminusModel implements
+    ContainerAwareInterface,
+    OrganizationJoinInterface,
+    SiteInterface
 {
     use ContainerAwareTrait;
     use OrganizationJoinTrait;
     use SiteTrait;
 
-    public static $pretty_name = 'site-organization membership';
+    const PRETTY_NAME = 'site-organization membership';
 
     /**
      * Remove membership of organization

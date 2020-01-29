@@ -6,6 +6,7 @@ use Pantheon\Terminus\Commands\Connection\SetCommand;
 use Pantheon\Terminus\Models\Workflow;
 use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
 use Pantheon\Terminus\Exceptions\TerminusException;
+use Pantheon\Terminus\UnitTests\Commands\WorkflowProgressTrait;
 
 /**
  * Class SetCommandTest
@@ -14,6 +15,13 @@ use Pantheon\Terminus\Exceptions\TerminusException;
  */
 class SetCommandTest extends CommandTestCase
 {
+    use WorkflowProgressTrait;
+
+    /**
+     * @var Workflow
+     */
+    protected $workflow;
+
     /**
      * @inheritdoc
      */
@@ -21,11 +29,17 @@ class SetCommandTest extends CommandTestCase
     {
         parent::setUp();
 
-        $this->command = new SetCommand($this->getConfig());
+        // dummy workflow instance
+        $this->workflow = $this->getMockBuilder(Workflow::class)
+            ->disableOriginalConstructor()
+            ->getMock();
 
-        // use the basic mocks from CommandTestCase
+        $this->command = new SetCommand($this->getConfig());
+        $this->command->setContainer($this->getContainer());
         $this->command->setSites($this->sites);
         $this->command->setLogger($this->logger);
+        $this->command->setInput($this->input);
+        $this->expectWorkflowProcessing();
     }
 
     /**
@@ -33,46 +47,120 @@ class SetCommandTest extends CommandTestCase
      */
     public function testConnectionSetSuccess()
     {
-        // dummy workflow instance
-        $workflow = $this->getMockBuilder(Workflow::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $message = 'successful workflow';
+        $mode = 'mode';
 
+        $this->environment->expects($this->once())
+            ->method('hasUncommittedChanges')
+            ->with()
+            ->willReturn(false);
+        $this->environment->expects($this->once())
+            ->method('changeConnectionMode')
+            ->with($mode)
+            ->willReturn($this->workflow);
         // workflow succeeded
-        $workflow->expects($this->once())->method('checkProgress')->willReturn(true);
-        $workflow->expects($this->once())->method('getMessage')->willReturn('successful workflow');
-
-        $this->environment->expects($this->once())->method('changeConnectionMode')
-            ->with($this->equalTo('a-valid-mode'))->willReturn($workflow);
-
+        $this->workflow->expects($this->once())
+            ->method('getMessage')
+            ->willReturn($message);
         // should display a notice about the mode switch
         $this->logger->expects($this->once())
-            ->method('log')->with(
-                $this->equalTo('notice'),
-                $this->equalTo('successful workflow')
-            );
+            ->method('log')
+            ->with('notice', $message);
 
         // trigger command call expectations
-        $this->command->connectionSet('dummy-site.dummy-env', 'a-valid-mode');
+        $this->command->connectionSet('dummy-site.dummy-env', $mode);
     }
 
     /**
-     * Exercises connection:set git mode
+     * Exercises connection:set when Environment::changeConnectionMode(mode) throws an error we're not expecting to use
      */
-    public function testConnectionSetNoOp()
+    public function testConnectionSetThrowsError()
     {
-        $this->environment->expects($this->once())->method('changeConnectionMode')
-            ->with($this->equalTo('the-current-mode'))->willReturn('noop');
+        $message = 'Chimken nuggers in bork soss';
+        $mode = 'mode';
 
+        $this->environment->expects($this->once())
+            ->method('hasUncommittedChanges')
+            ->with()
+            ->willReturn(false);
+        $this->environment->expects($this->once())
+            ->method('changeConnectionMode')
+            ->with($mode)
+            ->will($this->throwException(new TerminusException($message)));
+        // workflow succeeded
+        $this->workflow->expects($this->never())
+            ->method('getMessage');
+        // should display a notice about the mode switch
+        $this->logger->expects($this->never())
+            ->method('log');
+        $this->setExpectedException(TerminusException::class, $message);
+
+        // trigger command call expectations
+        $this->command->connectionSet('dummy-site.dummy-env', $mode);
+    }
+
+    /**
+     * Exercises connection:set when trying to change into the same mode as the environment is already on
+     */
+    public function testConnectionSetToSameMode()
+    {
+        $mode = 'mode';
+        $message = "This environment is already set to $mode.";
+
+        $this->environment->expects($this->once())
+            ->method('hasUncommittedChanges')
+            ->with()
+            ->willReturn(false);
+        $this->environment->expects($this->once())
+            ->method('changeConnectionMode')
+            ->with($mode)
+            ->will($this->throwException(new TerminusException($message)));
+        // workflow succeeded
+        $this->workflow->expects($this->never())
+            ->method('getMessage');
         // should display a notice about the mode switch
         $this->logger->expects($this->once())
-            ->method('log')->with(
+            ->method('log')
+            ->with('notice', $message);
+
+        // trigger command call expectations
+        $this->command->connectionSet('dummy-site.dummy-env', $mode);
+    }
+
+    /**
+     * Exercises connection:set command when changing from SFTP but the environment has uncommitted changes
+     */
+    public function testConnectionSetWithUncommittedChanges()
+    {
+        $message = 'successful workflow';
+        $mode = 'mode';
+
+        $this->environment->expects($this->once())
+            ->method('hasUncommittedChanges')
+            ->with()
+            ->willReturn(true);
+        // should display a notice about the mode switch
+        $this->logger->expects($this->at(0))
+            ->method('log')
+            ->with('warning');
+        $this->expectConfirmation();
+        $this->environment->expects($this->once())
+            ->method('changeConnectionMode')
+            ->with($mode)
+            ->willReturn($this->workflow);
+        $this->workflow->expects($this->once())
+            ->method('getMessage')
+            ->with()
+            ->willReturn($message);
+        $this->logger->expects($this->at(1))
+            ->method('log')
+            ->with(
                 $this->equalTo('notice'),
-                $this->equalTo('noop')
+                $this->equalTo($message)
             );
 
         // trigger command call expectations
-        $this->command->connectionSet('dummy-site.dummy-env', 'the-current-mode');
+        $this->command->connectionSet('dummy-site.dummy-env', $mode);
     }
 
     /**

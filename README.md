@@ -3,7 +3,6 @@
 ## Status
 [![Build Status](https://travis-ci.org/pantheon-systems/terminus.svg?branch=master)](https://travis-ci.org/pantheon-systems/terminus)
 [![Windows CI](https://ci.appveyor.com/api/projects/status/niiheng08p25mgnm?svg=true)](https://ci.appveyor.com/project/greg-1-anderson/terminus)
-[![Dependency Status](https://gemnasium.com/pantheon-systems/terminus.svg)](https://gemnasium.com/github.com/pantheon-systems/terminus)
 [![Coverage Status](https://coveralls.io/repos/github/pantheon-systems/terminus/badge.svg?branch=master)](https://coveralls.io/github/pantheon-systems/terminus?branch=master)
  
 ## About
@@ -18,9 +17,10 @@ Our documentation is kept in the Terminus Manual, located here: https://pantheon
 ## Dependencies
 ### Required
 - A command-line client
-- PHP version 5.5.9 or later
-- [PHP-CLI](http://www.php-cli.com/)
-- [PHP-CURL](http://php.net/manual/en/curl.setup.php)
+- PHP version 5.6.40 or later recommended (5.5.38 minimum)
+- [PHP-CLI](https://www.php-cli.com/)
+- [PHP-CURL](https://php.net/manual/en/curl.setup.php)
+- [PHP-XML](https://php.net/manual/en/book.xml.php)
 
 Once you have at least the requirements installed, you can install Terminus via Composer or Git. Additionally, you may want to install the optional software below to enhance your use of Terminus:
 
@@ -41,6 +41,7 @@ curl -O https://raw.githubusercontent.com/pantheon-systems/terminus-installer/ma
 For more information on installation options or to report an issue with this method, please see the [Terminus Installer README.md file](https://github.com/pantheon-systems/terminus-installer).
 
 ### Installing with Composer
+
 Run this in your terminal client:
 ```bash
 cd /install/location ; composer require pantheon-systems/terminus
@@ -51,16 +52,7 @@ composer remove pantheon-systems/terminus
 ```
 before requiring it.
 
-### Installing with [Homebrew](http://brew.sh/) (for Macs)
-This only installs stable versions of Terminus, and will install the latest 0.13.x release until 1.0 is out of beta.
-If you do not have `homebrew-php` already tapped, here are the commands for the taps:
-```bash
-brew tap homebrew/dupes ; brew tap homebrew/versions ; brew tap homebrew/php
-```
-And after you're all tapped out, install Terminus with this command:
-```bash
-brew install homebrew/php/terminus
-```
+Do not install Terminus via `composer global require`. [`composer global require` should not be used to install php applications](https://pantheon.io/blog/fixing-composer-global-command). If you need to globally install something using `composer`, use the [`cgr` utility](https://github.com/consolidation/cgr) as a replacement instead.
 
 ### Installing with Git
 To install with Git and use Terminus HEAD, you should clone this repository and run Terminus directly. If you would
@@ -112,7 +104,7 @@ cd /install/location/terminus ; git pull
 composer update
 ```
 
-**Optionally**, for ease of development, we suggest aliasing or setting the path bash configuration file, or
+**Optionally**, for ease of development we suggest aliasing, setting the PATH in the bash configuration file, or
 symlinking to it. This file is located at `~/.bashrc` on Linux systems and at `~/.bash_profile` on Mac.
 #### Alias
 ```bash
@@ -234,3 +226,14 @@ To deploy a new version of Terminus:
 - If you are getting `cURL error 60: SSL certificate problem: ...`, download a [cacert.pem](https://curl.haxx.se/ca/cacert.pem)
 file and add `curl.cainfo = "[path_to_file]\cacert.pem"` to your `php.ini`. If using XAMPP, you can add this to your
 `xampp\php\extras\ssl` directory.
+
+## Pull Request Guidelines
+- The code must be PSR-2 formatted.
+- The files must be appropriately namespaced so they are automatically found.
+- All new lines must be unit tested with PHPUnit. Ideally, all lines should be reached at least once while running the unit testing suite.
+- Functions should be as simple as possible so as to not require a great number of tests per function.
+- All reasonable states of any given command should have a Behat feature test. If fixing for a scenario not previously imagined or once considered unreasonable also test it.
+- Add changes to `CHANGELOG.md` and include the pull request number. (You will have to push a second time once you have one.)
+- All functions get comment markup consisting of at least all parameters, returned values, and exceptions thrown. An explanation should be included if it is not apparent.
+- Explain why you did what you did in the commit messages.
+- Pantheors: Add your Jira ticket number if it is available.

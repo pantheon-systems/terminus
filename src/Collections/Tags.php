@@ -9,9 +9,9 @@ use Pantheon\Terminus\Models\Tag;
  * Class Tags
  * @package Pantheon\Terminus\Collections
  */
-class Tags extends TerminusCollection
+class Tags extends APICollection
 {
-    public static $pretty_name = 'tags';
+    const PRETTY_NAME = 'tags';
     /**
      * @var string
      */
@@ -43,7 +43,10 @@ class Tags extends TerminusCollection
             "organizations/{$this->org_site_membership->getOrganization()->id}/tags",
             ['method' => 'put', 'form_params' => $params,]
         );
-        $this->models[$tag] = $this->getContainer()->get($this->collected_class, [(object)['id' => $tag,], ['collection' => $this,]]);
+        $this->models[$tag] = $this->getContainer()->get(
+            $this->collected_class,
+            [(object)['id' => $tag,], ['collection' => $this,]]
+        );
         return $this->models[$tag];
     }
 

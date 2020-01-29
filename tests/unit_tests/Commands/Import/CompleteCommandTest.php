@@ -5,6 +5,7 @@ namespace Pantheon\Terminus\UnitTests\Commands\Site;
 use Pantheon\Terminus\Commands\Import\CompleteCommand;
 use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
 use Pantheon\Terminus\Models\Workflow;
+use Pantheon\Terminus\UnitTests\Commands\WorkflowProgressTrait;
 
 /**
  * Class CompleteCommandTest
@@ -13,6 +14,7 @@ use Pantheon\Terminus\Models\Workflow;
  */
 class CompleteCommandTest extends CommandTestCase
 {
+    use WorkflowProgressTrait;
 
     /**
      * @inheritdoc
@@ -22,8 +24,10 @@ class CompleteCommandTest extends CommandTestCase
         parent::setUp();
 
         $this->command = new CompleteCommand($this->getConfig());
+        $this->command->setContainer($this->getContainer());
         $this->command->setSites($this->sites);
         $this->command->setLogger($this->logger);
+        $this->expectWorkflowProcessing();
     }
     
     /**
@@ -44,10 +48,6 @@ class CompleteCommandTest extends CommandTestCase
             ->method('get')
             ->with($this->equalTo('name'))
             ->willReturn($site_name);
-        $workflow->expects($this->once())
-            ->method('checkProgress')
-            ->with()
-            ->willReturn(true);
         $this->logger->expects($this->once())
             ->method('log')->with(
                 $this->equalTo('notice'),

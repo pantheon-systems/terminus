@@ -2,6 +2,7 @@
 
 namespace Pantheon\Terminus\Collections;
 
+use Pantheon\Terminus\Friends\OrganizationsTrait;
 use Pantheon\Terminus\Models\UserOrganizationMembership;
 
 /**
@@ -10,6 +11,8 @@ use Pantheon\Terminus\Models\UserOrganizationMembership;
  */
 class UserOrganizationMemberships extends UserOwnedCollection
 {
+    use OrganizationsTrait;
+
     /**
      * @var string
      */
@@ -22,4 +25,17 @@ class UserOrganizationMemberships extends UserOwnedCollection
      * @var string
      */
     protected $url = 'users/{user_id}/memberships/organizations';
+
+    /**
+     * @return array|void
+     */
+    public function serialize()
+    {
+        return array_map(
+            function ($member) {
+                return $member->getOrganization()->serialize();
+            },
+            $this->all()
+        );
+    }
 }

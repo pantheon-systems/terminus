@@ -2,13 +2,18 @@
 
 namespace Pantheon\Terminus\Models;
 
+use Pantheon\Terminus\Friends\SiteInterface;
+use Pantheon\Terminus\Friends\SiteTrait;
+
 /**
  * Class SiteUpstream
  * @package Pantheon\Terminus\Models
  */
-class SiteUpstream extends TerminusModel
+class SiteUpstream extends TerminusModel implements SiteInterface
 {
-    public static $pretty_name = 'upstream';
+    use SiteTrait;
+
+    const PRETTY_NAME = 'upstream';
 
     /**
      * @inheritdoc
@@ -16,6 +21,16 @@ class SiteUpstream extends TerminusModel
     public function __toString()
     {
         return "{$this->id}: {$this->get('url')}";
+    }
+
+    /**
+     * Clears a site's code cache
+     *
+     * @return Workflow
+     */
+    public function clearCache()
+    {
+        return $this->getSite()->getWorkflows()->create('clear_code_cache');
     }
 
     /**
@@ -35,7 +50,9 @@ class SiteUpstream extends TerminusModel
      */
     protected function parseAttributes($data)
     {
-        $data->id = $data->product_id;
+        if (!property_exists($data, 'id') && property_exists($data, 'product_id')) {
+            $data->id = $data->product_id;
+        }
         return $data;
     }
 }

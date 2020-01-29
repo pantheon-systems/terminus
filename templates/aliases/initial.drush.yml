@@ -1,0 +1,6 @@
+# Drush configuration file
+
+drush:
+  paths:
+    alias-path:
+      - '${env.home}/.drush/sites'

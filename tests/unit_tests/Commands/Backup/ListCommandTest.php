@@ -4,6 +4,7 @@ namespace Pantheon\Terminus\UnitTests\Commands\Backup;
 
 use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
 use Pantheon\Terminus\Commands\Backup\ListCommand;
+use Pantheon\Terminus\Models\Backup;
 
 /**
  * Class ListCommandTest
@@ -24,9 +25,16 @@ class ListCommandTest extends BackupCommandTest
     {
         parent::setUp();
 
-        $this->sample_data = ['data', 'data2'];
+        $this->sample_data = [
+            'data',
+            'data2',
+        ];
+        $this->backups->method('getCollectedClass')->willReturn(Backup::class);
 
-        $this->backup->expects($this->once())
+        $this->backups->expects($this->once())
+            ->method('filterForFinished')
+            ->willReturn($this->backups);
+        $this->backups->expects($this->once())
             ->method('serialize')
             ->with()
             ->willReturn($this->sample_data);
@@ -41,29 +49,9 @@ class ListCommandTest extends BackupCommandTest
      */
     public function testListBackups()
     {
-        $this->backups->expects($this->once())
-            ->method('getFinishedBackups')
-            ->with()
-            ->willReturn([$this->backup,]);
-
         $out = $this->command->listBackups('mysite.dev');
         $this->assertInstanceOf(RowsOfFields::class, $out);
-        $this->assertEquals([$this->sample_data,], $out->getArrayCopy());
-    }
-
-    /**
-     * Tests the backup:list command with 'db' element
-     */
-    public function testListBackupsWithDatabaseElement()
-    {
-        $this->backups->expects($this->once())
-            ->method('getFinishedBackups')
-            ->with($this->equalTo('database'))
-            ->willReturn([$this->backup,]);
-
-        $out = $this->command->listBackups('mysite.dev', 'all', ['element' => 'db',]);
-        $this->assertInstanceOf(RowsOfFields::class, $out);
-        $this->assertEquals([$this->sample_data,], $out->getArrayCopy());
+        $this->assertEquals($this->sample_data, $out->getArrayCopy());
     }
 
     /**
@@ -74,14 +62,13 @@ class ListCommandTest extends BackupCommandTest
         $element = "don't care";
 
         $this->backups->expects($this->once())
-            ->method('getFinishedBackups')
-            ->with($this->equalTo($element))
-            ->willReturn([$this->backup,]);
-
+            ->method('filterForElement')
+            ->with($element)
+            ->willReturn($this->backups);
 
         $out = $this->command->listBackups('mysite.dev', compact('element'));
         $this->assertInstanceOf(RowsOfFields::class, $out);
-        $this->assertEquals([$this->sample_data,], $out->getArrayCopy());
+        $this->assertEquals($this->sample_data, $out->getArrayCopy());
     }
 
     /**
@@ -92,13 +79,12 @@ class ListCommandTest extends BackupCommandTest
         $element = 'files';
 
         $this->backups->expects($this->once())
-            ->method('getFinishedBackups')
-            ->with($this->equalTo($element))
-            ->willReturn([$this->backup,]);
+            ->method('filterForElement')
+            ->with($element)
+            ->willReturn($this->backups);
 
-
-        $out = $this->command->listBackups('mysite.dev', 'all', compact('element'));
+        $out = $this->command->listBackups('mysite.dev', compact('element'));
         $this->assertInstanceOf(RowsOfFields::class, $out);
-        $this->assertEquals([$this->sample_data,], $out->getArrayCopy());
+        $this->assertEquals($this->sample_data, $out->getArrayCopy());
     }
 }

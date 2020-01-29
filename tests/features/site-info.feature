@@ -17,13 +17,35 @@ Feature: View site information
       Label
       Created
       Framework
+      Region
       Organization
-      Service Level
+      Plan
       Upstream
-      PHP Version
       Holder Type
       Holder ID
       Owner
+      Date Last Frozen
+    """
+
+  @vcr site-info.yml
+  Scenario: Site Info
+    When I set the environment variable "TERMINUS_SITE" to "[[test_site_name]]"
+    And I run "terminus site:info"
+    Then I should see a table with rows like:
+    """
+      ID
+      Name
+      Label
+      Created
+      Framework
+      Region
+      Organization
+      Plan
+      Upstream
+      Holder Type
+      Holder ID
+      Owner
+      Date Last Frozen
     """
 
   @vcr site-info-owner.yml

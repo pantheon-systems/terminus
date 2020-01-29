@@ -10,7 +10,7 @@ use Pantheon\Terminus\Models\Environment;
  */
 class Environments extends SiteOwnedCollection
 {
-    public static $pretty_name = 'environments';
+    const PRETTY_NAME = 'environments';
     /**
      * @var string
      */
@@ -23,29 +23,50 @@ class Environments extends SiteOwnedCollection
     /**
      * Creates a multidev environment
      *
-     * @param string $to_env_id Name of new the environment
-     * @param Environment $from_env Environment to clone from
+     * @param string $target_env_id Name of new the environment
+     * @param Environment $source_env Environment to clone from
+     * @param array $options
+     *     bool no-db Do not copy database from the source environment
+     *     bool no-files Do not copy files from the source environment
      * @return Workflow
      */
-    public function create($to_env_id, Environment $from_env)
+    public function create($target_env_id, Environment $source_env, array $options = [])
     {
+        $params = [
+            'clone_database' => ['from_environment' => $source_env->id,],
+            'clone_files' => ['from_environment' => $source_env->id,],
+            'annotation' => "Create the \"{$target_env_id}\" environment.",
+        ];
+        if (isset($options['no-db']) && $options['no-db']) {
+            unset($params['clone_database']);
+        }
+        if (isset($options['no-files']) && $options['no-files']) {
+            unset($params['clone_files']);
+        }
+
         $workflow = $this->getSite()->getWorkflows()->create(
             'create_cloud_development_environment',
             [
                 'params' => [
-                    'environment_id' => $to_env_id,
-                    'deploy' => [
-                        'clone_database' => ['from_environment' => $from_env->id,],
-                        'clone_files' => ['from_environment' => $from_env->id,],
-                        'annotation' => sprintf(
-                            'Create the "%s" environment.',
-                            $to_env_id
-                        ),
-                    ],
+                    'environment_id' => $target_env_id,
+                    'deploy' => $params,
                 ],
             ]
         );
         return $workflow;
+    }
+
+    /**
+     * Filters out non-multidev environments
+     *
+     * @return Environments $this
+     */
+    public function filterForMultidev()
+    {
+        $this->filter(function ($env) {
+            return $env->isMultidev();
+        });
+        return $this;
     }
 
     /**
@@ -55,7 +76,7 @@ class Environments extends SiteOwnedCollection
      */
     public function ids()
     {
-        $ids = array_keys($this->getMembers());
+        $ids = array_keys($this->all());
 
         //Reorder environments to put dev/test/live first
         $default_ids = ['dev', 'test', 'live'];
@@ -72,13 +93,9 @@ class Environments extends SiteOwnedCollection
      */
     public function multidev()
     {
-        $environments = array_filter(
-            $this->getMembers(),
-            function ($environment) {
-                return $environment->isMultidev();
-            }
-        );
-        return $environments;
+        $multidev_envs = $this->filterForMultidev()->all();
+        $this->reset();
+        return $multidev_envs;
     }
 
     /**
@@ -88,9 +105,9 @@ class Environments extends SiteOwnedCollection
      */
     public function serialize()
     {
-        $site_is_frozen = !is_null($this->getSite()->get('frozen'));
+        $site_is_frozen = $this->getSite()->isFrozen();
         $models = [];
-        foreach ($this->getMembers() as $id => $model) {
+        foreach ($this->all() as $id => $model) {
             if (!$site_is_frozen || !in_array($id, ['test', 'live',])) {
                 $models[$id] = $model->serialize();
             }

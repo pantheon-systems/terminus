@@ -9,6 +9,7 @@ use Pantheon\Terminus\Collections\SiteUserMemberships;
 use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
 use Pantheon\Terminus\Models\SiteUserMembership;
 use Pantheon\Terminus\Models\Workflow;
+use Pantheon\Terminus\UnitTests\Commands\WorkflowProgressTrait;
 
 /**
  * Class SetCommandTest
@@ -17,6 +18,8 @@ use Pantheon\Terminus\Models\Workflow;
  */
 class SetCommandTest extends CommandTestCase
 {
+    use WorkflowProgressTrait;
+
     /**
      * @var SiteUserMemberships
      */
@@ -36,8 +39,10 @@ class SetCommandTest extends CommandTestCase
         $this->site->method('getUserMemberships')->willReturn($this->user_memberships);
 
         $this->command = new SetCommand($this->getConfig());
+        $this->command->setContainer($this->getContainer());
         $this->command->setSites($this->sites);
         $this->command->setLogger($this->logger);
+        $this->expectWorkflowProcessing();
     }
 
     /**
@@ -47,7 +52,6 @@ class SetCommandTest extends CommandTestCase
     {
         $site_name = 'site_name';
         $email = 'a-valid-email';
-        $full_name = 'Dev User';
 
         $workflow = $this->getMockBuilder(Workflow::class)
             ->disableOriginalConstructor()
@@ -71,23 +75,17 @@ class SetCommandTest extends CommandTestCase
             ->with($this->equalTo($user->id))
             ->willReturn($workflow);
 
-        $workflow->expects($this->once())
-            ->method('checkProgress')
-            ->with()
-            ->willReturn(true);
-
         $this->site->expects($this->once())
             ->method('getName')
             ->willReturn($site_name);
-        $user->expects($this->once())
-            ->method('getName')
-            ->willReturn($full_name);
+        $user->expects($this->never())
+            ->method('getName');
 
         $this->logger->expects($this->once())
             ->method('log')->with(
                 $this->equalTo('notice'),
                 $this->equalTo('Promoted {user} to owner of {site}'),
-                $this->equalTo(['user' => $full_name, 'site' => $site_name,])
+                $this->equalTo(['user' => $email, 'site' => $site_name,])
             );
 
         $out = $this->command->setOwner($site_name, $email);

@@ -6,6 +6,7 @@ use Pantheon\Terminus\Collections\OrganizationSiteMemberships;
 use Pantheon\Terminus\Commands\Org\Site\RemoveCommand;
 use Pantheon\Terminus\Models\OrganizationSiteMembership;
 use Pantheon\Terminus\Models\Workflow;
+use Pantheon\Terminus\UnitTests\Commands\WorkflowProgressTrait;
 
 /**
  * Class RemoveCommandTest
@@ -14,6 +15,8 @@ use Pantheon\Terminus\Models\Workflow;
  */
 class RemoveCommandTest extends OrgSiteCommandTest
 {
+    use WorkflowProgressTrait;
+
     /**
      * @var OrganizationSiteMembership
      */
@@ -51,9 +54,11 @@ class RemoveCommandTest extends OrgSiteCommandTest
             ->willReturn($this->org_site_memberships);
 
         $this->command = new RemoveCommand($this->getConfig());
+        $this->command->setContainer($this->getContainer());
         $this->command->setSites($this->sites);
         $this->command->setLogger($this->logger);
         $this->command->setSession($this->session);
+        $this->expectWorkflowProcessing();
     }
 
     /**
@@ -71,9 +76,6 @@ class RemoveCommandTest extends OrgSiteCommandTest
             ->method('delete')
             ->with()
             ->willReturn($this->workflow);
-        $this->workflow->expects($this->once())
-            ->method('checkProgress')
-            ->willReturn(true);
         $this->site->expects($this->once())
             ->method('getName')
             ->with()

@@ -20,6 +20,7 @@ class WakeCommandTest extends EnvCommandTest
         parent::setUp();
 
         $this->command = new WakeCommand();
+        $this->command->setContainer($this->getContainer());
         $this->command->setSites($this->sites);
         $this->command->setLogger($this->logger);
     }

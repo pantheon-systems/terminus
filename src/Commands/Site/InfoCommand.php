@@ -3,6 +3,7 @@
 namespace Pantheon\Terminus\Commands\Site;
 
 use Consolidation\OutputFormatters\StructuredData\PropertyList;
+use Pantheon\Terminus\Commands\StructuredListTrait;
 
 /**
  * Class InfoCommand
@@ -10,6 +11,8 @@ use Consolidation\OutputFormatters\StructuredData\PropertyList;
  */
 class InfoCommand extends SiteCommand
 {
+    use StructuredListTrait;
+
     /**
      * Displays a site's information.
      *
@@ -23,15 +26,16 @@ class InfoCommand extends SiteCommand
      *     label: Label
      *     created: Created
      *     framework: Framework
+     *     region: Region
      *     organization: Organization
-     *     service_level: Service Level
+     *     plan_name: Plan
      *     max_num_cdes: Max Multidevs
      *     upstream: Upstream
-     *     php_version: PHP Version
      *     holder_type: Holder Type
      *     holder_id: Holder ID
      *     owner: Owner
      *     frozen: Is Frozen?
+     *     last_frozen_at: Date Last Frozen
      * @return PropertyList
      *
      * @param string $site The name or UUID of a site to retrieve information on
@@ -40,6 +44,6 @@ class InfoCommand extends SiteCommand
      */
     public function info($site)
     {
-        return new PropertyList($this->sites->get($site)->serialize());
+        return $this->getPropertyList($this->sites->get($site));
     }
 }

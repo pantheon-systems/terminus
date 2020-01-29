@@ -6,6 +6,7 @@ use Pantheon\Terminus\Commands\HTTPS\RemoveCommand;
 use Pantheon\Terminus\Models\Workflow;
 use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
 use Pantheon\Terminus\Exceptions\TerminusException;
+use Pantheon\Terminus\UnitTests\Commands\WorkflowProgressTrait;
 
 /**
  * Class DeleteCommandTest
@@ -14,6 +15,8 @@ use Pantheon\Terminus\Exceptions\TerminusException;
  */
 class RemoveCommandTest extends CommandTestCase
 {
+    use WorkflowProgressTrait;
+
     /**
      * @inheritdoc
      */
@@ -22,8 +25,10 @@ class RemoveCommandTest extends CommandTestCase
         parent::setUp();
 
         $this->command = new RemoveCommand();
+        $this->command->setContainer($this->getContainer());
         $this->command->setSites($this->sites);
         $this->command->setLogger($this->logger);
+        $this->expectWorkflowProcessing();
     }
 
     /**
@@ -35,7 +40,6 @@ class RemoveCommandTest extends CommandTestCase
             ->disableOriginalConstructor()
             ->getMock();
         // workflow succeeded
-        $workflow->expects($this->once())->method('checkProgress')->willReturn(true);
         $workflow->expects($this->once())->method('getMessage')->willReturn('successful workflow');
 
         $this->environment->expects($this->once())

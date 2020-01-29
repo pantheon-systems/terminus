@@ -17,27 +17,23 @@ use Pantheon\Terminus\Friends\ProfileInterface;
 use Pantheon\Terminus\Friends\ProfileTrait;
 use Pantheon\Terminus\Friends\SitesInterface;
 use Pantheon\Terminus\Friends\SitesTrait;
-use Robo\Common\ConfigAwareTrait;
-use Robo\Contract\ConfigAwareInterface;
 
 /**
  * Class User
  * @package Pantheon\Terminus\Models
  */
 class User extends TerminusModel implements
-    ConfigAwareInterface,
     ContainerAwareInterface,
     OrganizationsInterface,
     ProfileInterface,
     SitesInterface
 {
-    use ConfigAwareTrait;
     use ContainerAwareTrait;
     use OrganizationsTrait;
     use ProfileTrait;
     use SitesTrait;
 
-    public static $pretty_name = 'user';
+    const PRETTY_NAME = 'user';
     /**
      * @var string
      */

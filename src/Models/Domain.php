@@ -2,6 +2,9 @@
 
 namespace Pantheon\Terminus\Models;
 
+use League\Container\ContainerAwareInterface;
+use League\Container\ContainerAwareTrait;
+use Pantheon\Terminus\Collections\DNSRecords;
 use Pantheon\Terminus\Friends\EnvironmentInterface;
 use Pantheon\Terminus\Friends\EnvironmentTrait;
 
@@ -9,11 +12,17 @@ use Pantheon\Terminus\Friends\EnvironmentTrait;
  * Class Domain
  * @package Pantheon\Terminus\Models
  */
-class Domain extends TerminusModel implements EnvironmentInterface
+class Domain extends TerminusModel implements ContainerAwareInterface, EnvironmentInterface
 {
+    use ContainerAwareTrait;
     use EnvironmentTrait;
 
-    public static $pretty_name = 'domain';
+    /**
+     * @var DNSRecords
+     */
+    private $dns_records;
+
+    const PRETTY_NAME = 'domain';
     /**
      * @var string
      */
@@ -30,20 +39,33 @@ class Domain extends TerminusModel implements EnvironmentInterface
     }
 
     /**
+     * @return DNSRecords
+     */
+    public function getDNSRecords()
+    {
+        if (empty($this->dns_records)) {
+            $this->dns_records = $this->getContainer()->get(
+                DNSRecords::class,
+                [['data' => $this->get('dns_status_details')->dns_records, 'domain' => $this,],]
+            );
+        }
+        return $this->dns_records;
+    }
+
+    /**
      * Formats Domain object into an associative array for output
      *
      * @return array $data associative array of data for output
      */
     public function serialize()
     {
-        $data = [
-            'domain' => $this->id,
-            'dns_zone_name' => $this->get('dns_zone_name'),
-            'environment' => $this->get('environment'),
-            'site_id' => $this->get('site_id'),
-            'key' => $this->get('key'),
-            'deletable' => $this->get('deletable'),
+        return [
+            'id' => $this->id,
+            'type' => $this->get('type'),
+            'status' => in_array($this->get('status'), ['ok', 'okay',]) ? 'OK' : $this->get('status'),
+            'status_message' => $this->get('status_message'),
+            'deletable' => (boolean)$this->get('deletable'),
+            'primary' => (boolean)$this->get('primary'),
         ];
-        return $data;
     }
 }

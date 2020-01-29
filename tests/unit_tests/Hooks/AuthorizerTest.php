@@ -8,13 +8,14 @@ use Pantheon\Terminus\Exceptions\TerminusException;
 use Pantheon\Terminus\Hooks\Authorizer;
 use Pantheon\Terminus\Models\SavedToken;
 use Pantheon\Terminus\Session\Session;
+use Pantheon\Terminus\UnitTests\TerminusTestCase;
 
 /**
  * Class AuthorizerTest
  * Testing class for Pantheon\Terminus\Hooks\Authorizer
  * @package Pantheon\Terminus\UnitTests\Hooks
  */
-class AuthorizerTest extends \PHPUnit_Framework_TestCase
+class AuthorizerTest extends TerminusTestCase
 {
     /**
      * @var Authorizer

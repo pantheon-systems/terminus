@@ -4,20 +4,22 @@ namespace Pantheon\Terminus\UnitTests\Commands;
 
 use League\Container\Container;
 use Pantheon\Terminus\Config\TerminusConfig;
-use Psr\Log\NullLogger;
-use Symfony\Component\Console\Input\ArrayInput;
-use Symfony\Component\Console\Input\Input;
-use Symfony\Component\Console\Output\OutputInterface;
 use Pantheon\Terminus\Collections\Environments;
 use Pantheon\Terminus\Collections\Sites;
 use Pantheon\Terminus\Models\Environment;
 use Pantheon\Terminus\Models\Site;
+use Pantheon\Terminus\Style\TerminusStyle;
+use Pantheon\Terminus\UnitTests\TerminusTestCase;
+use Psr\Log\NullLogger;
+use Symfony\Component\Console\Input\ArrayInput;
+use Symfony\Component\Console\Input\Input;
+use Symfony\Component\Console\Output\OutputInterface;
 
 /**
  * Class CommandTestCase
  * @package Pantheon\Terminus\UnitTests\Commands
  */
-abstract class CommandTestCase extends \PHPUnit_Framework_TestCase
+abstract class CommandTestCase extends TerminusTestCase
 {
     /**
      * @var TerminusConfig
@@ -55,6 +57,10 @@ abstract class CommandTestCase extends \PHPUnit_Framework_TestCase
      * @var Sites
      */
     protected $sites;
+    /**
+     * @var TerminusStyle
+     */
+    protected $style;
 
     /**
      * @return TerminusConfig
@@ -106,11 +112,18 @@ abstract class CommandTestCase extends \PHPUnit_Framework_TestCase
     protected function setUp()
     {
         if (!$this->config) {
-            $this->config = new TerminusConfig();
+            $this->setConfig(
+                $this->getMockBuilder(TerminusConfig::class)
+                    ->disableOriginalConstructor()
+                    ->getMock()
+            );
         }
-
         if (!$this->container) {
-            $this->container = new Container();
+            $this->setContainer(
+                $this->getMockBuilder(Container::class)
+                    ->disableOriginalConstructor()
+                    ->getMock()
+            );
         }
 
         // These are not used by every test but are useful for SiteAwareInterface commands. Which is a lot of them.
@@ -126,6 +139,7 @@ abstract class CommandTestCase extends \PHPUnit_Framework_TestCase
         $this->environments = $this->getMockBuilder(Environments::class)
             ->disableOriginalConstructor()
             ->getMock();
+        $this->environments->method('getCollectedClass')->willReturn(Environment::class);
 
         $this->environments->method('get')
             ->willReturn($this->environment);
@@ -146,9 +160,14 @@ abstract class CommandTestCase extends \PHPUnit_Framework_TestCase
         $this->sites = $this->getMockBuilder(Sites::class)
             ->disableOriginalConstructor()
             ->getMock();
+        $this->sites->method('getCollectedClass')->willReturn(Site::class);
 
         $this->sites->method('get')
             ->willReturn($this->site);
+
+        $this->output = $this->getMockBuilder(OutputInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
 
         // A lot of commands output to a logger.
         // To use this call `$command->setLogger($this->logger);` after you create your command to test.
@@ -162,19 +181,17 @@ abstract class CommandTestCase extends \PHPUnit_Framework_TestCase
      *
      * @deprecated 1.0.1 This is a test for the incorrect way to do this and will be removed in the future.
      *
-     * @param bool $confirm Whether or not to respond affirmatively at the prompt
-     *
      * @todo Remove this when removing TerminusCommand::confirm()
      */
-    protected function expectConfirmation($confirm = true)
+    protected function expectConfirmation()
     {
         $this->input->expects($this->once())
             ->method('hasOption')
-            ->with($this->equalTo('yes'))
+            ->with('yes')
             ->willReturn(true);
         $this->input->expects($this->once())
             ->method('getOption')
-            ->with($this->equalTo('yes'))
-            ->willReturn($confirm);
+            ->with('yes')
+            ->willReturn(true);
     }
 }

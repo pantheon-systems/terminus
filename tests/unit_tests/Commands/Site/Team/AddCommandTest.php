@@ -3,6 +3,7 @@
 namespace Pantheon\Terminus\UnitTests\Commands\Site\Team;
 
 use Pantheon\Terminus\Commands\Site\Team\AddCommand;
+use Pantheon\Terminus\UnitTests\Commands\WorkflowProgressTrait;
 
 /**
  * Class AddCommandTest
@@ -11,6 +12,8 @@ use Pantheon\Terminus\Commands\Site\Team\AddCommand;
  */
 class AddCommandTest extends TeamCommandTest
 {
+    use WorkflowProgressTrait;
+
     /**
      * @var string
      */
@@ -26,17 +29,15 @@ class AddCommandTest extends TeamCommandTest
         $this->message = 'message';
 
         $this->workflow->expects($this->once())
-            ->method('checkProgress')
-            ->with()
-            ->willReturn(true);
-        $this->workflow->expects($this->once())
             ->method('getMessage')
             ->with()
             ->willReturn($this->message);
 
         $this->command = new AddCommand($this->getConfig());
+        $this->command->setContainer($this->getContainer());
         $this->command->setLogger($this->logger);
         $this->command->setSites($this->sites);
+        $this->expectWorkflowProcessing();
     }
 
     /**

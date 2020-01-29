@@ -9,7 +9,7 @@ namespace Pantheon\Terminus\Models;
 class NewRelic extends AddOnModel
 {
 
-    public static $pretty_name = 'New Relic';
+    const PRETTY_NAME = 'New Relic';
     /**
      * @var string
      */
@@ -51,7 +51,10 @@ class NewRelic extends AddOnModel
         return [
             'name' => $name,
             'status' => $this->get('status'),
-            'subscribed' => date($this->getConfig()->get('date_format'), strtotime($this->get('subscription')->starts_on)),
+            'subscribed' => date(
+                $this->getConfig()->get('date_format'),
+                strtotime($this->get('subscription')->starts_on)
+            ),
             'state' => $this->get('primary admin')->state,
         ];
     }

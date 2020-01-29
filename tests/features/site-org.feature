@@ -32,7 +32,25 @@ Feature: Managing site organizational memberships
     Removed supporting organization
     """
 
-  @vcr site-org-list.yml
+  @vcr site-org-remove.yml
   Scenario: Listing the supporting organizations of a site
     When I run "terminus site:org:list [[test_site_name]]"
-    Then I should get one of the following: "[[organization_name]], This site has no supporting organizations"
+    Then I should not see a warning
+    And I should see a table with rows like:
+    """
+        Name
+        ID
+    """
+    And that table should have 1 row
+    And I should get: "[[organization_name]]"
+
+  @vcr site-org-list-empty.yml
+  Scenario: Listing the supporting organizations of a site
+    When I run "terminus site:org:list [[test_site_name]]"
+    Then I should get the warning: "This site has no supporting organizations."
+    And I should see a table with rows like:
+    """
+        Name
+        ID
+    """
+    And that table should have no rows

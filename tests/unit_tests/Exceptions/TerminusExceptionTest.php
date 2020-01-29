@@ -3,13 +3,14 @@
 namespace Pantheon\Terminus\UnitTests\Exceptions;
 
 use Pantheon\Terminus\Exceptions\TerminusException;
+use Pantheon\Terminus\UnitTests\TerminusTestCase;
 
 /**
  * Class TerminusExceptionTest
  * Testing class for Pantheon\Terminus\Exceptions\TerminusException
  * @package Pantheon\Terminus\UnitTests\Exceptions
  */
-class TerminusExceptionTest extends \PHPUnit_Framework_TestCase
+class TerminusExceptionTest extends TerminusTestCase
 {
     /**
      * Tests the getReplacements function
@@ -43,6 +44,20 @@ class TerminusExceptionTest extends \PHPUnit_Framework_TestCase
         $raw_message = '{key} is a key';
         $replacements = ['key' => 'value',];
         $expected_message = 'value is a key';
+        $exception = new TerminusException($raw_message, $replacements);
+
+        $out = $exception->getMessage();
+        $this->assertEquals($out, $expected_message);
+    }
+
+    /**
+     * Indirectly tests the interpolateString function when the message is an array
+     */
+    public function testInterpolateStringWithArray()
+    {
+        $raw_message = ['{key} is a', 'key'];
+        $replacements = ['key' => 'value',];
+        $expected_message = 'value is a' . PHP_EOL . 'key';
         $exception = new TerminusException($raw_message, $replacements);
 
         $out = $exception->getMessage();

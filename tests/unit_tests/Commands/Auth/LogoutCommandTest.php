@@ -45,11 +45,11 @@ class LogoutCommandTest extends AuthTest
 
         $tokens = $this->getMockBuilder(SavedTokens::class)
           ->disableOriginalConstructor()
-          ->setMethods(['getMembers'])
+          ->setMethods(['all'])
           ->getMock();
         $tokens->expects($this->any())
-          ->method('getMembers')
-          ->willReturn([$token, $token2]);
+          ->method('all')
+          ->willReturn([$token, $token2,]);
 
         $this->session->expects($this->any())
           ->method('getTokens')

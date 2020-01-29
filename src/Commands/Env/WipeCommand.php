@@ -3,6 +3,7 @@
 namespace Pantheon\Terminus\Commands\Env;
 
 use Pantheon\Terminus\Commands\TerminusCommand;
+use Pantheon\Terminus\Commands\WorkflowProcessingTrait;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 
@@ -14,6 +15,7 @@ use Pantheon\Terminus\Site\SiteAwareTrait;
 class WipeCommand extends TerminusCommand implements SiteAwareInterface
 {
     use SiteAwareTrait;
+    use WorkflowProcessingTrait;
 
     /**
      * Deletes all files and database content in the environment.
@@ -42,9 +44,7 @@ class WipeCommand extends TerminusCommand implements SiteAwareInterface
             'Wiping the "{env}" environment of "{site}"',
             ['site' => $site->get('name'), 'env' => $env->id,]
         );
-        while (!$workflow->checkProgress()) {
-            // @TODO: Add Symfony progress bar to indicate that something is happening.
-        }
+        $this->processWorkflow($workflow);
         $this->log()->notice($workflow->getMessage());
     }
 }

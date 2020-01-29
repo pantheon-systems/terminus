@@ -5,13 +5,14 @@ namespace Pantheon\Terminus\UnitTests\Friends\Site;
 use Pantheon\Terminus\Collections\UserSiteMemberships;
 use Pantheon\Terminus\Models\Site;
 use Pantheon\Terminus\Models\UserSiteMembership;
+use Pantheon\Terminus\UnitTests\TerminusTestCase;
 
 /**
  * Class PluralTest
  * Testing class for Pantheon\Terminus\Friends\SitesTrait & Pantheon\Terminus\Friends\SitesInterface
  * @package Pantheon\Terminus\UnitTests\Friends\Site
  */
-class PluralTest extends \PHPUnit_Framework_TestCase
+class PluralTest extends TerminusTestCase
 {
     /**
      * @var UserSiteMemberships

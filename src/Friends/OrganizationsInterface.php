@@ -19,4 +19,9 @@ interface OrganizationsInterface
      * @return Organization[] Returns an array of organizations to which this model belongs
      */
     public function getOrganizations();
+
+    /**
+     * @return array
+     */
+    public function serialize();
 }
