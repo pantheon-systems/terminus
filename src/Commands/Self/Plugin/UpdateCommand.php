@@ -7,7 +7,6 @@ use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
 
 /**
  * Manage Terminus plugins.
- *
  * @package Pantheon\Terminus\Commands\Self\Plugin
  */
 class UpdateCommand extends PluginBaseCommand
@@ -30,7 +29,7 @@ class UpdateCommand extends PluginBaseCommand
         // @TODO: Add the ability to prompt for plugins to update.
 
         if (empty($plugins)) {
-            $plugins = array('all');
+            $plugins = ['all',];
         }
 
         if ($plugins[0] == 'all') {
@@ -60,7 +59,7 @@ class UpdateCommand extends PluginBaseCommand
             $message = "{$plugin} is not installed.";
             throw new TerminusNotFoundException($message);
         }
-        $messages = array();
+        $messages = [];
         $message = "Updating {$plugin}...";
         $this->log()->notice($message);
         $method = $this->getInstallMethod($plugin);

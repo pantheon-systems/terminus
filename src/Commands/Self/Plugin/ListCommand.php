@@ -6,7 +6,6 @@ use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
 
 /**
  * Manage Terminus plugins.
- *
  * @package Pantheon\Terminus\Commands\Self\Plugin
  */
 class ListCommand extends PluginBaseCommand
@@ -26,7 +25,7 @@ class ListCommand extends PluginBaseCommand
      */
     public function show()
     {
-        $rows = array();
+        $rows = [];
         $plugins_dir = $this->getPluginDir();
         $plugins = $this->getPluginProjects($plugins_dir);
         if (!empty($plugins[0])) {

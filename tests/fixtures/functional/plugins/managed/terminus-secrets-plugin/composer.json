@@ -8,7 +8,7 @@
     },
     "extra": {
         "terminus": {
-            "compatible-version": "^0 || ^1"
+            "compatible-version": "^0 || ^1 || ^2"
         }
     }
 }
