@@ -4,9 +4,9 @@ Feature: Search for plugins
   I need to be able to search for custom terminus plugins on Packagist
 
   Scenario: Show error when no search keyword is provided
-    When I run "terminus plugin:search"
-    Then I should see an error message: Usage: terminus plugin:<search|find|locate> <string>
+    When I run "terminus self:plugin:search"
+    Then I should see an error message: Usage: terminus self:plugin:<search|find|locate> <string>
 
   Scenario: Show result set in table
-    When I run: terminus plugin:search "pantheon-systems/terminus-secrets-plugin"
+    When I run: "terminus self:plugin:search "pantheon-systems/terminus-secrets-plugin"
     Then I should see a table with the headers: "Name, Status, Description"

@@ -1,21 +1,21 @@
 <?php
 
-namespace Pantheon\Terminus\Commands\Plugin;
+namespace Pantheon\Terminus\Commands\Self\Plugin;
 
 use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
 
 /**
  * Manage Terminus plugins.
  *
- * @package Pantheon\Terminus\Commands\Plugin
+ * @package Pantheon\Terminus\Commands\Self\Plugin
  */
 class InstallCommand extends PluginBaseCommand
 {
     /**
      * Install one or more Terminus plugins.
      *
-     * @command plugin:install
-     * @aliases plugin:add
+     * @command self:plugin:install
+     * @aliases self:plugin:add
      *
      * @option array $projects A list of one or more plugin projects to install
      * @option string $stability Version stability such as stable, beta, alpha, etc.

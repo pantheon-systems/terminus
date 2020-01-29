@@ -1,6 +1,6 @@
 <?php
 
-namespace Pantheon\Terminus\Commands\Plugin;
+namespace Pantheon\Terminus\Commands\Self\Plugin;
 
 use Pantheon\Terminus\Commands\TerminusCommand;
 use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
@@ -12,17 +12,10 @@ use Symfony\Component\Finder\Finder;
 /**
  * Class PluginBaseCommand
  * Base class for Terminus commands that deal with sending Plugin commands
- * @package Pantheon\Terminus\Commands\Plugin
+ * @package Pantheon\Terminus\Commands\Self\Plugin
  */
 abstract class PluginBaseCommand extends TerminusCommand
 {
-    /**
-     * PluginBaseCommand constructor.
-     */
-    public function __construct()
-    {
-    }
-
     /**
      * Get plugin projects.
      *

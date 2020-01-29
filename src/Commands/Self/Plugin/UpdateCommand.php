@@ -1,6 +1,6 @@
 <?php
 
-namespace Pantheon\Terminus\Commands\Plugin;
+namespace Pantheon\Terminus\Commands\Self\Plugin;
 
 use Composer\Semver\Comparator;
 use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
@@ -8,17 +8,15 @@ use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
 /**
  * Manage Terminus plugins.
  *
- * @package Pantheon\Terminus\Commands\Plugin
+ * @package Pantheon\Terminus\Commands\Self\Plugin
  */
 class UpdateCommand extends PluginBaseCommand
 {
-
     /**
      * Update one or more Terminus plugins.
      *
-     *
-     * @command plugin:update
-     * @aliases plugin:upgrade plugin:up
+     * @command self:plugin:update
+     * @aliases self:plugin:upgrade self:plugin:up
      *
      * @option array $plugins A list of one or more installed plugins to update
      *

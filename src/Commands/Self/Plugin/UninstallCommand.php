@@ -1,21 +1,21 @@
 <?php
 
-namespace Pantheon\Terminus\Commands\Plugin;
+namespace Pantheon\Terminus\Commands\Self\Plugin;
 
 use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
 
 /**
  * Manage Terminus plugins.
  *
- * @package Pantheon\Terminus\Commands\Plugin
+ * @package Pantheon\Terminus\Commands\Self\Plugin
  */
 class UninstallCommand extends PluginBaseCommand
 {
     /**
      * Remove one or more Terminus plugins.
      *
-     * @command plugin:uninstall
-     * @aliases plugin:remove plugin:delete
+     * @command self:plugin:uninstall
+     * @aliases self:plugin:remove self:plugin:rm self:plugin:delete
      *
      * @option array $plugins A list of one or more installed plugins to remove
      *

@@ -1,21 +1,21 @@
 <?php
 
-namespace Pantheon\Terminus\Commands\Plugin;
+namespace Pantheon\Terminus\Commands\Self\Plugin;
 
 use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
 
 /**
  * Manage Terminus plugins.
  *
- * @package Pantheon\Terminus\Commands\Plugin
+ * @package Pantheon\Terminus\Commands\Self\Plugin
  */
-class ShowCommand extends PluginBaseCommand
+class ListCommand extends PluginBaseCommand
 {
     /**
      * List all installed Terminus plugins.
      *
-     * @command plugin:show
-     * @aliases plugin:list plugin:display
+     * @command self:plugin:list
+     * @aliases self:plugins
      *
      * @field-labels
      *   name: Name

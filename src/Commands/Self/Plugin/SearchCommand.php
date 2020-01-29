@@ -1,6 +1,6 @@
 <?php
 
-namespace Pantheon\Terminus\Commands\Plugin;
+namespace Pantheon\Terminus\Commands\Self\Plugin;
 
 use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
 use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
@@ -8,15 +8,15 @@ use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
 /**
  * Manage Terminus plugins.
  *
- * @package Pantheon\Terminus\Commands\Plugin
+ * @package Pantheon\Terminus\Commands\Self\Plugin
  */
 class SearchCommand extends PluginBaseCommand
 {
     /**
      * Search for available Terminus plugins.
      *
-     * @command plugin:search
-     * @aliases plugin:find plugin:locate
+     * @command self:plugin:search
+     * @aliases self:plugin:find self:plugin:locate
      *
      * @option string $keyword A search string used to query for plugins. Example: terminus plugin:search "Terminus plugin".
      *
