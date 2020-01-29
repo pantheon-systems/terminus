@@ -92,13 +92,20 @@ class UpdateCommand extends PluginBaseCommand
                     $terminus_major_version = $this->getTerminusMajorVersion();
                     // Backup the plugin directory, just in case.
                     $datetime = date('YmdHi', time());
-                    $backup_directory = $plugins_dir . '..' . DIRECTORY_SEPARATOR . 'backups' . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . $project . DIRECTORY_SEPARATOR . $datetime;
-                    exec("mkdir -p {$backup_directory} && tar czvf {$backup_directory}" . DIRECTORY_SEPARATOR . "backup.tar.gz \"{$plugin_dir}\"", $backup_messages);
+                    $backup_directory = $plugins_dir . '..' . DIRECTORY_SEPARATOR . 'backups' . DIRECTORY_SEPARATOR
+                        . 'plugins' . DIRECTORY_SEPARATOR . $project . DIRECTORY_SEPARATOR . $datetime;
+                    exec(
+                        "mkdir -p {$backup_directory} && tar czvf {$backup_directory}"
+                        . DIRECTORY_SEPARATOR . "backup.tar.gz \"{$plugin_dir}\"",
+                        $backup_messages
+                    );
                     // Create a new project via Composer.
-                    $composer_command = "composer create-project --prefer-source --keep-vcs -n -d {$plugins_dir} {$project}:~{$terminus_major_version}";
+                    $composer_command = "composer create-project --prefer-source --keep-vcs -n -d "
+                        . "{$plugins_dir} {$project}:~{$terminus_major_version}";
                     exec("rm -rf \"{$plugin_dir}\" && {$composer_command}", $install_messages);
                     $messages = array_merge($backup_messages, $install_messages);
-                    $messages[] = "Backed up the project to {$backup_directory}" . DIRECTORY_SEPARATOR . "backup.tar.gz.";
+                    $messages[] =
+                        "Backed up the project to {$backup_directory}" . DIRECTORY_SEPARATOR . "backup.tar.gz.";
                 } else {
                     $messages[] = "Unable to update.  {$packagist_url} is not a valid Packagist project.";
                 }
