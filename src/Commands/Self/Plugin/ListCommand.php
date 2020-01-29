@@ -23,7 +23,7 @@ class ListCommand extends PluginBaseCommand
      *
      * @return RowsOfFields
      */
-    public function show()
+    public function listPlugins()
     {
         $rows = [];
         $plugins_dir = $this->getPluginDir();
