@@ -4,9 +4,6 @@ namespace Pantheon\Terminus\Commands\Self\Plugin;
 
 use Pantheon\Terminus\Commands\TerminusCommand;
 use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Finder\Finder;
 
 /**
@@ -24,7 +21,7 @@ abstract class PluginBaseCommand extends TerminusCommand
      */
     protected function getPluginProjects($plugins_dir)
     {
-        $projects = array();
+        $projects = [];
         $finder = new Finder();
         $finder->files()->in($plugins_dir);
         foreach ($finder as $file) {
@@ -189,7 +186,7 @@ abstract class PluginBaseCommand extends TerminusCommand
             $composer_data = @file_get_contents($composer_json);
             return (array)json_decode($composer_data);
         }
-        return array();
+        return [];
     }
 
     /**

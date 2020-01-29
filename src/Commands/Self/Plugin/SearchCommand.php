@@ -7,7 +7,6 @@ use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
 
 /**
  * Manage Terminus plugins.
- *
  * @package Pantheon\Terminus\Commands\Self\Plugin
  */
 class SearchCommand extends PluginBaseCommand
