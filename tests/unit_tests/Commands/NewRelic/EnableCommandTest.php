@@ -42,17 +42,9 @@ class EnableCommandTest extends NewRelicCommandTest
 
         $this->new_relic->expects($this->once())
             ->method('enable')
-            ->with();
-        $this->site->expects($this->once())
-            ->method('converge')
             ->willReturn($workflow);
 
         $this->logger->expects($this->at(0))
-            ->method('log')->with(
-                $this->equalTo('notice'),
-                $this->equalTo('New Relic enabled. Converging bindings.')
-            );
-        $this->logger->expects($this->at(1))
             ->method('log')->with(
                 $this->equalTo('notice'),
                 $this->equalTo('successful workflow')

@@ -15,21 +15,15 @@ Feature: Set HTTPS Certificate
     Converged loadbalancer
     """
 
-  @vcr https-delete.yml
+  @vcr https-remove.yml
   Scenario: Delete an HTTPS Certificate
     When I run "terminus https:remove [[test_site_name]].dev"
-    Then I should get:
-    """
-    Converged containers on "dev"
-    """
+    Then I should get: "Disabled ssl for dev"
 
-  @vcr https-delete-nocert.yml
-  Scenario: Delete a non-existant HTTPS Certificate
+  @vcr https-remove-nocert.yml
+  Scenario: Delete a non-existent HTTPS Certificate
     When I run "terminus https:remove [[test_site_name]].dev"
-    Then I should get:
-    """
-    The dev environment does not have https enabled
-    """
+    Then I should get: "The dev environment does not have https enabled"
 
   @vcr https-info.yml
   Scenario: Retrieve information on an environment's HTTPS setup

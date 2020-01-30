@@ -26,12 +26,19 @@ class RedisTest extends ModelTestCase
     public function setUp()
     {
         parent::setUp();
+        $this->workflow = $this->getMockBuilder(Workflow::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $this->workflows = $this->getMockBuilder(Workflows::class)
+            ->disableOriginalConstructor()
+            ->getMock();
         $this->site = $this->getMockBuilder(Site::class)
             ->disableOriginalConstructor()
             ->getMock();
-
+        $this->site->method('getWorkflows')->willReturn($this->workflows);
         $this->model = new Redis(null, ['site' => $this->site,]);
         $this->model->setRequest($this->request);
+        $this->model->setConfig($this->config);
     }
 
     /**
@@ -69,14 +76,20 @@ class RedisTest extends ModelTestCase
     {
         $this->site->id = 'site_id';
 
-        $this->request->expects($this->once())
-            ->method('request')
+        $this->workflows->expects($this->once())
+            ->method('create')
             ->with(
-                $this->equalTo("sites/{$this->site->id}/settings"),
-                $this->equalTo(['method' => 'put', 'form_params' => ['allow_cacheserver' => false,],])
-            );
-        $out = $this->model->disable();
-        $this->assertNull($out);
+                $this->equalTo('disable_addon'),
+                $this->equalTo([
+                    'params' => [
+                        'addon' => 'cacheserver',
+                    ],
+                ])
+            )
+            ->willReturn($this->workflow);
+
+        $workflow = $this->model->disable();
+        $this->assertEquals($workflow, $this->workflow);
     }
 
     /**
@@ -86,13 +99,19 @@ class RedisTest extends ModelTestCase
     {
         $this->site->id = 'site_id';
 
-        $this->request->expects($this->once())
-            ->method('request')
+        $this->workflows->expects($this->once())
+            ->method('create')
             ->with(
-                $this->equalTo("sites/{$this->site->id}/settings"),
-                $this->equalTo(['method' => 'put', 'form_params' => ['allow_cacheserver' => true,],])
-            );
-        $out = $this->model->enable();
-        $this->assertNull($out);
+                $this->equalTo('enable_addon'),
+                $this->equalTo([
+                    'params' => [
+                        'addon' => 'cacheserver',
+                    ],
+                ])
+            )
+            ->willReturn($this->workflow);
+
+        $workflow = $this->model->enable();
+        $this->assertEquals($workflow, $this->workflow);
     }
 }

@@ -246,16 +246,6 @@ class Environment extends TerminusModel implements ContainerAwareInterface, Site
     }
 
     /**
-     * Converges all bindings on a site
-     *
-     * @return array
-     */
-    public function convergeBindings()
-    {
-        return $this->getWorkflows()->create('converge_environment');
-    }
-
-    /**
      * Counts the number of deployable commits
      *
      * @return int
@@ -370,7 +360,7 @@ class Environment extends TerminusModel implements ContainerAwareInterface, Site
     /**
      * Remove a HTTPS certificate from the environment
      *
-     * @return array $workflow
+     * @return Workflow
      *
      * @throws TerminusException
      */
@@ -379,20 +369,8 @@ class Environment extends TerminusModel implements ContainerAwareInterface, Site
         if (!$this->settings('ssl_enabled')) {
             throw new TerminusException('The {env} environment does not have https enabled.', ['env' => $this->id,]);
         }
-        try {
-            $this->request()->request(
-                "sites/{$this->getSite()->id}/environments/{$this->id}/settings",
-                [
-                    'method' => 'put',
-                    'form_params' => [
-                        'ssl_enabled' => false,
-                        'dedicated_ip' => false,
-                    ],
-                ]
-            );
-        } catch (\Exception $e) {
-            throw new TerminusException('There was an problem disabling https for this environment.');
-        }
+
+        return $this->getWorkflows()->create('disable_ssl');
     }
 
     /**

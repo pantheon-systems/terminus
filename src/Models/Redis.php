@@ -24,30 +24,31 @@ class Redis extends AddOnModel
 
     /**
      * Disables Redis caching
+     *
+     * @return Workflow
      */
     public function disable()
     {
-        $this->setStatus(false);
+        $site = $this->getSite();
+        return $site->getWorkflows()->create('disable_addon', [
+            'params' => [
+                'addon' => 'cacheserver',
+            ]
+        ]);
     }
 
     /**
      * Enables Redis caching
+     *
+     * @return Workflow
      */
     public function enable()
     {
-        $this->setStatus(true);
-    }
-
-    /**
-     * Sets the site's allow_cacheserver setting to this value
-     *
-     * @param boolean $status True to enable Solr, false to disable
-     */
-    private function setStatus($status)
-    {
-        $this->request()->request(
-            "sites/{$this->getSite()->id}/settings",
-            ['method' => 'put', 'form_params' => ['allow_cacheserver' => $status,],]
-        );
+        $site = $this->getSite();
+        return $site->getWorkflows()->create('enable_addon', [
+            'params' => [
+                'addon' => 'cacheserver',
+            ]
+        ]);
     }
 }

@@ -358,15 +358,6 @@ class EnvironmentTest extends ModelTestCase
         $this->assertEquals(array_merge($sftp_expected, $db_expected, $cache_expected, $git_expected), $out);
     }
 
-    public function testConvergeBindings()
-    {
-        $this->setUpWorkflowOperationTest(
-            'convergeBindings',
-            [],
-            'converge_environment'
-        );
-    }
-
     public function testCountDeployableCode()
     {
         $model = $this->getModelWithCommits([]);
@@ -534,56 +525,17 @@ class EnvironmentTest extends ModelTestCase
             ->method('request')
             ->with(
                 'sites/abc/environments/dev/settings',
-                ['method' => 'get',]
-            )
-            ->willReturn(['data' => (object)['ssl_enabled' => true,]]);
-
-        $this->request->expects($this->at(1))
-            ->method('request')
-            ->with(
-                'sites/abc/environments/dev/settings',
-                [
-                    'method' => 'put',
-                    'form_params' => [
-                        'ssl_enabled' => false,
-                        'dedicated_ip' => false,
-                    ],
-                ]
-            )
-            ->willReturn(['data' => 'Ok',]);
-
-        $this->model->disableHttpsCertificate();
-    }
-
-    public function testDisableHttpsCertificateFailed()
-    {
-        $this->request->expects($this->at(0))
-            ->method('request')
-            ->with(
-                'sites/abc/environments/dev/settings',
-                ['method' => 'get',]
+                ['method' => 'get']
             )
             ->willReturn(['data' => (object)['ssl_enabled' => true,],]);
 
-        $this->request->expects($this->at(1))
-            ->method('request')
-            ->with(
-                'sites/abc/environments/dev/settings',
-                [
-                    'method' => 'put',
-                    'form_params' => [
-                        'ssl_enabled' => false,
-                        'dedicated_ip' => false,
-                    ],
-                ]
-            )
-            ->will($this->throwException(new \Exception()));
+        $this->workflows->expects($this->any())
+            ->method('create')
+            ->with('disable_ssl')
+            ->willReturn($this->workflow);
 
-        $this->setExpectedException(
-            TerminusException::class,
-            'There was an problem disabling https for this environment.'
-        );
-        $this->model->disableHttpsCertificate();
+        $workflow = $this->model->disableHttpsCertificate();
+        $this->assertEquals($workflow, $this->workflow);
     }
 
     public function testDisableHttpsCertificateNotEnabled()

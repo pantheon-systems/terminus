@@ -107,16 +107,6 @@ class Site extends TerminusModel implements ContainerAwareInterface, Organizatio
     }
 
     /**
-     * Converges all bindings on a site
-     *
-     * @return Workflow
-     */
-    public function converge()
-    {
-        return $this->getWorkflows()->create('converge_site');
-    }
-
-    /**
      * Provides Pantheon Dashboard URL for this site
      *
      * @return string

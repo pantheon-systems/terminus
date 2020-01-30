@@ -43,19 +43,11 @@ class RemoveCommandTest extends CommandTestCase
         $workflow->expects($this->once())->method('getMessage')->willReturn('successful workflow');
 
         $this->environment->expects($this->once())
-            ->method('disableHttpsCertificate');
-        $this->environment->expects($this->once())
-            ->method('convergeBindings')
+            ->method('disableHttpsCertificate')
             ->willReturn($workflow);
 
 
-        // should display a notice about the mode switch
-        $this->logger->expects($this->at(0))
-            ->method('log')->with(
-                $this->equalTo('notice'),
-                $this->equalTo('HTTPS has been disabled and the environment\'s bindings will now be converged.')
-            );
-        $this->logger->expects($this->at(1))
+        $this->logger->expects($this->once())
             ->method('log')->with(
                 $this->equalTo('notice'),
                 $this->equalTo('successful workflow')

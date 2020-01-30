@@ -11,9 +11,16 @@ All notable changes to this project will be documented in this file. This projec
 ### Changed
 - `Request::download($url, $target)` now accepts directories in addition to files as its `$target` parameter. (#2053)
 - The `backup:get` command's `--to` option now accepts directories in addition to files. (#2053)
+- Return type of `Redis::disable()` has changed to a `Workflow` model. (#2055)
+- Return type of `Redis::enable()` has changed to a `Workflow` model. (#2055)
+- Return type of `Solr::disable()` has changed to a `Workflow` model. (#2055)
+- Return type of `Solr::enable()` has changed to a `Workflow` model. (#2055)
+- Return type of `Environment::disableHttpsCertificate()` has changed to a `Workflow` model. (#2055)
 
 ### Removed
 - Removed now-redundant `Backup::serializeWithURL()` function. Use `Backup::serialize()` instead. (#2042)
+- Removed obsolete `Environment::convergeBindings()` method. (#2055)
+- Removed obsolete `Site::converge()` method. (#2055)
 
 ## 2.3.0 - 2020-01-10
 ### Added
