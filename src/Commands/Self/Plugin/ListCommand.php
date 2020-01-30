@@ -10,6 +10,8 @@ use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
  */
 class ListCommand extends PluginBaseCommand
 {
+    const NO_PLUGINS_MESSAGE = 'You have no plugins installed.';
+
     /**
      * List all installed Terminus plugins.
      *
@@ -20,58 +22,20 @@ class ListCommand extends PluginBaseCommand
      *   name: Name
      *   description: Description
      *   version: Version
+     *   location: Location
      *
      * @return RowsOfFields
      */
     public function listPlugins()
     {
-        $rows = [];
-        $plugins_dir = $this->getPluginDir();
-        $plugins = $this->getPluginProjects($plugins_dir);
-        if (!empty($plugins[0])) {
-            $message = "Plugins are installed in {$plugins_dir}.";
-            $this->log()->notice($message);
-            foreach ($plugins as $plugin) {
-                $plugin_dir = $plugins_dir . $plugin;
-                if (is_dir("$plugin_dir")) {
-                    $name = $plugin;
-                    $description = '';
-                    $version = '';
-                    $composer_info = $this->getComposerInfo($plugin);
-                    if (!empty($composer_info)) {
-                        $project = $composer_info['name'];
-                        $description = $composer_info['description'];
-                        $path = explode('/', $project);
-                        $name = $path[1];
-                        $method = $this->getInstallMethod($plugin);
-                        if ($method == 'git') {
-                            $version = $this->getInstalledVersion($plugin_dir);
-                        } else {
-                            $version = $composer_info['extra']->terminus->{'compatible-version'};
-                        }
-                    }
-                    $rows[] = [
-                        'name'        => $name,
-                        'description' => $description,
-                        'version'     => $version,
-                    ];
-                }
-            }
-        }
+        $plugins = $this->getPluginProjects();
+        asort($plugins);
 
-        if (empty($rows)) {
-            $this->log()->notice('You have no plugins installed.');
-            return false;
+        if (empty($plugins)) {
+            $this->log()->warning(self::NO_PLUGINS_MESSAGE);
         }
-
-        $count = count($rows);
-        $plural = ($count > 1) ? 's' : '';
-        $message = "You have {$count} plugin{$plural} installed."
-            . "Use 'terminus plugin:install <org/project>...' to add more plugins.";
-        $this->log()->notice($message);
-        asort($rows);
 
         // Output the plugin list in table format.
-        return new RowsOfFields($rows);
+        return new RowsOfFields($plugins);
     }
 }
