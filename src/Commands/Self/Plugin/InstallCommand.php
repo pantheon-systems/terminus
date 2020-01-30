@@ -16,7 +16,8 @@ class InstallCommand extends PluginBaseCommand
     const COMPOSER_INSTALL_COMMAND =
         'composer create-project --stability=%s --prefer-source --keep-vcs -n -d %s %s:~%s';
     const INVALID_PROJECT_MESSAGE = '{project} is not a valid Packagist project.';
-    const USAGE_MESSAGE = 'Usage: terminus self:plugin:<install|add> <Packagist project 1> [Packagist project 2] ...';
+    const USAGE_MESSAGE = 'terminus self:plugin:<install|add> <Packagist project 1> [Packagist project 2] ...';
+
 
     /**
      * Install one or more Terminus plugins.
