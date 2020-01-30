@@ -4,6 +4,7 @@ namespace Pantheon\Terminus\Commands\Self\Plugin;
 
 use Pantheon\Terminus\Commands\TerminusCommand;
 use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
+use Pantheon\Terminus\Plugins\PluginDiscovery;
 use Symfony\Component\Finder\Finder;
 
 /**
@@ -16,25 +17,21 @@ abstract class PluginBaseCommand extends TerminusCommand
     /**
      * Get plugin projects.
      *
-     * @param string $plugins_dir Plugins directory
      * @return array Plugin projects
      */
-    protected function getPluginProjects($plugins_dir)
+    protected function getPluginProjects($plugins_dir = '')
     {
-        $projects = [];
-        $finder = new Finder();
-        $finder->files()->in($plugins_dir);
-        foreach ($finder as $file) {
-            $path = $file->getRelativePath();
-            // Get the parent path only.
-            if (!strpos($path, DIRECTORY_SEPARATOR)) {
-                // Make sure the path is unique.
-                if (!in_array($path, $projects)) {
-                    $projects[] = $path;
-                }
-            }
-        }
-        return $projects;
+        return array_map(
+            function($plugin_info) {
+                $data = $plugin_info->getInfo();
+                $data['project'] = $data['name'];
+                list($data['creator'], $data['name']) = explode('/', $data['project']);
+                $data['location'] = $this->getPluginDir() . $data['name'];
+                $data['version'] = $plugin_info->getCompatibleTerminusVersion();
+                return $data;
+            },
+            $this->getContainer()->get(PluginDiscovery::class)->discover()
+        );
     }
 
     /**
