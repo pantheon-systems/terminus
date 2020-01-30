@@ -3,6 +3,7 @@
 namespace Pantheon\Terminus\Commands\Self\Plugin;
 
 use Composer\Semver\Comparator;
+use Consolidation\AnnotatedCommand\CommandData;
 use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
 
 /**
@@ -12,7 +13,12 @@ use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
  */
 class UpdateCommand extends PluginBaseCommand
 {
+    const ALREADY_UP_TO_DATE_MESSAGE = 'Already up-to-date.';
+    const GIT_UPDATE_COMMAND = 'cd %s && git checkout %s';
+    const INVALID_PROJECT_MESSAGE = 'Unable to update. {project} is not a valid Packagist project.';
     const NO_PLUGINS_MESSAGE = 'You have no plugins installed.';
+    const SEMVER_CANNOT_UPDATE_MESSAGE = 'Unable to update. Semver compliance issue with tagged release.';
+    const UPDATING_MESSAGE = 'Updating {project}...';
 
     /**
      * Update one or more Terminus plugins.
@@ -70,36 +76,39 @@ class UpdateCommand extends PluginBaseCommand
     protected function doUpdate($plugin_info)
     {
         $messages = [];
-        $message = "Updating {$plugin_info['project']}...";
-        $this->log()->notice($message);
+        $this->log()->notice(self::UPDATING_MESSAGE, $plugin_info);
         switch ($plugin_info['method']) {
             case 'git':
                 // Compare installed version to the latest release.
-                $installed_version = $this->getInstalledVersion($plugin_dir);
-                $latest_version = $this->getLatestVersion($plugin_dir);
-                if ($installed_version != 'unknown' && $latest_version != 'unknown') {
+                $installed_version = $plugin_info['version'];
+                $latest_version = $plugin_info['latest_version'];
+                if (($installed_version !== self::UNKNOWN_VERSION) && ($latest_version !== self::UNKNOWN_VERSION)) {
                     if (Comparator::greaterThan($latest_version, $installed_version)) {
-                        exec("cd \"$plugin_dir\" && git checkout {$latest_version}", $messages);
+                        exec(
+                            sprintf(self::GIT_UPDATE_COMMAND, $plugin_dir, $latest_version),
+                            $messages
+                        );
                     } else {
-                        $messages[] = "Already up-to-date.";
+                        $messages[] = self::ALREADY_UP_TO_DATE_MESSAGE;
                     }
                 } else {
-                    $messages[] = "Unable to update.  Semver compliance issue with tagged release.";
+                    $messages[] = self::SEMVER_CANNOT_UPDATE_MESSAGE;
                 }
                 break;
 
             case 'composer':
                 // Determine the project name.
-                $composer_info = $this->getComposerInfo($plugin);
-                $project = $composer_info['name'];
-                $packagist_url = "https://packagist.org/packages/{$project}";
-                if ($this->isValidUrl($packagist_url)) {
+                $project = $plugin_info['project'];
+                if ($this->isValidPackagistProject($project)) {
                     // Get the Terminus major version.
                     $terminus_major_version = $this->getTerminusMajorVersion();
                     // Backup the plugin directory, just in case.
                     $datetime = date('YmdHi', time());
-                    $backup_directory = $plugins_dir . '..' . DIRECTORY_SEPARATOR . 'backups' . DIRECTORY_SEPARATOR
-                        . 'plugins' . DIRECTORY_SEPARATOR . $project . DIRECTORY_SEPARATOR . $datetime;
+                    $backup_directory = str_replace(
+                        '/',
+                        DIRECTORY_SEPARATOR,
+                        "$plugins_dir/../backup/plugins/$project/$datetime"
+                    );
                     exec(
                         "mkdir -p {$backup_directory} && tar czvf {$backup_directory}"
                         . DIRECTORY_SEPARATOR . "backup.tar.gz \"{$plugin_dir}\"",
@@ -113,15 +122,33 @@ class UpdateCommand extends PluginBaseCommand
                     $messages[] =
                         "Backed up the project to {$backup_directory}" . DIRECTORY_SEPARATOR . "backup.tar.gz.";
                 } else {
-                    $messages[] = "Unable to update.  {$packagist_url} is not a valid Packagist project.";
+                    $messages[] = self::INVALID_PROJECT_MESSAGE;
                 }
                 break;
 
             default:
-                $messages[] = "Unable to update.  Plugin is not a valid Packagist project.";
+                $messages[] = self::INVALID_PROJECT_MESSAGE;
         }
         foreach ($messages as $message) {
-            $this->log()->notice($message);
+            $this->log()->notice($message, $plugin_info);
         }
+    }
+
+    /**
+     * Check whether a URL is valid.
+     *
+     * @param string $url The URL to check
+     * @return bool True if the URL returns a 200 status, false otherwise
+     */
+    protected function isValidPackagi($url = '')
+    {
+        if (!$url) {
+            return false;
+        }
+        $headers = @get_headers($url);
+        if (!isset($headers[0])) {
+            return false;
+        }
+        return (strpos($headers[0], '200') !== false);
     }
 }

@@ -21,7 +21,9 @@ class ListCommand extends PluginBaseCommand
      * @field-labels
      *   name: Name
      *   description: Description
-     *   version: Version
+     *   version: Installed Version
+     *   latest_version: Latest Version
+     *   compatible_versions: Compatible With
      *   location: Location
      *
      * @return RowsOfFields
