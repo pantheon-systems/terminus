@@ -5,7 +5,6 @@ namespace Pantheon\Terminus\Commands\Self\Plugin;
 use Pantheon\Terminus\Commands\TerminusCommand;
 use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
 use Pantheon\Terminus\Plugins\PluginDiscovery;
-use Symfony\Component\Finder\Finder;
 
 /**
  * Class PluginBaseCommand
@@ -14,6 +13,8 @@ use Symfony\Component\Finder\Finder;
  */
 abstract class PluginBaseCommand extends TerminusCommand
 {
+    const PROJECT_NOT_FOUND_MESSAGE = 'No project or plugin named {project} found.';
+
     /**
      * Get plugin projects.
      *
@@ -32,6 +33,27 @@ abstract class PluginBaseCommand extends TerminusCommand
             },
             $this->getContainer()->get(PluginDiscovery::class)->discover()
         );
+    }
+
+    /**
+     * Get data on a specific installed plugin.
+     *
+     * @param string $project Name of a project or plugin
+     * @return array Plugin projects
+     * @throws TerminusNotFoundException
+     */
+    protected function getPluginProject($project)
+    {
+        $matches = array_filter(
+            $this->getPluginProjects(),
+            function($plugin_data) use ($project) {
+                return in_array($project, [$plugin_data['name'], $plugin_data['project'],]);
+            }
+        );
+        if (empty($matches)) {
+            throw new TerminusNotFoundException(self::PROJECT_NOT_FOUND_MESSAGE, compact('project'));
+        }
+        return array_shift($matches);
     }
 
     /**
@@ -230,5 +252,20 @@ abstract class PluginBaseCommand extends TerminusCommand
             $message = 'Please install git to enable plugin management.';
             throw new TerminusNotFoundException($message);
         }
+    }
+
+    /**
+     * Detects whether a project/plugin is installed.
+     * @param string $project
+     * @return bool
+     */
+    protected function isInstalled($project)
+    {
+        try {
+            $this->getPluginProject($project);
+        } catch (TerminusNotFoundException $e) {
+            return false;
+        }
+        return true;
     }
 }

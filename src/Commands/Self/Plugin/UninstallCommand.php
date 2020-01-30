@@ -5,44 +5,62 @@ namespace Pantheon\Terminus\Commands\Self\Plugin;
 use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
 
 /**
- * Manage Terminus plugins.
+ * Removes Terminus plugins.
  * @package Pantheon\Terminus\Commands\Self\Plugin
+ * @TODO Add the ability to prompt for plugins to remove.
  */
 class UninstallCommand extends PluginBaseCommand
 {
+    const NOT_INSTALLED_MESSAGE = '{project} is not installed.';
+    const SUCCESS_MESSAGE = '{project} was removed successfully.';
+    const UNINSTALL_COMMAND = 'rm -rf %s';
+    const USAGE_MESSAGE = 'terminus self:plugin:<uninstall|remove> <Project 1> [Project 2] ...';
+
     /**
      * Remove one or more Terminus plugins.
      *
      * @command self:plugin:uninstall
      * @aliases self:plugin:remove self:plugin:rm self:plugin:delete
      *
-     * @option array $plugins A list of one or more installed plugins to remove
+     * @param array $projects A list of one or more installed projects or plugins to remove
      *
-     * @usage <plugin-name-1> [plugin-name-2] ...
+     * @usage <project> [project] ... Uninstalls the indicated plugins.
      */
-    public function uninstall(array $plugins)
+    public function uninstall(array $projects)
     {
-        // @TODO: Add the ability to prompt for plugins to remove.
-
-        if (empty($plugins)) {
-            $message = "Usage: terminus plugin:<uninstall|remove|delete>";
-            $message .= " <plugin-name-1> [plugin-name-2] ...";
-            throw new TerminusNotFoundException($message);
-        }
-
-        foreach ($plugins as $plugin) {
-            $plugin_dir = $this->getPluginDir($plugin);
-            if (!is_dir("$plugin_dir")) {
-                $message = "{$plugin} is not installed.";
-                $this->log()->error($message);
-            } else {
-                exec("rm -rf \"$plugin_dir\"", $messages);
+        foreach ($projects as $project) {
+            try {
+                $messages = $this->doUninstallation($this->getPluginProject($project));
                 foreach ($messages as $message) {
                     $this->log()->notice($message);
                 }
-                $message = "{$plugin} was removed successfully.";
-                $this->log()->notice($message);
+                $this->log()->notice(self::SUCCESS_MESSAGE, compact('project'));
+            } catch (TerminusNotFoundException $e) {
+                $this->log()->error(self::NOT_INSTALLED_MESSAGE, compact('project'));
             }
         }
+    }
+
+    /**
+     * Check for minimum plugin command requirements.
+     * @hook validate self:plugin:install
+     */
+    public function validate()
+    {
+        $this->checkRequirements();
+
+        if (empty($commandData->input()->getArgument('projects'))) {
+            throw new TerminusNotFoundException(self::USAGE_MESSAGE);
+        }
+    }
+
+    /**
+     * @param array $project Should have a location property
+     * @return array $messages
+     */
+    private function doUninstallation($project)
+    {
+        exec(sprintf(self::UNINSTALL_COMMAND, $project['location']), $messages);
+        return $messages;
     }
 }

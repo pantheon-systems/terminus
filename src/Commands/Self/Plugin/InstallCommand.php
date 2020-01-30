@@ -12,7 +12,7 @@ use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
  */
 class InstallCommand extends PluginBaseCommand
 {
-    const ALREADY_INSTALLED_MESSAGE = '{plugin} is already installed.';
+    const ALREADY_INSTALLED_MESSAGE = '{project} is already installed.';
     const COMPOSER_INSTALL_COMMAND =
         'composer create-project --stability=%s --prefer-source --keep-vcs -n -d %s %s:~%s';
     const INVALID_PROJECT_MESSAGE = '{project} is not a valid Packagist project.';
@@ -33,16 +33,11 @@ class InstallCommand extends PluginBaseCommand
     public function install(array $projects, $options = ['stability' => 'stable',])
     {
         foreach ($projects as $project) {
-            try {
-                $this->validateProject($project);
-            } catch (TerminusException $e) {
-                $this->log()->notice($e->getMessage());
-            } catch (TerminusNotFoundException $e) {
-                $this->log()->error($e->getMessage());
-            }
-            $messages = $this->doInstallation($project, $options['stability']);
-            foreach ($messages as $message) {
-                $this->log()->notice($message);
+            if ($this->validateProject($project)) {
+                $messages = $this->doInstallation($project, $options['stability']);
+                foreach ($messages as $message) {
+                    $this->log()->notice($message);
+                }
             }
         }
     }
@@ -83,18 +78,22 @@ class InstallCommand extends PluginBaseCommand
 
     /**
      * @param string $project
+     * @return bool
      * @throws TerminusException If the plugin is already installed
      * @throws TerminusNotFoundException If the package is not valid
      */
     private function validateProject($project)
     {
         if (!$this->isValidPackagistProject($project)) {
-            throw new TerminusNotFoundException(self::INVALID_PROJECT_MESSAGE, compact('project'));
+            $this->log()->error(self::INVALID_PROJECT_MESSAGE, compact('project'));
+            return false;
         }
-        $path = explode('/', $project);
-        $plugin = $path[1];
-        if (is_dir($this->getPluginDir() . $plugin)) {
-            throw new TerminusException(self::ALREADY_INSTALLED_MESSAGE, compact('plugin'));
+
+        if ($this->isInstalled($project)) {
+            $this->log()->notice(self::ALREADY_INSTALLED_MESSAGE, compact('project'));
+            return false;
         }
+
+        return true;
     }
 }
