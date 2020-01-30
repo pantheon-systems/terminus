@@ -43,7 +43,7 @@ class UninstallCommand extends PluginBaseCommand
 
     /**
      * Check for minimum plugin command requirements.
-     * @hook validate self:plugin:install
+     * @hook validate self:plugin:uninstall
      */
     public function validate()
     {

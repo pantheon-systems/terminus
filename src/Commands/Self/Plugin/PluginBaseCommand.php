@@ -15,24 +15,30 @@ abstract class PluginBaseCommand extends TerminusCommand
 {
     const PROJECT_NOT_FOUND_MESSAGE = 'No project or plugin named {project} found.';
 
+    private $projects = [];
+
     /**
      * Get plugin projects.
      *
      * @return array Plugin projects
      */
-    protected function getPluginProjects($plugins_dir = '')
+    protected function getPluginProjects()
     {
-        return array_map(
-            function($plugin_info) {
-                $data = $plugin_info->getInfo();
-                $data['project'] = $data['name'];
-                list($data['creator'], $data['name']) = explode('/', $data['project']);
-                $data['location'] = $this->getPluginDir() . $data['name'];
-                $data['version'] = $plugin_info->getCompatibleTerminusVersion();
-                return $data;
-            },
-            $this->getContainer()->get(PluginDiscovery::class)->discover()
-        );
+        if (empty($this->projects)) {
+            $this->projects = array_map(
+                function ($plugin_info) {
+                    $data = $plugin_info->getInfo();
+                    $data['project'] = $data['name'];
+                    list($data['creator'], $data['name']) = explode('/', $data['project']);
+                    $data['location'] = $this->getPluginDir() . $data['name'];
+                    $data['version'] = $plugin_info->getCompatibleTerminusVersion();
+                    $data['method'] = self::getInstallMethod($data['location']);
+                    return $data;
+                },
+                $this->getContainer()->get(PluginDiscovery::class)->discover()
+            );
+        }
+        return $this->projects;
     }
 
     /**
@@ -75,12 +81,11 @@ abstract class PluginBaseCommand extends TerminusCommand
     /**
      * Get the plugin installation method.
      *
-     * @param string Plugin name
+     * @param string $plugin_dir The directory the plugin is installed to
      * @return string Plugin installation method
      */
-    protected function getInstallMethod($plugin)
+    protected static function getInstallMethod($plugin_dir)
     {
-        $plugin_dir = $this->getPluginDir($plugin);
         $git_dir = $plugin_dir . DIRECTORY_SEPARATOR . '.git';
         if (is_dir("$git_dir")) {
             return 'git';

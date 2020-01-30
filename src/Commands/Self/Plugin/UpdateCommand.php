@@ -6,64 +6,73 @@ use Composer\Semver\Comparator;
 use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
 
 /**
- * Manage Terminus plugins.
+ * Updates installed Terminus plugins.
  * @package Pantheon\Terminus\Commands\Self\Plugin
+ * @TODO Add the ability to prompt for plugins to update.
  */
 class UpdateCommand extends PluginBaseCommand
 {
+    const NO_PLUGINS_MESSAGE = 'You have no plugins installed.';
+
     /**
      * Update one or more Terminus plugins.
      *
      * @command self:plugin:update
      * @aliases self:plugin:upgrade self:plugin:up
      *
-     * @option array $plugins A list of one or more installed plugins to update
+     * @param array $plugins A list of one or more installed plugins to update
      *
-     * @usage <plugin-name-1|all> [plugin-name-2] ...
+     * @usage <project|all> [project] ...
      */
-    public function update(array $plugins)
+    public function update(array $projects = ['all',])
     {
-        // Check for minimum plugin command requirements.
-        $this->checkRequirements();
-
-        // @TODO: Add the ability to prompt for plugins to update.
+        $plugins = $this->getPluginProjects();
+        $logger = $this->log();
 
         if (empty($plugins)) {
-            $plugins = ['all',];
+            $logger->warning(self::NO_PLUGINS_MESSAGE);
+            return;
         }
 
-        if ($plugins[0] == 'all') {
-            $plugins_dir = $this->getPluginDir();
-            $plugins = $this->getPluginProjects($plugins_dir);
-            if (empty($plugins[0])) {
-                $message = "You have no plugins installed.";
-                $this->log()->notice($message);
-                return false;
-            }
+        if ($projects[0] !== 'all') {
+            $plugins = array_map(
+                function($project) use ($logger) {
+                    try {
+                        return $this->getPluginProject($project);
+                    } catch (TerminusNotFoundException $e) {
+                        $logger->error($e->getMessage());
+                    }
+                },
+                $projects
+            );
         }
-        foreach ($plugins as $plugin) {
-            $this->updatePlugin($plugin);
+
+        foreach ($plugins as $plugin_info) {
+            $this->doUpdate($plugin_info);
         }
+    }
+
+    /**
+     * Check for minimum plugin command requirements.
+     * @hook validate self:plugin:install
+     * @param CommandData $commandData
+     */
+    public function validate(CommandData $commandData)
+    {
+        $this->checkRequirements();
     }
 
     /**
      * Update a specific plugin.
      *
-     * @param string $plugin Plugin name
+     * @param array $plugin_info Information about the installed plugin
      */
-    protected function updatePlugin($plugin)
+    protected function doUpdate($plugin_info)
     {
-        $plugins_dir = $this->getPluginDir();
-        $plugin_dir = $plugins_dir . $plugin;
-        if (!is_dir("$plugin_dir")) {
-            $message = "{$plugin} is not installed.";
-            throw new TerminusNotFoundException($message);
-        }
         $messages = [];
-        $message = "Updating {$plugin}...";
+        $message = "Updating {$plugin_info['project']}...";
         $this->log()->notice($message);
-        $method = $this->getInstallMethod($plugin);
-        switch ($method) {
+        switch ($plugin_info['method']) {
             case 'git':
                 // Compare installed version to the latest release.
                 $installed_version = $this->getInstalledVersion($plugin_dir);
