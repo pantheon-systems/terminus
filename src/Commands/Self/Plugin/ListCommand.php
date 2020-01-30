@@ -5,7 +5,7 @@ namespace Pantheon\Terminus\Commands\Self\Plugin;
 use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
 
 /**
- * Manage Terminus plugins.
+ * Lists installed Terminus plugins
  * @package Pantheon\Terminus\Commands\Self\Plugin
  */
 class ListCommand extends PluginBaseCommand
