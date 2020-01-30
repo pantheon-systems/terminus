@@ -9,15 +9,15 @@ All notable changes to this project will be documented in this file. This projec
 - New option `no-files` added to `Environments::create` which will skip the duplication of files from the source environment. (#2050)
 
 ### Changed
-- Return type of `Redis::disable()` has changed to a `Workflow` model. (#2XXX)
-- Return type of `Redis::enable()` has changed to a `Workflow` model. (#2XXX)
-- Return type of `Solr::disable()` has changed to a `Workflow` model. (#2XXX)
-- Return type of `Solr::enable()` has changed to a `Workflow` model. (#2XXX)
-- Return type of `Environment::disableHttpsCertificate()` has changed to a `Workflow` model. (#2XXX)
+- Return type of `Redis::disable()` has changed to a `Workflow` model. (#2055)
+- Return type of `Redis::enable()` has changed to a `Workflow` model. (#2055)
+- Return type of `Solr::disable()` has changed to a `Workflow` model. (#2055)
+- Return type of `Solr::enable()` has changed to a `Workflow` model. (#2055)
+- Return type of `Environment::disableHttpsCertificate()` has changed to a `Workflow` model. (#2055)
 
 ### Removed
-- Removed obsolete `Environment::convergeBindings()` method. (#2XXX)
-- Removed obsolete `Site::converge()` method. (#2XXX)
+- Removed obsolete `Environment::convergeBindings()` method. (#2055)
+- Removed obsolete `Site::converge()` method. (#2055)
 
 ## 2.3.0 - 2020-01-10
 ### Added
