@@ -3,7 +3,6 @@
 namespace Pantheon\Terminus\Commands\Self\Plugin;
 
 use Consolidation\AnnotatedCommand\CommandData;
-use Pantheon\Terminus\Exceptions\TerminusException;
 use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
 
 /**
@@ -79,8 +78,6 @@ class InstallCommand extends PluginBaseCommand
     /**
      * @param string $project
      * @return bool
-     * @throws TerminusException If the plugin is already installed
-     * @throws TerminusNotFoundException If the package is not valid
      */
     private function validateProject($project)
     {
