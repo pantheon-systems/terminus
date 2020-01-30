@@ -8,6 +8,13 @@ All notable changes to this project will be documented in this file. This projec
 - New option `no-db` added to `Environments::create` which will skip the duplication of the database from the source environment. (#2050)
 - New option `no-files` added to `Environments::create` which will skip the duplication of files from the source environment. (#2050)
 
+### Changed
+- `Request::download($url, $target)` now accepts directories in addition to files as its `$target` parameter. (#2053)
+- The `backup:get` command's `--to` option now accepts directories in addition to files. (#2053)
+
+### Removed
+- Removed now-redundant `Backup::serializeWithURL()` function. Use `Backup::serialize()` instead. (#2042)
+
 ## 2.3.0 - 2020-01-10
 ### Added
 - New const `TERMINUS_HOST_CERT` added to permit use of SSL certificates while making requests. (#2024)
