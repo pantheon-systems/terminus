@@ -7,6 +7,7 @@ All notable changes to this project will be documented in this file. This projec
 - New option `--no-files` added to `multidev:create` which will skip the duplication of files from the source environment. (#2050)
 - New option `no-db` added to `Environments::create` which will skip the duplication of the database from the source environment. (#2050)
 - New option `no-files` added to `Environments::create` which will skip the duplication of files from the source environment. (#2050)
+- New method `Upstream::hasCode()` returns a bool indicating whether the environment has code or not. (#2056)
 
 ### Changed
 - `Request::download($url, $target)` now accepts directories in addition to files as its `$target` parameter. (#2053)
@@ -21,6 +22,10 @@ All notable changes to this project will be documented in this file. This projec
 - Removed now-redundant `Backup::serializeWithURL()` function. Use `Backup::serialize()` instead. (#2042)
 - Removed obsolete `Environment::convergeBindings()` method. (#2055)
 - Removed obsolete `Site::converge()` method. (#2055)
+
+### Fixed
+- PHP notice is not emitted when using `upstream:updates:status` on an environment without code. (#2056)
+- PHP notice is not emitted when using `UpstreamStatus::hasUpdates()` on an environment without code. (#2056)
 
 ## 2.3.0 - 2020-01-10
 ### Added

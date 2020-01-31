@@ -64,6 +64,15 @@ class UpstreamStatusTest extends ModelTestCase
     }
 
     /**
+     * Tests UpstreamStatus::getStatus() when the status is current because there's no code
+     */
+    public function testGetStatusCurrentBecauseNoCode()
+    {
+        $this->expectRequest((object)['has_code' => false,]);
+        $this->assertEquals('current', $this->model->getStatus());
+    }
+
+    /**
      * Tests UpstreamStatus::getStatus() when the status is outdated
      */
     public function testGetStatusOutdated()
@@ -88,12 +97,20 @@ class UpstreamStatusTest extends ModelTestCase
      */
     public function testHasNoUpdates()
     {
+        $parent_environment = $this->getMockBuilder(Environment::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $parent_environment->id = 'test';
+
         $return_data = (object)[
+            'has_code' => true,
             $this->environment->id => (object)['is_up_to_date_with_upstream' => true,],
-            'test' => (object)['is_up_to_date_with_upstream' => true,],
+            $parent_environment->id => (object)['is_up_to_date_with_upstream' => true,],
         ];
         $this->expectIsDevelopment(false);
         $this->expectRequest($return_data);
+        $this->environment->method('getParentEnvironment')->willReturn($parent_environment);
+
         $this->assertFalse($this->model->hasUpdates());
     }
 
@@ -103,6 +120,7 @@ class UpstreamStatusTest extends ModelTestCase
     public function testHasUpdates()
     {
         $return_data = (object)[
+            'has_code' => true,
             $this->environment->id => (object)['is_up_to_date_with_upstream' => false,],
             'test' => (object)['is_up_to_date_with_upstream' => true,],
         ];
@@ -116,12 +134,21 @@ class UpstreamStatusTest extends ModelTestCase
      */
     public function testHasUpdatesFromParent()
     {
+        $parent_environment = $this->getMockBuilder(Environment::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $parent_environment->id = 'test';
+
         $return_data = (object)[
+            'has_code' => true,
             $this->environment->id => (object)['is_up_to_date_with_upstream' => true,],
-            'test' => (object)['is_up_to_date_with_upstream' => false,],
+            $parent_environment->id => (object)['is_up_to_date_with_upstream' => false,],
         ];
         $this->expectIsDevelopment(false);
         $this->expectRequest($return_data);
+
+        $this->environment->method('getParentEnvironment')->willReturn($parent_environment);
+
         $this->assertTrue($this->model->hasUpdates());
     }
 
@@ -149,7 +176,7 @@ class UpstreamStatusTest extends ModelTestCase
     private function expectIsBehind()
     {
         $this->expectIsDevelopment();
-        $this->expectRequest((object)['behind' => 1,]);
+        $this->expectRequest((object)['behind' => 1, 'has_code' => true,]);
     }
 
     /**
@@ -158,7 +185,7 @@ class UpstreamStatusTest extends ModelTestCase
     private function expectIsCurrent()
     {
         $this->expectIsDevelopment();
-        $this->expectRequest((object)['behind' => 0,]);
+        $this->expectRequest((object)['behind' => 0, 'has_code' => true,]);
     }
 
     /**
