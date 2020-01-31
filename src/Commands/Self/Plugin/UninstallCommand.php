@@ -2,7 +2,9 @@
 
 namespace Pantheon\Terminus\Commands\Self\Plugin;
 
+use Consolidation\AnnotatedCommand\CommandData;
 use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
+use Pantheon\Terminus\Plugins\PluginInfo;
 
 /**
  * Removes Terminus plugins.
@@ -30,7 +32,7 @@ class UninstallCommand extends PluginBaseCommand
     {
         foreach ($projects as $project) {
             try {
-                $messages = $this->doUninstallation($this->getPluginProject($project));
+                $messages = $this->doUninstallation($this->getPlugin($project));
                 foreach ($messages as $message) {
                     $this->log()->notice($message);
                 }
@@ -44,8 +46,10 @@ class UninstallCommand extends PluginBaseCommand
     /**
      * Check for minimum plugin command requirements.
      * @hook validate self:plugin:uninstall
+     * @param CommandData $commandData
+     * @throws TerminusNotFoundException
      */
-    public function validate()
+    public function validate(CommandData $commandData)
     {
         $this->checkRequirements();
 
@@ -55,12 +59,12 @@ class UninstallCommand extends PluginBaseCommand
     }
 
     /**
-     * @param array $project Should have a location property
+     * @param PluginInfo $plugin
      * @return array $messages
      */
-    private function doUninstallation($project)
+    private function doUninstallation(PluginInfo $plugin)
     {
-        exec(sprintf(self::UNINSTALL_COMMAND, $project['location']), $messages);
+        exec(sprintf(self::UNINSTALL_COMMAND, $plugin->getPath()), $messages);
         return $messages;
     }
 }

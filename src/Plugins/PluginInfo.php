@@ -3,15 +3,37 @@
 namespace Pantheon\Terminus\Plugins;
 
 use Consolidation\AnnotatedCommand\CommandFileDiscovery;
+use Pantheon\Terminus\Config\ConfigAwareTrait;
 use Pantheon\Terminus\Exceptions\TerminusException;
+use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
+use Robo\Contract\ConfigAwareInterface;
 
 /**
  * Class PluginInfo
  * @package Pantheon\Terminus\Plugins
  */
-class PluginInfo
+class PluginInfo implements ConfigAwareInterface
 {
+    use ConfigAwareTrait;
+
     const MAX_COMMAND_DEPTH = 4;
+
+    // Commands
+    const GET_BRANCH_INSTALLED_VERSION_COMMAND = '[ -d %s ] && cd %s && git rev-parse --abbrev-ref HEAD';
+    const GET_NONSTABLE_LATEST_VERSION_COMMAND =
+        '[ -d %s ] && cd %s && git tag -l --sort=version:refname | grep %s | sort -r | xargs';
+    const GET_STABLE_LATEST_VERSION_COMMAND =
+        '[ -d %s ] && cd %s && git fetch --all && git tag -l --sort=version:refname | grep ^[v%s] | sort -r | head -1';
+    const GET_TAGS_INSTALLED_VERSION_COMMAND = '[ -d %s ] && cd %s && git describe --tags 2> /dev/null';
+    const VALIDATION_COMMAND = 'composer search -N -t terminus-plugin %s';
+
+    // Installation Methods
+    const COMPOSER_METHOD = 'composer';
+    const GIT_METHOD = 'git';
+    const UNKNOWN_METHOD = 'unknown';
+
+    // Version Numbers
+    const UNKNOWN_VERSION = 'unknown';
 
     /**
      * @var null|array
@@ -45,7 +67,7 @@ class PluginInfo
         if ($this->usesAutoload()) {
             $info = $this->getInfo();
             foreach ($info['autoload']['psr-4'] as $prefix => $path) {
-                $loader->addPsr4($prefix, $this->plugin_dir . DIRECTORY_SEPARATOR . $path);
+                $loader->addPsr4($prefix, $this->getPath() . DIRECTORY_SEPARATOR . $path);
             }
         }
     }
@@ -98,13 +120,173 @@ class PluginInfo
         return $this->info;
     }
 
+    /**
+     * Get the currently installed plugin version.
+     *
+     * @return string Installed plugin version
+     */
+    public function getInstalledVersion()
+    {
+        try {
+            return $this->getTagInstalledVersion();
+        } catch (TerminusNotFoundException $e) {
+            try {
+                return $this->getBranchInstalledVersion();
+            } catch (TerminusNotFoundException $e) {
+                return self::UNKNOWN_VERSION;
+            }
+        }
+    }
+
+    /**
+     * Get the plugin installation method.
+     *
+     * @return string Plugin installation method
+     */
+    public function getInstallationMethod()
+    {
+        $git_dir = $this->getPath() . DIRECTORY_SEPARATOR . '.git';
+        if (is_dir($git_dir)) {
+            return self::GIT_METHOD;
+        }
+        $composer_json = $this->getPath() . DIRECTORY_SEPARATOR . 'composer.json';
+        if (file_exists($composer_json)) {
+            return self::COMPOSER_METHOD;
+        }
+        return self::UNKNOWN_METHOD;
+    }
+
+    /**
+     * Get the latest available plugin version.
+     *
+     * @return string Latest plugin version
+     */
+    public function getLatestVersion()
+    {
+        try {
+            return $this->getNonstableLatestVersion();
+        } catch (TerminusNotFoundException $e) {
+            try {
+                return $this->getBranchInstalledVersion();
+            } catch (TerminusNotFoundException $e) {
+                return self::UNKNOWN_VERSION;
+            }
+        }
+    }
+
+    /**
+     * @return string
+     */
     public function getName()
     {
         $info = $this->getInfo();
         if (isset($info['name'])) {
             return $info['name'];
         }
-        return basename($this->plugin_dir);
+        return basename($this->getPath());
+    }
+
+    /**
+     * Checks for non-stable semantic version (ie. -beta1 or -rc2).
+     * @return string The version number
+     * @throws TerminusNotFoundException If the lookup of stable version fails
+     */
+    public function getNonstableLatestVersion()
+    {
+        $version = $this->getStableLatestVersion();
+        preg_match(
+            '/(v*.*)\-(.*)/',
+            $version,
+            $matches
+        );
+
+        exec(
+            sprintf(
+                self::GET_NONSTABLE_LATEST_VERSION_COMMAND,
+                $this->getPath(),
+                $this->getPath(),
+                $this->getTerminusMajorVersion()
+            ),
+            $releases
+        );
+
+        if ((count($matches) > 1) && !empty($releases)) {
+            foreach ($releases as $release) {
+                // Update to stable release, if available.
+                if ($release === $stable_version) {
+                    return $release;
+                }
+            }
+        }
+
+        return $version;
+    }
+
+    /**
+     * @return string
+     */
+    public function getPackagistURL()
+    {
+        return 'https://packagist.org/packages/'. $this->getName();
+    }
+
+    /**
+     * @return string Location of the plugin installation
+     */
+    public function getPath()
+    {
+        return $this->plugin_dir;
+    }
+
+    /**
+     * @return string
+     */
+    public function getPluginName()
+    {
+        preg_match('/.*\/(.*)/', $this->getName(), $matches);
+        return $matches[1];
+    }
+
+    /**
+     * @return string The version number
+     * @throws TerminusNotFoundException If the lookup fails
+     */
+    public function getStableLatestVersion()
+    {
+        exec(
+            sprintf(
+                self::GET_STABLE_LATEST_VERSION_COMMAND,
+                $this->getPath(),
+                $this->getPath(),
+                $this->getTerminusMajorVersion()
+            ),
+            $tag
+        );
+        $exception = new TerminusNotFoundException('Stable latest version not found.');
+        if (empty($tag)) {
+            throw $exception;
+        }
+        $version = array_pop($tag);
+        if ($version === 'Fetching origin') {
+            throw $exception;
+        }
+        return $version;
+    }
+
+    /**
+     * Check whether a Packagist project is valid.
+     *
+     * @return bool True if valid, false otherwise
+     */
+    public function isValidPackagistProject()
+    {
+        // Search for the Packagist project.
+        exec(sprintf(self::VALIDATION_COMMAND, $this->getName()), $items);
+        if (empty($items)) {
+            return false;
+        }
+        $item = array_shift($items);
+        return ($item === $project);
     }
 
     /**
@@ -225,6 +407,27 @@ class PluginInfo
     }
 
     /**
+     * @return string The version number
+     * @throws TerminusNotFoundException If the lookup fails
+     */
+    private function getBranchInstalledVersion()
+    {
+        exec(
+            sprintf(
+                self::GET_BRANCH_INSTALLED_VERSION_COMMAND,
+                $this->getPath(),
+                $this->getPath()
+            ),
+            $branch
+        );
+        if (empty($branch)) {
+            throw new TerminusNotFoundException('Installed branch version not found.');
+        }
+        $version = array_pop($branch);
+        return $version;
+    }
+
+    /**
      * Return the directory where this plugin stores it's command files.
      *
      * @return string
@@ -232,6 +435,39 @@ class PluginInfo
     private function getCommandFileDirectory()
     {
         $autoload = $this->getAutoloadInfo();
-        return $this->plugin_dir . '/' . $autoload['dir'];
+        return $this->getPath() . '/' . $autoload['dir'];
+    }
+
+    /**
+     * @return string The version number
+     * @throws TerminusNotFoundException If the lookup fails
+     */
+    private function getTagInstalledVersion()
+    {
+        exec(
+            sprintf(
+                self::GET_TAGS_INSTALLED_VERSION_COMMAND,
+                $this->getPath(),
+                $this->getPath()
+            ),
+            $tags
+        );
+        if (empty($tags)) {
+            throw new TerminusNotFoundException('Installed tag version not found.');
+        }
+        $version = array_pop($tags);
+        return $version;
+    }
+
+    /**
+     * Get the Terminus major version.
+     *
+     * @return integer Terminus major version
+     */
+    private function getTerminusMajorVersion()
+    {
+        //preg_match('/(\d*).\d*.\d*/', $this->getConfig()->get('version'), $matches);
+        preg_match('/(\d*).\d*.\d*/', '2.3.0', $matches);
+        return $matches[1];
     }
 }

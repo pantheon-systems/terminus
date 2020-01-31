@@ -21,16 +21,26 @@ class ListCommand extends PluginBaseCommand
      * @field-labels
      *   name: Name
      *   description: Description
-     *   version: Installed Version
+     *   installed_version: Installed Version
      *   latest_version: Latest Version
      *   compatible_versions: Compatible With
-     *   location: Location
      *
      * @return RowsOfFields
      */
     public function listPlugins()
     {
-        $plugins = $this->getPluginProjects();
+        $plugins = array_map(
+            function($plugin) {
+                return [
+                    'name' => $plugin->getPluginName(),
+                    'description' => $plugin->getInfo()['description'],
+                    'installed_version' => $plugin->getInstalledVersion(),
+                    'latest_version' => $plugin->getLatestVersion(),
+                    'compatible_versions' => $plugin->getCompatibleTerminusVersion(),
+                ];
+            },
+            $this->getPluginProjects()
+        );
         asort($plugins);
 
         if (empty($plugins)) {
