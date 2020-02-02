@@ -5,7 +5,6 @@ namespace Pantheon\Terminus\Commands\Self\Plugin;
 use Consolidation\AnnotatedCommand\CommandData;
 use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
 use Pantheon\Terminus\Plugins\PluginInfo;
-use PHP_CodeSniffer\Tokenizers\PHP;
 
 /**
  * Installs a Terminus plugin using Composer.
@@ -28,16 +27,15 @@ class InstallCommand extends PluginBaseCommand
      * @param array $projects A list of one or more plugin projects to install
      * @option string $stability Version stability such as stable, beta, alpha, etc.
      *
-     * @usage <Packagist project 1> [Packagist project 2] ...
+     * @usage <project 1> [project 2] ...
      */
     public function install(array $projects, $options = ['stability' => 'stable',])
     {
         foreach ($projects as $project_name) {
             if ($this->validateProject($project_name)) {
-                $messages = $this->doInstallation($project_name, $options['stability']);
-                foreach ($messages as $message) {
-                    $this->log()->notice($message);
-                }
+                $results = $this->doInstallation($project_name, $options['stability']);
+                // TODO Improve messaging
+                $this->log()->notice($results['output']);
             }
         }
     }
@@ -59,26 +57,25 @@ class InstallCommand extends PluginBaseCommand
     /**
      * @param string $project_name Name of project to be installed
      * @param string $stability stable, beta, alpha, etc
-     * @return array $messages
+     * @return array Results from the install command
      */
     private function doInstallation($project_name, $stability)
     {
-        preg_match('/(\d*).\d*.\d*/', $this->getConfig()->get('version'), $version_matches);
-        $terminus_major_version = $version_matches[1];
-        preg_match('/.*\/(.*)/', $project_name, $plugin_name_matches);
-        $install_dir = $this->getConfig()->get('plugin_dir') . DIRECTORY_SEPARATOR . $plugin_name_matches[1];
+        $plugin_name = PluginInfo::getPluginNameFromProjectName($project_name);
+        $config = $this->getConfig();
+        $plugins_dir = $config->get('plugins_dir');
+        $install_dir = $plugins_dir . DIRECTORY_SEPARATOR . $plugin_name;
+        self::ensureDirectoryExists($install_dir);
 
         $command = sprintf(
             self::COMPOSER_INSTALL_COMMAND,
             $stability,
-            $install_dir,
+            $plugins_dir,
             $project_name,
-            $terminus_major_version
+            PluginInfo::getMajorVersionFromVersion($config->get('version'))
         );
-        $this->log()->debug("Running: $command");
-        exec($command, $messages);
-        $this->log()->debug("Returned:" . PHP_EOL . implode(PHP_EOL, $messages));
-        return $messages;
+        $results = $this->runCommand($command);
+        return $results;
     }
 
     /**
@@ -98,6 +95,17 @@ class InstallCommand extends PluginBaseCommand
         }
 
         return true;
+    }
+
+    /**
+     * @param string $path
+     * @param int $permissions
+     */
+    private static function ensureDirectoryExists($path, $permissions = 0755)
+    {
+        if (!is_dir($path)) {
+            mkdir($path, $permissions, true);
+        }
     }
 
     /**
