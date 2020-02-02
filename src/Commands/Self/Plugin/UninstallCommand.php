@@ -32,10 +32,9 @@ class UninstallCommand extends PluginBaseCommand
     {
         foreach ($projects as $project) {
             try {
-                $messages = $this->doUninstallation($this->getPlugin($project));
-                foreach ($messages as $message) {
-                    $this->log()->notice($message);
-                }
+                $results = $this->doUninstallation($this->getPlugin($project));
+                // TODO Improve messaging
+                $this->log()->notice($results['output']);
                 $this->log()->notice(self::SUCCESS_MESSAGE, compact('project'));
             } catch (TerminusNotFoundException $e) {
                 $this->log()->error(self::NOT_INSTALLED_MESSAGE, compact('project'));
@@ -60,11 +59,11 @@ class UninstallCommand extends PluginBaseCommand
 
     /**
      * @param PluginInfo $plugin
-     * @return array $messages
+     * @return array Results from running the command
      */
     private function doUninstallation(PluginInfo $plugin)
     {
-        exec(sprintf(self::UNINSTALL_COMMAND, $plugin->getPath()), $messages);
-        return $messages;
+        $command = sprintf(self::UNINSTALL_COMMAND, $plugin->getPath());
+        return $this->runCommand($command);
     }
 }

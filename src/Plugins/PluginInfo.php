@@ -205,7 +205,7 @@ class PluginInfo implements ConfigAwareInterface
                 self::GET_NONSTABLE_LATEST_VERSION_COMMAND,
                 $this->getPath(),
                 $this->getPath(),
-                $this->getTerminusMajorVersion()
+                self::getMajorVersionFromVersion($this->getConfig()->get('version'))
             ),
             $releases
         );
@@ -243,8 +243,7 @@ class PluginInfo implements ConfigAwareInterface
      */
     public function getPluginName()
     {
-        preg_match('/.*\/(.*)/', $this->getName(), $matches);
-        return $matches[1];
+        return self::getPluginNameFromProjectName($this->getName());
     }
 
     /**
@@ -258,7 +257,7 @@ class PluginInfo implements ConfigAwareInterface
                 self::GET_STABLE_LATEST_VERSION_COMMAND,
                 $this->getPath(),
                 $this->getPath(),
-                $this->getTerminusMajorVersion()
+                self::getMajorVersionFromVersion($this->getConfig()->get('version'))
             ),
             $tag
         );
@@ -287,6 +286,25 @@ class PluginInfo implements ConfigAwareInterface
         }
         $item = array_shift($items);
         return ($item === $project);
+    }
+
+    /**
+     * @param $version_number
+     * @return string
+     */
+    public static function getMajorVersionFromVersion($version_number)
+    {
+        preg_match('/(\d*).\d*.\d*/', $version_number, $version_matches);
+        return $version_matches[1];
+    }
+
+    /**
+     * @return string
+     */
+    public static function getPluginNameFromProjectName($project_name)
+    {
+        preg_match('/.*\/(.*)/', $project_name, $matches);
+        return $matches[1];
     }
 
     /**
@@ -457,17 +475,5 @@ class PluginInfo implements ConfigAwareInterface
         }
         $version = array_pop($tags);
         return $version;
-    }
-
-    /**
-     * Get the Terminus major version.
-     *
-     * @return integer Terminus major version
-     */
-    private function getTerminusMajorVersion()
-    {
-        //preg_match('/(\d*).\d*.\d*/', $this->getConfig()->get('version'), $matches);
-        preg_match('/(\d*).\d*.\d*/', '2.3.0', $matches);
-        return $matches[1];
     }
 }

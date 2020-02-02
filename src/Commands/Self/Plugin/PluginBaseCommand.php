@@ -4,6 +4,7 @@ namespace Pantheon\Terminus\Commands\Self\Plugin;
 
 use Pantheon\Terminus\Commands\TerminusCommand;
 use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
+use Pantheon\Terminus\Helpers\LocalMachineHelper;
 use Pantheon\Terminus\Plugins\PluginDiscovery;
 
 /**
@@ -85,6 +86,18 @@ abstract class PluginBaseCommand extends TerminusCommand
             return false;
         }
         return true;
+    }
+
+    /**
+     * @param string $command
+     * @return array
+     */
+    protected function runCommand($command)
+    {
+        $this->log()->debug("Running: $command");
+        $results = $this->getContainer()->get(LocalMachineHelper::class)->execute($command);
+        $this->log()->debug('Returned:' . PHP_EOL . $results['output']);
+        return $results;
     }
 
     /**
