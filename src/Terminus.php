@@ -15,6 +15,7 @@ use Pantheon\Terminus\DataStore\FileStore;
 use Pantheon\Terminus\Helpers\LocalMachineHelper;
 use Pantheon\Terminus\Plugins\PluginAutoloadDependencies;
 use Pantheon\Terminus\Plugins\PluginDiscovery;
+use Pantheon\Terminus\Plugins\PluginInfo;
 use Pantheon\Terminus\ProgressBars\ProcessProgressBar;
 use Pantheon\Terminus\ProgressBars\WorkflowProgressBar;
 use Pantheon\Terminus\Request\Request;
@@ -211,6 +212,11 @@ class Terminus implements ConfigAwareInterface, ContainerAwareInterface, LoggerA
             'Pantheon\\Terminus\\Commands\\Self\\ConfigDumpCommand',
             'Pantheon\\Terminus\\Commands\\Self\\ConsoleCommand',
             'Pantheon\\Terminus\\Commands\\Self\\InfoCommand',
+            'Pantheon\\Terminus\\Commands\\Self\\Plugin\\InstallCommand',
+            'Pantheon\\Terminus\\Commands\\Self\\Plugin\\ListCommand',
+            'Pantheon\\Terminus\\Commands\\Self\\Plugin\\SearchCommand',
+            'Pantheon\\Terminus\\Commands\\Self\\Plugin\\UninstallCommand',
+            'Pantheon\\Terminus\\Commands\\Self\\Plugin\\UpdateCommand',
             'Pantheon\\Terminus\\Commands\\ServiceLevel\\SetCommand',
             'Pantheon\\Terminus\\Commands\\Site\\CreateCommand',
             'Pantheon\\Terminus\\Commands\\Site\\DeleteCommand',
@@ -326,6 +332,7 @@ class Terminus implements ConfigAwareInterface, ContainerAwareInterface, LoggerA
             ->withArgument(__DIR__);
         $container->add(PluginDiscovery::class)
             ->withArgument($this->getConfig()->get('plugins_dir'));
+        $container->add(PluginInfo::class);
 
         // Update checker
         $container->add(LatestRelease::class);

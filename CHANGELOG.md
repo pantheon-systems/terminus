@@ -7,6 +7,11 @@ All notable changes to this project will be documented in this file. This projec
 - New option `--no-files` added to `multidev:create` which will skip the duplication of files from the source environment. (#2050)
 - New option `no-db` added to `Environments::create` which will skip the duplication of the database from the source environment. (#2050)
 - New option `no-files` added to `Environments::create` which will skip the duplication of files from the source environment. (#2050)
+- New command `self:plugin:install` to install Terminus plugins. (#2054)
+- New command `self:plugin:list` to list installed Terminus plugins. (#2054)
+- New command `self:plugin:search` to locate Terminus plugins to install. (#2054)
+- New command `self:plugin:uninstall` to uninstall Terminus plugins. (#2054)
+- New command `self:plugin:update` to update already-installed Terminus plugins. (#2054)
 
 ### Changed
 - `Request::download($url, $target)` now accepts directories in addition to files as its `$target` parameter. (#2053)

@@ -118,6 +118,30 @@ class FeatureContext implements Context
     }
 
     /**
+     * Empty out the plugin directory for the rest of the statements in the
+     * current scenario.
+     * @When /^I empty the "([^"]*)" plugins/
+     * @param string $dir_name
+     */
+    public function emptyPluginDir($dir_name)
+    {
+        $plugins = $this->plugin_dir . DIRECTORY_SEPARATOR . $dir_name;
+        $this->iRun("rm -rf $plugins");
+    }
+
+    /**
+     * Downgrades the given plugin for the rest of the statements in the current
+     * scenario.
+     * @When /^I downgrade the "([^"]*)" plugin to "([^"]*)"/
+     * @param string $plugin
+     */
+    public function downgradePlugin($plugin, $version)
+    {
+        $dir = $this->plugin_dir . DIRECTORY_SEPARATOR . $this->plugin_dir_name . DIRECTORY_SEPARATOR . $plugin;
+        $this->iRun("cd $dir && git checkout $version");
+    }
+
+    /**
      * Changes or displays mode, given or not, of given site
      * @Given /^the connection mode of "([^"]*)" is "([^"]*)"$/
      * @When /^I set the connection mode on "([^"]*)" to "([^"]*)"$/
@@ -614,8 +638,8 @@ class FeatureContext implements Context
      */
     public function iRun($command)
     {
-        $regex        = '/(?<!\.)terminus/';
-        $command = preg_replace($regex, sprintf('bin/terminus', $this->cliroot), $command);
+        $regex        = '/(?<!\.)terminus /';
+        $command = preg_replace($regex, sprintf('bin/terminus ', $this->cliroot), $command);
         $command = $this->replacePlaceholders($command);
 
         if (isset($this->connection_info['host'])) {
