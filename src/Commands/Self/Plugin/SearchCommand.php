@@ -10,13 +10,14 @@ use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
  * @TODO Limit the search to include only Packagist projects with versions compatible with the currently installed Terminus version.
  * @TODO Bonus: Add the ability to search and prompt to install new plugins.
  * @TODO Keep an internal registry of approved third-party plugins.
+ * @TODO Do lookup if given a plugin name and not a project name, prompt OK for match, install
  */
 class SearchCommand extends PluginBaseCommand
 {
     const APPROVED_PROJECTS = 'terminus-plugin-project/terminus-pancakes-plugin';
     const NO_PLUGINS_MESSAGE = 'No plugins have met your criterion.';
     const OFFICIAL_PLUGIN_AUTHOR = 'pantheon-systems';
-    const SEARCH_COMMAND = 'composer search -t terminus-plugin %s';
+    const SEARCH_COMMAND = 'composer search -t terminus-plugin {keyword}';
 
     /**
      * Search for available Terminus plugins.
@@ -36,10 +37,15 @@ class SearchCommand extends PluginBaseCommand
      */
     public function search($keyword)
     {
-        exec(sprintf(self::SEARCH_COMMAND, $keyword), $messages);
-        $results = array_map(
+        $command = str_replace('{keyword}', $keyword, self::SEARCH_COMMAND);
+        $results = explode(
+            PHP_EOL,
+            str_replace(' - ', ' ', trim($this->runCommand($command)['output']))
+        );
+
+        $projects = array_map(
             function($message) {
-                @list($project, $description) = explode(' ', $message, 2);
+                list($project, $description) = explode(' ', $message, 2);
                 return [
                     'name' => $project,
                     'status' => self::checkStatus($project),
@@ -47,21 +53,21 @@ class SearchCommand extends PluginBaseCommand
                 ];
             },
             array_filter(
-                $messages,
+                $results,
                 function ($message) {
                     list($project) = explode(' ', $message, 1);
                     return preg_match('#^[^/]*/[^/]*$#', $project);
                 }
             )
         );
-        asort($results);
 
-        if (empty($results)) {
+        if (empty($projects)) {
             $this->log()->warning(self::NO_PLUGINS_MESSAGE);
         }
 
         // Output the plugin list in table format.
-        return new RowsOfFields($results);
+        asort($projects);
+        return new RowsOfFields($projects);
     }
 
     /**

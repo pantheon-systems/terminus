@@ -13,8 +13,8 @@ use Pantheon\Terminus\Plugins\PluginInfo;
 class InstallCommand extends PluginBaseCommand
 {
     const ALREADY_INSTALLED_MESSAGE = '{project} is already installed.';
-    const COMPOSER_INSTALL_COMMAND =
-        'composer create-project --stability=%s --prefer-source --keep-vcs -n -d %s %s:~%s';
+    const INSTALL_COMMAND =
+        'composer create-project --stability={stability} --prefer-source --keep-vcs -n -d {dir} {project}';
     const INVALID_PROJECT_MESSAGE = '{project} is not a valid Packagist project.';
     const USAGE_MESSAGE = 'terminus self:plugin:<install|add> <Packagist project 1> [Packagist project 2] ...';
 
@@ -65,17 +65,25 @@ class InstallCommand extends PluginBaseCommand
         $config = $this->getConfig();
         $plugins_dir = $config->get('plugins_dir');
         $install_dir = $plugins_dir . DIRECTORY_SEPARATOR . $plugin_name;
-        self::ensureDirectoryExists($install_dir);
+        $this->ensureDirectoryExists($install_dir);
 
-        $command = sprintf(
-            self::COMPOSER_INSTALL_COMMAND,
-            $stability,
-            $plugins_dir,
-            $project_name,
-            PluginInfo::getMajorVersionFromVersion($config->get('version'))
+        $command = str_replace(
+            ['{stability}', '{dir}', '{project}',],
+            [$stability, $plugins_dir, $project_name,],
+            self::INSTALL_COMMAND
         );
         $results = $this->runCommand($command);
+        $this->log()->notice('Installed {project_name}.', compact('project_name'));
         return $results;
+    }
+
+    /**
+     * @param string $path
+     * @param int $permissions
+     */
+    private function ensureDirectoryExists($path, $permissions = 0755)
+    {
+        $this->getLocalMachine()->getFileSystem()->mkdir($path, $permissions);
     }
 
     /**
@@ -84,7 +92,7 @@ class InstallCommand extends PluginBaseCommand
      */
     private function validateProject($project_name)
     {
-        if (!self::isValidPackagistProject($project_name)) {
+        if (!PluginInfo::checkWhetherPackagistProject($project_name, $this->getLocalMachine())) {
             $this->log()->error(self::INVALID_PROJECT_MESSAGE, ['project' => $project_name,]);
             return false;
         }
@@ -95,33 +103,5 @@ class InstallCommand extends PluginBaseCommand
         }
 
         return true;
-    }
-
-    /**
-     * @param string $path
-     * @param int $permissions
-     */
-    private static function ensureDirectoryExists($path, $permissions = 0755)
-    {
-        if (!is_dir($path)) {
-            mkdir($path, $permissions, true);
-        }
-    }
-
-    /**
-     * Check whether a Packagist project is valid.
-     *
-     * @param string $project_name Name of plugin package to install
-     * @return bool True if valid, false otherwise
-     */
-    private static function isValidPackagistProject($project_name)
-    {
-        // Search for the Packagist project.
-        exec(sprintf(PluginInfo::VALIDATION_COMMAND, $project_name), $items);
-        if (empty($items)) {
-            return false;
-        }
-        $item = array_shift($items);
-        return ($item === $project_name);
     }
 }

@@ -26,6 +26,14 @@ abstract class PluginBaseCommand extends TerminusCommand
     private $projects = null;
 
     /**
+     * @return LocalMachineHelper
+     */
+    protected function getLocalMachine()
+    {
+        return $this->getContainer()->get(LocalMachineHelper::class);
+    }
+
+    /**
      * Check for minimum plugin command requirements.
      * @throws TerminusNotFoundException
      */
@@ -94,9 +102,9 @@ abstract class PluginBaseCommand extends TerminusCommand
      */
     protected function runCommand($command)
     {
-        $this->log()->debug("Running: $command");
-        $results = $this->getContainer()->get(LocalMachineHelper::class)->execute($command);
-        $this->log()->debug('Returned:' . PHP_EOL . $results['output']);
+        $this->log()->debug('Running {command}...', compact('command'));
+        $results = $this->getLocalMachine()->exec($command);
+        $this->log()->debug("Returned:\n{output}", $results);
         return $results;
     }
 
