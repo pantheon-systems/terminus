@@ -33,21 +33,29 @@ Once you have at least the requirements installed, you can install Terminus via 
 You can install Terminus just about anywhere on your system. In this README, we'll use `/install/location` to stand in for your chosen installation location.
 
 ## Installation
+
+There are several ways to install Terminus, depending on your use case:
+
+- For a composer-managed version of Terminus that is _not_ part of your other composer-managed project(s) and doesn't utilize global composer installations, use the [Terminus installer](#installing-via-the-terminus-installer).
+- If you want to contribute to the Terminus project, [download and install](#installing-with-git) from the git repository.
+- To add Terminus as a dependency of your composer-based project, [install with Composer](#installing-with-composer).
+- For a self-contained Terminus executable, [install terminus.phar](#install-self-contained-terminus).
+
 ### Install Self-Contained Terminus
 
 1. Download the latest `terminus.phar` from the [Releases](https://github.com/pantheon-systems/terminus/releases) page. In the example below, we're directing the file to `$HOME/bin/` and renaming the file to `terminus`:
 
-  ```bash
-  wget https://github.com/pantheon-systems/terminus/releases/download/2.3.0/terminus.phar -O ~/.bin/terminus
-  ```
+    ```bash
+    wget https://github.com/pantheon-systems/terminus/releases/download/2.3.0/terminus.phar -O ~/.bin/terminus
+    ```
 
-  Remember to get the latest version of Terminus from the [Releases](https://github.com/pantheon-systems/terminus/releases) page, don't copy the command above vermatim.
+    Remember to get the latest version of Terminus from the [Releases](https://github.com/pantheon-systems/terminus/releases) page, don't copy the command above vermatim.
 
 1. Make the Terminus file exectable. The example below assumes the same installation path as above:
 
-  ```bash
-  chmod +X ~/.bin/terminus
-  ```
+    ```bash
+    chmod +X ~/.bin/terminus
+    ```
 
 **Note:** Your installation directory must be in or added to your `$PATH` environment variable in order to call `terminus` from any working directory.
 
