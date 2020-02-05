@@ -33,6 +33,24 @@ Once you have at least the requirements installed, you can install Terminus via 
 You can install Terminus just about anywhere on your system. In this README, we'll use `/install/location` to stand in for your chosen installation location.
 
 ## Installation
+### Install Self-Contained Terminus
+
+1. Download the latest `terminus.phar` from the [Releases](https://github.com/pantheon-systems/terminus/releases) page. In the example below, we're directing the file to `$HOME/bin/` and renaming the file to `terminus`:
+
+  ```bash
+  wget https://github.com/pantheon-systems/terminus/releases/download/2.3.0/terminus.phar -O ~/.bin/terminus
+  ```
+
+  Remember to get the latest version of Terminus from the [Releases](https://github.com/pantheon-systems/terminus/releases) page, don't copy the command above vermatim.
+
+1. Make the Terminus file exectable. The example below assumes the same installation path as above:
+
+  ```bash
+  chmod +X ~/.bin/terminus
+  ```
+
+**Note:** Your installation directory must be in or added to your `$PATH` environment variable in order to call `terminus` from any working directory.
+
 ### Installing via the Terminus installer
 Run this in your Terminal client:
 ```bash
