@@ -58,6 +58,8 @@ curl -O https://raw.githubusercontent.com/pantheon-systems/terminus-installer/ma
 ```
 For more information on installation options or to report an issue with this method, please see the [Terminus Installer README.md file](https://github.com/pantheon-systems/terminus-installer).
 
+**Note:** Terminus installed this way cannot use `terminus update` to self-update versions.
+
 ### Installing with Composer
 
 Run this in your terminal client:
@@ -71,6 +73,8 @@ composer remove pantheon-systems/terminus
 before requiring it.
 
 Do not install Terminus via `composer global require`. [`composer global require` should not be used to install php applications](https://pantheon.io/blog/fixing-composer-global-command). If you need to globally install something using `composer`, use the [`cgr` utility](https://github.com/consolidation/cgr) as a replacement instead.
+
+**Note:** Terminus installed this way cannot use `terminus update` to self-update versions.
 
 ### Installing with Git
 To install with Git and use Terminus HEAD, you should clone this repository and run Terminus directly. If you would
@@ -89,6 +93,8 @@ You can now run the bleeding-edge version of Terminus via:
 ```bash
 bin/terminus
 ```
+
+**Note:** Terminus installed this way cannot use `terminus update` to self-update versions.
 
 ## Updating
 ### Updating via the Terminus installer
