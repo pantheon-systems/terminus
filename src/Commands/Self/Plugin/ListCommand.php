@@ -1,4 +1,4 @@
-<?pt hp
+<?php
 
 namespace Pantheon\Terminus\Commands\Self\Plugin;
 

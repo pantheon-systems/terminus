@@ -209,7 +209,7 @@ class PluginInfo implements ConfigAwareInterface, ContainerAwareInterface, Logge
             $command = str_replace(
                 ['{dir}', '{version}',],
                 [$this->getPath(), self::getMajorVersionFromVersion($this->getConfig()->get('version'))],
-                self::CHANGE_DIRECTORY_AND . self::GET_NONSTABLE_LATEST_VERSION_COMMAND,
+                self::CHANGE_DIRECTORY_AND . self::GET_NONSTABLE_LATEST_VERSION_COMMAND
             );
             $results = $this->runCommand($command);
             $releases = self::filterForVersionNumbers($results);
@@ -262,7 +262,7 @@ class PluginInfo implements ConfigAwareInterface, ContainerAwareInterface, Logge
             $command = str_replace(
                 ['{dir}', '{version}',],
                 [$this->getPath(), self::getMajorVersionFromVersion($this->getConfig()->get('version'))],
-                self::CHANGE_DIRECTORY_AND . self::GET_STABLE_LATEST_VERSION_COMMAND,
+                self::CHANGE_DIRECTORY_AND . self::GET_STABLE_LATEST_VERSION_COMMAND
             );
             $results = $this->runCommand($command);
             $version = self::filterForVersionNumbers($results['output']);
