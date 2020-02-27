@@ -17,7 +17,7 @@ class FilesCommand extends TerminusCommand implements SiteAwareInterface
     use WorkflowProcessingTrait;
 
     /**
-     * Imports a database archive to the environment.
+     * Imports a file archive to the environment.
      *
      * @authorize
      *
