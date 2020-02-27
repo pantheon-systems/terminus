@@ -24,7 +24,7 @@ class FilesCommand extends TerminusCommand implements SiteAwareInterface
      * @command import:files
      *
      * @param string $site_env Site & environment in the format `site-name.env`
-     * @param string $url Publicly accessible URL of the database archive
+     * @param string $url Publicly accessible URL of the file archive
      *
      * @usage <site>.<env> <archive_url> Imports the files in the archive at <archive_url> to <site>'s <env> environment.
      */
