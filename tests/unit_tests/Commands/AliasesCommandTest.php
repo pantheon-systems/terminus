@@ -150,7 +150,7 @@ class AliasesCommandTest extends CommandTestCase
   host: appserver.\${env-name}.abc.drush.in
   paths:
     files: files
-    drush-script: drush9
+    drush-script: drush
   uri: \${env-name}-site1.pantheonsite.io
   user: \${env-name}.abc
   ssh:
