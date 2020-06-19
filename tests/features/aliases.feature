@@ -34,7 +34,6 @@ Feature: Gathering sites' aliases
        'ssh-options' => '-p 2222 -o "AddressFamily inet"',
        'path-aliases' => array(
          '%files' => 'files',
-         '%drush-script' => 'drush',
         ),
      );
     """

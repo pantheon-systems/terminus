@@ -150,7 +150,6 @@ class AliasesCommandTest extends CommandTestCase
   host: appserver.\${env-name}.abc.drush.in
   paths:
     files: files
-    drush-script: drush9
   uri: \${env-name}-site1.pantheonsite.io
   user: \${env-name}.abc
   ssh:
@@ -236,7 +235,6 @@ __EOT__;
     'ssh-options' => '-p 2222 -o "AddressFamily inet"',
     'path-aliases' => array(
       '%files' => 'files',
-      '%drush-script' => 'drush',
      ),
   );
 __EOT__;
