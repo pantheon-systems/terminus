@@ -1,6 +1,8 @@
 # Change Log
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org)
 
+## Master
+
 ## 2.4.0 - 2020-06-19
 ### Added
 - New option `--no-db` added to `multidev:create` which will skip the duplication of the database from the source environment. (#2050)
