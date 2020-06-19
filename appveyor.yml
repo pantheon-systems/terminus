@@ -59,8 +59,9 @@ services:
   - mysql
 
 test_script:
-  - php composer.phar clover
-  - php composer.phar cs
+  - echo 'Appveryor tests disabled until PHP 7.4 support added to Terminus.'
+  #- php composer.phar clover
+  #- php composer.phar cs
 
 # environment variables
 environment:
