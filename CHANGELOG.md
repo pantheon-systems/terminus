@@ -3,6 +3,12 @@ All notable changes to this project will be documented in this file. This projec
 
 ## Master
 
+### Changed
+- The `DrushRCEditor` class has been renamed to `DrushRcClass`. (#2083)
+
+### Fixed
+- The `DrushRCEditor` class no longer emits deprecation warnings. (#2083)
+
 ## 2.4.0 - 2020-06-19
 ### Added
 - New option `--no-db` added to `multidev:create` which will skip the duplication of the database from the source environment. (#2050)
