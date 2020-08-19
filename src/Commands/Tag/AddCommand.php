@@ -26,7 +26,7 @@ class AddCommand extends TagCommand
     public function add($site_name, $organization, $tag)
     {
         if (empty($tag)) {
-            throw new TerminusException("Tag cannot be null");
+            throw new TerminusException("Tag cannot be empty");
         }
         list($org, $site, $tags) = $this->getModels($site_name, $organization);
         $tags->create($tag);
