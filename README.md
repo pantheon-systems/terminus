@@ -128,7 +128,7 @@ Adding a symlink to `/install/location/terminus/bin/terminus` inside your bin di
 ## Authentication
 To get started with Terminus, you must first authenticate:
 ```bash
-terminus auth:login --machine_token=xxxxxxxx
+terminus auth:login --machine-token=xxxxxxxx
 [notice] Logging in via machine token
 ```
 If you are planning to run WP-CLI or Drush commands through Terminus, please
