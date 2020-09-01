@@ -55,4 +55,12 @@ class SiteUpstream extends TerminusModel implements SiteInterface
         }
         return $data;
     }
+    
+     /**
+     * @return string[]
+     */
+    public function getReferences()
+    {
+        return [$this->id, $this->get('product_id'), $this->get('label'), $this->get('machine_name'),];
+    }
 }
