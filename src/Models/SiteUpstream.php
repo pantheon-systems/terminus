@@ -63,5 +63,4 @@ class SiteUpstream extends TerminusModel implements SiteInterface
     {
         return [$this->id, $this->get('product_id'), $this->get('label'), $this->get('machine_name'),];
     }
-
 }
