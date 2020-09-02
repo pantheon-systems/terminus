@@ -1,13 +1,14 @@
 # Change Log
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org)
 
-## Master
-
+## 2.4.1 - 2020-09-02
 ### Changed
 - The `DrushRCEditor` class has been renamed to `DrushRcClass`. (#2083)
+- Upstreams can be ID'd by `label`s, `product_id`s and `machine_name`s in addition to `id`s. (#2086)
 
 ### Fixed
 - The `DrushRCEditor` class no longer emits deprecation warnings. (#2083)
+- `tag:add` now rejects empty tags. (#2085)
 
 ## 2.4.0 - 2020-06-19
 ### Added
