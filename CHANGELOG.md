@@ -1,6 +1,8 @@
 # Change Log
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org)
 
+## MASTER
+
 ## 2.4.1 - 2020-09-02
 ### Changed
 - The `DrushRCEditor` class has been renamed to `DrushRcClass`. (#2083)
