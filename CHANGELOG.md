@@ -1,7 +1,7 @@
 # Change Log
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org)
 
-## 2.4.1 - 2020-09-02
+## 2.4.1 - 2020-09-08
 ### Changed
 - The `DrushRCEditor` class has been renamed to `DrushRcClass`. (#2083)
 - Upstreams can be ID'd by `label`s, `product_id`s and `machine_name`s in addition to `id`s. (#2086)
