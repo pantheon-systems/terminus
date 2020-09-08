@@ -125,7 +125,7 @@ class ApplyCommandTest extends UpdatesCommandTest
             ->method('log')
             ->with(
                 $this->equalTo('notice'),
-                $this->equalTo('Applying {count} upstream update(s) to the {env} environment of {site_id}...'),
+                $this->equalTo('{prefix} to the {env} environment of {site_id}...'),
                 $this->equalTo(['count' => 2, 'env' => 'dev', 'site_id' => 'my-site'])
             );
 
