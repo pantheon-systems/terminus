@@ -910,5 +910,4 @@ class Environment extends TerminusModel implements ContainerAwareInterface, Site
         }
         return $response['data']->BUILD_STEP;
     }
-
 }
