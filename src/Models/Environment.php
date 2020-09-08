@@ -889,4 +889,26 @@ class Environment extends TerminusModel implements ContainerAwareInterface, Site
         $response = (array)$this->request()->request($path, ['method' => 'get',]);
         return $response['data']->$setting;
     }
+
+    /**
+     * Checks if the environment has the build step enabled by looking
+     * at the environment variables defined in pantheon.yml.
+     *
+     * @return bool
+     */
+    public function isBuildStepEnabled()
+    {
+        $path = sprintf(
+            'sites/%s/environments/%s/variables',
+            $this->getSite()->id,
+            $this->id
+        );
+        $options = ['method' => 'get',];
+        $response = $this->request()->request($path, $options);
+        if (empty($response['data']) || !isset($response['data']->BUILD_STEP)) {
+            return false;
+        }
+        return $response['data']->BUILD_STEP;
+    }
+
 }
