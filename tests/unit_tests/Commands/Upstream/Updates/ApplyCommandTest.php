@@ -126,7 +126,7 @@ class ApplyCommandTest extends UpdatesCommandTest
             ->with(
                 $this->equalTo('notice'),
                 $this->equalTo('{prefix} to the {env} environment of {site_id}...'),
-                $this->equalTo(['count' => 2, 'env' => 'dev', 'site_id' => 'my-site'])
+                $this->equalTo(['prefix' => 'Applying 2 upstream update(s)', 'env' => 'dev', 'site_id' => 'my-site'])
             );
 
         $this->logger->expects($this->at(1))
