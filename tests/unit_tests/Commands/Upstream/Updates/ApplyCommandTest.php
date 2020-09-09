@@ -230,7 +230,10 @@ class ApplyCommandTest extends UpdatesCommandTest
                 $this->equalTo('notice'),
                 $this->equalTo('Applied upstream updates to "dev"')
             );
-        $out = $this->command->applyUpstreamUpdates('my-composer-site', ['accept-upstream' => true, 'updatedb' => true,]);
+        $out = $this->command->applyUpstreamUpdates('my-composer-site', [
+            'accept-upstream' => true, 
+            'updatedb' => true,
+        ]);
         $this->assertNull($out);
     }
 }
