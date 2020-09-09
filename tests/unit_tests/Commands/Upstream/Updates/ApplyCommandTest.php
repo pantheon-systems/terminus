@@ -162,4 +162,75 @@ class ApplyCommandTest extends UpdatesCommandTest
         $out = $this->command->applyUpstreamUpdates('123', ['accept-updates' => true, 'updatedb' => true,]);
         $this->assertNull($out);
     }
+
+    /**
+     * Tests the upstream:updates:apply command when there are only composer updates to apply
+     */
+    public function testApplyUpdatesComposerUpdatesOnly()
+    {
+        $this->environment->id = 'dev';
+        $this->environment->method('isBuildStepEnabled')
+            ->willReturn(true);
+
+        $upstream_data = (object)[
+            'remote_head' => '2f1c945d01cd03250e2b6668ad77bf24f54a5a56',
+            'ahead' => 1,
+            'update_log' => (object)[],
+        ];
+        $this->upstream_status->method('getUpdates')
+            ->willReturn($upstream_data);
+
+        $composer_data = (object)[
+            'updated_dependencies' => [
+                0 => (object)[
+                    'name' => 'pantheon-systems/wordpress-composer',
+                    'version' => '5.5.1',
+                    'type' => 'update',
+                    'prior_version' => '5.5',
+                ],
+                1 => (object)[
+                    'name' => 'pantheon-systems/quicksilver-pushback',
+                    'version' => '2.0.2',
+                    'type' => 'update',
+                    'prior_version' => '2.0.1',
+                ],
+            ]
+        ];
+        $this->upstream_status->method('getComposerUpdates')
+            ->willReturn($composer_data);
+
+        $workflow = $this->getMockBuilder(Workflow::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $workflow->expects($this->any())
+            ->method('getMessage')
+            ->willReturn('Applied upstream updates to "dev"');
+        $this->environment->expects($this->once())
+            ->method('applyUpstreamUpdates')
+            ->with($this->equalTo(true), $this->equalTo(true))
+            ->willReturn($workflow);
+        $this->site->expects($this->once())
+            ->method('get')
+            ->with('name')
+            ->willReturn('my-composer-site');
+        $this->logger->expects($this->at(0))
+            ->method('log')
+            ->with(
+                $this->equalTo('notice'),
+                $this->equalTo('{prefix} to the {env} environment of {site_id}...'),
+                $this->equalTo([
+                    'prefix' => 'Applying 0 upstream update(s) and 2 composer update(s)',
+                    'env' => 'dev',
+                    'site_id' => 'my-composer-site',
+                ])
+            );
+        $this->logger->expects($this->at(1))
+            ->method('log')
+            ->with(
+                $this->equalTo('notice'),
+                $this->equalTo('Applied upstream updates to "dev"')
+            );
+        $out = $this->command->applyUpstreamUpdates('my-composer-site', ['accept-upstream' => true, 'updatedb' => true,]);
+        $this->assertNull($out);
+    }
 }
