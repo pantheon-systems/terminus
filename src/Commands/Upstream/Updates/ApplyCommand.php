@@ -49,7 +49,7 @@ class ApplyCommand extends UpdatesCommand
         if ($count || $composerCount) {
             $prefix = sprintf("Applying %d upstream update(s)", $count);
             if ($composerCount) {
-                $prefix .= sprintf(" and %d composer update(s)", $composerCount);
+                $prefix .= " and any composer update(s)";
             }
             $this->log()->notice(
                 '{prefix} to the {env} environment of {site_id}...',

@@ -219,7 +219,7 @@ class ApplyCommandTest extends UpdatesCommandTest
                 $this->equalTo('notice'),
                 $this->equalTo('{prefix} to the {env} environment of {site_id}...'),
                 $this->equalTo([
-                    'prefix' => 'Applying 0 upstream update(s) and 2 composer update(s)',
+                    'prefix' => 'Applying 0 upstream update(s) and any composer update(s)',
                     'env' => 'dev',
                     'site_id' => 'my-composer-site',
                 ])
