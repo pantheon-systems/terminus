@@ -20,6 +20,13 @@ class UpstreamStatus extends TerminusModel implements EnvironmentInterface
      */
     protected $updates = null;
 
+     /**
+      * Stores composer dependency updates.
+      *
+      * @var object|null
+      */
+    protected $composerUpdates = null;
+
     public function __construct($attributes, array $options = [])
     {
         parent::__construct($attributes, $options);
@@ -53,6 +60,22 @@ class UpstreamStatus extends TerminusModel implements EnvironmentInterface
             )['data'];
         }
         return $this->updates;
+    }
+
+    /**
+     * Retrives composer dependecy updates
+     *
+     * @return object
+     */
+    public function getComposerUpdates()
+    {
+        if ($this->composerUpdates === null) {
+            $env = $this->getEnvironment();
+            $this->composerUpdates = $this->request()->request(
+                "sites/{$env->getSite()->id}/environments/{$env->id}/build/updates"
+            )['data'];
+        }
+        return $this->composerUpdates;
     }
 
     /**
