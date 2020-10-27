@@ -17,6 +17,11 @@ class FileStore implements DataStoreInterface
 
     public function __construct($directory)
     {
+        // Prevent categories group+other from reading, writing or executing
+        // any files written to the FileStore, for security/privacy.
+        // e.g. tokens are cached and could be read by other user accounts
+        // on the machine.
+        umask(077);
         $this->directory = $directory;
     }
 
