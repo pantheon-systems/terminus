@@ -23,7 +23,7 @@ class ListCommandTest extends CommandTestCase
             ['id' => 'master', 'sku' => 'xxx'],
             ['id' => 'another', 'sku' => 'yyy'],
         ];
-        
+
         $plans_collection = $this->getMockBuilder(Plans::class)
             ->disableOriginalConstructor()
             ->getMock();
