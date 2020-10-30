@@ -21,3 +21,20 @@ default:
               machine_token_device:    'Behat Testing Token'
               machine_token_id:        'dcr_q4tFMiYiK9DfJO15'
               cache_dir:               '/tmp/.terminus/cache'
+    hermes:
+      paths: [ '%paths.base%/../hermes-features' ]
+      contexts:
+        - Pantheon\Terminus\HermesTests\HermesContext:
+            parameters:
+              host:                    'terminus.pantheon.io'
+              host_protocol:           'https'
+              verify_host_cert:         false
+              dashboard_host:          'dashboard.pantheon.io'
+              test_site_name:          'behat-hermes-tests'
+              other_user:              'sara@pantheon.io'
+              php_site_domain:         'pantheonsite.io'
+              payment_method_label:    'Visa - 1111'
+              organization_name:       'Agency Name'
+              machine_token_device:    'Terminus for POC'
+              machine_token_id:        'dcr_q4tFMiYiK9DfJO15'
+              cache_dir:               '/tmp/.terminus/cache'
