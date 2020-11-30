@@ -349,6 +349,7 @@ class BackupsTest extends CollectionTestCase
         $expected = [
             'daily_backup_hour' => '16 UTC',
             'weekly_backup_day' => 'Friday',
+            'expiry' => '32 days',
         ];
         $this->assertEquals($expected, $actual);
     }
@@ -395,6 +396,10 @@ class BackupsTest extends CollectionTestCase
 
     public function testSetBackupSchedule()
     {
+        $weekly_backup_ttl_days = Backups::WEEKLY_BACKUP_TTL;
+        $daily_backup_ttl_days = Backups::DAILY_BACKUP_TTL;
+        $weekly_backup_ttl = Backups::convertDaysToSeconds($weekly_backup_ttl_days);
+        $daily_backup_ttl = Backups::convertDaysToSeconds($daily_backup_ttl_days);
         $backups = $this->createBackups();
         $this->workflows->expects($this->once())
             ->method('create')
@@ -402,21 +407,30 @@ class BackupsTest extends CollectionTestCase
                 'change_backup_schedule',
                 ['params' => [
                     'backup_schedule' => (object)[
-                        (object)['hour' => null, 'ttl' => Backups::WEEKLY_BACKUP_TTL],
-                        (object)['hour' => null, 'ttl' => Backups::DAILY_BACKUP_TTL],
-                        (object)['hour' => null, 'ttl' => Backups::DAILY_BACKUP_TTL],
-                        (object)['hour' => null, 'ttl' => Backups::DAILY_BACKUP_TTL],
-                        (object)['hour' => null, 'ttl' => Backups::DAILY_BACKUP_TTL],
-                        (object)['hour' => null, 'ttl' => Backups::DAILY_BACKUP_TTL],
-                        (object)['hour' => null, 'ttl' => Backups::DAILY_BACKUP_TTL],
+                        (object)['hour' => null, 'ttl' => $weekly_backup_ttl],
+                        (object)['hour' => null, 'ttl' => $daily_backup_ttl],
+                        (object)['hour' => null, 'ttl' => $daily_backup_ttl],
+                        (object)['hour' => null, 'ttl' => $daily_backup_ttl],
+                        (object)['hour' => null, 'ttl' => $daily_backup_ttl],
+                        (object)['hour' => null, 'ttl' => $daily_backup_ttl],
+                        (object)['hour' => null, 'ttl' => $daily_backup_ttl],
                     ]
                 ]]
             )
             ->willReturn($this->workflow);
 
-        $actual = $backups->setBackupSchedule(['day' => 'Sunday',]);
+        $actual = $backups->setBackupSchedule([
+            'day' => 'Sunday',
+        ]);
         $this->assertEquals($this->workflow, $actual);
+    }
 
+    public function testSetBackupScheduleWithHour()
+    {
+        $weekly_backup_ttl_days = Backups::WEEKLY_BACKUP_TTL;
+        $daily_backup_ttl_days = Backups::DAILY_BACKUP_TTL;
+        $weekly_backup_ttl = Backups::convertDaysToSeconds($weekly_backup_ttl_days);
+        $daily_backup_ttl = Backups::convertDaysToSeconds($daily_backup_ttl_days);
         $backups = $this->createBackups();
         $this->workflows->expects($this->once())
             ->method('create')
@@ -424,19 +438,52 @@ class BackupsTest extends CollectionTestCase
                 'change_backup_schedule',
                 ['params' => [
                     'backup_schedule' => (object)[
-                        (object)['hour' => 5, 'ttl' => Backups::DAILY_BACKUP_TTL,],
-                        (object)['hour' => 5, 'ttl' => Backups::WEEKLY_BACKUP_TTL,],
-                        (object)['hour' => 5, 'ttl' => Backups::DAILY_BACKUP_TTL,],
-                        (object)['hour' => 5, 'ttl' => Backups::DAILY_BACKUP_TTL,],
-                        (object)['hour' => 5, 'ttl' => Backups::DAILY_BACKUP_TTL,],
-                        (object)['hour' => 5, 'ttl' => Backups::DAILY_BACKUP_TTL,],
-                        (object)['hour' => 5, 'ttl' => Backups::DAILY_BACKUP_TTL,],
+                        (object)['hour' => 5, 'ttl' => $daily_backup_ttl,],
+                        (object)['hour' => 5, 'ttl' => $weekly_backup_ttl,],
+                        (object)['hour' => 5, 'ttl' => $daily_backup_ttl,],
+                        (object)['hour' => 5, 'ttl' => $daily_backup_ttl,],
+                        (object)['hour' => 5, 'ttl' => $daily_backup_ttl,],
+                        (object)['hour' => 5, 'ttl' => $daily_backup_ttl,],
+                        (object)['hour' => 5, 'ttl' => $daily_backup_ttl,],
                     ]
                 ]]
             )
             ->willReturn($this->workflow);
 
         $actual = $backups->setBackupSchedule(['day' => 'Monday', 'hour' => 5,]);
+        $this->assertEquals($this->workflow, $actual);
+    }
+
+    public function testSetBackupScheduleWithTtl()
+    {
+        $weekly_backup_ttl_days = 16;
+        $daily_backup_ttl_days = 2;
+        $weekly_backup_ttl = Backups::convertDaysToSeconds($weekly_backup_ttl_days);
+        $daily_backup_ttl = Backups::convertDaysToSeconds($daily_backup_ttl_days);
+        $backups = $this->createBackups();
+        $this->workflows->expects($this->once())
+            ->method('create')
+            ->with(
+                'change_backup_schedule',
+                ['params' => [
+                    'backup_schedule' => (object)[
+                        (object)['hour' => null, 'ttl' => $daily_backup_ttl,],
+                        (object)['hour' => null, 'ttl' => $weekly_backup_ttl,],
+                        (object)['hour' => null, 'ttl' => $daily_backup_ttl,],
+                        (object)['hour' => null, 'ttl' => $daily_backup_ttl,],
+                        (object)['hour' => null, 'ttl' => $daily_backup_ttl,],
+                        (object)['hour' => null, 'ttl' => $daily_backup_ttl,],
+                        (object)['hour' => null, 'ttl' => $daily_backup_ttl,],
+                    ]
+                ]]
+            )
+            ->willReturn($this->workflow);
+
+        $actual = $backups->setBackupSchedule([
+            'daily-ttl' => $daily_backup_ttl_days,
+            'day' => 'Monday',
+            'weekly-ttl' => $weekly_backup_ttl_days,
+        ]);
         $this->assertEquals($this->workflow, $actual);
     }
 

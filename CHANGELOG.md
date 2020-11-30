@@ -1,9 +1,30 @@
 # Change Log
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org)
 
-## MASTER
+## 3.0.0 - {}
+
+### Added
+- D9ify command (see docs)
+- Symfony Library updates (5.x)
+-
+
+## 2.6.0 - 2021-06-04
+
+### Added
+- `daily-ttl` and `weekly-ttl` options have been added to `Backups::setBackupSchedule()`. (#2133)
+- `keep-for` option has been added to `backup:automatic:schedule`. (#2133)
+- `expiry` information added to the output of `backup:automatic:info`. (#2133)
+
+## 2.5.0 - 2021-01-20
+### Added
+- `getUsername` added to `Binding` model to retrieve the username for a connection. (#2107)
+
 ### Changed
 - `upstream:updates:apply` now applies Composer changes in addition to upstream changes. (#2089)
+- Connection usernames are no longer "pantheon" but derived from API data. (#2107)
+
+### Fixed
+- Fixed issue where `plan:info` receives a 404 error. (#2098)
 
 ## 2.4.1 - 2020-09-08
 ### Changed

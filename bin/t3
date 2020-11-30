@@ -1,4 +1,4 @@
-#!/usr/bin/env php
+#!/usr/bin/env php -d memory_limit=2048M
 <?php
 
 /**
@@ -10,6 +10,9 @@
  */
 
 $pharPath = \Phar::running(true);
+if (version_compare(PHP_VERSION, '7.4.0', '<=') === true) {
+    throw new \PharIo\Version\InvalidVersionException("Sorry, but you need to upgrade PHP to version 7.4 or greater.");
+}
 if ($pharPath) {
     include_once("$pharPath/vendor/autoload.php");
 } elseif (file_exists($path = __DIR__ . '/../vendor/autoload.php')
@@ -40,6 +43,19 @@ $config->extend(new YamlConfig($config->get('root') . '/config/constants.yml'));
 $config->extend(new YamlConfig($config->get('user_home') . '/.terminus/config.yml'));
 $config->extend(new DotEnvConfig(getcwd()));
 $config->extend(new EnvConfig());
+
+$tokens_dir = $_SERVER['HOME'] .
+    DIRECTORY_SEPARATOR . ".terminus" . DIRECTORY_SEPARATOR .
+    "cache" . DIRECTORY_SEPARATOR . "tokens";
+if (!is_dir($tokens_dir)) {
+    mkdir(
+            $tokens_dir,
+        0700,
+        true
+    );
+}
+
+
 
 /**
  * Running Terminus

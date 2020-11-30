@@ -32,7 +32,7 @@ class SavedToken extends TerminusModel implements SessionAwareInterface, DataSto
      */
     public function getReferences()
     {
-        return [$this->id, $this->get('token'),];
+        return [$this->id, $this->get('token')];
     }
 
     /**

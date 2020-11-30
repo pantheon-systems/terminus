@@ -98,7 +98,8 @@ abstract class SSHBaseCommand extends TerminusCommand implements SiteAwareInterf
      */
     protected function sendCommandViaSsh($command)
     {
-        $ssh_command = $this->getConnectionString() . ' ' . ProcessUtils::escapeArgument($command);
+        $ssh_command = $this->getConnectionString() . ' ' . escapeshellarg($command);
+        $this->logger->debug("shell command: {command}", [ 'command' => $command ]);
         if ($this->getConfig()->get('test_mode')) {
             return $this->divertForTestMode($ssh_command);
         }
@@ -187,7 +188,7 @@ abstract class SSHBaseCommand extends TerminusCommand implements SiteAwareInterf
         if (preg_match('/^[a-zA-Z0-9_-]*$/', $arg)) {
             return $arg;
         }
-        return ProcessUtils::escapeArgument($arg);
+        return escapeshellarg($arg);
     }
 
     /**
@@ -262,9 +263,11 @@ abstract class SSHBaseCommand extends TerminusCommand implements SiteAwareInterf
     private function getConnectionString()
     {
         $sftp = $this->environment->sftpConnectionInfo();
+        $command = $this->getConfig()->get('ssh_command');
+
         return vsprintf(
-            'ssh -T %s@%s -p %s -o "StrictHostKeyChecking=no" -o "AddressFamily inet"',
-            [$sftp['username'], $sftp['host'], $sftp['port'],]
+            '%s -T %s@%s -p %s -o "StrictHostKeyChecking=no" -o "AddressFamily inet"',
+            [$command, $sftp['username'], $sftp['host'], $sftp['port'],]
         );
     }
 }

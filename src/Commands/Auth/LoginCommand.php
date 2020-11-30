@@ -11,6 +11,16 @@ use Pantheon\Terminus\Exceptions\TerminusException;
  */
 class LoginCommand extends TerminusCommand
 {
+
+    public static $HELP_TEXT = [
+        "*******************************************************************************",
+        "* THIS IS AN EARLY VERSION OF TERMINUS 3.0. NOT ALL THE COMMANDS ARE WORKING  *",
+        "* AND IT'S NOT 100% COMPATIBLE WITH PHP 8 BUT WE'RE GETTING THERE.            *",
+        "* If you find a bug you think needs to be addressed, please add the bug to    *",
+        "* terminus issue queue: https://github.com/pantheon-systems/terminus/issues   *",
+        "*******************************************************************************",
+    ];
+
     /**
      * Logs in a user to Pantheon.
      *
@@ -35,29 +45,45 @@ class LoginCommand extends TerminusCommand
                 $this->log()->notice('Logging in via machine token.');
                 $tokens->create($token_string);
             }
-        } elseif (isset($options['email']) && !is_null($email = $options['email'])) {
+        }
+
+        if (isset($options['email']) && !is_null($email = $options['email'])) {
             $token = $tokens->get($email);
-        } elseif (count($all_tokens = $tokens->all()) == 1) {
-            $token = array_shift($all_tokens);
-            $this->log()->notice('Found a machine token for {email}.', ['email' => $token->get('email'),]);
-        } else {
+        }
+
+        $all_tokens = $tokens->all();
+
+        if (!isset($token)) {
             if (count($all_tokens) > 1) {
                 throw new TerminusException(
                     "Tokens were saved for the following email addresses:\n{tokens}\nYou may log in via `terminus"
-                        . " auth:login --email=<email>`, or you may visit the dashboard to generate a machine"
-                        . " token:\n{url}",
+                    . " auth:login --email=<email>`, or you may visit the dashboard to generate a machine"
+                    . " token:\n{url}",
                     ['tokens' => implode("\n", $tokens->ids()), 'url' => $this->getMachineTokenCreationURL(),]
                 );
-            } else {
-                throw new TerminusException(
-                    "Please visit the dashboard to generate a machine token:\n{url}",
-                    ['url' => $this->getMachineTokenCreationURL(),]
-                );
+            }
+
+            if (count($all_tokens) == 1) {
+                $token = array_shift($all_tokens);
+                $this->log()->notice('Found a machine token for {email}.', ['email' => $token->get('email'),]);
             }
         }
+
+        if (count($all_tokens) == 0) {
+            throw new TerminusException(
+                "Please visit the dashboard to generate a machine token:\n{url}",
+                ['url' => $this->getMachineTokenCreationURL(),]
+            );
+        }
+
         if (isset($token)) {
-            $this->log()->notice('Logging in via machine token.');
             $token->logIn();
+            $this->log()->notice('Logged in via machine token.');
+            if (static::$HELP_TEXT) {
+                $this->log()->notice(
+                    PHP_EOL . join(PHP_EOL, static::$HELP_TEXT)
+                );
+            }
         }
     }
 

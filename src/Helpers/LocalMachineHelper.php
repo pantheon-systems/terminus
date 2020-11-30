@@ -25,9 +25,7 @@ class LocalMachineHelper implements ConfigAwareInterface, ContainerAwareInterfac
 {
     use ConfigAwareTrait;
     use ContainerAwareTrait;
-    use IO {
-        io as roboIo;
-    }
+    use IO;
 
     /**
      * Executes the given command on the local machine and return the exit code and output.
@@ -39,7 +37,11 @@ class LocalMachineHelper implements ConfigAwareInterface, ContainerAwareInterfac
     {
         $process = $this->getProcess($cmd);
         $process->run($callback);
-        return ['output' => $process->getOutput(), 'exit_code' => $process->getExitCode(),];
+        return [
+            'output' => $process->getOutput(),
+            'stderr' => $process->getErrorOutput(),
+            'exit_code' => $process->getExitCode(),
+        ];
     }
 
     /**
@@ -71,7 +73,11 @@ class LocalMachineHelper implements ConfigAwareInterface, ContainerAwareInterfac
             $process->start();
             $process->wait($callback);
         }
-        return ['output' => $process->getOutput(), 'exit_code' => $process->getExitCode(),];
+        return [
+            'output' => $process->getOutput(),
+            'stderr' => $process->getErrorOutput(),
+            'exit_code' => $process->getExitCode(),
+        ];
     }
 
     /**
@@ -103,7 +109,10 @@ class LocalMachineHelper implements ConfigAwareInterface, ContainerAwareInterfac
     public function getProgressBar(Process $process)
     {
         $process->start();
-        return $this->getContainer()->get(ProcessProgressBar::class, [$this->output(), $process,]);
+        $nickname = \uniqid(__METHOD__ . "-");
+        $this->getContainer()->add($nickname, ProcessProgressBar::class)
+            ->addArguments([$this->output(), $process]);
+        return $this->getContainer()->get($nickname);
     }
 
     /**
@@ -195,6 +204,9 @@ class LocalMachineHelper implements ConfigAwareInterface, ContainerAwareInterfac
      */
     protected function getProcess($cmd)
     {
+        if (is_string($cmd)) {
+            $cmd = [ $cmd ];
+        }
         $process = new Process($cmd);
         $config = $this->getConfig();
         $process->setTimeout($config->get('timeout'));
