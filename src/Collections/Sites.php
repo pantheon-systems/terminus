@@ -150,7 +150,7 @@ class Sites extends APICollection implements SessionAwareInterface
     public function filterByTag($tag)
     {
         return $this->filter(function ($site) use ($tag) {
-            return (empty($tag)) ? $site->tags->contains_none() : $site->tags->contains_any($this->splitString($tag));
+            return (empty($tag)) ? $site->tags->containsNone() : $site->tags->containsAny($this->splitString($tag));
         });
     }
 
@@ -163,7 +163,7 @@ class Sites extends APICollection implements SessionAwareInterface
     public function filterByTags($tags)
     {
         return $this->filter(function ($site) use ($tags) {
-            return (empty($tags)) ? $site->tags->contains_none() : $site->tags->contains_all($this->splitString($tags));
+            return (empty($tags)) ? $site->tags->containsNone() : $site->tags->containsAll($this->splitString($tags));
         });
     }
 
