@@ -2,8 +2,12 @@
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org)
 
 ## MASTER
+### Added
+- `getUsername` added to `Binding` model to retrieve the username for a connection. (#2107)
+
 ### Changed
 - `upstream:updates:apply` now applies Composer changes in addition to upstream changes. (#2089)
+- Connection usernames are no longer "pantheon" but derived from API data. (#2107)
 
 ## 2.4.1 - 2020-09-08
 ### Changed

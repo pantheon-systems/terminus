@@ -89,10 +89,11 @@ class Environment extends TerminusModel implements ContainerAwareInterface, Site
                 $cache_binding = array_shift($cacheserver_binding);
             } while (!is_null($cache_binding) && $cache_binding->get('environment') != $this->id);
 
+            $username = $cache_binding->getUsername();
             $password = $cache_binding->get('password');
             $domain = $cache_binding->get('host');
             $port = $cache_binding->get('port');
-            $url = "redis://pantheon:$password@$domain:$port";
+            $url = "redis://$username:$password@$domain:$port";
             $command = "redis-cli -h $domain -p $port -a $password";
             return [
                 'password' => $password,
@@ -288,7 +289,7 @@ class Environment extends TerminusModel implements ContainerAwareInterface, Site
                 $db_binding = array_shift($dbserver_binding);
             } while ($db_binding->get('environment') != $this->id);
 
-            $username = 'pantheon';
+            $username = $db_binding->getUsername();
             $password = $db_binding->get('password');
             $domain = "dbserver.{$this->id}.{$this->getSite()->id}.drush.in";
             $port = $db_binding->get('port');
