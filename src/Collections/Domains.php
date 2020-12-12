@@ -33,6 +33,13 @@ class Domains extends EnvironmentOwnedCollection
         $this->request->request($url, ['method' => 'put',]);
     }
 
+    public function getACMEStatus($domain)
+    {
+        $url = $this->getUrl() . '/' . rawurlencode($domain);
+        $data = $this->request->request($url, ['method' => 'get',]);
+        return $data['data'];
+    }
+
     /**
      * Fetches domain data hydrated with recommendations
      *
