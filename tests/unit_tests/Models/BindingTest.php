@@ -32,8 +32,6 @@ class BindingTest extends ModelTestCase
             ->disableOriginalConstructor()
             ->getMock();
         $this->collection->method('getSite')->willReturn($site);
-
-        $this->model = new Binding((object)$this->data, ['collection' => $this->collection,]);
     }
 
     /**
