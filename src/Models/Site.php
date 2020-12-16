@@ -185,13 +185,23 @@ class Site extends TerminusModel implements ContainerAwareInterface, Organizatio
      * Returns a specific site feature value
      *
      * @param string $feature Feature to check
+     *
      * @return mixed|null Feature value, or null if not found
+     * @throws \Exception
      */
     public function getFeature($feature)
     {
         if (!isset($this->features)) {
-            $response = $this->request()->request("sites/{$this->id}/features");
-            $this->features = (array)$response['data'];
+            try {
+                $response = $this->request()->request("sites/{$this->id}/features");
+                $this->features = (array)$response['data'];
+            } catch (\Exception $e) {
+                if ($e->getCode() == 404) {
+                    return null;
+                }
+
+                throw $e;
+            }
         }
         if (isset($this->features[$feature])) {
             return $this->features[$feature];
