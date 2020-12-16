@@ -21,12 +21,12 @@ class RestoreCommand extends SingleBackupCommand
      * @command backup:restore
      *
      * @param string $site_env Site & environment in the format `site-name.env`
-     * @option string $file [filename.tgz] Name of backup file
+     * @option string $file [filename.tgz] Name of backup file on the plaform
      * @option string $element [all|code|files|database|db] Backup element
      * @throws TerminusException
      *
      * @usage <site>.<env> Restores the most recent backup of any type to <site>'s <env> environment.
-     * @usage <site>.<env> --file=<backup> Restores backup with the <backup> file name to <site>'s <env> environment.
+     * @usage <site>.<env> --file=<backup> Restores backup with the <backup> file name to <site>'s <env> environment. Use terminus backup:list to identify available backups.
      * @usage <site>.<env> --element=<element> Restores the most recent <element> backup to <site>'s <env> environment.
      */
     public function restoreBackup($site_env, array $options = ['file' => null, 'element' => 'all',])
