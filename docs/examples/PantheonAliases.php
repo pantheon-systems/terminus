@@ -59,17 +59,18 @@ class PantheonAliases
         }
         $db_binding = array_shift($db_bindings);
         $uri        = array_shift($hostnames);
+        $db_user    = $db_binding->getUsername();
         $db_pass    = $db_binding->get('password');
         $db_port    = $db_binding->get('port');
         if (strpos(TERMINUS_HOST, 'onebox') !== false) {
             $remote_user = "appserver.$env_id.$site_id";
             $remote_host = TERMINUS_HOST;
-            $db_url      = "mysql://pantheon:$db_pass@$remote_host:$db_port";
+            $db_url      = "mysql://$db_user:$db_pass@$remote_host:$db_port";
             $db_url     .= '/pantheon';
         } else {
             $remote_user = "$env_id.$site_id";
             $remote_host = "appserver.$env_id.$site_id.drush.in";
-            $db_url      = "mysql://pantheon:$db_pass@dbserver.$environment.$site_id";
+            $db_url      = "mysql://$db_user:$db_pass@dbserver.$environment.$site_id";
             $db_url     .= ".drush.in:$db_port/pantheon";
         }
         $output = "array(
