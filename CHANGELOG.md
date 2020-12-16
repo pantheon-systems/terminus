@@ -3,10 +3,11 @@ All notable changes to this project will be documented in this file. This projec
 
 ## MASTER
 
-## 2.4.1 - 2020-09-02
+## 2.4.1 - 2020-09-08
 ### Changed
 - The `DrushRCEditor` class has been renamed to `DrushRcClass`. (#2083)
 - Upstreams can be ID'd by `label`s, `product_id`s and `machine_name`s in addition to `id`s. (#2086)
+- `upstream:updates:apply` now applies Composer changes in addition to upstream changes. (#2089)
 
 ### Fixed
 - The `DrushRCEditor` class no longer emits deprecation warnings. (#2083)

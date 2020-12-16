@@ -42,4 +42,34 @@ abstract class UpdatesCommand extends TerminusCommand implements SiteAwareInterf
         $updates = $this->getUpstreamUpdates($env);
         return property_exists($updates, 'update_log') ? (array)$updates->update_log : [];
     }
+
+    /**
+     * Get the list of composer dependency updates for a site environment
+     *
+     * @param Environment $env
+     * @return array The list of updates
+     * @throws TerminusException
+     */
+    protected function getComposerUpdatesLog($env)
+    {
+        // Check if the site is IC-enabled.
+        if (empty($env->isBuildStepEnabled())) {
+            return [];
+        }
+        $updates = $env->getUpstreamStatus()->getComposerUpdates();
+        if (empty($updates)) {
+            return [];
+        }
+        $deps = [];
+        if (!empty($updates->added_dependencies)) {
+            $deps = array_merge($deps, $updates->added_dependencies);
+        }
+        if (!empty($updates->updated_dependencies)) {
+            $deps = array_merge($deps, $updates->updated_dependencies);
+        }
+        if (!empty($updates->removed_dependencies)) {
+            $deps = array_merge($deps, $updates->removed_dependencies);
+        }
+        return $deps;
+    }
 }

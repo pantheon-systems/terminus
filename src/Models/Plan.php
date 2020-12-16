@@ -28,6 +28,9 @@ class Plan extends TerminusModel implements SiteInterface
             $attributes = (object)$attributes->attributes;
         }
         parent::__construct($attributes, $options);
+        if (isset($options['site'])) {
+            $this->setSite($options['site']);
+        }
     }
 
     /**

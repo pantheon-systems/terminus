@@ -3,6 +3,7 @@
 namespace Pantheon\Terminus\UnitTests\Models;
 
 use Pantheon\Terminus\Collections\Plans;
+use Pantheon\Terminus\Models\Site;
 use Pantheon\Terminus\Models\Plan;
 
 /**
@@ -28,6 +29,9 @@ class PlanTest extends ModelTestCase
     {
         parent::setUp();
         $this->plans = $this->getMockBuilder(Plans::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $this->site = $this->getMockBuilder(Site::class)
             ->disableOriginalConstructor()
             ->getMock();
         $this->data = [
@@ -203,7 +207,7 @@ class PlanTest extends ModelTestCase
      */
     protected function makePlan(array $attributes = [])
     {
-        $model = new Plan((object)$attributes, ['collection' => $this->plans,]);
+        $model = new Plan((object)$attributes, ['collection' => $this->plans,'site' => $this->site,]);
         $model->setConfig($this->config);
         $model->setRequest($this->request);
         return $model;
