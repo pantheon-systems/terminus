@@ -24,17 +24,14 @@ jobs:
       - name: Install PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: 7.4
+          php-version: 7.3
           coverage: none
 
       - name: Install dependencies
         run: composer install --no-ansi --no-interaction --no-progress
 
-      - name: Run phpcs
-        run: composer cs
-
       - name: Run linter
-        run: composer lint
+        run: composer run cs
 
   backward-compatibility:
     name: Backward Compatibility
@@ -53,7 +50,7 @@ jobs:
       - name: Install PHP with extensions
         uses: shivammathur/setup-php@v2
         with:
-          php-version: 7.4
+          php-version: 7.3
           coverage: none
           extensions: intl
 
@@ -97,8 +94,27 @@ jobs:
 
         include:
           - os: ubuntu-latest
+            php-version: "5.5.38"
+            
+          - os: ubuntu-latest
+            php-version: "5.6"
+            dependencies: highest  
+            
+          - os: ubuntu-latest
+            php-version: "7.0"
+            dependencies: highest
+
+          - os: ubuntu-latest
             php-version: "7.1"
-            dependencies: lowest
+            dependencies: highest
+              
+          - os: ubuntu-latest
+            php-version: "7.2"
+            dependencies: highest
+            
+          - os: ubuntu-latest
+            php-version: "7.3"
+            dependencies: highest  
 
           - os: ubuntu-latest
             php-version: "7.4"
@@ -107,9 +123,7 @@ jobs:
           - os: ubuntu-latest
             php-version: "8.0"
             dependencies: highest
-            codecov: true
-            php-ini-values: assert.exception=1, zend.assertions=1, opcache.enable=1, opcache.enable_cli=1, opcache.optimization_level=-1, opcache.jit_buffer_size=4096M, opcache.jit=1205
-
+      
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -157,9 +171,6 @@ jobs:
       - name: Install highest dependencies with composer
         if: matrix.dependencies == 'highest'
         run: composer update --no-ansi --no-interaction --no-progress
-
-      - name: Run linter
-        run: composer run cs
 
       - name: Run tests with PHPUnit
         run: composer run phpunit
