@@ -16,9 +16,9 @@ class PluginInfoTest extends TerminusTestCase
     /**
      * @inheritdoc
      */
-    public function setUp()
+    public function set_up()
     {
-        parent::setUp();
+        parent::set_up();
 
         $this->plugins_dir = __DIR__ . '/../../fixtures/plugins/';
 

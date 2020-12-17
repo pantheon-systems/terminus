@@ -19,9 +19,9 @@ class ApplyCommandTest extends UpdatesCommandTest
     /**
      * @inheritdoc
      */
-    public function setUp()
+    public function set_up()
     {
-        parent::setUp();
+        parent::set_up();
 
         $this->command = new ApplyCommand($this->getConfig());
         $this->command->setContainer($this->getContainer());

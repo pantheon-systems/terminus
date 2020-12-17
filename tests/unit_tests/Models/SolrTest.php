@@ -20,9 +20,9 @@ class SolrTest extends ModelTestCase
     /**
      * @inheritdoc
      */
-    public function setUp()
+    public function set_up()
     {
-        parent::setUp();
+        parent::set_up();
         $this->workflow = $this->getMockBuilder(Workflow::class)
             ->disableOriginalConstructor()
             ->getMock();

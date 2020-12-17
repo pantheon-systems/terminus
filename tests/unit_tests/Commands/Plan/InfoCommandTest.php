@@ -22,9 +22,9 @@ class InfoCommandTest extends CommandTestCase
     /**
      * @inheritdoc
      */
-    protected function setup()
+    protected function set_up()
     {
-        parent::setUp();
+        parent::set_up();
 
         $this->plan = $this->getMockBuilder(Plan::class)
             ->disableOriginalConstructor()

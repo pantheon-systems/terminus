@@ -24,9 +24,9 @@ class LogsCommandTest extends InfoCommandTest
     /**
      * @inheritdoc
      */
-    protected function setUp()
+    protected function set_up()
     {
-        parent::setUp();
+        parent::set_up();
 
         $this->operation = $this->getMockBuilder(WorkflowOperation::class)
             ->disableOriginalConstructor()

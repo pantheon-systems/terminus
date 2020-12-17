@@ -21,9 +21,9 @@ class ListCommandTest extends UpstreamCommandTest
     /**
      * @inheritdoc
      */
-    public function setUp()
+    public function set_up()
     {
-        parent::setUp();
+        parent::set_up();
         $this->upstreams->method('getCollectedClass')
             ->with()
             ->willReturn(Upstream::class);

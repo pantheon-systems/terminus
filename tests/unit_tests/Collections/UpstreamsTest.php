@@ -37,9 +37,9 @@ class UpstreamsTest extends CollectionTestCase
     /**
      * @inheritdoc
      */
-    public function setUp()
+    public function set_up()
     {
-        parent::setUp();
+        parent::set_up();
         $this->organization = $this->getMockBuilder(Organization::class)
             ->disableOriginalConstructor()
             ->getMock();

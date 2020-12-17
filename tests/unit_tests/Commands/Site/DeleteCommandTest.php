@@ -32,9 +32,9 @@ class DeleteCommandTest extends CommandTestCase
     /**
      * @inheritdoc
      */
-    protected function setup()
+    protected function set_up()
     {
-        parent::setUp();
+        parent::set_up();
 
         $this->workflow = $this->getMockBuilder(Workflow::class)
             ->disableOriginalConstructor()

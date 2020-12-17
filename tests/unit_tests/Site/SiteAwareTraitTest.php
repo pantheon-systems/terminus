@@ -17,9 +17,9 @@ class SiteAwareTraitTest extends CommandTestCase
     /**
      * @inheritdoc
      */
-    public function setUp()
+    public function set_up()
     {
-        parent::setUp();
+        parent::set_up();
 
         $this->class = new DummyClass();
         $this->class->setSites($this->sites);

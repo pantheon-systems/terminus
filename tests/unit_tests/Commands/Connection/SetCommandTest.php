@@ -25,9 +25,9 @@ class SetCommandTest extends CommandTestCase
     /**
      * @inheritdoc
      */
-    protected function setup()
+    protected function set_up()
     {
-        parent::setUp();
+        parent::set_up();
 
         // dummy workflow instance
         $this->workflow = $this->getMockBuilder(Workflow::class)

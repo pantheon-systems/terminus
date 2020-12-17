@@ -15,9 +15,9 @@ class ListCommandTest extends TagCommandTest
     /**
      * @inheritdoc
      */
-    protected function setUp()
+    protected function set_up()
     {
-        parent::setUp();
+        parent::set_up();
 
         $this->command = new ListCommand($this->config);
         $this->command->setLogger($this->logger);

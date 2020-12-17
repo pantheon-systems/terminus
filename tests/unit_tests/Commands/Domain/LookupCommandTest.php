@@ -20,9 +20,9 @@ class LookupCommandTest extends DomainTest
     /**
      * @inheritdoc
      */
-    protected function setUp()
+    protected function set_up()
     {
-        parent::setUp();
+        parent::set_up();
 
         $this->command = new LookupCommand($this->getConfig());
         $this->command->setLogger($this->logger);

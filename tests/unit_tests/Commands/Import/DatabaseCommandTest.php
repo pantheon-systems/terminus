@@ -24,9 +24,9 @@ class DatabaseCommandTest extends CommandTestCase
     /**
      * @inheritdoc
      */
-    protected function setup()
+    protected function set_up()
     {
-        parent::setUp();
+        parent::set_up();
 
         $this->workflow = $this->getMockBuilder(Workflow::class)
             ->disableOriginalConstructor()
@@ -39,7 +39,7 @@ class DatabaseCommandTest extends CommandTestCase
         $this->command->setInput($this->input);
         $this->expectWorkflowProcessing();
     }
-    
+
     /**
      * Exercises import:database command with a valid URL
      */

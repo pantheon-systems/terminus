@@ -36,9 +36,9 @@ class LatestReleaseTest extends TerminusTestCase
     /**
      * @inheritdoc
      */
-    public function setUp()
+    public function set_up()
     {
-        parent::setUp();
+        parent::set_up();
 
         $this->container = $this->getMockBuilder(Container::class)
             ->disableOriginalConstructor()

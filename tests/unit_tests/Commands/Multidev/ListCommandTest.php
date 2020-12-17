@@ -20,9 +20,9 @@ class ListCommandTest extends MultidevCommandTest
      * Sets up the fixture, for example, open a network connection.
      * This method is called before a test is executed.
      */
-    protected function setUp()
+    protected function set_up()
     {
-        parent::setUp();
+        parent::set_up();
 
         $this->data = [
             'id' => 'testing',

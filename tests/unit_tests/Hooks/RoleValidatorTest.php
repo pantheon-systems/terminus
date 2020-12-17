@@ -8,13 +8,14 @@ use Pantheon\Terminus\Config\TerminusConfig;
 use Pantheon\Terminus\Exceptions\TerminusException;
 use Pantheon\Terminus\Hooks\RoleValidator;
 use Symfony\Component\Console\Input\InputInterface;
+use Pantheon\Terminus\UnitTests\TerminusTestCase;
 
 /**
  * Class RoleValidatorTest
  * Testing class for Pantheon\Terminus\Hooks\RoleValidator
  * @package Pantheon\Terminus\UnitTests\Hooks
  */
-class RoleValidatorTest extends \PHPUnit_Framework_TestCase
+class RoleValidatorTest extends TerminusTestCase
 {
     const ORG_ROLES = 'admin, developer, team_member, or unprivileged';
     const PARAM_NAME = 'role';
@@ -43,7 +44,7 @@ class RoleValidatorTest extends \PHPUnit_Framework_TestCase
     /**
      * @inheritDoc
      */
-    public function setUp()
+    public function set_up()
     {
         $this->config = new TerminusConfig();
 
