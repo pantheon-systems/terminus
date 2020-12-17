@@ -10,3 +10,4 @@
 .idea
 .vagrant
 Vagrantfile
+tests/config/.phpunit.result.cache
