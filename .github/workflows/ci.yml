@@ -5,7 +5,7 @@ on:
   pull_request:
     branches:
       - main
-      - master 
+      - master
   push:
     branches:
       - main
@@ -58,19 +58,19 @@ jobs:
 
         dependencies:
           - locked
-        
+
         codecov:
           - false
 
         include:
           - os: ubuntu-latest
-            dependencies: locked  
+            dependencies: locked
             php-version: "5.5.38"
-            
+
           - os: ubuntu-latest
             php-version: "5.6"
-            dependencies: highest  
-            
+            dependencies: highest
+
           - os: ubuntu-latest
             php-version: "7.0"
             dependencies: highest
@@ -78,11 +78,11 @@ jobs:
           - os: ubuntu-latest
             php-version: "7.1"
             dependencies: highest
-              
+
           - os: ubuntu-latest
             php-version: "7.2"
             dependencies: highest
-      
+
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -113,7 +113,7 @@ jobs:
 
       - name: Make sure composer.json is valid before we start modifyig it
         run: composer validate
-        
+
       - name: Clear platform php configuration in case we need to update phpunit
         run: composer config --unset platform.php
 
@@ -132,8 +132,8 @@ jobs:
         run: composer update --no-ansi --no-interaction --no-progress
 
       - name: Run tests with PHPUnit
-        run: ./vendor/bin/phpunit
-      
+        run: ./vendor/bin/phpunit /tests
+
       - name: Run tests with Behat
         run: composer run behat
 #add code coverage w/ conditional of PHP 7.0 only
