@@ -51,7 +51,7 @@ jobs:
           - windows-latest
 
         php-version:
-          - "7.4"
+          - "7.3"
 
         php-ini-values:
           - assert.exception=1, zend.assertions=1
@@ -81,14 +81,6 @@ jobs:
               
           - os: ubuntu-latest
             php-version: "7.2"
-            dependencies: highest
-            
-          - os: ubuntu-latest
-            php-version: "7.3"
-            dependencies: highest  
-
-          - os: ubuntu-latest
-            php-version: "7.4"
             dependencies: highest
       
     steps:
