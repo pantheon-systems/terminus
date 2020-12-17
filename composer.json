@@ -58,7 +58,7 @@
   "require-dev": {
     "behat/behat": "^3.2.2",
     "php-vcr/php-vcr": "^1.4",
-    "phpunit/phpunit": "^4.8.36",
+    "phpunit/phpunit": "^4.8.36 || ^7.5.20 || ^8 || ^9",
     "php-coveralls/php-coveralls": "^2.1",
     "squizlabs/php_codesniffer": "^3.5"
   },
