@@ -132,7 +132,7 @@ jobs:
         run: composer update --no-ansi --no-interaction --no-progress
 
       - name: Run tests with PHPUnit
-        run: ./vendor/bin/phpunit tests/
+        run: ./vendor/bin/phpunit -c tests/config/phpunit.xml.dist --debug --testsuite=unit
 
       - name: Run tests with Behat
         run: composer run behat
