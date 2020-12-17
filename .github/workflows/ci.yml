@@ -132,7 +132,7 @@ jobs:
         run: composer update --no-ansi --no-interaction --no-progress
 
       - name: Run tests with PHPUnit
-        run: composer run phpunit
+        run: ./vendor/bin/phpunit
       
       - name: Run tests with Behat
         run: composer run behat
