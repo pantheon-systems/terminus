@@ -11,9 +11,9 @@ use Pantheon\Terminus\UnitTests\Commands\Workflow\WorkflowCommandTest;
  */
 abstract class InfoCommandTest extends WorkflowCommandTest
 {
-    protected function setUp()
+    protected function set_up()
     {
-        parent::setUp();
+        parent::set_up();
 
         $this->workflows->expects($this->once())
             ->method('setPaging')

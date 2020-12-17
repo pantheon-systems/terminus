@@ -21,9 +21,9 @@ class ConsoleCommandTest extends EnvCommandTest
     /**
      * @inheritdoc
      */
-    public function setUp()
+    public function set_up()
     {
-        parent::setUp();
+        parent::set_up();
 
         $this->command = new ConsoleCommand();
         $this->command->setSites($this->sites);

@@ -14,9 +14,9 @@ class AddCommandTest extends TagCommandTest
     /**
      * @inheritdoc
      */
-    protected function setUp()
+    protected function set_up()
     {
-        parent::setUp();
+        parent::set_up();
 
         $this->command = new AddCommand($this->config);
         $this->command->setLogger($this->logger);

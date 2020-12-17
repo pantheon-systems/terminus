@@ -14,9 +14,9 @@ class DrushCommandTest extends CommandTestCase
     /**
      * @inheritdoc
      */
-    public function setUp()
+    public function set_up()
     {
-        parent::setUp();
+        parent::set_up();
 
         $this->command = $this->getMockBuilder(DrushCommand::class)
             ->disableOriginalConstructor()

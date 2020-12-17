@@ -16,9 +16,9 @@ class RemoveCommandTest extends SSHKeyCommandTest
     /**
      * @inheritdoc
      */
-    protected function setUp()
+    protected function set_up()
     {
-        parent::setUp();
+        parent::set_up();
 
         $this->command = new RemoveCommand($this->getConfig());
         $this->command->setSession($this->session);
@@ -99,7 +99,7 @@ class RemoveCommandTest extends SSHKeyCommandTest
             ->willReturn(
                 $token
             );
-        
+
         $this->setExpectedException(
             \Exception::class,
             'There was an problem deleting the SSH key.'

@@ -23,10 +23,10 @@ abstract class MachineTokenCommandTest extends CommandTestCase
     /**
      * @inheritdoc
      */
-    protected function setUp()
+    protected function set_up()
     {
-        parent::setUp();
-        
+        parent::set_up();
+
         $this->machine_tokens = $this->getMockBuilder(MachineTokens::class)
             ->disableOriginalConstructor()
             ->getMock();

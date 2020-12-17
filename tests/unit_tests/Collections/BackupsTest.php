@@ -30,9 +30,9 @@ class BackupsTest extends CollectionTestCase
      */
     protected $environment;
 
-    public function setUp()
+    public function set_up()
     {
-        parent::setUp();
+        parent::set_up();
 
         $this->backup_data = (object)[
             '1471562180_backup_code' =>

@@ -41,9 +41,9 @@ class EnvironmentsTest extends CollectionTestCase
     /**
      * @inheritdoc
      */
-    public function setUp()
+    public function set_up()
     {
-        parent::setUp();
+        parent::set_up();
 
         $this->request = $this->getMockBuilder(Request::class)
             ->disableOriginalConstructor()

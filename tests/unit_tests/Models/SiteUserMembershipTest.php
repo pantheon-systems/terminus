@@ -46,9 +46,9 @@ class SiteUserMembershipTest extends TerminusTestCase
     /**
      * @inheritdoc
      */
-    public function setUp()
+    public function set_up()
     {
-        parent::setUp();
+        parent::set_up();
 
         $this->user_data = [
             'id' => 'abc',

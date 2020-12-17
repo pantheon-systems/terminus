@@ -17,9 +17,9 @@ class MergeToDevCommandTest extends MultidevCommandTest
     /**
      * @inheritdoc
      */
-    protected function setUp()
+    protected function set_up()
     {
-        parent::setUp();
+        parent::set_up();
 
         $this->command = new MergeToDevCommand($this->getConfig());
         $this->command->setContainer($this->getContainer());

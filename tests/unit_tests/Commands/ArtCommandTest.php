@@ -45,9 +45,9 @@ class ArtCommandTest extends CommandTestCase
     /**
      * @inheritdoc
      */
-    protected function setUp()
+    protected function set_up()
     {
-        parent::setUp();
+        parent::set_up();
 
         $this->config = $this->getMockBuilder(TerminusConfig::class)
             ->disableOriginalConstructor()

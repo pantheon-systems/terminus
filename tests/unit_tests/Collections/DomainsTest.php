@@ -39,9 +39,9 @@ class DomainsTest extends CollectionTestCase
     /**
      * @inheritdoc
      */
-    public function setUp()
+    public function set_up()
     {
-        parent::setUp();
+        parent::set_up();
 
         $this->environment = $this->getMockBuilder(Environment::class)
             ->disableOriginalConstructor()

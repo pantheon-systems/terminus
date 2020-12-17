@@ -43,9 +43,9 @@ abstract class TagCommandTest extends CommandTestCase
     /**
      * @inheritdoc
      */
-    protected function setUp()
+    protected function set_up()
     {
-        parent::setUp();
+        parent::set_up();
 
         $this->site->id = 'site_id';
         $this->site_name = 'site_name';

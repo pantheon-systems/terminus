@@ -65,7 +65,7 @@ class SetCommandTest extends CommandTestCase
     /**
      * @inheritdoc
      */
-    protected function setup()
+    protected function set_up()
     {
         $this->authorizations = $this->getMockBuilder(SiteAuthorizations::class)
             ->disableOriginalConstructor()
@@ -88,7 +88,7 @@ class SetCommandTest extends CommandTestCase
         $this->site_upstream->id = 'Site upstream ID';
         $this->upstream_data = ['framework' => 'Framework', 'id' => 'upstream_id', 'label' => 'Upstream Name',];
 
-        parent::setUp();
+        parent::set_up();
 
         $this->site->expects($this->once())
             ->method('getAuthorizations')

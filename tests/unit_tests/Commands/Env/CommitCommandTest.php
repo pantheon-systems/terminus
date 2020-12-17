@@ -17,9 +17,9 @@ class CommitCommandTest extends EnvCommandTest
     /**
      * Sets up the test fixture.
      */
-    protected function setUp()
+    protected function set_up()
     {
-        parent::setUp();
+        parent::set_up();
         $this->command = new CommitCommand($this->getConfig());
         $this->command->setContainer($this->getContainer());
         $this->command->setLogger($this->logger);

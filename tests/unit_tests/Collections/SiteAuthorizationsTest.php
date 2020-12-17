@@ -25,9 +25,9 @@ class SiteAuthorizationsTest extends CollectionTestCase
     /**
      * @inheritdoc
      */
-    public function setUp()
+    public function set_up()
     {
-        parent::setUp();
+        parent::set_up();
 
         $this->site = $this->getMockBuilder(Site::class)
             ->disableOriginalConstructor()

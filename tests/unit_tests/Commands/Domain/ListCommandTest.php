@@ -16,9 +16,9 @@ class ListCommandTest extends DomainTest
     /**
      * @inheritdoc
      */
-    protected function setUp()
+    protected function set_up()
     {
-        parent::setUp();
+        parent::set_up();
 
         $this->command = new ListCommand($this->getConfig());
         $this->command->setLogger($this->logger);

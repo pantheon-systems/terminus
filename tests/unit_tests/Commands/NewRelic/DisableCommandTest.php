@@ -18,9 +18,9 @@ class DisableCommandTest extends NewRelicCommandTest
     /**
      * @inheritdoc
      */
-    public function setUp()
+    public function set_up()
     {
-        parent::setUp();
+        parent::set_up();
 
         $this->command = new DisableCommand();
         $this->command->setContainer($this->getContainer());

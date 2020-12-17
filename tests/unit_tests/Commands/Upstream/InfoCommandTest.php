@@ -15,9 +15,9 @@ class InfoCommandTest extends UpstreamCommandTest
     /**
      * @inheritdoc
      */
-    public function setUp()
+    public function set_up()
     {
-        parent::setUp();
+        parent::set_up();
 
         $this->command = new InfoCommand($this->getConfig());
         $this->command->setSession($this->session);

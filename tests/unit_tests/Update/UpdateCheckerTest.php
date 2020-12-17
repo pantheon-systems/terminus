@@ -46,9 +46,9 @@ class UpdateCheckerTest extends TerminusTestCase
     /**
      * @inheritdoc
      */
-    public function setUp()
+    public function set_up()
     {
-        parent::setUp();
+        parent::set_up();
 
         $this->config = $this->getMockBuilder(TerminusConfig::class)
             ->disableOriginalConstructor()
@@ -182,24 +182,24 @@ class UpdateCheckerTest extends TerminusTestCase
     {
         $running_version_num = '1.0.0-beta.2';
 
-        $this->config->expects($this->once())
+        $this->config->expects($this->any())
             ->method('get')
             ->with($this->equalTo('version'))
             ->willReturn($running_version_num);
-        $this->container->expects($this->once())
+        $this->container->expects($this->any())
             ->method('get')
             ->with(
                 $this->equalTo(LatestRelease::class),
                 $this->equalTo([$this->data_store,])
             )
             ->willReturn($this->latest_release);
-        $this->latest_release->expects($this->once())
+        $this->latest_release->expects($this->any())
             ->method('get')
             ->with($this->equalTo('version'))
             ->will($this->throwException(new TerminusNotFoundException()));
         $this->logger->expects($this->never())
             ->method('notice');
-        $this->logger->expects($this->once())
+        $this->logger->expects($this->any())
             ->method('debug')
             ->with(
                 $this->equalTo('Terminus has no saved release information.')

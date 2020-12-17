@@ -22,9 +22,9 @@ class AddCommandTest extends TeamCommandTest
     /**
      * @inheritdoc
      */
-    protected function setUp()
+    protected function set_up()
     {
-        parent::setUp();
+        parent::set_up();
 
         $this->message = 'message';
 

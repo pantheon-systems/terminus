@@ -22,9 +22,9 @@ class LoginCommandTest extends AuthTest
     /**
      * @inheritdoc
      */
-    public function setUp()
+    public function set_up()
     {
-        parent::setUp();
+        parent::set_up();
 
         $this->token = $this->getMockBuilder(SavedToken::class)
             ->disableOriginalConstructor()

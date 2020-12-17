@@ -25,9 +25,9 @@ class SiteCommandTest extends CommandTestCase
     /**
      * @inheritdoc
      */
-    protected function setup()
+    protected function set_up()
     {
-        parent::setUp();
+        parent::set_up();
 
         $this->workflow = $this->getMockBuilder(Workflow::class)
             ->disableOriginalConstructor()
@@ -40,7 +40,7 @@ class SiteCommandTest extends CommandTestCase
         $this->command->setInput($this->input);
         $this->expectWorkflowProcessing();
     }
-    
+
     /**
      * Exercises site:import command with a valid URL
      */
