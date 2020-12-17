@@ -19,9 +19,9 @@ class CompleteCommandTest extends CommandTestCase
     /**
      * @inheritdoc
      */
-    protected function setup()
+    protected function set_up()
     {
-        parent::setUp();
+        parent::set_up();
 
         $this->command = new CompleteCommand($this->getConfig());
         $this->command->setContainer($this->getContainer());
@@ -29,7 +29,7 @@ class CompleteCommandTest extends CommandTestCase
         $this->command->setLogger($this->logger);
         $this->expectWorkflowProcessing();
     }
-    
+
     /**
      * Tests the import:complete command
      */

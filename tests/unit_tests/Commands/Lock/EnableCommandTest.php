@@ -18,9 +18,9 @@ class EnableCommandTest extends LockCommandTest
     /**
      * @inheritdoc
      */
-    public function setUp()
+    public function set_up()
     {
-        parent::setUp();
+        parent::set_up();
 
         $this->command = new EnableCommand($this->getConfig());
         $this->command->setContainer($this->getContainer());

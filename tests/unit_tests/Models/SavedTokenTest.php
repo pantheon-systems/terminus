@@ -28,9 +28,9 @@ class SavedTokenTest extends ModelTestCase
      */
     protected $token_data;
 
-    public function setUp()
+    public function set_up()
     {
-        parent::setUp();
+        parent::set_up();
 
         $this->data_store = $this->getMockBuilder(FileStore::class)
             ->disableOriginalConstructor()

@@ -18,9 +18,9 @@ class ClearCacheCommandTest extends EnvCommandTest
     /**
      * @inheritdoc
      */
-    public function setUp()
+    public function set_up()
     {
-        parent::setUp();
+        parent::set_up();
 
         $this->command = new ClearCacheCommand($this->getConfig());
         $this->command->setContainer($this->getContainer());

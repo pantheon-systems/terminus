@@ -40,9 +40,9 @@ class AliasesCommandTest extends CommandTestCase
     /**
      * @inheritdoc
      */
-    protected function setUp()
+    protected function set_up()
     {
-        parent::setUp();
+        parent::set_up();
 
         $this->fixtures = new AliasFixtures();
         $this->output = new BufferedOutput();
@@ -79,7 +79,7 @@ class AliasesCommandTest extends CommandTestCase
     /**
      * @inheritdoc
      */
-    protected function tearDown()
+    protected function tear_down()
     {
         $this->fixtures->cleanup();
     }

@@ -19,9 +19,9 @@ abstract class AuthTest extends CommandTestCase
     /**
      * @inheritdoc
      */
-    public function setUp()
+    public function set_up()
     {
-        parent::setUp();
+        parent::set_up();
 
         $this->session = $this->getMockBuilder(Session::class)
             ->disableOriginalConstructor()

@@ -22,9 +22,9 @@ class ConfigDumpCommandTest extends CommandTestCase
     /**
      * @inheritdoc
      */
-    public function setUp()
+    public function set_up()
     {
-        parent::setUp();
+        parent::set_up();
 
         $this->config = $this->getMockBuilder(TerminusConfig::class)
             ->disableOriginalConstructor()

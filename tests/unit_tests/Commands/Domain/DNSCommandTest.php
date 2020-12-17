@@ -25,9 +25,9 @@ class DNSCommandTest extends DomainTest
     /**
      * @inheritdoc
      */
-    protected function setUp()
+    protected function set_up()
     {
-        parent::setUp();
+        parent::set_up();
 
         $this->dns_records = $this->getMockBuilder(DNSRecord::class)
             ->disableOriginalConstructor()

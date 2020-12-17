@@ -14,9 +14,9 @@ abstract class NewRelicCommandTest extends CommandTestCase
     /**
      * @inheritdoc
      */
-    public function setUp()
+    public function set_up()
     {
-        parent::setUp();
+        parent::set_up();
 
         $this->new_relic = $this->getMockBuilder(NewRelic::class)
             ->disableOriginalConstructor()

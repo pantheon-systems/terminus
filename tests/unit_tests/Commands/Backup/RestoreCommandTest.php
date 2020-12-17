@@ -19,9 +19,9 @@ class RestoreCommandTest extends BackupCommandTest
     /**
      * @inheritdoc
      */
-    protected function setUp()
+    protected function set_up()
     {
-        parent::setUp();
+        parent::set_up();
         $this->command = new RestoreCommand($this->sites);
         $this->command->setContainer($this->getContainer());
         $this->command->setLogger($this->logger);

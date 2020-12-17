@@ -20,9 +20,9 @@ class ListCommandTest extends CommandTestCase
     /**
      * @inheritdoc
      */
-    protected function setUp()
+    protected function set_up()
     {
-        parent::setUp();
+        parent::set_up();
 
         $this->org_memberships = $this->getMockBuilder(SiteOrganizationMemberships::class)
             ->disableOriginalConstructor()

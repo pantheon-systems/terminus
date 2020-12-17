@@ -29,9 +29,9 @@ abstract class BackupCommandTest extends CommandTestCase
     /**
      * @inheritdoc
      */
-    protected function setUp()
+    protected function set_up()
     {
-        parent::setUp();
+        parent::set_up();
 
         $this->backups = $this->getMockBuilder(Backups::class)
             ->disableOriginalConstructor()

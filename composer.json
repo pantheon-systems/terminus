@@ -59,6 +59,7 @@
     "behat/behat": "^3.2.2",
     "php-vcr/php-vcr": "^1.4",
     "phpunit/phpunit": "^4.8.36 || ^6.5",
+    "yoast/phpunit-polyfills": "^0.2.0",
     "php-coveralls/php-coveralls": "^2.1",
     "squizlabs/php_codesniffer": "^3.5"
   },
