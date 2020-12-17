@@ -16,13 +16,6 @@ class PluginDiscovery implements LoggerAwareInterface
     use LoggerAwareTrait;
 
     /**
-     * List of all Terminus plugins that have been rolled into Terminus core.
-     */
-    const BLACKLIST = [
-        'pantheon-systems/terminus-aliases-plugin'
-    ];
-
-    /**
      * @var string The path to the directory to search for plugins.
      */
     protected $directory_path;
@@ -35,6 +28,16 @@ class PluginDiscovery implements LoggerAwareInterface
     public function __construct($path)
     {
         $this->directory_path = $path;
+    }
+
+    /**
+     * List of all Terminus plugins that have been rolled into Terminus core.
+     */
+    public function disallowlist()
+    {
+        return [
+            'pantheon-systems/terminus-aliases-plugin'
+        ];
     }
 
     /**
@@ -51,12 +54,12 @@ class PluginDiscovery implements LoggerAwareInterface
             return $out;
             // Plugin directory probably didn't exist or wasn't writable. Do nothing.
         }
-
+        $disallowlist = $this->disallowlist();
         foreach ($di as $dir) {
             if ($dir->isDir() && !$dir->isDot() && $dir->isReadable()) {
                 try {
                     $plugin = new PluginInfo($dir->getPathname());
-                    if (!in_array($plugin->getName(), self::BLACKLIST)) {
+                    if (!in_array($plugin->getName(), $disallowlist)) {
                         $out[] = $plugin;
                     }
                 } catch (TerminusException $e) {
