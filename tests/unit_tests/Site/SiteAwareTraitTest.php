@@ -41,9 +41,8 @@ class SiteAwareTraitTest extends CommandTestCase
      */
     public function testGetSiteEnvWrongFormat()
     {
-        $this->setExpectedException(
-            TerminusException::class,
-            'The environment argument must be given as <site_name>.<environment>'
+        $this->expectException(TerminusException::class);
+        $this->expectExceptionMessage('The environment argument must be given as <site_name>.<environment>'
         );
 
         $out = $this->class->getSiteEnv('');
@@ -77,11 +76,8 @@ class SiteAwareTraitTest extends CommandTestCase
             ->method('isFrozen')
             ->willReturn(true);
 
-        $this->setExpectedException(
-            TerminusException::class,
-            'This site is frozen. Its test and live environments and many commands will be '
-            . 'unavailable while it remains frozen.'
-        );
+        $this->expectException(TerminusException::class);
+        $this->expectExceptionMessage('This site is frozen. Its test and live environments and many commands will be unavailable while it remains frozen.');
 
         $out = $this->class->getUnfrozenSiteEnv("{$this->site->id}.{$this->environment->id}");
         $this->assertNull($out);

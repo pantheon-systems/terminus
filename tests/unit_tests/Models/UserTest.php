@@ -78,8 +78,8 @@ class UserTest extends ModelTestCase
         $config->expects($this->exactly(2))
             ->method('get')
             ->withConsecutive(
-                $this->equalTo('dashboard_protocol'),
-                $this->equalTo('dashboard_host')
+                [$this->equalTo('dashboard_protocol')],
+                [$this->equalTo('dashboard_host')]
             )
             ->willReturnOnConsecutiveCalls(
                 'https',

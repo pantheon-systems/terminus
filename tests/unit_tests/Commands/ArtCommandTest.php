@@ -103,7 +103,7 @@ class ArtCommandTest extends CommandTestCase
             ->willReturn($artwork);
 
         $out = $this->command->art($name);
-        $this->assertInternalType('string', $out);
+        $this->assertIsString($out);
     }
 
     /**
@@ -123,7 +123,7 @@ class ArtCommandTest extends CommandTestCase
             ->willReturn($artwork);
 
         $out = $this->command->art();
-        $this->assertInternalType('string', $out);
+        $this->assertIsString($out);
     }
 
     /**
@@ -140,10 +140,8 @@ class ArtCommandTest extends CommandTestCase
         $this->local_machine_helper->expects($this->never())
             ->method('readFile');
 
-        $this->setExpectedException(
-            TerminusNotFoundException::class,
-            "There is no source for the requested $name artwork."
-        );
+        $this->expectException(TerminusNotFoundException::class);
+        $this->expectExceptionMessage("There is no source for the requested $name artwork.");
 
         $out = $this->command->art($name);
         $this->assertNull($out);

@@ -177,10 +177,8 @@ class DeployCommandTest extends EnvCommandTest
             ->method('isFrozen')
             ->willReturn(false);
 
-        $this->setExpectedException(
-            TerminusException::class,
-            "$site_name's live environment cannot be cloned because it has not been initialized."
-        );
+        $this->expectException(TerminusException::class);
+        $this->expectExceptionMessage("$site_name's live environment cannot be cloned because it has not been initialized.");
 
         // Run the deploy.
         $this->command->deploy(

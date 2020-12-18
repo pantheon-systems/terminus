@@ -56,7 +56,8 @@ class WakeCommandTest extends EnvCommandTest
             ->with()
             ->willReturn(['success' => false, 'target' => 'dev',]);
 
-        $this->setExpectedException(TerminusException::class, 'Could not reach dev');
+        $this->expectException(TerminusException::class);
+        $this->expectExceptionMessage('Could not reach dev');
 
         $out = $this->command->wake('mysite.dev');
         $this->assertNull($out);
@@ -72,7 +73,8 @@ class WakeCommandTest extends EnvCommandTest
             ->with()
             ->willReturn(['success' => true, 'target' => 'dev',]);
 
-        $this->setExpectedException(TerminusException::class, 'Pantheon headers missing, which is not quite right.');
+        $this->expectException(TerminusException::class);
+        $this->expectExceptionMessage('Pantheon headers missing, which is not quite right.');
 
         $out = $this->command->wake('mysite.dev');
         $this->assertNull($out);

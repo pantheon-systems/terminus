@@ -185,7 +185,8 @@ class BackupTest extends ModelTestCase
         $this->assertEquals($workflow, $backup->restore());
 
         $backup = $this->getBackup(['id' => 'scheduledfor_archivetype_xyz', 'filename' => 'def.tgz',]);
-        $this->setExpectedException(TerminusException::class, 'This backup has no archive to restore.');
+        $this->expectException(TerminusException::class);
+        $this->expectExceptionMessage('This backup has no archive to restore.');
         $this->assertNull($backup->restore());
     }
 

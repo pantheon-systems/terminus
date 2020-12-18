@@ -120,7 +120,8 @@ class DeleteCommandTest extends CommandTestCase
             ->willReturn($this->workflow);
         $this->getProgressBar()->method('cycle')
             ->will($this->throwException(new \Exception($this->message, 403)));
-        $this->setExpectedException(\Exception::class, $this->message);
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage($this->message);
         $this->logger->expects($this->never())
             ->method('log');
 
@@ -144,7 +145,8 @@ class DeleteCommandTest extends CommandTestCase
         $this->logger->expects($this->never())
             ->method('log');
 
-        $this->setExpectedException(\Exception::class, $exception_message);
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage($exception_message);
 
         $out = $this->command->delete($this->site_name);
         $this->assertNull($out);

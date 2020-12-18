@@ -40,7 +40,7 @@ class SSHKeysTest extends UserOwnedCollectionTest
         $this->collection->addKey($file);
         unlink($file);
 
-        $this->setExpectedException(TerminusException::class);
+        $this->expectException(TerminusException::class);
         $this->collection->addKey($file);
     }
 
@@ -52,7 +52,7 @@ class SSHKeysTest extends UserOwnedCollectionTest
 
         $this->collection->deleteAll();
     }
-    
+
     public function testFetch()
     {
         $data = [
