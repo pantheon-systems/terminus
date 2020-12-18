@@ -48,16 +48,19 @@ jobs:
       matrix:
         os:
           - ubuntu-latest
-          - windows-latest
 
         php-version:
           - "7.3"
+          - "7.2"
+          - "7.1"
+          - "7.0"
+          - "5.6"
 
         php-ini-values:
           - assert.exception=1, zend.assertions=1
 
         dependencies:
-          - locked
+          - highest
 
         codecov:
           - false
@@ -67,21 +70,9 @@ jobs:
             dependencies: locked
             php-version: "5.5.38"
 
-          - os: ubuntu-latest
-            php-version: "5.6"
-            dependencies: highest
-
-          - os: ubuntu-latest
-            php-version: "7.0"
-            dependencies: highest
-
-          - os: ubuntu-latest
-            php-version: "7.1"
-            dependencies: highest
-
-          - os: ubuntu-latest
-            php-version: "7.2"
-            dependencies: highest
+#          - os: windows-latest
+#            dependencies: locked
+#            php-version: "5.5.38"
 
     steps:
       - name: Checkout
