@@ -11,6 +11,9 @@ All notable changes to this project will be documented in this file. This projec
 - `upstream:updates:apply` now applies Composer changes in addition to upstream changes. (#2089)
 - Connection usernames are no longer "pantheon" but derived from API data. (#2107)
 
+### Fixed
+- Fixed issue where `plan:info` receives a 404 error. (#2098)
+
 ## 2.4.1 - 2020-09-08
 ### Changed
 - The `DrushRCEditor` class has been renamed to `DrushRcClass`. (#2083)
