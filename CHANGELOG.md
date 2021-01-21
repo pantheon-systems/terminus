@@ -1,7 +1,9 @@
 # Change Log
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org)
 
-## 2.5.0 - 2021-01-19
+## MASTER
+
+## 2.5.0 - 2021-01-20
 ### Added
 - `getUsername` added to `Binding` model to retrieve the username for a connection. (#2107)
 
