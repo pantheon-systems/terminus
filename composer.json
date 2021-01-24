@@ -28,7 +28,8 @@
   "autoload-dev": {
     "psr-4": {
       "Pantheon\\Terminus\\UnitTests\\": "tests/unit_tests/",
-      "Pantheon\\Terminus\\FeatureTests\\": "tests/features/bootstrap/"
+      "Pantheon\\Terminus\\FeatureTests\\": "tests/features/bootstrap/",
+      "Pantheon\\Terminus\\HermesTests\\": "tests/hermes-features/bootstrap/"
     },
     "classmap": ["scripts/UpdateClassLists.php"]
   },
@@ -50,6 +51,7 @@
       "coveralls": "php vendor/bin/php-coveralls -v -c tests/config/coveralls.yml",
       "cs": "phpcs --standard=tests/config/linting_ruleset.xml tests/unit_tests bin/terminus src",
       "docs": "php scripts/make-docs.php",
+      "hermes": "SHELL_INTERACTIVE=true behat --colors --config tests/config/behat.yml --suite=hermes",
       "lint": "@cs",
       "phpunit": "SHELL_INTERACTIVE=true phpunit --colors=always  -c tests/config/phpunit.xml.dist --debug",
       "functional": "phpunit --colors=always -c tests/config/functional.phpunit.xml.dist --debug",
