@@ -43,7 +43,7 @@ class ListCommandTest extends UpdatesCommandTest
             ->method('log')
             ->with(
                 $this->equalTo('warning'),
-                $this->equalTo('There are no available updates for the site 123')
+                $this->equalTo('There are no available updates for the site 123.')
             );
 
         $out = $this->command->listUpstreamUpdates('123');
