@@ -11,7 +11,7 @@ Feature: Update a site with all its upstream's updates
   @vcr upstream-updates.yml
   Scenario: Check for upstream updates and there aren't any
     When I run "terminus upstream:updates:list [[test_site_name]].dev"
-    Then I should get: "There are no available updates for this site."
+    Then I should get: "There are no available updates for the site [[test_site_name]].dev."
     And I should get: "----------- ----------- --------- --------"
     And I should get: "Commit ID   Timestamp   Message   Author"
     And I should get: "----------- ----------- --------- --------"
