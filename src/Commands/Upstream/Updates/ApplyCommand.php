@@ -66,7 +66,7 @@ class ApplyCommand extends UpdatesCommand
             $this->processWorkflow($workflow);
             $this->log()->notice($workflow->getMessage());
         } else {
-            $this->log()->warning('There are no available updates for this site.');
+            $this->log()->warning('There are no available updates for the site ' . $site_env . '.');
         }
     }
 }

@@ -51,7 +51,7 @@ class DeployCommand extends TerminusCommand implements SiteAwareInterface
         $annotation = $options['note'];
         if ($env->isInitialized()) {
             if (!$env->hasDeployableCode()) {
-                $this->log()->notice('There is nothing to deploy.');
+                $this->log()->notice('There is nothing to deploy on ' . $site_env . '.');
                 return;
             }
 

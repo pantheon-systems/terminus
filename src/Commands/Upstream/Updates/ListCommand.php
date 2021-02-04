@@ -55,7 +55,7 @@ class ListCommand extends UpdatesCommand
         );
 
         if (empty($data)) {
-            $this->log()->warning('There are no available updates for this site.');
+            $this->log()->warning('There are no available updates for the site ' . $site_env . '.');
         }
 
         // Return the output data.
