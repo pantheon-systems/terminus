@@ -26,7 +26,7 @@ Feature: Site Deployment
   @vcr env-deploy-no-changes.yml
   Scenario: Failing to deploy dev to test because there are no changes to deploy
     When I run "terminus env:deploy [[test_site_name]].test --note='Deploy test' --sync-content"
-    Then I should get: "There is nothing to deploy."
+    Then I should get: "There is nothing to deploy on [[test_site_name]].test."
 
   @vcr env-deploy-init-with-message.yml
   Scenario: Initializing test when it has not been previously initialized

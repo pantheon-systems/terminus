@@ -52,7 +52,7 @@ class ApplyCommandTest extends UpdatesCommandTest
             ->method('log')
             ->with(
                 $this->equalTo('warning'),
-                $this->equalTo('There are no available updates for this site.')
+                $this->equalTo('There are no available updates for the site 123')
             );
 
         $this->environment->expects($this->never())
