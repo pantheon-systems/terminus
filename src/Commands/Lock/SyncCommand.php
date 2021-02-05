@@ -54,8 +54,7 @@ class SyncCommand extends TerminusCommand implements SiteAwareInterface
 
         if (!$source_lock->isLocked()) {
             $this->processWorkflow($target_lock->disable());
-        }
-        else {
+        } else {
             $this->processWorkflow($target_lock->enable([
                 'username' => $source_lock->get('username'),
                 'password' => $source_lock->get('password'),
