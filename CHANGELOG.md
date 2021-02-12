@@ -3,6 +3,9 @@ All notable changes to this project will be documented in this file. This projec
 
 ## MASTER
 
+### Added
+- Added `rename:me:cleverly` command to convert a site built from drops-8 to an Integrated Composer site. (######)
+
 ## 2.5.0 - 2021-01-20
 ### Added
 - `getUsername` added to `Binding` model to retrieve the username for a connection. (#2107)

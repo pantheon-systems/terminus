@@ -245,7 +245,9 @@ class Terminus implements ConfigAwareInterface, ContainerAwareInterface, LoggerA
             'Pantheon\\Terminus\\Commands\\Workflow\\Info\\OperationsCommand',
             'Pantheon\\Terminus\\Commands\\Workflow\\Info\\StatusCommand',
             'Pantheon\\Terminus\\Commands\\Workflow\\ListCommand',
-            'Pantheon\\Terminus\\Commands\\Workflow\\WatchCommand'
+            'Pantheon\\Terminus\\Commands\\Workflow\\WatchCommand',
+
+            'Pantheon\\Terminus\\Commands\\Rename\\Me\\Cleverly',
         ];
     }
 
