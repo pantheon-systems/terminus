@@ -39,7 +39,11 @@ class LocalMachineHelper implements ConfigAwareInterface, ContainerAwareInterfac
     {
         $process = $this->getProcess($cmd);
         $process->run($callback);
-        return ['output' => $process->getOutput(), 'exit_code' => $process->getExitCode(),];
+        return [
+            'output' => $process->getOutput(),
+            'stderr' => $process->getErrorOutput(),
+            'exit_code' => $process->getExitCode(),
+        ];
     }
 
     /**
@@ -71,7 +75,11 @@ class LocalMachineHelper implements ConfigAwareInterface, ContainerAwareInterfac
             $process->start();
             $process->wait($callback);
         }
-        return ['output' => $process->getOutput(), 'exit_code' => $process->getExitCode(),];
+        return [
+            'output' => $process->getOutput(),
+            'stderr' => $process->getErrorOutput(),
+            'exit_code' => $process->getExitCode(),
+        ];
     }
 
     /**
