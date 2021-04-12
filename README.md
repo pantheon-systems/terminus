@@ -19,8 +19,9 @@ Our documentation is kept in the Terminus Manual, located here: https://pantheon
 - A command-line client
 - PHP version 5.6.40 or later recommended (5.5.38 minimum)
 - [PHP-CLI](https://www.php-cli.com/)
-- [PHP-CURL](https://php.net/manual/en/curl.setup.php)
-- [PHP-XML](https://php.net/manual/en/book.xml.php)
+- [PHP-CURL](https://php.net/manual/curl.setup.php)
+- [PHP-XML](https://php.net/manual/book.xml.php)
+- [PHP-JSON](https://php.net/manual/book.json.php)
 
 Once you have at least the requirements installed, you can install Terminus via Composer or Git. Additionally, you may want to install the optional software below to enhance your use of Terminus:
 
@@ -46,15 +47,15 @@ There are several ways to install Terminus, depending on your use case:
 1. Download the latest `terminus.phar` from the [Releases](https://github.com/pantheon-systems/terminus/releases) page. In the example below, we're directing the file to `$HOME/bin/` and renaming the file to `terminus`:
 
     ```bash
-    wget https://github.com/pantheon-systems/terminus/releases/download/2.3.0/terminus.phar -O ~/.bin/terminus
+    wget https://github.com/pantheon-systems/terminus/releases/latest/download/terminus.phar -O ~/bin/terminus
     ```
 
-    Remember to get the latest version of Terminus from the [Releases](https://github.com/pantheon-systems/terminus/releases) page, don't copy the command above vermatim.
+     This will grab the latest version of Terminus from the [Releases](https://github.com/pantheon-systems/terminus/releases) page.
 
 1. Make the Terminus file exectable. The example below assumes the same installation path as above:
 
     ```bash
-    chmod +X ~/.bin/terminus
+    chmod +X ~/bin/terminus
     ```
 
 **Note:** Your installation directory must be in or added to your `$PATH` environment variable in order to call `terminus` from any working directory.
