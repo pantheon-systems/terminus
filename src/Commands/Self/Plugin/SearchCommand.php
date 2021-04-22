@@ -44,7 +44,7 @@ class SearchCommand extends PluginBaseCommand
         );
 
         $projects = array_map(
-            function($message) {
+            function ($message) {
                 list($project, $description) = explode(' ', $message, 2);
                 return [
                     'name' => $project,

@@ -58,7 +58,7 @@ abstract class PluginBaseCommand extends TerminusCommand
     {
         $matches = array_filter(
             $this->getPluginProjects(),
-            function($plugin) use ($project) {
+            function ($plugin) use ($project) {
                 return in_array($project, [$plugin->getName(), $plugin->getPluginName(),]);
             }
         );
