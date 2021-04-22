@@ -34,9 +34,9 @@ abstract class WorkflowCommandTest extends CommandTestCase
     /**
      * Setup the test fixture.
      */
-    protected function set_up()
+    protected function setUp()
     {
-        parent::set_up();
+        parent::setUp();
 
         $this->expected_logs = <<<'EOT'
 

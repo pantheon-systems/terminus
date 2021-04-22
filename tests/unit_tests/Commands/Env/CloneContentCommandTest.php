@@ -19,9 +19,9 @@ class CloneContentCommandTest extends EnvCommandTest
     /**
      * @inheritdoc
      */
-    protected function set_up()
+    protected function setUp()
     {
-        parent::set_up();
+        parent::setUp();
         $this->command = new CloneContentCommand();
         $this->command->setContainer($this->getContainer());
         $this->command->setSites($this->sites);

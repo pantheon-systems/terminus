@@ -15,9 +15,9 @@ class InfoCommandTest extends LockCommandTest
     /**
      * @inheritdoc
      */
-    public function set_up()
+    public function setUp()
     {
-        parent::set_up();
+        parent::setUp();
 
         $this->command = new InfoCommand($this->getConfig());
         $this->command->setSites($this->sites);

@@ -15,9 +15,9 @@ class WakeCommandTest extends EnvCommandTest
     /**
      * @inheritdoc
      */
-    public function set_up()
+    public function setUp()
     {
-        parent::set_up();
+        parent::setUp();
 
         $this->command = new WakeCommand();
         $this->command->setContainer($this->getContainer());

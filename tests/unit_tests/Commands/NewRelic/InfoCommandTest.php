@@ -15,9 +15,9 @@ class InfoCommandTest extends NewRelicCommandTest
     /**
      * @inheritdoc
      */
-    public function set_up()
+    public function setUp()
     {
-        parent::set_up();
+        parent::setUp();
 
         $this->command = new InfoCommand();
         $this->command->setSites($this->sites);

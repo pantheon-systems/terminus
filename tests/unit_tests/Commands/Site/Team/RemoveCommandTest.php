@@ -22,9 +22,9 @@ class RemoveCommandTest extends TeamCommandTest
     /**
      * Setup the test fixture.
      */
-    protected function set_up()
+    protected function setUp()
     {
-        parent::set_up();
+        parent::setUp();
 
         $this->message = 'message';
 

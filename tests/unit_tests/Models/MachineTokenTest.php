@@ -23,9 +23,9 @@ class MachineTokenTest extends ModelTestCase
      */
     protected $model;
 
-    public function set_up()
+    public function setUp()
     {
-        parent::set_up();
+        parent::setUp();
 
         $this->collection = $this->getMockBuilder(MachineTokens::class)
             ->disableOriginalConstructor()

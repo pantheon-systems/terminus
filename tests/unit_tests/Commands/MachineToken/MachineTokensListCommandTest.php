@@ -16,9 +16,9 @@ class MachineTokensListCommandTest extends MachineTokenCommandTest
     /**
      * @inheritdoc
      */
-    protected function set_up()
+    protected function setUp()
     {
-        parent::set_up();
+        parent::setUp();
         $this->machine_tokens->method('getCollectedClass')->willReturn(MachineToken::class);
 
         $this->command = new ListCommand(new Config());

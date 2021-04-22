@@ -30,9 +30,9 @@ class RemoveCommandTest extends OrgSiteCommandTest
     /**
      * @inheritdoc
      */
-    protected function set_up()
+    protected function setUp()
     {
-        parent::set_up();
+        parent::setUp();
 
         $this->site_name = 'site name';
 

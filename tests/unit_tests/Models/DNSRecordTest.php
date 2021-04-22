@@ -30,9 +30,9 @@ class DNSRecordTest extends TerminusTestCase
     /**
      * @inheritdoc
      */
-    public function set_up()
+    public function setUp()
     {
-        parent::set_up();
+        parent::setUp();
 
         $this->data = (object)[
             'detected_value' => 'a detected value',

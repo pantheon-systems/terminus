@@ -26,9 +26,9 @@ class PluralTest extends TerminusTestCase
     /**
      * @inheritdoc
      */
-    public function set_up()
+    public function setUp()
     {
-        parent::set_up();
+        parent::setUp();
 
         $this->memberships = $this->getMockBuilder(SiteUserMemberships::class)
             ->disableOriginalConstructor()

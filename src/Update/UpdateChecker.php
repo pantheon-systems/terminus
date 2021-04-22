@@ -29,9 +29,33 @@ class UpdateChecker implements
     use LoggerAwareTrait;
 
     const DEFAULT_COLOR = "\e[0m";
-    const UPDATE_COMMAND = "You can update Terminus by running `composer update` or using the Terminus installer:\ncurl -O https://raw.githubusercontent.com/pantheon-systems/terminus-installer/master/builds/installer.phar && php installer.phar update";
-    const UPDATE_COMMAND_PHAR = "You can update Terminus by running:\nterminus self:update";
-    const UPDATE_NOTICE = "A new Terminus version v{latest_version} is available.\nYou are currently using version v{running_version}.\n{update_command}";
+
+    const UPDATE_COMMAND = <<<EOT
+          **********************************************************************
+          * You can update Terminus by running `composer update` or using the  *
+          * Terminus installer:                                                *
+          * curl -O https://raw.githubusercontent.com/pantheon-systems/  \     *
+          * terminus-installer/master/builds/installer.phar \                  *
+          * && php installer.phar update                                       *
+          **********************************************************************
+EOT;
+
+    const UPDATE_COMMAND_PHAR = <<<EOT
+          **********************************************************************
+           You can update Terminus by running:
+           > terminus self:update
+          **********************************************************************
+EOT;
+
+    const UPDATE_NOTICE = <<<EOT
+          **********************************************************************
+          A new Terminus version v{latest_version} is available.
+          You are currently using
+          VERSION v{running_version}.
+          > {update_command}
+          **********************************************************************
+EOT;
+
     const UPDATE_NOTICE_COLOR = "\e[38;5;33m";
     const UPDATE_VARS_COLOR = "\e[38;5;45m";
 

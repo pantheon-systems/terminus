@@ -46,9 +46,9 @@ class SiteOrganizationMembershipTest extends TerminusTestCase
     /**
      * @inheritdoc
      */
-    public function set_up()
+    public function setUp()
     {
-        parent::set_up();
+        parent::setUp();
 
         $this->collection = $this->getMockBuilder(SiteOrganizationMemberships::class)
             ->disableOriginalConstructor()

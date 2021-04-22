@@ -21,9 +21,9 @@ class ListCommandTest extends BackupCommandTest
     /**
      * @inheritdoc
      */
-    protected function set_up()
+    protected function setUp()
     {
-        parent::set_up();
+        parent::setUp();
 
         $this->sample_data = [
             'data',

@@ -17,9 +17,9 @@ class WipeCommandTest extends EnvCommandTest
     /**
      * @inheritdoc
      */
-    public function set_up()
+    public function setUp()
     {
-        parent::set_up();
+        parent::setUp();
 
         $this->command = new WipeCommand();
         $this->command->setContainer($this->getContainer());

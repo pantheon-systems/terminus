@@ -16,9 +16,9 @@ class LogoutCommandTest extends AuthTest
     /**
      * @inheritdoc
      */
-    public function set_up()
+    public function setUp()
     {
-        parent::set_up();
+        parent::setUp();
 
         $this->command = new LogoutCommand();
         $this->command->setConfig($this->config);

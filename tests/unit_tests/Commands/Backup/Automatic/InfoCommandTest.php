@@ -17,9 +17,9 @@ class InfoCommandTest extends BackupCommandTest
     /**
      * @inheritdoc
      */
-    protected function set_up()
+    protected function setUp()
     {
-        parent::set_up();
+        parent::setUp();
         $this->command = new InfoCommand($this->sites);
         $this->command->setLogger($this->logger);
         $this->command->setSites($this->sites);

@@ -46,9 +46,9 @@ class UpdateCheckerTest extends TerminusTestCase
     /**
      * @inheritdoc
      */
-    public function set_up()
+    public function setUp()
     {
-        parent::set_up();
+        parent::setUp();
 
         $this->config = $this->getMockBuilder(TerminusConfig::class)
             ->disableOriginalConstructor()

@@ -7,9 +7,9 @@ use Pantheon\Terminus\UnitTests\TerminusTestCase;
 
 class FileStoreTest extends TerminusTestCase
 {
-    public function set_up()
+    public function setUp()
     {
-        parent::set_up();
+        parent::setUp();
 
         $this->tmp = tempnam(sys_get_temp_dir(), 'terminus_test_');
         unlink($this->tmp);
@@ -17,7 +17,7 @@ class FileStoreTest extends TerminusTestCase
         $this->filestore = new FileStore($this->tmp);
     }
 
-    public function tear_down()
+    public function tearDown()
     {
         parent::tear_down();
 

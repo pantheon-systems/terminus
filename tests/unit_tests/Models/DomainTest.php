@@ -39,9 +39,9 @@ class DomainTest extends ModelTestCase
      */
     protected $workflows;
 
-    public function set_up()
+    public function setUp()
     {
-        parent::set_up();
+        parent::setUp();
 
         $this->model = $this->createDomain(['id' => 'dev.example.com',]);
     }

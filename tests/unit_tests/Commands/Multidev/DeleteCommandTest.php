@@ -18,9 +18,9 @@ class DeleteCommandTest extends MultidevCommandTest
     /**
      * @inheritdoc
      */
-    protected function set_up()
+    protected function setUp()
     {
-        parent::set_up();
+        parent::setUp();
 
         $this->environment->method('delete')->willReturn($this->workflow);
 

@@ -20,9 +20,9 @@ class ClearCacheCommandTest extends CommandTestCase
     /**
      * @inheritdoc
      */
-    public function set_up()
+    public function setUp()
     {
-        parent::set_up();
+        parent::setUp();
 
         $this->command = new ClearCacheCommand($this->getConfig());
         $this->command->setSites($this->sites);

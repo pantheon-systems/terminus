@@ -20,9 +20,9 @@ class StatusCommandTest extends InfoCommandTest
     /**
      * @inheritdoc
      */
-    protected function set_up()
+    protected function setUp()
     {
-        parent::set_up();
+        parent::setUp();
 
         $this->data = ['id' => '12345', 'details' => 'test',];
 

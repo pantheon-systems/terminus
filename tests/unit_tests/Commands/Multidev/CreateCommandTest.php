@@ -17,9 +17,9 @@ class CreateCommandTest extends MultidevCommandTest
     /**
      * @inheritdoc
      */
-    protected function set_up()
+    protected function setUp()
     {
-        parent::set_up();
+        parent::setUp();
 
         $this->command = new CreateCommand($this->getConfig());
         $this->command->setContainer($this->getContainer());

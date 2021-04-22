@@ -19,9 +19,9 @@ abstract class LockCommandTest extends EnvCommandTest
     /**
      * @inheritdoc
      */
-    public function set_up()
+    public function setUp()
     {
-        parent::set_up();
+        parent::setUp();
 
         $this->lock = $this->getMockBuilder(Lock::class)
             ->disableOriginalConstructor()

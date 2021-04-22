@@ -16,9 +16,9 @@ class TerminusCommandTest extends CommandTestCase
     /**
      * @inherit
      */
-    public function set_up()
+    public function setUp()
     {
-        parent::set_up();
+        parent::setUp();
 
         $this->output = $this->getMockBuilder(OutputInterface::class)
             ->disableOriginalConstructor()

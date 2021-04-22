@@ -28,9 +28,9 @@ class SetCommandTest extends CommandTestCase
     /**
      * @inheritdoc
      */
-    protected function set_up()
+    protected function setUp()
     {
-        parent::set_up();
+        parent::setUp();
 
         $this->user_memberships = $this->getMockBuilder(SiteUserMemberships::class)
             ->disableOriginalConstructor()

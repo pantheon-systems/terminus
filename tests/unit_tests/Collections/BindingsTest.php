@@ -19,9 +19,9 @@ class BindingsTest extends CollectionTestCase
      */
     protected $bindings_data;
 
-    public function set_up()
+    public function setUp()
     {
-        parent::set_up();
+        parent::setUp();
 
         $this->bindings_data = (object)[
             'd37eff55a5ec4c3daf31f17f239fd893' =>

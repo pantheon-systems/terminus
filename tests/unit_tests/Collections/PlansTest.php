@@ -35,9 +35,9 @@ class PlansTest extends CollectionTestCase
     /**
      * @inheritdoc
      */
-    public function set_up()
+    public function setUp()
     {
-        parent::set_up();
+        parent::setUp();
 
         $this->plan = $this->getMockBuilder(Plan::class)
             ->disableOriginalConstructor()

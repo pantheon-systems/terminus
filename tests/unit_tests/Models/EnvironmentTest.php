@@ -75,9 +75,9 @@ class EnvironmentTest extends ModelTestCase
     /**
      * @inheritdoc
      */
-    public function set_up()
+    public function setUp()
     {
-        parent::set_up();
+        parent::setUp();
 
         $this->model = $this->createModel(['id' => 'dev',]);
     }

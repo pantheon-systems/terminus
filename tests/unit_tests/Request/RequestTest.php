@@ -78,9 +78,9 @@ class RequestTest extends TerminusTestCase
     /**
      * @inheritdoc
      */
-    public function set_up()
+    public function setUp()
     {
-        parent::set_up();
+        parent::setUp();
 
         $this->request = new Request();
         $this->http_request = $this->getMockBuilder(HttpRequest::class)

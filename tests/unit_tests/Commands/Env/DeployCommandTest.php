@@ -18,9 +18,9 @@ class DeployCommandTest extends EnvCommandTest
     /**
      * @inheritdoc
      */
-    protected function set_up()
+    protected function setUp()
     {
-        parent::set_up();
+        parent::setUp();
         $this->command = new DeployCommand($this->getConfig());
         $this->command->setContainer($this->getContainer());
         $this->command->setLogger($this->logger);

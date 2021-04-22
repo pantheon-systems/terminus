@@ -25,9 +25,9 @@ class PluginAutoloadTest extends TerminusTestCase
     /**
      * @inheritdoc
      */
-    public function set_up()
+    public function setUp()
     {
-        parent::set_up();
+        parent::setUp();
 
         $this->logger = $this->getMockBuilder(NullLogger::class)
             ->setMethods(['warning','debug'])
