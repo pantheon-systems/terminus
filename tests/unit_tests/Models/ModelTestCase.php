@@ -40,7 +40,7 @@ abstract class ModelTestCase extends TerminusTestCase
     /**
      * @inheritdoc
      */
-    protected function set_up()
+    protected function setUp()
     {
         $this->config = $this->getMockBuilder(TerminusConfig::class)
           ->disableOriginalConstructor()

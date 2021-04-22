@@ -14,9 +14,9 @@ class ListCommandTest extends OrgSiteCommandTest
     /**
      * @inheritdoc
      */
-    protected function set_up()
+    protected function setUp()
     {
-        parent::set_up();
+        parent::setUp();
 
         $this->sites->method('fetch')
             ->with($this->equalTo(['org_id' => $this->organization->id,]))

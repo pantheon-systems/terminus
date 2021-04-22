@@ -15,9 +15,9 @@ class ListCommandTest extends OrgPeopleCommandTest
     /**
      * @inheritdoc
      */
-    protected function set_up()
+    protected function setUp()
     {
-        parent::set_up();
+        parent::setUp();
         $this->org_user_memberships->method('getCollectedClass')->willReturn(UserOrganizationMembership::class);
 
         $this->command = new ListCommand($this->getConfig());

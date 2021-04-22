@@ -21,9 +21,9 @@ class InfoCommandTest extends BackupCommandTest
      * Sets up the fixture, for example, open a network connection.
      * This method is called before a test is executed.
      */
-    protected function set_up()
+    protected function setUp()
     {
-        parent::set_up();
+        parent::setUp();
 
         $url = 'https://url.to/backup.tgz';
         $this->expected_data = [

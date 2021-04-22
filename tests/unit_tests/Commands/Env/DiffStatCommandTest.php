@@ -11,9 +11,9 @@ use Pantheon\Terminus\Commands\Env\DiffStatCommand;
  */
 class DiffStatCommandTest extends EnvCommandTest
 {
-    public function set_up()
+    public function setUp()
     {
-        parent::set_up();
+        parent::setUp();
 
         $this->command = new DiffStatCommand();
         $this->command->setLogger($this->logger);

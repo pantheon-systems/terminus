@@ -19,9 +19,9 @@ class CompleteCommandTest extends CommandTestCase
     /**
      * @inheritdoc
      */
-    protected function set_up()
+    protected function setUp()
     {
-        parent::set_up();
+        parent::setUp();
 
         $this->command = new CompleteCommand($this->getConfig());
         $this->command->setContainer($this->getContainer());

@@ -18,9 +18,9 @@ class RoleCommandTest extends OrgPeopleCommandTest
     /**
      * @inheritdoc
      */
-    protected function set_up()
+    protected function setUp()
     {
-        parent::set_up();
+        parent::setUp();
 
         $this->command = new RoleCommand($this->getConfig());
         $this->command->setContainer($this->getContainer());

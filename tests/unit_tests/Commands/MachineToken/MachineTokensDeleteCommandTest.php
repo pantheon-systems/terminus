@@ -22,9 +22,9 @@ class MachineTokenDeleteCommandTest extends MachineTokenCommandTest
     /**
      * @inheritdoc
      */
-    protected function set_up()
+    protected function setUp()
     {
-        parent::set_up();
+        parent::setUp();
 
         $this->token = $this->getMockBuilder(MachineToken::class)
             ->disableOriginalConstructor()

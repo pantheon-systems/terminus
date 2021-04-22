@@ -20,9 +20,9 @@ class ListCommandTest extends WorkflowCommandTest
     /**
      * Setup the test fixture.
      */
-    protected function set_up()
+    protected function setUp()
     {
-        parent::set_up();
+        parent::setUp();
         $this->site_name = 'site_name';
 
         $this->command = new ListCommand($this->getConfig());

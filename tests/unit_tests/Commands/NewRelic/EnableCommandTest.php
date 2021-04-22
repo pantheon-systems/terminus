@@ -18,9 +18,9 @@ class EnableCommandTest extends NewRelicCommandTest
     /**
      * @inheritdoc
      */
-    public function set_up()
+    public function setUp()
     {
-        parent::set_up();
+        parent::setUp();
 
         $this->command = new EnableCommand();
         $this->command->setContainer($this->getContainer());

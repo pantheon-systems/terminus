@@ -22,9 +22,9 @@ class SSHBaseCommandTest extends CommandTestCase
     /**
      * @inheritdoc
      */
-    protected function set_up()
+    protected function setUp()
     {
-        parent::set_up();
+        parent::setUp();
 
         $this->container = $this->getMockBuilder(Container::class)
             ->disableOriginalConstructor()

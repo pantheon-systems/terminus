@@ -55,9 +55,9 @@ class CreateCommandTest extends CommandTestCase
     /**
      * @inheritdoc
      */
-    protected function set_up()
+    protected function setUp()
     {
-        parent::set_up();
+        parent::setUp();
 
         $this->session = $this->getMockBuilder(Session::class)
             ->disableOriginalConstructor()

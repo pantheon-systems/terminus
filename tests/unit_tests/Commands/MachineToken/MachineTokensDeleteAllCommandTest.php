@@ -17,9 +17,9 @@ class MachineTokenDeleteAllCommandTest extends MachineTokenCommandTest
     /**
      * @inheritdoc
      */
-    protected function set_up()
+    protected function setUp()
     {
-        parent::set_up();
+        parent::setUp();
 
         $this->command = new DeleteAllCommand(new Config());
         $this->command->setSession($this->session);

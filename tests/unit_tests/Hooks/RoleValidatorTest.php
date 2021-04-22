@@ -44,7 +44,7 @@ class RoleValidatorTest extends TerminusTestCase
     /**
      * @inheritDoc
      */
-    public function set_up()
+    public function setUp()
     {
         $this->config = new TerminusConfig();
 

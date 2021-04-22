@@ -39,9 +39,9 @@ class WatchCommandTest extends WorkflowCommandTest
     /**
      * Setup the test fixture.
      */
-    protected function set_up()
+    protected function setUp()
     {
-        parent::set_up();
+        parent::setUp();
 
         $this->sites = $this->getMockBuilder(Sites::class)
             ->disableOriginalConstructor()

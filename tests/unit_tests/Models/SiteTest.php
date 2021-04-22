@@ -86,9 +86,9 @@ class SiteTest extends ModelTestCase
     /**
      * @inheritdoc
      */
-    public function set_up()
+    public function setUp()
     {
-        parent::set_up();
+        parent::setUp();
 
         $this->branches = $this->getMockBuilder(Branches::class)
             ->disableOriginalConstructor()

@@ -38,9 +38,9 @@ class OrganizationSiteMembershipTest extends ModelTestCase
     /**
      * @inheritdoc
      */
-    public function set_up()
+    public function setUp()
     {
-        parent::set_up();
+        parent::setUp();
 
         $this->collection = $this->getMockBuilder(OrganizationSiteMemberships::class)
             ->disableOriginalConstructor()

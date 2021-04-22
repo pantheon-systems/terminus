@@ -21,9 +21,9 @@ class SetCommandTest extends CommandTestCase
     /**
      * @inheritdoc
      */
-    public function set_up()
+    public function setUp()
     {
-        parent::set_up();
+        parent::setUp();
 
         $this->command = new SetCommand();
         $this->command->setSites($this->sites);

@@ -41,7 +41,7 @@ class AuthorizerTest extends TerminusTestCase
     /**
      * @inheritdoc
      */
-    public function set_up()
+    public function setUp()
     {
         $this->config = $this->getMockBuilder(TerminusConfig::class)
             ->disableOriginalConstructor()

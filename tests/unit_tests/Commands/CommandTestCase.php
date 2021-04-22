@@ -109,7 +109,7 @@ abstract class CommandTestCase extends TerminusTestCase
     /**
      * @inheritdoc
      */
-    protected function set_up()
+    protected function setUp()
     {
         if (!$this->config) {
             $this->setConfig(

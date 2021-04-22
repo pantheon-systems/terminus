@@ -41,7 +41,7 @@ abstract class CollectionTestCase extends TerminusTestCase
     /**
      * @inheritdoc
      */
-    protected function set_up()
+    protected function setUp()
     {
         $this->config = $this->getMockBuilder(Config::class)
             ->disableOriginalConstructor()
