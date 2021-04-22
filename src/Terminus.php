@@ -15,6 +15,7 @@ use Pantheon\Terminus\DataStore\FileStore;
 use Pantheon\Terminus\Helpers\LocalMachineHelper;
 use Pantheon\Terminus\Plugins\PluginAutoloadDependencies;
 use Pantheon\Terminus\Plugins\PluginDiscovery;
+use Pantheon\Terminus\Plugins\PluginInfo;
 use Pantheon\Terminus\ProgressBars\ProcessProgressBar;
 use Pantheon\Terminus\ProgressBars\WorkflowProgressBar;
 use Pantheon\Terminus\Request\Request;
@@ -331,6 +332,7 @@ class Terminus implements ConfigAwareInterface, ContainerAwareInterface, LoggerA
             ->withArgument(__DIR__);
         $container->add(PluginDiscovery::class)
             ->withArgument($this->getConfig()->get('plugins_dir'));
+        $container->add(PluginInfo::class);
 
         // Update checker
         $container->add(LatestRelease::class);

@@ -15,8 +15,7 @@ class UninstallCommand extends PluginBaseCommand
 {
     const NOT_INSTALLED_MESSAGE = '{project} is not installed.';
     const SUCCESS_MESSAGE = '{project} was removed successfully.';
-    const UNINSTALL_COMMAND = 'rm -rf %s';
-    const USAGE_MESSAGE = 'terminus self:plugin:<uninstall|remove> <Project 1> [Project 2] ...';
+    const USAGE_MESSAGE = 'terminus self:plugin:<uninstall|remove> <project> [project 2] ...';
 
     /**
      * Remove one or more Terminus plugins.
@@ -32,9 +31,7 @@ class UninstallCommand extends PluginBaseCommand
     {
         foreach ($projects as $project) {
             try {
-                $results = $this->doUninstallation($this->getPlugin($project));
-                // TODO Improve messaging
-                $this->log()->notice($results['output']);
+                $this->doUninstallation($this->getPlugin($project));
                 $this->log()->notice(self::SUCCESS_MESSAGE, compact('project'));
             } catch (TerminusNotFoundException $e) {
                 $this->log()->error(self::NOT_INSTALLED_MESSAGE, compact('project'));
@@ -58,12 +55,10 @@ class UninstallCommand extends PluginBaseCommand
     }
 
     /**
-     * @param PluginInfo $plugin
-     * @return array Results from running the command
+     * @param PluginInfo $project
      */
-    private function doUninstallation(PluginInfo $plugin)
+    private function doUninstallation(PluginInfo $project)
     {
-        $command = sprintf(self::UNINSTALL_COMMAND, $plugin->getPath());
-        return $this->runCommand($command);
+        $this->getLocalMachine()->getFilesystem()->remove($project->getPath());
     }
 }

@@ -3,29 +3,37 @@
 namespace Pantheon\Terminus\Plugins;
 
 use Consolidation\AnnotatedCommand\CommandFileDiscovery;
+use League\Container\ContainerAwareInterface;
+use League\Container\ContainerAwareTrait;
 use Pantheon\Terminus\Config\ConfigAwareTrait;
 use Pantheon\Terminus\Exceptions\TerminusException;
 use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
+use Pantheon\Terminus\Helpers\LocalMachineHelper;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareTrait;
 use Robo\Contract\ConfigAwareInterface;
 
 /**
  * Class PluginInfo
  * @package Pantheon\Terminus\Plugins
  */
-class PluginInfo implements ConfigAwareInterface
+class PluginInfo implements ConfigAwareInterface, ContainerAwareInterface, LoggerAwareInterface
 {
     use ConfigAwareTrait;
+    use ContainerAwareTrait;
+    use LoggerAwareTrait;
 
     const MAX_COMMAND_DEPTH = 4;
 
     // Commands
-    const GET_BRANCH_INSTALLED_VERSION_COMMAND = '[ -d %s ] && cd %s && git rev-parse --abbrev-ref HEAD';
+    const CHANGE_DIRECTORY_AND = '[ -d {dir} ] && cd {dir} && ';
+    const GET_BRANCH_INSTALLED_VERSION_COMMAND = 'git rev-parse --abbrev-ref HEAD';
     const GET_NONSTABLE_LATEST_VERSION_COMMAND =
-        '[ -d %s ] && cd %s && git tag -l --sort=version:refname | grep %s | sort -r | xargs';
+        'git tag -l --sort=version:refname | grep {version} | sort -r | xargs';
     const GET_STABLE_LATEST_VERSION_COMMAND =
-        '[ -d %s ] && cd %s && git fetch --all && git tag -l --sort=version:refname | grep ^[v%s] | sort -r | head -1';
-    const GET_TAGS_INSTALLED_VERSION_COMMAND = '[ -d %s ] && cd %s && git describe --tags 2> /dev/null';
-    const VALIDATION_COMMAND = 'composer search -N -t terminus-plugin %s';
+        'git fetch --all && git tag -l --sort=version:refname | grep ^[v{version}] | sort -r | head -1';
+    const GET_TAGS_INSTALLED_VERSION_COMMAND = 'git describe --tags 2> /dev/null';
+    const VALIDATION_COMMAND = 'composer search -N -t terminus-plugin {project}';
 
     // Installation Methods
     const COMPOSER_METHOD = 'composer';
@@ -43,6 +51,10 @@ class PluginInfo implements ConfigAwareInterface
      * @var string
      */
     protected $plugin_dir;
+    /**
+     * @var string
+     */
+    protected $stable_latest_version;
 
     /**
      * PluginInfo constructor.
@@ -193,33 +205,27 @@ class PluginInfo implements ConfigAwareInterface
      */
     public function getNonstableLatestVersion()
     {
-        $version = $this->getStableLatestVersion();
-        preg_match(
-            '/(v*.*)\-(.*)/',
-            $version,
-            $matches
-        );
+        if (empty($this->nonstable_latest_version)) {
+            $command = str_replace(
+                ['{dir}', '{version}',],
+                [$this->getPath(), self::getMajorVersionFromVersion($this->getConfig()->get('version'))],
+                self::CHANGE_DIRECTORY_AND . self::GET_NONSTABLE_LATEST_VERSION_COMMAND,
+            );
+            $results = $this->runCommand($command);
+            $releases = self::filterForVersionNumbers($results);
+            $stable_version = $this->getStableLatestVersion();
 
-        exec(
-            sprintf(
-                self::GET_NONSTABLE_LATEST_VERSION_COMMAND,
-                $this->getPath(),
-                $this->getPath(),
-                self::getMajorVersionFromVersion($this->getConfig()->get('version'))
-            ),
-            $releases
-        );
-
-        if ((count($matches) > 1) && !empty($releases)) {
-            foreach ($releases as $release) {
-                // Update to stable release, if available.
-                if ($release === $stable_version) {
-                    return $release;
+            if (count($releases) > 0) {
+                foreach ($releases as $release) {
+                    // Update to stable release, if available.
+                    if ($release === $stable_version) {
+                        return $release;
+                    }
                 }
             }
         }
 
-        return $version;
+        return $this->nonstable_latest_version;
     }
 
     /**
@@ -252,24 +258,20 @@ class PluginInfo implements ConfigAwareInterface
      */
     public function getStableLatestVersion()
     {
-        exec(
-            sprintf(
-                self::GET_STABLE_LATEST_VERSION_COMMAND,
-                $this->getPath(),
-                $this->getPath(),
-                self::getMajorVersionFromVersion($this->getConfig()->get('version'))
-            ),
-            $tag
-        );
-        $exception = new TerminusNotFoundException('Stable latest version not found.');
-        if (empty($tag)) {
-            throw $exception;
+        if (empty($this->stable_latest_version)) {
+            $command = str_replace(
+                ['{dir}', '{version}',],
+                [$this->getPath(), self::getMajorVersionFromVersion($this->getConfig()->get('version'))],
+                self::CHANGE_DIRECTORY_AND . self::GET_STABLE_LATEST_VERSION_COMMAND,
+            );
+            $results = $this->runCommand($command);
+            $version = self::filterForVersionNumbers($results['output']);
+            if (empty($version)) {
+                throw new TerminusNotFoundException('Stable latest version not found.');
+            }
+            $this->stable_latest_version = array_shift($version);
         }
-        $version = array_pop($tag);
-        if ($version === 'Fetching origin') {
-            throw $exception;
-        }
-        return $version;
+        return $this->stable_latest_version;
     }
 
     /**
@@ -279,13 +281,31 @@ class PluginInfo implements ConfigAwareInterface
      */
     public function isValidPackagistProject()
     {
+        return self::checkWhetherPackagistProject($this->getName(), $this->getLocalMachine());
+    }
+
+
+    /**
+     * Check whether a Packagist project is valid.
+     *
+     * @param string $project_name Name of plugin package to install
+     * @param LocalMachineHelper $local_machine_helper
+     * @return bool True if valid, false otherwise
+     */
+    public static function checkWhetherPackagistProject($project_name, LocalMachineHelper $local_machine_helper)
+    {
         // Search for the Packagist project.
-        exec(sprintf(self::VALIDATION_COMMAND, $this->getName()), $items);
-        if (empty($items)) {
+        $command = str_replace(
+            '{project}',
+            $project_name,
+            self::VALIDATION_COMMAND
+        );
+        $results = $local_machine_helper->exec($command);
+        $result = (trim($results['output']));
+        if (empty($result)) {
             return false;
         }
-        $item = array_shift($items);
-        return ($item === $project);
+        return ($result === $project_name);
     }
 
     /**
@@ -334,6 +354,14 @@ class PluginInfo implements ConfigAwareInterface
     {
         $autoload = $this->getAutoloadInfo();
         return $autoload['prefix'];
+    }
+
+    /**
+     * @return LocalMachineHelper
+     */
+    protected function getLocalMachine()
+    {
+        return $this->getContainer()->get(LocalMachineHelper::class);
     }
 
     /**
@@ -430,18 +458,17 @@ class PluginInfo implements ConfigAwareInterface
      */
     private function getBranchInstalledVersion()
     {
-        exec(
-            sprintf(
-                self::GET_BRANCH_INSTALLED_VERSION_COMMAND,
-                $this->getPath(),
-                $this->getPath()
-            ),
-            $branch
+        $command = str_replace(
+            '{dir}',
+            $this->getPath(),
+            self::CHANGE_DIRECTORY_AND . self::GET_BRANCH_INSTALLED_VERSION_COMMAND
         );
-        if (empty($branch)) {
+        $results = $this->runCommand($command);
+
+        $version = $results['output'];
+        if (empty($version)) {
             throw new TerminusNotFoundException('Installed branch version not found.');
         }
-        $version = array_pop($branch);
         return $version;
     }
 
@@ -462,18 +489,55 @@ class PluginInfo implements ConfigAwareInterface
      */
     private function getTagInstalledVersion()
     {
-        exec(
-            sprintf(
-                self::GET_TAGS_INSTALLED_VERSION_COMMAND,
-                $this->getPath(),
-                $this->getPath()
-            ),
-            $tags
+        $command = str_replace(
+            '{dir}',
+            $this->getPath(),
+            self::CHANGE_DIRECTORY_AND . self::GET_TAGS_INSTALLED_VERSION_COMMAND
         );
-        if (empty($tags)) {
+        $results = $this->runCommand($command);
+        $version = $results['output'];
+        if (empty($version)) {
             throw new TerminusNotFoundException('Installed tag version not found.');
         }
-        $version = array_pop($tags);
         return $version;
+    }
+
+    /**
+     * @param string $command
+     * @return array
+     */
+    private function runCommand($command)
+    {
+        $this->logger->debug('Running {command}...', compact('command'));
+        $results = $this->getLocalMachine()->exec($command);
+        $this->logger->debug("Returned:\n{output}", $results);
+        return $results;
+    }
+
+    /**
+     * @param string $results Version results from Composer
+     * @return array
+     */
+    private static function filterForVersionNumbers($results)
+    {
+        if (is_string($results)) {
+            $results = explode(PHP_EOL, $results);
+        }
+        if (empty($results)) {
+            return [];
+        }
+        return array_map(
+            function ($result) {
+                preg_match('/(\d*\.\d*\.\d*)/', $result, $output_array);
+                return $output_array[1];
+            },
+            array_filter(
+                $results,
+                function ($result) {
+                    preg_match('/(\d*\.\d*\.\d*)/', $result, $output_array);
+                    return isset($output_array[1]);
+                }
+            )
+        );
     }
 }
