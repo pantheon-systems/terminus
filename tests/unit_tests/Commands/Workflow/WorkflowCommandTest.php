@@ -34,7 +34,7 @@ abstract class WorkflowCommandTest extends CommandTestCase
     /**
      * Setup the test fixture.
      */
-    protected function setUp()
+    public function setUp(): void
     {
         parent::setUp();
 

@@ -30,7 +30,7 @@ class RemoveCommandTest extends OrgSiteCommandTest
     /**
      * @inheritdoc
      */
-    protected function setUp()
+    public function setUp(): void
     {
         parent::setUp();
 

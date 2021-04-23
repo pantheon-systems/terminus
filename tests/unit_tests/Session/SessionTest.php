@@ -34,7 +34,7 @@ class SessionTest extends TerminusTestCase
      */
     protected $session;
 
-    protected function setUp()
+    public function setUp(): void
     {
         $this->config = $this->getMockBuilder(Config::class)
             ->disableOriginalConstructor()

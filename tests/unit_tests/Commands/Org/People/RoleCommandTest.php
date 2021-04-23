@@ -18,7 +18,7 @@ class RoleCommandTest extends OrgPeopleCommandTest
     /**
      * @inheritdoc
      */
-    protected function setUp()
+    public function setUp(): void
     {
         parent::setUp();
 

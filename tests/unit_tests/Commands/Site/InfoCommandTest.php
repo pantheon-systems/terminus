@@ -16,7 +16,7 @@ class InfoCommandTest extends CommandTestCase
     /**
      * @inheritdoc
      */
-    protected function setUp()
+    public function setUp(): void
     {
         parent::setUp();
         $this->command = new InfoCommand($this->getConfig());

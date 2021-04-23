@@ -18,7 +18,7 @@ class RoleCommandTest extends TeamCommandTest
     /**
      * @inheritdoc
      */
-    protected function setUp()
+    public function setUp(): void
     {
         parent::setUp();
         $this->command = new RoleCommand($this->getConfig());

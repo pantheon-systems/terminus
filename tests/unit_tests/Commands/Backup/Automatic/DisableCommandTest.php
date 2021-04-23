@@ -15,7 +15,7 @@ class DisableCommandTest extends BackupCommandTest
     /**
      * @inheritdoc
      */
-    protected function setUp()
+    public function setUp(): void
     {
         parent::setUp();
         $this->command = new DisableCommand($this->sites);

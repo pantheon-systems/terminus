@@ -39,7 +39,7 @@ abstract class OrgSiteCommandTest extends CommandTestCase
     /**
      * @inheritdoc
      */
-    protected function setUp()
+    public function setUp(): void
     {
         parent::setUp();
 

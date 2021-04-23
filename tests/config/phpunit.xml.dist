@@ -1,6 +1,15 @@
 <phpunit
   bootstrap="../unit_tests/bootstrap.php"
   colors="true"
+  verbose="true"
+  convertErrorsToExceptions="true"
+  convertNoticesToExceptions="true"
+  convertWarningsToExceptions="true"
+  stopOnError="true"
+  stopOnFailure="true"
+  stopOnIncomplete="true"
+  stopOnSkipped="true"
+  stopOnRisky="true"
   >
   <testsuites>
     <testsuite name="unit">

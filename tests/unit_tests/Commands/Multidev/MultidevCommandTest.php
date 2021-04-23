@@ -20,7 +20,7 @@ abstract class MultidevCommandTest extends CommandTestCase
     /**
      * @inheritdoc
      */
-    protected function setUp()
+    public function setUp(): void
     {
         parent::setUp();
         $this->workflow = $this->getMockBuilder(Workflow::class)

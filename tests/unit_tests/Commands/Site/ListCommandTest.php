@@ -30,7 +30,7 @@ class ListCommandTest extends CommandTestCase
     /**
      * @inheritdoc
      */
-    protected function setUp()
+    public function setUp(): void
     {
         parent::setUp();
         $this->session = $this->getMockBuilder(Session::class)

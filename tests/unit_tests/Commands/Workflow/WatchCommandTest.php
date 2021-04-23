@@ -39,7 +39,7 @@ class WatchCommandTest extends WorkflowCommandTest
     /**
      * Setup the test fixture.
      */
-    protected function setUp()
+    public function setUp(): void
     {
         parent::setUp();
 

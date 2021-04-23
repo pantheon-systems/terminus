@@ -16,7 +16,7 @@ class RemoveCommandTest extends SSHKeyCommandTest
     /**
      * @inheritdoc
      */
-    protected function setUp()
+    public function setUp(): void
     {
         parent::setUp();
 

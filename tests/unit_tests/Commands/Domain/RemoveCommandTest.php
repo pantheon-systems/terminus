@@ -14,7 +14,7 @@ class RemoveCommandTest extends DomainTest
     /**
      * @inheritdoc
      */
-    protected function setUp()
+    public function setUp(): void
     {
         parent::setUp();
 

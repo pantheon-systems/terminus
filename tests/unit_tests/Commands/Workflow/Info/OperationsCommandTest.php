@@ -20,7 +20,7 @@ class OperationsCommandTest extends InfoCommandTest
     /**
      * @inheritdoc
      */
-    protected function setUp()
+    public function setUp(): void
     {
         parent::setUp();
 

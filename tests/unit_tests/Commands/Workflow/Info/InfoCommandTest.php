@@ -11,7 +11,7 @@ use Pantheon\Terminus\UnitTests\Commands\Workflow\WorkflowCommandTest;
  */
 abstract class InfoCommandTest extends WorkflowCommandTest
 {
-    protected function setUp()
+    public function setUp(): void
     {
         parent::setUp();
 
