@@ -10,6 +10,7 @@
   stopOnIncomplete="true"
   stopOnSkipped="true"
   stopOnRisky="true"
+  printerClass="Codedungeon\PHPUnitPrettyResultPrinter\Printer"
   >
   <testsuites>
     <testsuite name="unit">

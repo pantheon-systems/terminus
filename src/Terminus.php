@@ -122,7 +122,6 @@ class Terminus implements ConfigAwareInterface, ContainerAwareInterface, LoggerA
     {
         // List of all hooks and commands. Update via 'composer update-class-lists'
         $this->commands = [
-            'Consolidation\\Filter\\Hooks\\FilterHooks',
             'Pantheon\\Terminus\\Hooks\\Authorizer',
             'Pantheon\\Terminus\\Hooks\\RoleValidator',
             'Pantheon\\Terminus\\Hooks\\SiteEnvLookup',
@@ -214,6 +213,7 @@ class Terminus implements ConfigAwareInterface, ContainerAwareInterface, LoggerA
             'Pantheon\\Terminus\\Commands\\Self\\InfoCommand',
             'Pantheon\\Terminus\\Commands\\Self\\Plugin\\InstallCommand',
             'Pantheon\\Terminus\\Commands\\Self\\Plugin\\ListCommand',
+            'Pantheon\\Terminus\\Commands\\Self\\Plugin\\PluginBaseCommand',
             'Pantheon\\Terminus\\Commands\\Self\\Plugin\\SearchCommand',
             'Pantheon\\Terminus\\Commands\\Self\\Plugin\\UninstallCommand',
             'Pantheon\\Terminus\\Commands\\Self\\Plugin\\UpdateCommand',

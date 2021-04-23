@@ -57,6 +57,7 @@
   },
   "require-dev": {
     "behat/behat": "^3.2.2",
+    "codedungeon/phpunit-result-printer": "^0.30.1",
     "php-vcr/php-vcr": "^1.4",
     "phpunit/phpunit": "^9",
     "yoast/phpunit-polyfills": "^0.2.0",
