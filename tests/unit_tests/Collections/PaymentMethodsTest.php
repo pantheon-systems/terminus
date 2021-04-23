@@ -51,7 +51,7 @@ class PaymentMethodsTest extends UserOwnedCollectionTest
     public function testGetWhenNotFound()
     {
         $bad_id = 'invalid';
-        $this->setExpectedException(
+        $this->expectException(
             TerminusNotFoundException::class,
             "Could not locate a payment method identified by $bad_id on this account."
         );
@@ -62,7 +62,7 @@ class PaymentMethodsTest extends UserOwnedCollectionTest
     public function testGetWhenMultipleMatches()
     {
         $shared_label = 'Visa - 1111';
-        $this->setExpectedException(
+        $this->expectException(
             TerminusException::class,
             "More than one payment method matched $shared_label."
         );

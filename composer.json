@@ -7,7 +7,7 @@
   "minimum-stability": "stable",
   "prefer-stable": true,
   "require": {
-    "php": ">=7.4.0",
+    "php": ">=7.3.11",
     "composer/semver": "^1.4",
     "consolidation/comments": "^1.0.2",
     "consolidation/filter-via-dot-access-data": "^1.0",
@@ -69,7 +69,7 @@
     "preferred-install": "dist",
     "sort-packages": true,
     "platform": {
-      "php": "7.4.0"
+      "php": "7.3.11"
     }
   },
   "extra": {

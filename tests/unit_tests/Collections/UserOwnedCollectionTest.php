@@ -31,7 +31,6 @@ abstract class UserOwnedCollectionTest extends CollectionTestCase
     public function setUp(): void
     {
         parent::setUp();
-
         $user = new User((object)['id' => 'USERID']);
         $this->collection = new $this->class(['user' => $user]);
         $this->collection->setRequest($this->request);

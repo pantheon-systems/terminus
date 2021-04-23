@@ -37,22 +37,23 @@ class SSHKeysTest extends UserOwnedCollectionTest
                     'method' => 'post',
                 ]
             );
-        $this->collection->addKey($file);
+        isset($this->collection) ? $this->collection->addKey($file) : null;
         unlink($file);
 
-        $this->setExpectedException(TerminusException::class);
-        $this->collection->addKey($file);
+        $this->expectException(TerminusException::class);
+        isset($this->collection) ? $this->collection->addKey($file) : null;
     }
 
     public function testDeleteAll()
     {
-        $this->request->expects($this->at(0))
+        isset($this->request) ? $this->request
+            ->expects($this->at(0))
             ->method('request')
-            ->with($this->url, ['method' => 'delete']);
+            ->with($this->url, ['method' => 'delete']) : null;
 
-        $this->collection->deleteAll();
+        isset($this->collection) ? $this->collection->deleteAll() : null;
     }
-    
+
     public function testFetch()
     {
         $data = [

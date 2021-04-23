@@ -63,7 +63,7 @@ class APICollectionTest extends CollectionTestCase
         $expected = array_map(function ($d) {
             return (array)$d;
         }, $data);
-        $this->assertEquals($expected, $collection->serialize());
+        $this->assertEquals($expected, $collection);
     }
 
     /**
