@@ -1,13 +1,22 @@
 # terminus : Pantheon's Command-Line Interface
- 
+
 ## Status
 [![Build Status](https://travis-ci.org/pantheon-systems/terminus.svg?branch=master)](https://travis-ci.org/pantheon-systems/terminus)
 [![Windows CI](https://ci.appveyor.com/api/projects/status/niiheng08p25mgnm?svg=true)](https://ci.appveyor.com/project/greg-1-anderson/terminus)
 [![Coverage Status](https://coveralls.io/repos/github/pantheon-systems/terminus/badge.svg?branch=master)](https://coveralls.io/github/pantheon-systems/terminus?branch=master)
- 
+
 ## About
 Terminus is Pantheon's Command Line Interface (CLI), providing at least equivalent functionality to the Pantheon's
 browser-based Dashboard and easier scripting.
+
+## ***Which version do I use***?
+The version of terminus you use is dependent on the version of PHP with which you develop regularly.
+
+| PHP Version        | Terminus Version |
+| ------------------ | ---------------- |
+| >= 7.3 (incl. 5.x) | 2.5.x            |
+| 7.4+               | 3.0.x            |
+
 
 If you would like to contribute, pull requests are welcome!
 
@@ -17,7 +26,7 @@ Our documentation is kept in the Terminus Manual, located here: https://pantheon
 ## Dependencies
 ### Required
 - A command-line client
-- PHP version 5.6.40 or later recommended (5.5.38 minimum)
+- PHP version 7.4.0 or later recommended (7.4.0 minimum)
 - [PHP-CLI](https://www.php-cli.com/)
 - [PHP-CURL](https://php.net/manual/curl.setup.php)
 - [PHP-XML](https://php.net/manual/book.xml.php)
@@ -166,7 +175,7 @@ terminus auth:login --machine-token=xxxxxxxx
 ```
 If you are planning to run WP-CLI or Drush commands through Terminus, please
 [upload an SSH key](https://pantheon.io/docs/ssh-keys/#add-your-ssh-key-to-pantheon) for the user that will be executing Terminus.
- 
+
 ## Running
 Commands in Terminus follow a predictable pattern:
 ```bash
@@ -179,7 +188,7 @@ terminus command:subcommand:subcommand param param --option=value --option
 
 ## Runtime Configuration
 ### Setting default user, site, environment, etc. and Dotenv
-Terminus can use certain environment variables to set certain default values when invoking commands. Check the 
+Terminus can use certain environment variables to set certain default values when invoking commands. Check the
 `config/constants.yml` file for the names of variables which can be set. Do not alter this file - add global settings to
 your `~/.terminus/config.yml` file or export them in your terminal client.
 
@@ -189,7 +198,7 @@ Terminus will automatically use when invoked within that working directory.
 
 ## Known Issues/Limitations
 - Terminus will not offer you options for selection when parameters are not provided. This will be added in the future.
- 
+
 ## Developing & Contributing
 1. See the [CONTRIBUTING](CONTRIBUTING.md) document.
 2. Create an issue on this repository to discuss the change you propose should be made.
@@ -209,7 +218,7 @@ Tests are run via the `.scripts/test.sh` script. Components thereof can be run a
 - `composer cs` runs the code sniffer to ensure all code is appropriately formatted.
 - `composer phpunit` runs the PHPUnit unit tests.
 - `composer behat` runs the Behat feature tests
- 
+
 ## Support
 Please make ready the steps to reproduce the issue, outputs, pertinent information about your system, and what you
 believe the correct reaction of the system ought to be. Reporting of issues encountered should happen in one of two
@@ -234,7 +243,7 @@ the issue's notifications.
 ### If the problem is with the Pantheon platform
 Head over to [your support tickets in the Pantheon Dashboard](https://dashboard.pantheon.io/users/#support) and
 submit a new issue ticket. Please include the helpful information you have gathered.
- 
+
 ## Managing Third-Party Libraries
 Dependencies are easily updated by Composer. To update this codebase:
 
@@ -243,7 +252,7 @@ Dependencies are easily updated by Composer. To update this codebase:
 2. Run `composer update` at the repository root directory.
 3. Run the test suite. If there are errors, address them.
 4. Commit the changes, push the branch, and create a pull request for the update.
- 
+
 ## Deployment
 To deploy a new version of Terminus:
 
@@ -252,7 +261,7 @@ To deploy a new version of Terminus:
 2. Copy all `CHANGELOG.md` entries for the new version into the description of the release.
 3. Tag the new release with its version number.
 4. Release it. It will become automatically available to the public via Packagist and the [Terminus Installer](https://github.com/pantheon-systems/terminus-installer).
- 
+
 ## Debugging
 - Run Terminus with the `-vvv` option to get debug output.
 - If you are getting `PHP Fatal error:  Uncaught exception 'ReflectionException' ...`, install php-xml.
