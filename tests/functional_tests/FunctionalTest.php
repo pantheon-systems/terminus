@@ -7,7 +7,7 @@ class FunctionalTest extends TestCase
     /**
      * If there is a terminus token, then log in.
      */
-    public static function setUpBeforeClass()
+    public static function setUpBeforeClass() : void
     {
         $token = getenv('TERMINUS_TOKEN');
         if ($token) {
@@ -31,8 +31,8 @@ class FunctionalTest extends TestCase
      * Run a terminus command.
      *
      * @param string $command The command to run
-     * @param integer $status The required status code for the
-     *   provided command
+     * @param integer $expected_status The required status code for the provided
+     * command.
      */
     protected function terminus($command, $expected_status = 0)
     {

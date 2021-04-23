@@ -3,6 +3,13 @@ All notable changes to this project will be documented in this file. This projec
 
 ## MASTER
 
+## 3.0 - 2021-04-23
+- New command `self:plugin:install` to install Terminus plugins. (#2054)
+- New command `self:plugin:list` to list installed Terminus plugins. (#2054)
+- New command `self:plugin:search` to locate Terminus plugins to install. (#2054)
+- New command `self:plugin:uninstall` to uninstall Terminus plugins. (#2054)
+- New command `self:plugin:update` to update already-installed Terminus plugins. (#2054)
+
 ## 2.5.0 - 2021-01-20
 ### Added
 - `getUsername` added to `Binding` model to retrieve the username for a connection. (#2107)
@@ -29,15 +36,9 @@ All notable changes to this project will be documented in this file. This projec
 - New option `--no-files` added to `multidev:create` which will skip the duplication of files from the source environment. (#2050)
 - New option `no-db` added to `Environments::create` which will skip the duplication of the database from the source environment. (#2050)
 - New option `no-files` added to `Environments::create` which will skip the duplication of files from the source environment. (#2050)
-<<<<<<< HEAD
 - New method `Upstream::hasCode()` returns a bool indicating whether the environment has code or not. (#2056)
-=======
-- New command `self:plugin:install` to install Terminus plugins. (#2054)
-- New command `self:plugin:list` to list installed Terminus plugins. (#2054)
-- New command `self:plugin:search` to locate Terminus plugins to install. (#2054)
-- New command `self:plugin:uninstall` to uninstall Terminus plugins. (#2054)
-- New command `self:plugin:update` to update already-installed Terminus plugins. (#2054)
->>>>>>> 14adeeac (Updated CHANGELOG with new plugin commands)
+
+
 
 ### Changed
 - `Request::download($url, $target)` now accepts directories in addition to files as its `$target` parameter. (#2053)
