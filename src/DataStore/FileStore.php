@@ -49,7 +49,13 @@ class FileStore implements DataStoreInterface
     public function set($key, $data)
     {
         $path = $this->getFileName($key, true);
+        // Prevent categories group+other from reading, writing or executing
+        // any files written to the FileStore, for security/privacy.
+        // e.g. tokens are cached and could be read by other user accounts
+        // on the machine.
+        $old = umask(077);
         file_put_contents($path, json_encode($data));
+        umask($old);
     }
 
     /**

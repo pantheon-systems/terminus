@@ -19,8 +19,9 @@ Our documentation is kept in the Terminus Manual, located here: https://pantheon
 - A command-line client
 - PHP version 5.6.40 or later recommended (5.5.38 minimum)
 - [PHP-CLI](https://www.php-cli.com/)
-- [PHP-CURL](https://php.net/manual/en/curl.setup.php)
-- [PHP-XML](https://php.net/manual/en/book.xml.php)
+- [PHP-CURL](https://php.net/manual/curl.setup.php)
+- [PHP-XML](https://php.net/manual/book.xml.php)
+- [PHP-JSON](https://php.net/manual/book.json.php)
 
 Once you have at least the requirements installed, you can install Terminus via Composer or Git. Additionally, you may want to install the optional software below to enhance your use of Terminus:
 
@@ -33,12 +34,40 @@ Once you have at least the requirements installed, you can install Terminus via 
 You can install Terminus just about anywhere on your system. In this README, we'll use `/install/location` to stand in for your chosen installation location.
 
 ## Installation
+
+There are several ways to install Terminus, depending on your use case:
+
+- For a composer-managed version of Terminus that is _not_ part of your other composer-managed project(s) and doesn't utilize global composer installations, use the [Terminus installer](#installing-via-the-terminus-installer).
+- If you want to contribute to the Terminus project, [download and install](#installing-with-git) from the git repository.
+- To add Terminus as a dependency of your composer-based project, [install with Composer](#installing-with-composer).
+- For a self-contained Terminus executable, [install terminus.phar](#install-self-contained-terminus).
+
+### Install Self-Contained Terminus
+
+1. Download the latest `terminus.phar` from the [Releases](https://github.com/pantheon-systems/terminus/releases) page. In the example below, we're directing the file to `$HOME/bin/` and renaming the file to `terminus`:
+
+    ```bash
+    wget https://github.com/pantheon-systems/terminus/releases/latest/download/terminus.phar -O ~/bin/terminus
+    ```
+
+     This will grab the latest version of Terminus from the [Releases](https://github.com/pantheon-systems/terminus/releases) page.
+
+1. Make the Terminus file exectable. The example below assumes the same installation path as above:
+
+    ```bash
+    chmod +X ~/bin/terminus
+    ```
+
+**Note:** Your installation directory must be in or added to your `$PATH` environment variable in order to call `terminus` from any working directory.
+
 ### Installing via the Terminus installer
 Run this in your Terminal client:
 ```bash
 curl -O https://raw.githubusercontent.com/pantheon-systems/terminus-installer/master/builds/installer.phar && php installer.phar install
 ```
 For more information on installation options or to report an issue with this method, please see the [Terminus Installer README.md file](https://github.com/pantheon-systems/terminus-installer).
+
+**Note:** Terminus installed this way cannot use `terminus update` to self-update versions.
 
 ### Installing with Composer
 
@@ -53,6 +82,8 @@ composer remove pantheon-systems/terminus
 before requiring it.
 
 Do not install Terminus via `composer global require`. [`composer global require` should not be used to install php applications](https://pantheon.io/blog/fixing-composer-global-command). If you need to globally install something using `composer`, use the [`cgr` utility](https://github.com/consolidation/cgr) as a replacement instead.
+
+**Note:** Terminus installed this way cannot use `terminus update` to self-update versions.
 
 ### Installing with Git
 To install with Git and use Terminus HEAD, you should clone this repository and run Terminus directly. If you would
@@ -71,6 +102,8 @@ You can now run the bleeding-edge version of Terminus via:
 ```bash
 bin/terminus
 ```
+
+**Note:** Terminus installed this way cannot use `terminus update` to self-update versions.
 
 ## Updating
 ### Updating via the Terminus installer
@@ -128,7 +161,7 @@ Adding a symlink to `/install/location/terminus/bin/terminus` inside your bin di
 ## Authentication
 To get started with Terminus, you must first authenticate:
 ```bash
-terminus auth:login --machine_token=xxxxxxxx
+terminus auth:login --machine-token=xxxxxxxx
 [notice] Logging in via machine token
 ```
 If you are planning to run WP-CLI or Drush commands through Terminus, please

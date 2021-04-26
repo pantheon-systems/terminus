@@ -2,6 +2,28 @@
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org)
 
 ## MASTER
+
+## 2.5.0 - 2021-01-20
+### Added
+- `getUsername` added to `Binding` model to retrieve the username for a connection. (#2107)
+
+### Changed
+- `upstream:updates:apply` now applies Composer changes in addition to upstream changes. (#2089)
+- Connection usernames are no longer "pantheon" but derived from API data. (#2107)
+
+### Fixed
+- Fixed issue where `plan:info` receives a 404 error. (#2098)
+
+## 2.4.1 - 2020-09-08
+### Changed
+- The `DrushRCEditor` class has been renamed to `DrushRcClass`. (#2083)
+- Upstreams can be ID'd by `label`s, `product_id`s and `machine_name`s in addition to `id`s. (#2086)
+
+### Fixed
+- The `DrushRCEditor` class no longer emits deprecation warnings. (#2083)
+- `tag:add` now rejects empty tags. (#2085)
+
+## 2.4.0 - 2020-06-19
 ### Added
 - New option `--no-db` added to `multidev:create` which will skip the duplication of the database from the source environment. (#2050)
 - New option `--no-files` added to `multidev:create` which will skip the duplication of files from the source environment. (#2050)
@@ -24,6 +46,7 @@ All notable changes to this project will be documented in this file. This projec
 - Removed obsolete `Site::converge()` method. (#2055)
 
 ### Fixed
+- Drush script is no longer included when generating Drush aliases. (#2076)
 - PHP notice is not emitted when using `upstream:updates:status` on an environment without code. (#2056)
 - PHP notice is not emitted when using `UpstreamStatus::hasUpdates()` on an environment without code. (#2056)
 
