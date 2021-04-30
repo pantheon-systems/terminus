@@ -1,8 +1,9 @@
 <?php
 
-namespace Pantheon\Terminus\UnitTests\Commands;
+namespace Pantheon\Terminus\UnitTests\Commands\Workflow;
 
 use Pantheon\Terminus\Style\TerminusStyle;
+use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
 use Symfony\Component\Console\Formatter\OutputFormatter;
 use Symfony\Component\Console\Output\OutputInterface;
 

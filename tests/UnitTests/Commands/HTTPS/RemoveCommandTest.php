@@ -1,6 +1,6 @@
 <?php
 
-namespace Pantheon\Terminus\UnitTests\HTTPS;
+namespace Pantheon\Terminus\UnitTests\Commands\HTTPS;
 
 use Pantheon\Terminus\Commands\HTTPS\RemoveCommand;
 use Pantheon\Terminus\Models\Workflow;

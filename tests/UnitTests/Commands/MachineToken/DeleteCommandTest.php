@@ -12,7 +12,7 @@ use Pantheon\Terminus\Exceptions\TerminusException;
  * Testing class for Pantheon\Terminus\Commands\Auth\LoginCommand
  * @package Pantheon\Terminus\UnitTests\Commands\Auth
  */
-class MachineTokenDeleteCommandTest extends MachineTokenCommandTest
+class DeleteCommandTest extends CommandTest
 {
     /**
      * @var Token
@@ -37,7 +37,8 @@ class MachineTokenDeleteCommandTest extends MachineTokenCommandTest
     }
 
     /**
-     * Tests the machine-token:delete command.
+     * @testdox Tests the machine-token:delete command.
+     * @test
      */
     public function testMachineTokenDelete()
     {
@@ -55,7 +56,8 @@ class MachineTokenDeleteCommandTest extends MachineTokenCommandTest
     }
 
     /**
-     * Tests the machine-token:delete command when there are no tokens.
+     * @testdox  Tests the machine-token:delete command when there are no tokens.
+     * @test
      */
     public function testMachineTokenDeleteNonExistant()
     {

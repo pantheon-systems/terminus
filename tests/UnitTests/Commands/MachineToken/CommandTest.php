@@ -9,10 +9,10 @@ use Psr\Log\NullLogger;
 use Pantheon\Terminus\Collections\MachineTokens;
 
 /**
- * Class MachineTokenCommandTest
+ * Class CommandTest
  * @package Pantheon\Terminus\UnitTests\Commands\Auth
  */
-abstract class MachineTokenCommandTest extends CommandTestCase
+abstract class CommandTest extends CommandTestCase
 {
     protected $session;
     protected $machine_tokens;

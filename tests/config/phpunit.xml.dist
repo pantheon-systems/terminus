@@ -1,5 +1,5 @@
 <phpunit
-  bootstrap="../unit_tests/bootstrap.php"
+  bootstrap="../UnitTests/bootstrap.php"
   colors="true"
   verbose="true"
   convertErrorsToExceptions="true"
@@ -10,11 +10,11 @@
   stopOnIncomplete="true"
   stopOnSkipped="true"
   stopOnRisky="true"
-  printerClass="Codedungeon\PHPUnitPrettyResultPrinter\Printer"
+  printerClass="LimeDeck\Testing\Printer"
   >
   <testsuites>
     <testsuite name="unit">
-      <directory suffix="Test.php">../unit_tests/</directory>
+      <directory suffix="Test.php">../UnitTests/</directory>
     </testsuite>
   </testsuites>
   <filter>

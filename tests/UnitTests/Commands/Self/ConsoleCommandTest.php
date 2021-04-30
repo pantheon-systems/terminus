@@ -1,6 +1,6 @@
 <?php
 
-namespace Pantheon\Terminus\UnitTests\Commands\Console;
+namespace Pantheon\Terminus\UnitTests\Commands\Self;
 
 use Pantheon\Terminus\Commands\Self\ConsoleCommand;
 use Pantheon\Terminus\Config\TerminusConfig;

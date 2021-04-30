@@ -1,6 +1,6 @@
 <?php
 
-namespace Pantheon\Terminus\UnitTests\Commands\Remove;
+namespace Pantheon\Terminus\UnitTests\Commands\Remote;
 
 use Pantheon\Terminus\Commands\Remote\WPCommand;
 use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;

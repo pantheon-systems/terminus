@@ -11,7 +11,7 @@ use Pantheon\Terminus\Models\MachineToken;
  * Testing class for Pantheon\Terminus\Commands\Auth\LoginCommand
  * @package Pantheon\Terminus\UnitTests\Commands\Auth
  */
-class MachineTokensListCommandTest extends MachineTokenCommandTest
+class ListCommandTest extends CommandTest
 {
     /**
      * @inheritdoc

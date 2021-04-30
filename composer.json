@@ -15,10 +15,20 @@
     "consolidation/robo": "^1.4.4",
     "guzzlehttp/guzzle": "^6.2",
     "psy/psysh": "^0.8",
-    "symfony/console": "^3.3",
-    "symfony/finder": "~2.7|^3.2",
-    "symfony/process": "~2.7|^3.2",
-    "symfony/yaml": "~2.1|^3.2"
+    "symfony/console": "^4",
+    "symfony/finder": "^4",
+    "symfony/process": "^4",
+    "symfony/yaml": "^4"
+  },
+  "require-dev": {
+    "behat/behat": "^3.2.2",
+    "codedungeon/phpunit-result-printer": "^0.30.1",
+    "limedeck/phpunit-detailed-printer": "^6",
+    "php-coveralls/php-coveralls": "^2.1",
+    "php-vcr/php-vcr": "^1.4",
+    "phpunit/phpunit": "^9",
+    "squizlabs/php_codesniffer": "^3.5",
+    "yoast/phpunit-polyfills": "^0.2.0"
   },
   "autoload": {
     "psr-4": {
@@ -27,7 +37,7 @@
   },
   "autoload-dev": {
     "psr-4": {
-      "Pantheon\\Terminus\\UnitTests\\": "tests/unit_tests/",
+      "Pantheon\\Terminus\\UnitTests\\": "tests/UnitTests/",
       "Pantheon\\Terminus\\FeatureTests\\": "tests/features/bootstrap/"
     },
     "classmap": ["scripts/UpdateClassLists.php"]
@@ -45,24 +55,15 @@
       "phar:build": "env PATH=tools:$PATH box build",
       "update-class-lists": ["\\Terminus\\UpdateClassLists::update"],
       "behat": "SHELL_INTERACTIVE=true behat --colors --config tests/config/behat.yml --suite=default",
-      "cbf": "phpcbf --standard=tests/config/linting_ruleset.xml tests/unit_tests/* bin/terminus src/*",
+      "cbf": "phpcbf --standard=tests/config/linting_ruleset.xml tests/UnitTests/* bin/terminus src/*",
       "clover": "phpunit -c tests/config/phpunit.xml.dist --coverage-clover tests/logs/clover.xml",
       "coveralls": "php vendor/bin/php-coveralls -v -c tests/config/coveralls.yml",
-      "cs": "phpcs --standard=tests/config/linting_ruleset.xml tests/unit_tests bin/terminus src",
+      "cs": "phpcs --standard=tests/config/linting_ruleset.xml tests/UnitTests bin/terminus src",
       "docs": "php scripts/make-docs.php",
       "lint": "@cs",
       "phpunit": "SHELL_INTERACTIVE=true phpunit --colors=always  -c tests/config/phpunit.xml.dist --debug",
       "functional": "phpunit --colors=always -c tests/config/functional.phpunit.xml.dist --debug",
       "test": "set -ex ; composer cs ; composer phpunit ; composer behat ; composer functional"
-  },
-  "require-dev": {
-    "behat/behat": "^3.2.2",
-    "codedungeon/phpunit-result-printer": "^0.30.1",
-    "php-vcr/php-vcr": "^1.4",
-    "phpunit/phpunit": "^9",
-    "yoast/phpunit-polyfills": "^0.2.0",
-    "php-coveralls/php-coveralls": "^2.1",
-    "squizlabs/php_codesniffer": "^3.5"
   },
   "config": {
     "process-timeout": 3600,

@@ -1,8 +1,9 @@
 <?php
 
-namespace Pantheon\Terminus\UnitTests\Commands;
+namespace Pantheon\Terminus\UnitTests\Commands\Remote;
 
 use Pantheon\Terminus\Commands\Remote\DrushCommand;
+use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
 
 /**
  * Class DrushCommandTest

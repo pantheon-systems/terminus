@@ -1,6 +1,6 @@
 <?php
 
-namespace Pantheon\Terminus\UnitTests\HTTPS;
+namespace Pantheon\Terminus\UnitTests\Commands\HTTPS;
 
 use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
 use Pantheon\Terminus\Collections\Domains;

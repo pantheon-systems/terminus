@@ -31,7 +31,7 @@ class WPCommand extends SSHBaseCommand
      * @usage <site>.<env> -- <command> Runs the WP-CLI command <command> remotely on <site>'s <env> environment.
      * @usage <site>.<env> --progress -- <command> Runs a WP-CLI command with a progress bar
      */
-    public function wpCommand($site_env, array $wp_command, array $options = ['progress' => false])
+    public function execWpCommand($site_env, array $wp_command, array $options = ['progress' => false])
     {
         $this->prepareEnvironment($site_env);
         $this->setProgressAllowed($options['progress']);
