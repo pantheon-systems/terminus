@@ -12,3 +12,4 @@
 .vagrant
 Vagrantfile
 tests/config/.phpunit.result.cache
+/tests/config/logfile.txt

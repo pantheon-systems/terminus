@@ -11,8 +11,11 @@ use Pantheon\Terminus\Models\TerminusModel;
  */
 class APICollectionTest extends CollectionTestCase
 {
+
+
     /**
-     * Tests APICollection::fetch()
+     * @testdox Tests APICollection::fetch()
+     * @test
      */
     public function testFetch()
     {
@@ -25,35 +28,51 @@ class APICollectionTest extends CollectionTestCase
 
         $this->request->expects($this->once())
             ->method('request')
-            ->with('TESTURL', ['options' => ['method' => 'get',],])
+            ->with('TESTURL', ['options' => ['method' => 'get']])
             ->willReturn(['data' => $data]);
-
         $collection = $this->getMockBuilder(APICollection::class)
-            ->setMethods(['getUrl',])
+            ->onlyMethods([
+                'getUrl',
+                'request',
+                'getData'
+            ])
             ->disableOriginalConstructor()
             ->getMock();
+
         $collection->expects($this->once())
             ->method('getUrl')
             ->willReturn('TESTURL');
+        $collection->expects($this->once())
+            ->method('getData')
+            ->willReturn($data);
+
 
         $models = [];
         $options = ['collection' => $collection,];
-        $i = 0;
+        $i = 1;
         foreach ($data as $key => $model_data) {
-            $models[$model_data->id] = $this->getMockForAbstractClass(TerminusModel::class, [$model_data, $options,]);
+            $models[$model_data->id] = $this->getMockForAbstractClass(
+                TerminusModel::class,
+                [$model_data, $options],
+                '',
+                true,
+                false,
+                true,
+                ['serialize', 'fetch']
+            );
             $options['id'] = $model_data->id;
-            $this->container->expects($this->at($i++))
+            $this->container->expects($this->exactly(3))
                 ->method('get')
-                ->with(TerminusModel::class, [$model_data, $options,])
-                ->willReturn($models[$key]);
-            $models[$model_data->id]->method('serialize')->willReturn((array)$model_data);
+                ->withConsecutive(TerminusModel::class, [$model_data, $options])
+                ->willReturn($this->onConsecutiveCalls(
+                    $this->returnValue('serialize'),
+                    $this->returnValue('fetch')
+                ));
+            $models[$model_data->id]->method('serialize')->willReturn($model_data);
         }
-
         $collection->setRequest($this->request);
         $collection->setContainer($this->container);
-
         $collection->fetch();
-
         $this->assertEquals(array_keys($models), $collection->ids());
         $this->assertEquals($models, $collection->all());
         foreach ($models as $id => $model) {
@@ -63,11 +82,12 @@ class APICollectionTest extends CollectionTestCase
         $expected = array_map(function ($d) {
             return (array)$d;
         }, $data);
-        $this->assertEquals($expected, $collection);
+        $this->assertEquals($expected, $collection->serialize());
     }
 
     /**
-     * Tests APICollection::setPaging(bool) and APICollection::isPaged()
+     * @testdox Tests APICollection::setPaging(bool) and APICollection::isPaged()
+     * @test
      */
     public function testPaging()
     {

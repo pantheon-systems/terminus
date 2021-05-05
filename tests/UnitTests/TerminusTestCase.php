@@ -2,7 +2,7 @@
 
 namespace Pantheon\Terminus\UnitTests;
 
-use Yoast\PHPUnitPolyfills\TestCases\TestCase;
+use PHPUnit\Framework\TestCase;
 
 /**
  * Class TerminusTestCase

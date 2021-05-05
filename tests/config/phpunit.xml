@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<phpunit
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        bootstrap="../UnitTests/bootstrap.php"
+        colors="true"
+        verbose="true"
+        convertErrorsToExceptions="true"
+        convertNoticesToExceptions="true"
+        convertWarningsToExceptions="true"
+        stopOnError="true"
+        stopOnFailure="true"
+        stopOnIncomplete="true"
+        stopOnSkipped="true"
+        stopOnRisky="true"
+        printerClass="LimeDeck\Testing\Printer"
+        xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.3/phpunit.xsd">
+  <coverage>
+    <include>
+      <directory suffix=".php">../../src/</directory>
+      <directory suffix=".php">../../utils/</directory>
+    </include>
+    <exclude>
+      <directory suffix=".php">../../vendor/</directory>
+    </exclude>
+  </coverage>
+  <testsuites>
+    <testsuite name="unit">
+      <directory suffix="Test.php">../UnitTests/</directory>
+    </testsuite>
+  </testsuites>
+  <logging>
+    <text outputFile="./logfile.txt"/>
+  </logging>
+</phpunit>

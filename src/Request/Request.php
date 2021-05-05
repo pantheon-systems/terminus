@@ -133,7 +133,7 @@ class Request implements ConfigAwareInterface, ContainerAwareInterface, LoggerAw
      *   array form_params  Fed into the body of the request
      * @return array
      */
-    public function execRequest($path, array $options = [])
+    public function request($path, array $options = []): array
     {
         // Set headers
         $headers = $this->getDefaultHeaders();

@@ -2,6 +2,7 @@
 
 namespace Pantheon\Terminus\UnitTests\Collections;
 
+use Consolidation\Config\Util\ConfigOverlay;
 use League\Container\Container;
 use Robo\Config;
 use Pantheon\Terminus\Request\Request;
@@ -43,13 +44,15 @@ abstract class CollectionTestCase extends TerminusTestCase
      */
     public function setUp(): void
     {
-        $this->config = $this->getMockBuilder(Config::class)
+        $this->config = $this->getMockBuilder(ConfigOverlay::class)
             ->disableOriginalConstructor()
             ->getMock();
         $this->request = $this->getMockBuilder(Request::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $this->request->method('getConfig')->willReturn($this->getConfig());
+        $this->request
+            ->method('getConfig')
+            ->willReturn($this->getConfig());
         $this->container = $this->getMockBuilder(Container::class)
             ->disableOriginalConstructor()
             ->getMock();
