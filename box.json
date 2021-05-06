@@ -24,6 +24,10 @@
     {
       "in": "vendor/consolidation/annotated-command/src",
       "name": "*.php"
+    },
+    {
+      "in": "vendor/symfony",
+      "name": "*.php8"
     }
   ],
   "git-commit": "git-commit",
