@@ -1,7 +1,13 @@
 {
   "name": "pantheon-systems/terminus",
   "description": "A command line interface for Pantheon",
-  "keywords": [ "cli", "pantheon", "terminus", "drupal", "wordpress" ],
+  "keywords": [
+    "cli",
+    "pantheon",
+    "terminus",
+    "drupal",
+    "wordpress"
+  ],
   "homepage": "https://pantheon.io",
   "license": "MIT",
   "minimum-stability": "stable",
@@ -9,16 +15,18 @@
   "require": {
     "php": ">=7.3.0",
     "composer/semver": "^3",
+    "consolidation/annotated-command": "^4",
     "consolidation/comments": "^1.0.2",
     "consolidation/filter-via-dot-access-data": "^1.0",
-    "consolidation/output-formatters": "^3.5",
-    "consolidation/robo": "^1.4.4",
+    "consolidation/output-formatters": "^4",
+    "consolidation/robo": "^3.0",
     "guzzlehttp/guzzle": "^6.2",
     "psy/psysh": "^0.10",
     "symfony/console": "^4",
     "symfony/finder": "^4",
     "symfony/process": "^4",
-    "symfony/yaml": "^4"
+    "symfony/yaml": "^4",
+    "tm/tooly-composer-script": "^1.4"
   },
   "require-dev": {
     "behat/behat": "^3.2.2",
@@ -39,30 +47,37 @@
       "Pantheon\\Terminus\\UnitTests\\": "tests/UnitTests/",
       "Pantheon\\Terminus\\FeatureTests\\": "tests/features/bootstrap/"
     },
-    "classmap": ["scripts/UpdateClassLists.php"]
+    "classmap": [
+      "scripts/UpdateClassLists.php"
+    ]
   },
   "bin": [
     "bin/terminus"
   ],
   "scripts": {
-      "phar:install-tools": [
-        "gem install mime-types -v 2.6.2",
-        "curl -LSs https://box-project.github.io/box2/installer.php | php",
-        "mkdir -p tools",
-        "mv -f box.phar tools/box"
-      ],
-      "phar:build": "env PATH=tools:$PATH box build",
-      "update-class-lists": ["\\Terminus\\UpdateClassLists::update"],
-      "behat": "SHELL_INTERACTIVE=true behat --colors --config tests/config/behat.yml --suite=default",
-      "cbf": "phpcbf --standard=tests/config/linting_ruleset.xml tests/UnitTests/* bin/terminus src/*",
-      "clover": "phpunit -c tests/config/phpunit.xml.dist --coverage-clover tests/logs/clover.xml",
-      "coveralls": "php vendor/bin/php-coveralls -v -c tests/config/coveralls.yml",
-      "cs": "phpcs --standard=tests/config/linting_ruleset.xml tests/UnitTests bin/terminus src",
-      "docs": "php scripts/make-docs.php",
-      "lint": "@cs",
-      "phpunit": "SHELL_INTERACTIVE=true phpunit --colors=always  -c tests/config/phpunit.xml --debug",
-      "functional": "phpunit --colors=always -c tests/config/functional.phpunit.xml --debug",
-      "test": "set -ex ; composer cs ; composer phpunit ; composer behat ; composer functional"
+    "phar:install-tools": [
+      "gem install mime-types -v 2.6.2"
+    ],
+    "phar:build": "env PATH=tools:$PATH vendor/bin/box build",
+    "update-class-lists": [
+      "\\Terminus\\UpdateClassLists::update"
+    ],
+    "behat": "SHELL_INTERACTIVE=true behat --colors --config tests/config/behat.yml --suite=default",
+    "cbf": "phpcbf --standard=tests/config/linting_ruleset.xml tests/UnitTests/* bin/terminus src/*",
+    "clover": "phpunit -c tests/config/phpunit.xml.dist --coverage-clover tests/logs/clover.xml",
+    "coveralls": "php vendor/bin/php-coveralls -v -c tests/config/coveralls.yml",
+    "cs": "phpcs --standard=tests/config/linting_ruleset.xml tests/UnitTests bin/terminus src",
+    "docs": "php scripts/make-docs.php",
+    "lint": "@cs",
+    "phpunit": "SHELL_INTERACTIVE=true phpunit --colors=always  -c tests/config/phpunit.xml --debug",
+    "functional": "phpunit --colors=always -c tests/config/functional.phpunit.xml --debug",
+    "test": "set -ex ; composer cs ; composer phpunit ; composer behat ; composer functional",
+    "post-install-cmd": [
+      "Tooly\\ScriptHandler::installPharTools"
+    ],
+    "post-update-cmd": [
+      "Tooly\\ScriptHandler::installPharTools"
+    ]
   },
   "config": {
     "process-timeout": 3600,
@@ -75,7 +90,12 @@
   },
   "extra": {
     "branch-alias": {
-        "dev-master": "1.x-dev"
+      "dev-master": "1.x-dev"
+    },
+    "tools": {
+      "box": {
+        "url": "https://box-project.github.io/box2/installer.php"
+      }
     }
   }
 }

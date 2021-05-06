@@ -329,9 +329,9 @@ class Terminus implements ConfigAwareInterface, ContainerAwareInterface, LoggerA
 
         // Plugin handlers
         $container->share('pluginAutoloadDependencies', PluginAutoloadDependencies::class)
-            ->withArgument(__DIR__);
+            ->addArgument(__DIR__);
         $container->add(PluginDiscovery::class)
-            ->withArgument($this->getConfig()->get('plugins_dir'));
+            ->addArgument($this->getConfig()->get('plugins_dir'));
         $container->add(PluginInfo::class);
 
         // Update checker
