@@ -10,3 +10,6 @@
 .idea
 .vagrant
 Vagrantfile
+tests/config/.phpunit.*
+*.bak
+/vendor-bin

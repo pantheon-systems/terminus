@@ -1,7 +1,6 @@
 {
   "alias": "terminus.phar",
   "chmod": "0755",
-  "compactors": [],
   "directories": ["assets", "bin", "config", "src", "templates"],
   "files": ["README.md","composer.lock","composer.json"],
   "finder": [
