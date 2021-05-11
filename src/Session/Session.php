@@ -72,7 +72,13 @@ class Session implements ContainerAwareInterface, ConfigAwareInterface, DataStor
      */
     public function getUser()
     {
-        return $this->getContainer()->get(User::class, [(object)['id' => $this->get('user_id'),],]);
+        $userID = $this->get('user_id');
+        $this->getContainer()
+            ->add($userID, User::class)
+            ->addArgument((object)['id' => $userID]);
+        return $this
+            ->getContainer()
+            ->get($userID);
     }
 
     /**
@@ -105,7 +111,11 @@ class Session implements ContainerAwareInterface, ConfigAwareInterface, DataStor
     public function getTokens()
     {
         if (empty($this->tokens)) {
-            $this->tokens = $this->getContainer()->get(SavedTokens::class, [['session' => $this,],]);
+            $id = uniqid();
+            $this->getContainer()
+                ->add($id, SavedTokens::class)
+                ->addArgument(['session' => $this]);
+            $this->tokens = $this->getContainer()->get($id);
         }
         return $this->tokens;
     }

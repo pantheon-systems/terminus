@@ -53,10 +53,18 @@ abstract class TerminusCollection implements ContainerAwareInterface, RequestAwa
     public function add($model_data, array $options = [])
     {
         $options = array_merge(
-            ['id' => $model_data->id, 'collection' => $this,],
-            $options
+            $options,
+            [
+                'id' => $model_data->id,
+                'collection' => $this
+            ]
         );
-        $model = $this->getContainer()->get($this->collected_class, [$model_data, $options,]);
+        $this->getContainer()
+            ->add($model_data->id, $this->collected_class)
+            ->addArgument($model_data)
+            ->addArgument($options);
+
+        $model = $this->getContainer()->get($model_data->id);
         $this->models[$model_data->id] = $model;
         return $model;
     }

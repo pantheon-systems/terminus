@@ -433,7 +433,9 @@ class Terminus implements ConfigAwareInterface, ContainerAwareInterface, LoggerA
     private function runUpdateChecker()
     {
         $file_store = new FileStore($this->getConfig()->get('cache_dir'));
-        $this->runner->getContainer()->get(UpdateChecker::class, [$file_store,])->run();
+        $this->runner->getContainer()->add('UpdateChecker', UpdateChecker::class)
+            ->addArgument($file_store);
+        $this->runner->getContainer()->get('UpdateChecker')->run();
     }
 
     /**

@@ -56,7 +56,10 @@ class PluginDiscovery implements ContainerAwareInterface, LoggerAwareInterface
         foreach ($di as $dir) {
             if ($dir->isDir() && !$dir->isDot() && $dir->isReadable()) {
                 try {
-                    $plugin = $this->getContainer()->get(PluginInfo::class, [$dir->getPathname(),]);
+                    $name = basename($dir->getPathname());
+                    $this->container->add($name, PluginInfo::class)
+                        ->addArgument($dir->getPathname());
+                    $plugin = $this->getContainer()->get($name);
                     if (!in_array($plugin->getName(), self::BLACKLIST)) {
                         $out[] = $plugin;
                     }

@@ -65,7 +65,8 @@ class ArtCommand extends TerminusCommand
     protected function retrieveArt($name)
     {
         $filename = $this->getFilename($name);
-        $local_machine_helper = $this->getContainer()->get(LocalMachineHelper::class);
+        $this->getContainer()->add('LocalMachineHelper', LocalMachineHelper::class)
+        $local_machine_helper = $this->getContainer()->get('LocalMachineHelper');
         if (!$local_machine_helper->getFilesystem()->exists($filename)) {
             throw new TerminusNotFoundException(
                 'There is no source for the requested {name} artwork.',

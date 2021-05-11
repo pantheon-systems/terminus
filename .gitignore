@@ -13,3 +13,5 @@
 Vagrantfile
 tests/config/.phpunit.result.cache
 /tests/config/logfile.txt
+/tests/config/functional.phpunit.xml.dist.bak
+/vendor-bin

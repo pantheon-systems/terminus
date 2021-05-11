@@ -95,7 +95,7 @@ abstract class APICollection extends TerminusCollection
      */
     protected function requestDataAtUrl($url, $args = [])
     {
-        $default_args = ['options' => ['method' => 'get',],];
+        $default_args = ['options' => ['method' => 'get']];
         $args = array_merge($default_args, $args);
 
         if ($this->isPaged()) {

@@ -63,8 +63,8 @@ class Request implements ConfigAwareInterface, ContainerAwareInterface, LoggerAw
                 $target = $target . DIRECTORY_SEPARATOR . strtok(basename($url), '?');
             }
         }
-
-        if ($this->getContainer()->get(LocalMachineHelper::class)->getFilesystem()->exists($target)) {
+        $this->getContainer()->add('local-machine-helper', LocalMachineHelper::class);
+        if ($this->getContainer()->get('local-machine-helper')->getFilesystem()->exists($target)) {
             throw new TerminusException('Target file {target} already exists.', compact('target'));
         }
 
@@ -174,7 +174,14 @@ class Request implements ConfigAwareInterface, ContainerAwareInterface, LoggerAw
 
         //Required objects and arrays stir benign warnings.
         error_reporting(E_ALL ^ E_WARNING);
-        $request = $this->getContainer()->get(HttpRequest::class, [$method, $uri, $headers, $body,]);
+        $id = uniqid();
+        $this->getContainer()
+            ->add($id, HttpRequest::class)
+            ->addArgument($method)
+            ->addArgument($uri)
+            ->addArgument($headers)
+            ->addArgument($body);
+        $request = $this->getContainer()->get($id);
         error_reporting(E_ALL);
         $response = $this->sendWithRetry($request);
 
@@ -284,8 +291,10 @@ class Request implements ConfigAwareInterface, ContainerAwareInterface, LoggerAw
         if ($host_cert !== null) {
             $params[RequestOptions::CERT] = $host_cert;
         }
-
-        return $this->getContainer()->get(Client::class, [$params]);
+        $this->getContainer()
+            ->add('ClientClass', Client::class)
+            ->addArgument($params);
+        return $this->getContainer()->get('ClientClass');
     }
 
     /**

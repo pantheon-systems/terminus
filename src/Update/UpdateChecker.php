@@ -79,10 +79,9 @@ EOT;
         }
         $running_version = $this->getRunningVersion();
         try {
-            $latest_version = $this->getContainer()->get(
-                LatestRelease::class,
-                [$this->getDataStore(),]
-            )->get('version');
+            $this->getContainer()->add('LatestRelease', LatestRelease::class)
+                ->addArgument($this->getDataStore());
+            $latest_version = $this->getContainer()->get('LatestRelease')->get('version');
         } catch (TerminusNotFoundException $e) {
             $this->logger->debug('Terminus has no saved release information.');
             return;

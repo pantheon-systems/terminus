@@ -57,8 +57,11 @@ class OrganizationSiteMembership extends TerminusModel implements
     public function getSite()
     {
         if (empty($this->site)) {
-            $site = $this->getContainer()->get(Site::class, [$this->get('site'),]);
-            $site->memberships = [$this,];
+            $this->getContainer()
+                ->add('Site', Site::class)
+            ->addArgument($this->get('site'));
+            $site = $this->getContainer()->get('Site');
+            $site->memberships = [$this];
             $site->tags = $this->getTags();
             $this->setSite($site);
         }
@@ -71,7 +74,9 @@ class OrganizationSiteMembership extends TerminusModel implements
     public function getTags()
     {
         if (!$this->tags) {
-            $this->tags = $this->getContainer()->get(Tags::class, [['org_site_membership' => $this,],]);
+            $this->getContainer()->add('tags', Tags::class)
+                ->addArgument(['org_site_membership' => $this]);
+            $this->tags = $this->getContainer()->get('tags');
             $this->tags->fetch((array)$this->get('tags'));
         }
         return $this->tags;

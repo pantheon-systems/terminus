@@ -21,6 +21,8 @@
     "consolidation/output-formatters": "^4",
     "consolidation/robo": "^3.0",
     "guzzlehttp/guzzle": "^6.2",
+    "kint-php/kint": "^3.3",
+    "league/container": "^3.3",
     "psy/psysh": "^0.10",
     "symfony/console": "^4",
     "symfony/finder": "^4",

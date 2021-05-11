@@ -110,7 +110,9 @@ class User extends TerminusModel implements
     public function getMachineTokens()
     {
         if (empty($this->machine_tokens)) {
-            $this->machine_tokens = $this->getContainer()->get(MachineTokens::class, [['user' => $this,],]);
+            $this->getContainer()->add(MachineTokens::class)
+                ->addArgument(['user' => $this]);
+            $this->machine_tokens = $this->getContainer()->get(MachineTokens::class);
         }
         return $this->machine_tokens;
     }
