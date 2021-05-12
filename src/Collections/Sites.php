@@ -33,7 +33,9 @@ class Sites extends APICollection implements SessionAwareInterface
      */
     public function create($params = [])
     {
-        return $this->getUser()->getWorkflows()->create('create_site', compact('params'));
+        return $this->getUser()
+            ->getWorkflows()
+            ->create('create_site', compact('params'));
     }
 
     /**
@@ -48,7 +50,10 @@ class Sites extends APICollection implements SessionAwareInterface
      */
     public function createForMigration($params = [])
     {
-        return $this->getUser()->getWorkflows()->create('create_site_for_migration', compact('params'));
+        return $this
+            ->getUser()
+            ->getWorkflows()
+            ->create('create_site_for_migration', compact('params'));
     }
 
     /**
@@ -73,7 +78,10 @@ class Sites extends APICollection implements SessionAwareInterface
         }
 
         if (!$options['team_only']) {
-            $memberships = $this->getUser()->getOrganizationMemberships()->fetch()->all();
+            $memberships = $this->getUser()
+                ->getOrganizationMemberships()
+                ->fetch()
+                ->all();
             if (!is_null($org_id = $options['org_id'])) {
                 $memberships = array_filter($memberships, function ($membership) use ($org_id) {
                     return $membership->id == $org_id;
@@ -188,13 +196,12 @@ class Sites extends APICollection implements SessionAwareInterface
             // This can be a lot faster when there are a lot of items.
             try {
                 $uuid = $this->findUUIDByNameOrUUID($id);
-                $site = $this->getContainer()->get(
-                    $this->collected_class,
-                    [
-                        (object)['id' => $uuid,],
-                        ['id' => $uuid, 'collection' => $this,]
-                    ]
-                );
+                $id = uniqid();
+                $this->getContainer()
+                    ->add($id, $this->collected_class)
+                    ->addArgument((object)['id' => $uuid])
+                    ->addArgument(['id' => $uuid, 'collection' => $this]);
+                $site = $this->getContainer()->get($id);
                 $site->fetch();
             } catch (\Exception $e) {
                 throw new TerminusException(

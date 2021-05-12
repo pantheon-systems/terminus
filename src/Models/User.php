@@ -110,9 +110,10 @@ class User extends TerminusModel implements
     public function getMachineTokens()
     {
         if (empty($this->machine_tokens)) {
-            $this->getContainer()->add(MachineTokens::class)
+            $this->getContainer()
+                ->add('MachineTokens', MachineTokens::class)
                 ->addArgument(['user' => $this]);
-            $this->machine_tokens = $this->getContainer()->get(MachineTokens::class);
+            $this->machine_tokens = $this->getContainer()->get('MachineTokens');
         }
         return $this->machine_tokens;
     }
@@ -133,8 +134,11 @@ class User extends TerminusModel implements
     public function getOrganizationMemberships()
     {
         if (empty($this->org_memberships)) {
+            $this->getContainer()
+                ->add('UserOrganizationMemberships', UserOrganizationMemberships::class)
+                ->addArgument(['user' => $this]);
             $this->org_memberships = $this->getContainer()
-                ->get(UserOrganizationMemberships::class, [['user' => $this,],]);
+                ->get('UserOrganizationMemberships');
         }
         return $this->org_memberships;
     }
@@ -145,7 +149,10 @@ class User extends TerminusModel implements
     public function getPaymentMethods()
     {
         if (empty($this->payment_methods)) {
-            $this->payment_methods = $this->getContainer()->get(PaymentMethods::class, [['user' => $this,],]);
+            $this->getContainer()
+                ->add('PaymentMethods', PaymentMethods::class)
+                ->addArgument(['user' => $this]);
+            $this->payment_methods = $this->getContainer()->get('PaymentMethods');
         }
         return $this->payment_methods;
     }
@@ -155,7 +162,7 @@ class User extends TerminusModel implements
      */
     public function getReferences()
     {
-        return [$this->id, $this->getName(), $this->get('email'),];
+        return [$this->id, $this->getName(), $this->get('email')];
     }
 
     /**
@@ -164,7 +171,10 @@ class User extends TerminusModel implements
     public function getSiteMemberships()
     {
         if (empty($this->site_memberships)) {
-            $this->site_memberships = $this->getContainer()->get(UserSiteMemberships::class, [['user' => $this,],]);
+            $this->getContainer()
+                ->add('UserSiteMemberships', UserSiteMemberships::class)
+                ->addArgument(['user' => $this]);
+            $this->site_memberships = $this->getContainer()->get('UserSiteMemberships');
         }
         return $this->site_memberships;
     }
@@ -175,7 +185,10 @@ class User extends TerminusModel implements
     public function getSSHKeys()
     {
         if (empty($this->ssh_keys)) {
-            $this->ssh_keys = $this->getContainer()->get(SSHKeys::class, [['user' => $this,],]);
+            $this->getContainer()
+                ->add('SshKeys', SSHKeys::class)
+                ->addArgument(['user' => $this]);
+            $this->ssh_keys = $this->getContainer()->get('SshKeys');
         }
         return $this->ssh_keys;
     }
@@ -186,7 +199,10 @@ class User extends TerminusModel implements
     public function getUpstreams()
     {
         if (empty($this->upstreams)) {
-            $this->upstreams = $this->getContainer()->get(Upstreams::class, [['user' => $this,],]);
+            $this->getContainer()
+                ->add('Upstreams', Upstreams::class)
+                ->addArgument(['user' => $this]);
+            $this->upstreams = $this->getContainer()->get('Upstreams');
         }
         return $this->upstreams;
     }
@@ -197,7 +213,10 @@ class User extends TerminusModel implements
     public function getWorkflows()
     {
         if (empty($this->workflows)) {
-            $this->workflows = $this->getContainer()->get(Workflows::class, [['user' => $this,],]);
+            $this->getContainer()
+                ->add('WorkFlows', Workflows::class)
+                ->addArgument(['user' => $this]);
+            $this->workflows = $this->getContainer()->get('Workflows');
         }
         return $this->workflows;
     }

@@ -27,6 +27,9 @@
     <testsuite name="unit">
       <directory suffix="Test.php">../UnitTests/</directory>
     </testsuite>
+    <testsuite name="functional">
+      <directory suffix="Test.php">../FunctionalTests/</directory>
+    </testsuite>
   </testsuites>
   <logging>
     <text outputFile="./logfile.txt"/>

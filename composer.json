@@ -47,7 +47,9 @@
   "autoload-dev": {
     "psr-4": {
       "Pantheon\\Terminus\\UnitTests\\": "tests/UnitTests/",
-      "Pantheon\\Terminus\\FeatureTests\\": "tests/features/bootstrap/"
+      "Pantheon\\Terminus\\FeatureTests\\": "tests/features/bootstrap/",
+      "Pantheon\\Terminus\\FunctionalTests\\": "tests/FunctionalTests"
+
     },
     "classmap": [
       "scripts/UpdateClassLists.php"
@@ -60,20 +62,45 @@
     "phar:install-tools": [
       "gem install mime-types -v 2.6.2"
     ],
-    "phar:build": "env PATH=tools:$PATH vendor/bin/box build",
+    "phar:build": [
+      "vendor/bin/box.phar build"
+    ],
     "update-class-lists": [
       "\\Terminus\\UpdateClassLists::update"
     ],
-    "behat": "SHELL_INTERACTIVE=true behat --colors --config tests/config/behat.yml --suite=default",
-    "cbf": "phpcbf --standard=tests/config/linting_ruleset.xml tests/UnitTests/* bin/terminus src/*",
-    "clover": "phpunit -c tests/config/phpunit.xml.dist --coverage-clover tests/logs/clover.xml",
-    "coveralls": "php vendor/bin/php-coveralls -v -c tests/config/coveralls.yml",
-    "cs": "phpcs --standard=tests/config/linting_ruleset.xml tests/UnitTests bin/terminus src",
-    "docs": "php scripts/make-docs.php",
-    "lint": "@cs",
-    "phpunit": "SHELL_INTERACTIVE=true phpunit --colors=always  -c tests/config/phpunit.xml --debug",
-    "functional": "phpunit --colors=always -c tests/config/functional.phpunit.xml --debug",
-    "test": "set -ex ; composer cs ; composer phpunit ; composer behat ; composer functional",
+    "behat": [
+      "SHELL_INTERACTIVE=true behat --colors --config tests/config/behat.yml --suite=default"
+    ],
+    "cbf": [
+      "phpcbf --standard=tests/config/linting_ruleset.xml tests/UnitTests/* bin/terminus src/*"
+    ],
+    "clover": [
+      "phpunit -c tests/config/phpunit.xml.dist --coverage-clover tests/logs/clover.xml"
+    ],
+    "coveralls": [
+      "php vendor/bin/php-coveralls -v -c tests/config/coveralls.yml"
+    ],
+    "cs": [
+      "phpcs --standard=tests/config/linting_ruleset.xml tests/UnitTests bin/terminus src"
+    ],
+    "docs": [
+      "php scripts/make-docs.php"
+    ],
+    "lint": [
+      "@cs"
+    ],
+    "phpunit": [
+      "@functional"
+    ],
+    "functional": [
+      "@phar:build",
+      "set -ex ; SHELL_INTERACTIVE=true phpunit --colors=always -c tests/config/functional.phpunit.xml --debug"
+    ],
+    "test": [
+      "@cs",
+      "@functional",
+      "@behat"
+    ],
     "post-install-cmd": [
       "Tooly\\ScriptHandler::installPharTools"
     ],
@@ -96,7 +123,7 @@
     },
     "tools": {
       "box": {
-        "url": "https://box-project.github.io/box2/installer.php"
+        "url": "https://github.com/box-project/box/releases/download/3.12.2/box.phar"
       }
     }
   }

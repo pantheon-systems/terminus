@@ -144,7 +144,10 @@ class Site extends TerminusModel implements ContainerAwareInterface, Organizatio
     public function getAuthorizations()
     {
         if (empty($this->authorizations)) {
-            $this->authorizations = $this->getContainer()->get(SiteAuthorizations::class, [['site' => $this,],]);
+            $this->getContainer()
+                ->add(strtolower($this->getName()), SiteAuthorizations::class)
+                ->addArgument(['site' => $this]);
+            $this->authorizations = $this->getContainer()->get(strtolower($this->getName()));
         }
         return $this->authorizations;
     }
@@ -155,7 +158,10 @@ class Site extends TerminusModel implements ContainerAwareInterface, Organizatio
     public function getBranches()
     {
         if (empty($this->branches)) {
-            $this->branches = $this->getContainer()->get(Branches::class, [['site' => $this,],]);
+            $this->getContainer()
+                ->add(strtolower($this->getName()) . '_branches', Branches::class)
+                ->addArgument(['site' => $this]);
+            $this->branches = $this->getContainer()->get(strtolower($this->getName()) . '_branches');
         }
         return $this->branches;
     }
@@ -176,7 +182,10 @@ class Site extends TerminusModel implements ContainerAwareInterface, Organizatio
     public function getEnvironments()
     {
         if (empty($this->environments)) {
-            $this->environments = $this->getContainer()->get(Environments::class, [['site' => $this,],]);
+            $this->getContainer()
+                ->add(strtolower($this->getName()) . '_environments', Environments::class)
+                ->addArgument(['site' => $this]);
+            $this->environments = $this->getContainer()->get(strtolower($this->getName()) . '_environments');
         }
         return $this->environments;
     }
@@ -225,7 +234,10 @@ class Site extends TerminusModel implements ContainerAwareInterface, Organizatio
     public function getNewRelic()
     {
         if (empty($this->new_relic)) {
-            $this->new_relic = $this->getContainer()->get(NewRelic::class, [null, ['site' => $this,],]);
+            $this->getContainer()
+                ->add(strtolower($this->getName()) . "_newrelic", NewRelic::class)
+                ->addArgument(['site' => $this]);
+            $this->new_relic = $this->getContainer()->get(strtolower($this->getName()) . "_newrelic");
         }
         return $this->new_relic;
     }
@@ -319,7 +331,11 @@ class Site extends TerminusModel implements ContainerAwareInterface, Organizatio
         ) {
             $upstream_data = $settings->upstream;
         }
-        return $this->getContainer()->get(SiteUpstream::class, [$upstream_data, ['site' => $this,],]);
+        $this->getContainer()
+            ->add(strtolower($this->getName()) . "_upstream", SiteUpstream::class)
+            ->addArgument($upstream_data)
+            ->addArgument(['site' => $this]);
+        return $this->getContainer()->get(strtolower($this->getName()) . "_upstream");
     }
 
     /**
@@ -328,7 +344,11 @@ class Site extends TerminusModel implements ContainerAwareInterface, Organizatio
     public function getUserMemberships()
     {
         if (empty($this->user_memberships)) {
-            $this->user_memberships = $this->getContainer()->get(SiteUserMemberships::class, [['site' => $this,],]);
+            $this->getContainer()
+                ->add(strtolower($this->getName()) . "_site_user_memberships", SiteUserMemberships::class)
+                ->addArgument(['site' => $this]);
+            $this->user_memberships = $this->getContainer()
+                ->get(strtolower($this->getName()) . "_site_user_memberships");
         }
         return $this->user_memberships;
     }
@@ -339,7 +359,10 @@ class Site extends TerminusModel implements ContainerAwareInterface, Organizatio
     public function getWorkflows()
     {
         if (empty($this->workflows)) {
-            $this->workflows = $this->getContainer()->get(Workflows::class, [['site' => $this,],]);
+            $this->getContainer()
+                ->add(strtolower($this->getName()) . "_workflows", Workflows::class)
+                ->addArgument(['site' => $this]);
+            $this->workflows = $this->getContainer()->get(strtolower($this->getName()) . "_workflows");
         }
         return $this->workflows;
     }

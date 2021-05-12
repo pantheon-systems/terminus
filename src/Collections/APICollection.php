@@ -82,7 +82,7 @@ abstract class APICollection extends TerminusCollection
      *
      * @return array
      */
-    public function request()
+    public function requestData()
     {
         return $this->requestDataAtUrl($this->getUrl(), $this->getFetchArgs());
     }
