@@ -16,10 +16,32 @@ class EnvFunctionalTest extends FunctionalTestBase {
      * @test
      * @testdox Test basic env:info command.
      */
-    public function TestEnvInfo() {
+    public function testEnvInfo() {
         $site = getenv('TERMINUS_SITE') ?: 'ci-wordpress-core';
-        $output = $this->terminus("env:info {$site}.dev --format=yaml");
-        $this->assertEquals(0, $output['status']);
+        $output = $this->terminus("env:info {$site}.dev --format=yaml");`
+        $this->assertTrue($output->isSuccess(), 
+          "Command Should return clean status");
     }
+    
+    /**
+     * @test
+     */
+     public function testEnvCreate() {
+        $this->fail();
+     }
 
+    /**
+     * @test
+     */
+     public function testEnvUpdate() {
+        $this->fail();
+     }
+     
+     /**
+      * @test
+      */
+     public function testEnvDelete() {
+        $this->fail();
+     }
+     
 }
