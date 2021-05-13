@@ -103,13 +103,9 @@ class Workflows extends APICollection implements SessionAwareInterface
             ]
         );
 
-        $model = $this->getContainer()->get(
-            $this->collected_class,
-            [
-                $results['data'],
-                ['id' => $results['data']->id, 'collection' => $this,]
-            ]
-        );
+        $model = $this->getContainer()->get('collected_class')
+            ->addArgument($results['data'])
+            ->addArgument(['id' => $results['data']->id, 'collection' => $this]);
         $this->add($model);
         return $model;
     }

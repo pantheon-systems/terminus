@@ -66,9 +66,9 @@ class ArtCommand extends TerminusCommand
     {
         $filename = $this->getFilename($name);
         $this->getContainer()
-            ->add('LocalMachineHelper', LocalMachineHelper::class);
+            ->add(LocalMachineHelper::class);
         $local_machine_helper = $this->getContainer()
-            ->get('LocalMachineHelper');
+            ->get(LocalMachineHelper::class);
         if (!$local_machine_helper->getFilesystem()
             ->exists($filename)) {
             throw new TerminusNotFoundException(

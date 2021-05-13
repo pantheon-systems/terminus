@@ -46,7 +46,7 @@ abstract class SSHBaseCommand extends TerminusCommand implements SiteAwareInterf
      */
     protected function prepareEnvironment($site_env_id)
     {
-        list($this->site, $this->environment) = $this->getSiteEnv($site_env_id);
+        [$this->site, $this->environment] = $this->getSiteEnv($site_env_id);
     }
 
     /**
@@ -102,6 +102,7 @@ abstract class SSHBaseCommand extends TerminusCommand implements SiteAwareInterf
         if ($this->getConfig()->get('test_mode')) {
             return $this->divertForTestMode($ssh_command);
         }
+        $this->getContainer()->add(LocalMachineHelper::class);
         return $this->getContainer()->get(LocalMachineHelper::class)->execute(
             $ssh_command,
             $this->getOutputCallback(),
@@ -215,7 +216,7 @@ abstract class SSHBaseCommand extends TerminusCommand implements SiteAwareInterf
      */
     private function getOutputCallback()
     {
-        if ($this->getContainer()->get(LocalMachineHelper::class)->useTty() === false) {
+        if ($this->getContainer()->get('local_machine_helper')->useTty() === false) {
             $output = $this->output();
             $stderr = $this->stderr();
 

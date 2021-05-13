@@ -20,9 +20,14 @@ class SiteFunctionalTest extends FunctionalTestBase {
     public function testSiteCreate()
     {
         $site = getenv('TERMINUS_SITE') ?: 'ci-wordpress-core';
-        $result = $this->terminus("site:info $site --format=yaml");
-        $this->assertTrue($result->isSuccess(), "Command should produce success code");
-        $this->assertContains('framework: wordpress', $result->__toString());
+        $org = getenv('PANTHEON_INTERNAL_ORG');
+        $result = $this->terminus(
+            sprintf('site:create %s %s drupal9 --org=%s', $site, $site, $org)
+        );
+        $this->assertTrue(
+            $result->isSuccess(),
+            "Command Should return clean status"
+        );
     }
 
     /**
@@ -33,7 +38,7 @@ class SiteFunctionalTest extends FunctionalTestBase {
     {
        $this->fail();
     }
-    
+
     /**
      * @test
      * @testdox Test to see if we can use terminus.phar and get rational results back from the Hermes API.
@@ -42,7 +47,7 @@ class SiteFunctionalTest extends FunctionalTestBase {
     {
        $this->fail();
     }
-    
+
     /**
      * @test
      * @testdox Test to see if we can use terminus.phar and get rational results back from the Hermes API.

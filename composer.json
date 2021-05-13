@@ -25,7 +25,7 @@
     "league/container": "^3.3",
     "psy/psysh": "^0.10",
     "symfony/console": "^4",
-    "symfony/finder": "^4",
+    "symfony/finder": "^5",
     "symfony/process": "^4",
     "symfony/yaml": "^4",
     "tm/tooly-composer-script": "^1.4"
@@ -38,6 +38,10 @@
     "php-vcr/php-vcr": "^1.4",
     "phpunit/phpunit": "^9",
     "squizlabs/php_codesniffer": "^3.5"
+  },
+  "suggest": {
+    "ext-json": "*",
+    "ext-yaml": "*"
   },
   "autoload": {
     "psr-4": {
@@ -106,6 +110,10 @@
     ],
     "post-update-cmd": [
       "Tooly\\ScriptHandler::installPharTools"
+    ],
+    "pre-commit": [
+      "@cs",
+      "composer validate --strict"
     ]
   },
   "config": {

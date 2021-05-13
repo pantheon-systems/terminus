@@ -10,11 +10,14 @@ abstract class FunctionalTestBase extends TestCase {
     /**
      * If there is a terminus token, then log in.
      */
-    public static function setUpBeforeClass(): void
+    public function setUp(): void
     {
         $token = getenv('TERMINUS_TOKEN');
         if ($token) {
-            static::call_terminus("auth:login --machine-token=$token");
+            $result = static::call_terminus("auth:login --machine-token=$token");
+            if ($result->isError()) {
+                throw new \Exception("Cannot log in to do test...");
+            }
         }
     }
 

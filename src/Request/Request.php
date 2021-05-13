@@ -63,8 +63,8 @@ class Request implements ConfigAwareInterface, ContainerAwareInterface, LoggerAw
                 $target = $target . DIRECTORY_SEPARATOR . strtok(basename($url), '?');
             }
         }
-        $this->getContainer()->add('local-machine-helper', LocalMachineHelper::class);
-        if ($this->getContainer()->get('local-machine-helper')->getFilesystem()->exists($target)) {
+        $this->getContainer()->add(LocalMachineHelper::class);
+        if ($this->getContainer()->get(LocalMachineHelper::class)->getFilesystem()->exists($target)) {
             throw new TerminusException('Target file {target} already exists.', compact('target'));
         }
 
