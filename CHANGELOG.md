@@ -3,6 +3,11 @@ All notable changes to this project will be documented in this file. This projec
 
 ## MASTER
 
+### Added
+- `daily-ttl` and `weekly-ttl` options have been added to `Backups::setBackupSchedule()`. (#2133)
+- `keep-for` option has been added to `backup:automatic:schedule`. (#2133)
+- `expiry` information added to the output of `backup:automatic:info`. (#2133)
+
 ## 2.5.0 - 2021-01-20
 ### Added
 - `getUsername` added to `Binding` model to retrieve the username for a connection. (#2107)
