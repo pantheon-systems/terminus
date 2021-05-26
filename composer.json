@@ -14,6 +14,7 @@
     "consolidation/output-formatters": "^3.5",
     "consolidation/robo": "^1.4.4",
     "guzzlehttp/guzzle": "^6.2",
+    "paragonie/sodium_compat": "^1.16",
     "psy/psysh": "^0.8",
     "symfony/console": "^3.3",
     "symfony/finder": "~2.7|^3.2",
