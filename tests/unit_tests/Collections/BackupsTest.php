@@ -349,6 +349,7 @@ class BackupsTest extends CollectionTestCase
         $expected = [
             'daily_backup_hour' => '16 UTC',
             'weekly_backup_day' => 'Friday',
+            'expiry' => '32 days',
         ];
         $this->assertEquals($expected, $actual);
     }
