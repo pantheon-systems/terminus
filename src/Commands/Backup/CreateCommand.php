@@ -32,7 +32,9 @@ class CreateCommand extends BackupCommand
     public function create($site_env, $options = ['element' => 'all', 'keep-for' => null,])
     {
         list(, $env) = $this->getUnfrozenSiteEnv($site_env);
-        $options['keep-for'] = (isset($options['keep-for']) && !is_null($options['keep-for'])) ? $options['keep-for'] : Backup::DEFAULT_TTL;
+        $options['keep-for'] = (isset($options['keep-for']) && !is_null($options['keep-for']))
+            ? $options['keep-for']
+            : Backup::DEFAULT_TTL;
         $options['element'] = isset($options['element']) ? $this->getElement($options['element']) : null;
         $this->processWorkflow($env->getBackups()->create($options));
         $this->log()->notice('Created a backup of the {env} environment.', ['env' => $env->id,]);

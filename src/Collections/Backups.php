@@ -227,7 +227,7 @@ class Backups extends EnvironmentOwnedCollection
         'weekly-ttl' => null,
     ])
     {
-        $option_exists = function($option_name) use ($options) {
+        $option_exists = function ($option_name) use ($options) {
             return isset($options[$option_name]) && !is_null($options[$option_name]);
         };
         $daily_ttl = self::convertDaysToSeconds(
