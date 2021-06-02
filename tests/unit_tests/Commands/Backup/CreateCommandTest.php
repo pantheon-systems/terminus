@@ -4,6 +4,7 @@ namespace Pantheon\Terminus\UnitTests\Commands\Backup;
 
 use Pantheon\Terminus\Commands\Backup\CreateCommand;
 use Pantheon\Terminus\Exceptions\TerminusException;
+use Pantheon\Terminus\Models\Backup;
 use Pantheon\Terminus\UnitTests\Commands\WorkflowProgressTrait;
 
 /**
@@ -87,7 +88,7 @@ class CreateCommandTest extends BackupCommandTest
 
         $this->backups->expects($this->once())
             ->method('create')
-            ->with($this->equalTo(['element' => 'database',]))
+            ->with($this->equalTo(['element' => 'database', 'keep-for' => Backup::DEFAULT_TTL,]))
             ->willReturn($this->workflow);
 
         $this->logger->expects($this->once())
