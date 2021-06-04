@@ -1,7 +1,9 @@
 # Change Log
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org)
 
-## 2.6.0 - 2021-06-03
+## MASTER
+
+## 2.6.0 - 2021-06-04
 
 ### Added
 - `daily-ttl` and `weekly-ttl` options have been added to `Backups::setBackupSchedule()`. (#2133)
