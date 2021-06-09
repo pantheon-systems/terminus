@@ -1,0 +1,114 @@
+name: Terminus
+on:
+  push:
+  pull_request:
+  repository_dispatch:
+  schedule:
+    - cron: '0 0 * * *'
+jobs:
+  # Checkout in separate job because docker image is alpine based and checkout action doesn't work.
+  checkout:
+    runs-on: ubuntu-latest
+    name: Checkout
+    env:
+      TZ: "/usr/share/zoneinfo/America/Los_Angeles"
+      TERM: dumb
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Save repo content as artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: full-workspace
+          path: /home/runner/work/terminus/terminus
+
+  build_phar:
+    runs-on: ubuntu-latest
+    name: Build PHAR
+    env:
+      TZ: "/usr/share/zoneinfo/America/Los_Angeles"
+      TERM: dumb
+      COMPOSER_ALLOW_SUPERUSER: 1
+    container:
+      image: quay.io/pantheon-public/php-ci:v7.4
+    needs: [checkout]
+    steps:
+      - name: Download repo content from artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: full-workspace
+      - name: Full Composer Install
+        run: composer install --no-interaction --prefer-dist
+      - name: Phar Build
+        run: composer phar:build
+      - name: Save terminus.phar as artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: t3-phar
+          path: t3
+  functional:
+    runs-on: ${{ matrix.operating-system }}
+    name: PHP ${{ matrix.php-versions }} on ${{ matrix.operating-system }}
+    strategy:
+      matrix:
+        operating-system: ['ubuntu-latest', 'macos-latest']
+        php-versions: ['7.4', '8.0']
+    env:
+      TZ: "/usr/share/zoneinfo/America/Los_Angeles"
+      TERM: dumb
+      COMPOSER_PROCESS_TIMEOUT: 0
+      COMPOSER_ALLOW_SUPERUSER: 1
+      TERMINUS_TOKEN: ${{ secrets.TERMINUS_TOKEN }}
+      TERMINUS_SITE: ${{ secrets.TERMINUS_SITE }}
+    needs: [build_phar]
+    steps:
+      - name: Download repo content from artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: full-workspace
+      - name: Download terminus.phar as artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: t3-phar
+      - name: Setup PHP with PECL extension
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php-versions }}
+          extensions: gd, mbstring, zip
+          coverage: pcov
+      - name: Install
+        run: composer install
+      - name: permissions
+        run: chmod +x ./t3
+      - name: Functional Tests
+        run: composer functional:short
+        env:
+          COMPOSER_ALLOW_SUPERUSER: 1
+          TERMINUS_TOKEN: ${{ secrets.TERMINUS_TOKEN }}
+          TERMINUS_SITE: ${{ secrets.TERMINUS_SITE }}
+      - name: Coverage Report
+        run: composer coverage
+      - name: Save coverage as artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: CoverageReport
+          path: docs/TestCoverage.md
+
+  release:
+    runs-on: ubuntu-latest
+    name: Release
+    container:
+      image: quay.io/pantheon-public/php-ci:1.x
+    needs: [ functional ]
+    if: ${{ startsWith(github.ref, 'refs/tags/')  && github.repository_owner == 'pantheon-systems' }}
+    steps:
+      - name: Download terminus.phar as artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: t3-phar
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: t3
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

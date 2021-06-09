@@ -30,7 +30,7 @@ trait SiteAwareTrait
     /**
      * @return Sites The sites collection for the authenticated user.
      */
-    public function sites()
+    public function sites(): Sites
     {
         return $this->sites;
     }
@@ -39,10 +39,14 @@ trait SiteAwareTrait
      * Look up a site by id.
      *
      * @param string $site_id Either a site's UUID or its name
-     * @return mixed
+     * @return null | Site
      */
-    public function getSite($site_id)
+    public function getSite($site_id) : ?Site
     {
+        if (strpos($site_id, ".")) {
+            $split = explode(".", $site_id);
+            $site_id = array_shift($split);
+        }
         return $this->sites()->get($site_id);
     }
 
@@ -73,6 +77,11 @@ trait SiteAwareTrait
      * @param string  $site_env_id The site/environment id in the form <site>[.<env>]
      * @param string  $default_env The default environment to use if none is specified
      * @return array  The site and environment in an array.
+     *
+     * @deprecated
+     * Use $this->getSite($site_id | $site_env)->getEnvironments()->get($env)
+     * for a typed object return.
+     *
      * @throws TerminusException
      */
     public function getSiteEnv($site_env_id, $default_env = null)

@@ -3,10 +3,15 @@
 namespace Pantheon\Terminus\Request;
 
 use GuzzleHttp\Client;
+use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\ClientException;
+use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Exception\TooManyRedirectsException;
+use GuzzleHttp\Handler\CurlHandler;
+use GuzzleHttp\HandlerStack;
+use GuzzleHttp\Middleware;
+use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\RequestOptions;
-use GuzzleHttp\Psr7\Request as HttpRequest;
 use League\Container\ContainerAwareInterface;
 use League\Container\ContainerAwareTrait;
 use Pantheon\Terminus\Config\ConfigAwareTrait;
@@ -16,7 +21,10 @@ use Pantheon\Terminus\Session\SessionAwareInterface;
 use Pantheon\Terminus\Session\SessionAwareTrait;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
+use Psr\Log\LoggerInterface;
+use Robo\Common\IO;
 use Robo\Contract\ConfigAwareInterface;
+use Robo\Contract\IOAwareInterface;
 
 /**
  * Class Request
@@ -30,7 +38,11 @@ use Robo\Contract\ConfigAwareInterface;
  *
  * @package Pantheon\Terminus\Request
  */
-class Request implements ConfigAwareInterface, ContainerAwareInterface, LoggerAwareInterface, SessionAwareInterface
+class Request implements
+    ConfigAwareInterface,
+    ContainerAwareInterface,
+    LoggerAwareInterface,
+    SessionAwareInterface
 {
     use ConfigAwareTrait;
     use ContainerAwareTrait;
@@ -38,9 +50,14 @@ class Request implements ConfigAwareInterface, ContainerAwareInterface, LoggerAw
     use SessionAwareTrait;
 
     const PAGED_REQUEST_ENTRY_LIMIT = 100;
+
     const HIDDEN_VALUE_REPLACEMENT = '**HIDDEN**';
+
     const DEBUG_REQUEST_STRING = "#### REQUEST ####\nHeaders: {headers}\nURI: {uri}\nMethod: {method}\nBody: {body}";
-    const DEBUG_RESPONSE_STRING =  "#### RESPONSE ####\nHeaders: {headers}\nData: {data}\nStatus Code: {status_code}";
+
+    const DEBUG_RESPONSE_STRING = "#### RESPONSE ####\nHeaders: {headers}\nData: {data}\nStatus Code: {status_code}";
+
+    protected ClientInterface $client;
 
     /**
      * @var array Names of the values to strip from debug output
@@ -52,6 +69,7 @@ class Request implements ConfigAwareInterface, ContainerAwareInterface, LoggerAw
      *
      * @param string $url URL to download from
      * @param string $target Target file or directory's name
+     *
      * @throws TerminusException
      */
     public function download($url, $target)
@@ -63,13 +81,121 @@ class Request implements ConfigAwareInterface, ContainerAwareInterface, LoggerAw
                 $target = $target . DIRECTORY_SEPARATOR . strtok(basename($url), '?');
             }
         }
+        $this->logger->notice("Downloading {url} to {target}", [
+            "url" => strtok(basename($url), '?'),
+            "target" => $target,
+        ]);
 
         if ($this->getContainer()->get(LocalMachineHelper::class)->getFilesystem()->exists($target)) {
             throw new TerminusException('Target file {target} already exists.', compact('target'));
         }
 
         $parsed_url = parse_url($url);
-        $this->getClient($parsed_url['host'])->request('GET', $url, ['sink' => $target,]);
+        $this->getClient($parsed_url['host'])->request('GET', $url, ['sink' => $target]);
+    }
+
+    /**
+     * Returns a configured Client object
+     *
+     * @param string $base_uri Defaults to the getBaseURI() value
+     */
+    private function getClient($base_uri = null): ClientInterface
+    {
+        if (!isset($this->client)) {
+            $config = $this->getConfig();
+            $stack = HandlerStack::create(new CurlHandler());
+            $stack->push(Middleware::retry(
+                $this->createRetryDecider($this->logger),
+                function (
+                    $retries,
+                    Response $response = null
+                ) {
+                    return 1000 * $retries;
+                }
+            ));
+            $params = $config->get('client_options') + [
+                    'base_uri' => ($base_uri === null) ? $this->getBaseURI() : $base_uri,
+                    RequestOptions::VERIFY => (boolean)$config->get('verify_host_cert', true),
+                    'handler' => $stack,
+                ];
+
+            $host_cert = $config->get('host_cert');
+            if ($host_cert !== null) {
+                $params[RequestOptions::CERT] = $host_cert;
+            }
+
+            $this->client = new Client($params);
+        }
+        return $this->client;
+    }
+
+    private function createRetryDecider(LoggerInterface $logger = null)
+    {
+        $config = $this->getConfig();
+        $logger = $logger ?? $this->logger;
+        return function (
+            $retries,
+            \GuzzleHttp\Psr7\Request $request,
+            Response $response = null,
+            RequestException $e = null
+        ) use (
+            $logger,
+            $config
+        ) {
+            $retry_max = $config->get('http_max_retries', 5);
+            //$logger->debug(@\Kint::dump(get_defined_vars()));
+            if ($e instanceof ClientException or $e instanceof TooManyRedirectsException) {
+                throw $e;
+            }
+
+            switch ($response->getStatusCode()) {
+                case 200:
+                case 201:
+                case 202:
+                case 400:
+                case 401:
+                case 402:
+                case 403:
+                case 404:
+                case 405:
+                case 500:
+                    return false;
+
+                default:
+                    $logger->warning(sprintf(
+                        'Retrying %s %s %s/%s, %s',
+                        $request->getMethod(),
+                        $request->getUri(),
+                        $retries + 1,
+                        $retry_max,
+                        $response ? 'status code: ' . $response->getStatusCode() : $e->getMessage()
+                    ), [$request->getHeader('Host')[0]]);
+                    if ($retries >= $retry_max) {
+                        throw new TerminusException(
+                            'HTTPS request failed with error {error}. Maximum retry attempts reached.',
+                            ['error' => $e->getMessage()]
+                        );
+                    }
+                    return true;
+            }
+        };
+    }
+
+
+    /**
+     * Parses the base URI for requests
+     *
+     * @return string
+     */
+    private function getBaseURI()
+    {
+        $config = $this->getConfig();
+        return sprintf(
+            '%s://%s:%s',
+            $config->get('protocol'),
+            $config->get('host'),
+            $config->get('port')
+        );
     }
 
     /**
@@ -80,6 +206,7 @@ class Request implements ConfigAwareInterface, ContainerAwareInterface, LoggerAw
      *   string method      GET is default
      *   array form_params  Fed into the body of the request
      *   integer limit      Max number of entries to return
+     *
      * @return array
      */
     public function pagedRequest($path, array $options = [])
@@ -131,11 +258,16 @@ class Request implements ConfigAwareInterface, ContainerAwareInterface, LoggerAw
      * @param array $options Options for the request
      *   string method      GET is default
      *   array form_params  Fed into the body of the request
+     *
      * @return array
+     * @throws \GuzzleHttp\Exception\GuzzleException
      */
     public function request($path, array $options = [])
     {
         // Set headers
+
+        $parts = explode("/", $path);
+        $part = array_pop($parts);
         $headers = $this->getDefaultHeaders();
         if (isset($options['headers'])) {
             $headers = array_merge($headers, $options['headers']);
@@ -143,26 +275,23 @@ class Request implements ConfigAwareInterface, ContainerAwareInterface, LoggerAw
 
         if (strpos($path, '://') === false) {
             $uri = "{$this->getBaseURI()}/api/$path";
-            if ($session = $this->session()->get('session', false)) {
-                $headers['Authorization'] = "Bearer $session";
+            if ($part !== "machine-token") {
+                $headers['Authorization'] = sprintf("Bearer %s", $this->session()->get('session'));
             }
         } else {
             $uri = $path;
         }
-
-        if (!empty($options['query'])) {
-            $uri .= '?' . http_build_query($options['query'], null, '&', PHP_QUERY_RFC3986);
-        }
-
         $body = $debug_body = null;
         if (isset($options['form_params'])) {
+            $debug_body = $this->stripSensitiveInfo($options['form_params']);
             $body = json_encode($options['form_params'], JSON_UNESCAPED_SLASHES);
-            $debug_body = $options['form_params'];
+            unset($options['form_params']);
+            $headers['Content-Type'] = "application/json";
+            $headers['Content-Length'] = strlen($body);
         }
 
         $method = isset($options['method']) ? strtoupper($options['method']) : 'GET';
-
-        $this->logger->debug(
+        $this->logger->info(
             self::DEBUG_REQUEST_STRING,
             [
                 'headers' => json_encode($this->stripSensitiveInfo($headers), JSON_UNESCAPED_SLASHES),
@@ -171,121 +300,28 @@ class Request implements ConfigAwareInterface, ContainerAwareInterface, LoggerAw
                 'body' => json_encode($this->stripSensitiveInfo($debug_body), JSON_UNESCAPED_SLASHES),
             ]
         );
-
         //Required objects and arrays stir benign warnings.
         error_reporting(E_ALL ^ E_WARNING);
-        $request = $this->getContainer()->get(HttpRequest::class, [$method, $uri, $headers, $body,]);
-        error_reporting(E_ALL);
-        $response = $this->sendWithRetry($request);
-
-        return $response;
-    }
-
-    /**
-     * Send the request using the Guzzle client. Retry the request if a server or network error occurs.
-     *
-     * @param HttpRequest $request
-     * @return array
-     * @throws \Pantheon\Terminus\Exceptions\TerminusException
-     */
-    private function sendWithRetry($request)
-    {
-        $config = $this->getConfig();
-        $retry_interval = $config->get('http_retry_delay_ms', 100);
-        $retry_multiplier = $config->get('http_retry_backoff_multiplier', 2);
-        $retry_jitter = $config->get('http_retry_jitter_ms', 100);
-        $retry_max = $config->get('http_max_retries', 5);
-
-        $client = $this->getClient();
-
-        $tries = 0;
-        while (true) {
-            $tries++;
-
-            try {
-                $response = $client->send($request);
-                $body = json_decode($response->getBody()->getContents());
-                $data = [
-                    'data' => $body,
-                    'headers' => $response->getHeaders(),
-                    'status_code' => $response->getStatusCode(),
-                ];
-                $this->logger->debug(
-                    self::DEBUG_RESPONSE_STRING,
-                    [
-                        'data' => json_encode($this->stripSensitiveInfo((array)$body)),
-                        'headers' => json_encode($this->stripSensitiveInfo((array)$data['headers'])),
-                        'status_code' => $data['status_code'],
-                    ]
-                );
-
-                return $data;
-            } catch (\Exception $e) {
-                // Don't retry on Client errors or redirect loops.
-                if ($e instanceof ClientException or $e instanceof TooManyRedirectsException) {
-                    throw $e;
-                }
-
-                // If we're out of retries then throw an error.
-                if ($tries > $retry_max) {
-                    throw new TerminusException(
-                        'HTTPS request failed with error {error}. Maximum retry attempts reached.',
-                        ['error' => $e->getMessage(),]
-                    );
-                }
-
-                // For server or connection errors, retry the request until we have reached our maximum retries.
-                // Sleep for a specified interval. Jitter is added to prevent clients syncing up accidentally.
-                $sleep = $retry_interval + rand(0, $retry_jitter);
-
-                // Increase the retry interval so that we're backing off request to prevent overloading
-                $retry_interval = $retry_interval * $retry_multiplier;
-                $this->logger->warning(
-                    'HTTPS request failed with error {error}. Retrying in {sleep} milliseconds..',
-                    ['error' => $e->getMessage(), 'sleep' => $sleep,]
-                );
-
-                // Sleep the specified number if milliseconds.
-                usleep($sleep * 1000);
-            }
-        }
-    }
-
-    /**
-     * Parses the base URI for requests
-     *
-     * @return string
-     */
-    private function getBaseURI()
-    {
-        $config = $this->getConfig();
-        return sprintf(
-            '%s://%s:%s',
-            $config->get('protocol'),
-            $config->get('host'),
-            $config->get('port')
+        $response = $this->getClient()->send(
+            new \GuzzleHttp\Psr7\Request(
+                $method,
+                $uri,
+                $headers,
+                $body
+            ),
+            $options
         );
-    }
-
-    /**
-     * Returns a configured Client object
-     *
-     * @param string $base_uri Defaults to the getBaseURI() value
-     */
-    private function getClient($base_uri = null)
-    {
-        $config = $this->getConfig();
-        $params = [
-            'base_uri' => ($base_uri === null) ? $this->getBaseURI() : $base_uri,
-            RequestOptions::VERIFY => (boolean)$config->get('verify_host_cert', true),
+        $body = \json_decode(
+            $response->getBody()->getContents(),
+            false,
+            512,
+            JSON_THROW_ON_ERROR
+        );
+        return [
+            'data' => $body,
+            'headers' => $response->getHeaders(),
+            'status_code' => $response->getStatusCode(),
         ];
-
-        $host_cert = $config->get('host_cert');
-        if ($host_cert !== null) {
-            $params[RequestOptions::CERT] = $host_cert;
-        }
-
-        return $this->getContainer()->get(Client::class, [$params]);
     }
 
     /**
@@ -296,25 +332,9 @@ class Request implements ConfigAwareInterface, ContainerAwareInterface, LoggerAw
     private function getDefaultHeaders()
     {
         return [
-            'Content-type' => 'application/json',
             'User-Agent' => $this->userAgent(),
+            'Accept' => 'application/json',
         ];
-    }
-
-    /**
-     * @param array
-     * @return array
-     */
-    private function stripSensitiveInfo($data = [])
-    {
-        if (is_array($data)) {
-            foreach ($this->sensitive_data as $verboten) {
-                if (isset($data[$verboten])) {
-                    $data[$verboten] = self::HIDDEN_VALUE_REPLACEMENT;
-                }
-            }
-        }
-        return $data;
     }
 
     /**
@@ -331,5 +351,22 @@ class Request implements ConfigAwareInterface, ContainerAwareInterface, LoggerAw
             $config->get('php_version'),
             $config->get('script')
         );
+    }
+
+    /**
+     * @param array
+     *
+     * @return array
+     */
+    private function stripSensitiveInfo($data = [])
+    {
+        if (is_array($data)) {
+            foreach ($this->sensitive_data as $verboten) {
+                if (isset($data[$verboten])) {
+                    $data[$verboten] = self::HIDDEN_VALUE_REPLACEMENT;
+                }
+            }
+        }
+        return $data;
     }
 }
