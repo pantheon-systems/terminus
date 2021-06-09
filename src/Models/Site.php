@@ -235,11 +235,11 @@ class Site extends TerminusModel implements ContainerAwareInterface, Organizatio
      */
     public function getOrganizationMemberships()
     {
+        eval(\Psy\sh());
         if (empty($this->user_memberships)) {
-            $this->org_memberships = $this->getContainer()->get(
-                SiteOrganizationMemberships::class,
-                [['site' => $this,],]
-            );
+            $this->getContainer()->add(SiteOrganizationMemberships::class)
+                ->addArgument(['site' => $this]);
+            $this->org_memberships = $this->getContainer()->get(SiteOrganizationMemberships::class);
         }
         return $this->org_memberships;
     }
@@ -250,7 +250,9 @@ class Site extends TerminusModel implements ContainerAwareInterface, Organizatio
     public function getPlan()
     {
         if (empty($this->plan)) {
-            $this->plan = $this->getContainer()->get(Plan::class, [null, ['site' => $this,],]);
+            $this->getContainer()->add(Plan::class)
+                ->addArguments([['site' => $this]]);
+            $this->plan = $this->getContainer()->get(Plan::class);
         }
         return $this->plan;
     }
@@ -261,7 +263,9 @@ class Site extends TerminusModel implements ContainerAwareInterface, Organizatio
     public function getPlans()
     {
         if (empty($this->plans)) {
-            $this->plans = $this->getContainer()->get(Plans::class, [['site' => $this,],]);
+            $this->getContainer()->add(Plans::class)
+                ->addArguments([null, ['site' => $this]]);
+            $this->plans = $this->getContainer()->get(Plans::class);
         }
         return $this->plans;
     }
@@ -272,7 +276,9 @@ class Site extends TerminusModel implements ContainerAwareInterface, Organizatio
     public function getRedis()
     {
         if (empty($this->redis)) {
-            $this->redis = $this->getContainer()->get(Redis::class, [null, ['site' => $this,],]);
+            $this->getContainer()->add(Redis::class)
+                ->addArguments([null, ['site' => $this]]);
+            $this->redis = $this->getContainer()->get(Redis::class);
         }
         return $this->redis;
     }
@@ -291,7 +297,9 @@ class Site extends TerminusModel implements ContainerAwareInterface, Organizatio
     public function getSiteMetrics()
     {
         if (empty($this->site_metrics)) {
-            $this->site_metrics = $this->getContainer()->get(SiteMetrics::class, [['site' => $this,],]);
+            $this->getContainer()->add(SiteMetrics::class)
+                ->addArguemnt(['site' => $this]);
+            $this->site_metrics = $this->getContainer()->get(SiteMetrics::class);
         }
         return $this->site_metrics;
     }
@@ -302,7 +310,9 @@ class Site extends TerminusModel implements ContainerAwareInterface, Organizatio
     public function getSolr()
     {
         if (empty($this->solr)) {
-            $this->solr = $this->getContainer()->get(Solr::class, [null, ['site' => $this,],]);
+            $this->getContainer()->add(Solr::class)
+                ->addArguments([null, ['site' => $this]]);
+            $this->solr = $this->getContainer()->get(Solr::class);
         }
         return $this->solr;
     }
@@ -319,7 +329,9 @@ class Site extends TerminusModel implements ContainerAwareInterface, Organizatio
         ) {
             $upstream_data = $settings->upstream;
         }
-        return $this->getContainer()->get(SiteUpstream::class, [$upstream_data, ['site' => $this,],]);
+        $this->getContainer()->add(SiteUpstream::class)
+            ->addArguments([$upstream_data, ['site' => $this]]);
+        return $this->getContainer()->get(SiteUpstream::class);
     }
 
     /**
@@ -328,7 +340,9 @@ class Site extends TerminusModel implements ContainerAwareInterface, Organizatio
     public function getUserMemberships()
     {
         if (empty($this->user_memberships)) {
-            $this->user_memberships = $this->getContainer()->get(SiteUserMemberships::class, [['site' => $this,],]);
+            $this->getContainer()->add(SiteUserMemberships::class)
+                ->addArgument(['site' => $this]);
+            $this->user_memberships = $this->getContainer()->get(SiteUserMemberships::class);
         }
         return $this->user_memberships;
     }
@@ -339,7 +353,9 @@ class Site extends TerminusModel implements ContainerAwareInterface, Organizatio
     public function getWorkflows()
     {
         if (empty($this->workflows)) {
-            $this->workflows = $this->getContainer()->get(Workflows::class, [['site' => $this,],]);
+            $this->getContainer()->add(Workflows::class)
+                ->addArgument(['site' => $this]);
+            $this->workflows = $this->getContainer()->get(Workflows::class);
         }
         return $this->workflows;
     }

@@ -2,12 +2,17 @@
 
 namespace Pantheon\Terminus\Helpers\Site;
 
-use Pantheon\D9ify\Composer\ComposerFile;
-use Pantheon\D9ify\Exceptions\ComposerInstallException;
-use Pantheon\D9ify\Site\Sources\SiteSourceInterface;
-use Pantheon\D9ify\Site\Sources\Terminus;
-use Pantheon\D9ify\Traits\CommandExecutorTrait;
-use Pantheon\D9ify\Traits\DefaultClonePathTrait;
+use League\Container\ContainerAwareInterface;
+use League\Container\ContainerAwareTrait;
+use Pantheon\Terminus\Helpers\Composer\ComposerFile;
+use Pantheon\Terminus\Exceptions\ComposerInstallException;
+use Pantheon\Terminus\Helpers\Traits\CommandExecutorTrait;
+use Pantheon\Terminus\Helpers\Traits\DefaultClonePathTrait;
+use Pantheon\Terminus\Models\Site;
+use Pantheon\Terminus\Site\SiteAwareInterface;
+use Pantheon\Terminus\Site\SiteAwareTrait;
+use Robo\Common\IO;
+use Robo\Contract\IOAwareInterface;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -16,21 +21,16 @@ use Symfony\Component\Console\Output\OutputInterface;
  *
  * @package D9ify\Site
  */
-class Directory
+class Directory implements ContainerAwareInterface, IOAwareInterface, SiteAwareInterface
 {
 
     use CommandExecutorTrait;
     use DefaultClonePathTrait;
+    use ContainerAwareTrait;
+    use IO;
+    use SiteAwareTrait;
 
-    /**
-     * @var \Symfony\Component\Console\Output\OutputInterface
-     */
-    protected OutputInterface $output;
-
-    /**
-     * @var SiteSourceInterface
-     */
-    protected SiteSourceInterface $source;
+    protected string $siteID;
 
     /**
      * @var \SplFileInfo
@@ -45,30 +45,13 @@ class Directory
     /**
      * Directory constructor.
      *
-     * @param string | \D9ify\Site\Info $site
-     * @param \Symfony\Component\Console\Output\OutputInterface $output
+     * @param Site $site
      *
      * @throws \JsonException
      */
-    public function __construct(SiteSourceInterface $source, OutputInterface $output, $org = null)
+    public function __construct(string $site)
     {
-        $this->setSource($source);
-        $this->setOutput($output);
-    }
-
-    /**
-     * @param string $site
-     * @param \Symfony\Component\Console\Output\OutputInterface $output
-     *
-     * @return static
-     * @throws \JsonException
-     */
-    public static function factory(string $site, OutputInterface $output)
-    {
-        if ($output->isVerbose()) {
-            $output->writeln(__CLASS__ . " SOURCE DIR SET");
-        }
-        return new static(new Terminus($site), $output);
+        $this->siteID = $site;
     }
 
     /**
@@ -93,7 +76,6 @@ class Directory
      */
     public function ensure(bool $create = false)
     {
-        $this->getSource()->refresh();
         $valid = $this->getSource()->valid();
         if ($valid === false) {
             // if site doesn't exist
@@ -135,7 +117,7 @@ class Directory
     }
 
     /**
-     * @return \D9ify\Site\ComposerFile
+     * @return ComposerFile
      */
     public function &getComposerObject(): ?ComposerFile
     {
@@ -192,12 +174,10 @@ class Directory
     }
 
     /**
-     * @param OutputInterface $output
-     *
      * @return int
      * @throws \Exception
      */
-    public function install(OutputInterface $output)
+    public function install()
     {
         is_file($this->clonePath . "/composer.lock") ?
             unlink($this->clonePath . "/composer.lock") : [];
@@ -209,14 +189,6 @@ class Directory
             throw new ComposerInstallException($result, $output);
         }
         return $result;
-    }
-
-    /**
-     * @return \D9ify\Site\Info
-     */
-    public function getSiteInfo(): Info
-    {
-        return $this->info;
     }
 
     /**
@@ -233,22 +205,6 @@ class Directory
     public function setClonePath(\SplFileInfo $clonePath): void
     {
         $this->clonePath = $clonePath;
-    }
-
-    /**
-     * @return \Symfony\Component\Console\Output\OutputInterface
-     */
-    public function getOutput(): OutputInterface
-    {
-        return $this->output;
-    }
-
-    /**
-     * @param \Symfony\Component\Console\Output\OutputInterface $output
-     */
-    public function setOutput(OutputInterface $output): void
-    {
-        $this->output = $output;
     }
 
     /**
@@ -312,19 +268,7 @@ class Directory
         yaml_emit_file($yamlFile, $pantheonYaml);
     }
 
-    /**
-     * @return SiteSourceInterface
-     */
-    public function getSource(): SiteSourceInterface
-    {
-        return $this->source;
-    }
-
-    /**
-     * @param SiteSourceInterface $source
-     */
-    public function setSource(SiteSourceInterface $source): void
-    {
-        $this->source = $source;
+    public function getInfo() : Site {
+        return $this->getSite($this->siteID);
     }
 }

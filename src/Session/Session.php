@@ -106,7 +106,7 @@ class Session implements ContainerAwareInterface, ConfigAwareInterface, DataStor
     {
         if (empty($this->tokens)) {
             $this->getContainer()->add(SavedTokens::class)
-                ->addArgument($this);
+                ->addArgument($this->data_store);
             $this->tokens = $this->getContainer()->get(SavedTokens::class);
         }
         return $this->tokens;

@@ -174,7 +174,9 @@ class Request implements ConfigAwareInterface, ContainerAwareInterface, LoggerAw
 
         //Required objects and arrays stir benign warnings.
         error_reporting(E_ALL ^ E_WARNING);
-        $request = $this->getContainer()->get(HttpRequest::class, [$method, $uri, $headers, $body,]);
+        $this->getContainer()->extend(HttpRequest::class)
+            ->addArguments([ $method, $uri, $headers, $body]);
+        $request = $this->getContainer()->get(HttpRequest::class);
         error_reporting(E_ALL);
         $response = $this->sendWithRetry($request);
 
@@ -284,8 +286,9 @@ class Request implements ConfigAwareInterface, ContainerAwareInterface, LoggerAw
         if ($host_cert !== null) {
             $params[RequestOptions::CERT] = $host_cert;
         }
-
-        return $this->getContainer()->get(Client::class, [$params]);
+        $this->getContainer()->extend(Client::class)
+            ->addArgument($params);
+        return $this->getContainer()->get(Client::class);
     }
 
     /**

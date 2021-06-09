@@ -3,9 +3,9 @@
 
 namespace Pantheon\Terminus\Commands\D9ify;
 
+use Pantheon\Terminus\Commands\TerminusCommand;
 use Pantheon\Terminus\Config\ConfigAwareTrait;
 use Pantheon\Terminus\Helpers\Site\Directory;
-use Pantheon\Terminus\Commands\TerminusCommand;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -21,6 +21,7 @@ class CommitAndPushCommand extends TerminusCommand
 
     use SiteAwareTrait;
     use ConfigAwareTrait;
+
     /**
      * @var string
      */
@@ -46,22 +47,25 @@ class CommitAndPushCommand extends TerminusCommand
     protected Directory $destinationDirectory;
 
 
-
     /**
      * Commit uncommitted site files and push to remote repository.
      *
      * @authorize
+     *
      * @command d9ify:commitAndPush
+     *
      * @aliases d9cp
      *
      * @param string $site
      *   Pantheon Site ID/Name.
      *
      * @return void
+     *
      * @usage terminus d9ify:commitAndPush {SiteName}
      *
+     * @throws \JsonException
      */
-    protected function commitAndPush(string $site)
+    public function commitAndPush(string $site)
     {
         $this->setDestinationDirectory(
             Directory::factory(
@@ -74,8 +78,6 @@ class CommitAndPushCommand extends TerminusCommand
         $this->unpackSiteFilesAndRsyncToDestination($this->output());
         $this->checkinVersionManagedFilesAndPush($this->output());
     }
-
-
 
 
     /**
@@ -112,6 +114,14 @@ class CommitAndPushCommand extends TerminusCommand
     }
 
     /**
+     * @return Directory
+     */
+    public function getDestinationDirectory(): Directory
+    {
+        return $this->destinationDirectory;
+    }
+
+    /**
      * @step Set Destination directory
      * @description
      * Destination name will be {source}-{THIS YEAR} by default
@@ -122,13 +132,5 @@ class CommitAndPushCommand extends TerminusCommand
     public function setDestinationDirectory(Directory $destinationDirectory): void
     {
         $this->destinationDirectory = $destinationDirectory;
-    }
-
-    /**
-     * @return Directory
-     */
-    public function getDestinationDirectory(): Directory
-    {
-        return $this->destinationDirectory;
     }
 }

@@ -188,13 +188,14 @@ class Sites extends APICollection implements SessionAwareInterface
             // This can be a lot faster when there are a lot of items.
             try {
                 $uuid = $this->findUUIDByNameOrUUID($id);
-                $site = $this->getContainer()->get(
-                    $this->collected_class,
-                    [
-                        (object)['id' => $uuid,],
-                        ['id' => $uuid, 'collection' => $this,]
-                    ]
-                );
+                $this->getContainer()->add($this->collected_class)
+                    ->addArguments(
+                        [
+                            (object)['id' => $uuid,],
+                            ['id' => $uuid, 'collection' => $this,]
+                        ]
+                    );
+                $site = $this->getContainer()->get($this->collected_class);
                 $site->fetch();
             } catch (\Exception $e) {
                 throw new TerminusException(

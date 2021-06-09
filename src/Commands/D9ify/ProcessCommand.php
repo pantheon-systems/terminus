@@ -7,7 +7,6 @@ use Pantheon\Terminus\Config\ConfigAwareTrait;
 use Pantheon\Terminus\Helpers\Site\Directory;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
-use Robo\Tasks;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
 use Symfony\Component\Yaml\Yaml;
@@ -48,29 +47,32 @@ class ProcessCommand extends TerminusCommand implements SiteAwareInterface
      * Clone a pantheon site and spelunk the contents to create new D9 site.
      *
      * @authorize
+     *
      * @command d9ify:process
+     *
      * @aliases d9p
+     *
      * @param string $site
      *   Pantheon Site name/ID.
+     *
      * @return void
      * @throws \JsonException
      *
      * @usage terminus d9ify:process {sourceSiteName}
      * @usage terminus d9ify:process {sourceSiteName} {destinationSiteName}
      */
-    protected function process(string $site)
+    public function process($site)
     {
-        \Kint::dump($this->getSite($site));
-        exit();
+
         try {
-            $output->writeln(static::$HELP_TEXT);
-            $this->setSourceDirectory(
-                Directory::factory(
-                    $input->getArgument('source'),
-                    $io->output()
-                )
-            );
-            $org = $this->getSourceDirectory()->getInfo()->getOrganization();
+            $this->getContainer()->add(Directory::class)
+                ->addArgument($site);
+            $source = $this->getContainer()->get(Directory::class);
+            $this->output()->writeln(static::$HELP_TEXT);
+            $this->setSourceDirectory($source);
+            $org = $this->getSourceDirectory()->getInfo()->getOrganizations();
+            \Kint::dump($org);
+            exit();
             $this->setDestinationDirectory(
                 Directory::factory(
                     $input->getArgument('destination') ??
@@ -90,20 +92,24 @@ class ProcessCommand extends TerminusCommand implements SiteAwareInterface
             $this->downloadSourceSiteFilesDirectory($output);
         } catch (D9ifyExceptionBase $d9ifyException) {
             // TODO: Composer install exception help text
-            $io->writeln((string) $d9ifyException);
-            return self::FAILURE;
+            $io->writeln((string)$d9ifyException);
         } catch (\Exception $e) {
             // TODO: General help text and how to restart the process
-            $io->writeln("Script ended in Exception state. " . $e->getMessage());
-            $io->writeln($e->getTraceAsString());
-            self::FAILURE;
+            $this->output()->writeln("Script ended in Exception state. " . $e->getMessage());
+            $this->output()->writeln($e->getTraceAsString());
         } catch (\Throwable $t) {
             // TODO: General help text and how to restart the process
-            $io->write("Script ended in error state. " . $t->getMessage());
-            $io->writeln($t->getTraceAsString());
-            self::FAILURE;
+            $this->output()->write("Script ended in error state. " . $t->getMessage());
+            $this->output()->writeln($t->getTraceAsString());
         }
-        return self::SUCCESS;
+    }
+
+    /**
+     * @return \D9ify\Site\Directory
+     */
+    protected function getSourceDirectory(): Directory
+    {
+        return $this->sourceDirectory;
     }
 
     /**
@@ -118,36 +124,6 @@ class ProcessCommand extends TerminusCommand implements SiteAwareInterface
     {
         $this->sourceDirectory = $sourceDirectory;
     }
-
-    /**
-     * @return \D9ify\Site\Directory
-     */
-    protected function getSourceDirectory(): Directory
-    {
-        return $this->sourceDirectory;
-    }
-
-    /**
-     * @step Set Destination directory
-     * @description
-     * Destination name will be {source}-{THIS YEAR} by default
-     * if you don't provide a value.
-     *
-     * @param \D9ify\Site\Directory $destinationDirectory
-     */
-    protected function setDestinationDirectory(Directory $destinationDirectory): void
-    {
-        $this->destinationDirectory = $destinationDirectory;
-    }
-
-    /**
-     * @return \D9ify\Site\Directory
-     */
-    protected function getDestinationDirectory(): Directory
-    {
-        return $this->destinationDirectory;
-    }
-
 
     /**
      * @step Clone Source & Destination.
@@ -180,6 +156,27 @@ class ProcessCommand extends TerminusCommand implements SiteAwareInterface
             sprintf("Destination Folder: %s", $this->getDestinationDirectory()->getClonePath()),
             "*********************************************************************",
         ]);
+    }
+
+    /**
+     * @return \D9ify\Site\Directory
+     */
+    protected function getDestinationDirectory(): Directory
+    {
+        return $this->destinationDirectory;
+    }
+
+    /**
+     * @step Set Destination directory
+     * @description
+     * Destination name will be {source}-{THIS YEAR} by default
+     * if you don't provide a value.
+     *
+     * @param \D9ify\Site\Directory $destinationDirectory
+     */
+    protected function setDestinationDirectory(Directory $destinationDirectory): void
+    {
+        $this->destinationDirectory = $destinationDirectory;
     }
 
     /**
@@ -225,7 +222,7 @@ class ProcessCommand extends TerminusCommand implements SiteAwareInterface
             "*******************************************************************************",
             "* Found new Modules & themes from the source site:                            *",
             "*******************************************************************************",
-            print_r($composerFile->getDiff(), true)
+            print_r($composerFile->getDiff(), true),
         ]);
         return 0;
     }
@@ -255,7 +252,7 @@ class ProcessCommand extends TerminusCommand implements SiteAwareInterface
         $composerFile = $this->getDestinationDirectory()->getComposerObject();
         foreach ($fileList as $key => $file) {
             $package = \json_decode(file_get_contents($file->getRealPath()), true, 10, JSON_THROW_ON_ERROR);
-            $repoString = (string) $package['name'];
+            $repoString = (string)$package['name'];
             if (empty($repoString)) {
                 $repoString = is_string($package['repository']) ?
                     $package['repository'] : $package['repository']['url'];
@@ -315,8 +312,8 @@ class ProcessCommand extends TerminusCommand implements SiteAwareInterface
             "*******************************************************************************",
             "* Found new ESLibraries from the source site:                                 *",
             "*******************************************************************************",
-            print_r($composerFile->getDiff(), true)
-            ]);
+            print_r($composerFile->getDiff(), true),
+        ]);
     }
 
     /**
@@ -341,8 +338,8 @@ class ProcessCommand extends TerminusCommand implements SiteAwareInterface
             ->getComposerObject()
             ->addRequirement("drupal/core", "^9.1");
         $output->writeln(print_r($this->destinationDirectory
-                                     ->getComposerObject()
-                                     ->getDiff(), true));
+            ->getComposerObject()
+            ->getDiff(), true));
         $output->writeln(
             sprintf(
                 "Write these changes to the composer file at %s?",
@@ -357,7 +354,7 @@ class ProcessCommand extends TerminusCommand implements SiteAwareInterface
         $question = new ConfirmationQuestion(" Type '(y)es' to continue: ", false);
         $helper = $this->getHelper('question');
         if ($helper->ask($input, $output, $question)) {
-             $this->getDestinationDirectory()
+            $this->getDestinationDirectory()
                 ->getComposerObject()
                 ->write();
             $output->writeln("===> Composer File Written");
@@ -401,7 +398,7 @@ class ProcessCommand extends TerminusCommand implements SiteAwareInterface
      * | ✓ | web/modules/custom/milken_base/milken_base.info.yaml       |
      *
      */
-    protected function copyCustomCode(OutputInterface $output) :bool
+    protected function copyCustomCode(OutputInterface $output): bool
     {
         $output->writeln("===> Copying Custom Code");
 
@@ -497,6 +494,7 @@ class ProcessCommand extends TerminusCommand implements SiteAwareInterface
      * Write known values to the pantheon.yml file.
      *
      * @param \Symfony\Component\Console\Output\OutputInterface $output
+     *
      * @extra
      * [REGEX](https://regex101.com/r/vWIStG/1)
      *
@@ -509,20 +507,20 @@ class ProcessCommand extends TerminusCommand implements SiteAwareInterface
         $configFiles = $this->getSourceDirectory()
             ->spelunkFilesFromRegex('/[!^core]\/(system\.site\.yml$)/', $output);
         $configDirectory = @dirname(
-            reset($configFiles)
-        ) ?? null;
+                reset($configFiles)
+            ) ?? null;
 
         if ($configDirectory === null) {
             $output->writeln([
                 "A config directory was not found for this site. ",
-                "Expectation was that it was in `{site root directory}/config`"
+                "Expectation was that it was in `{site root directory}/config`",
             ]);
             return false;
         }
         exec(
             sprintf(
                 "mkdir -p %s",
-                $this->getDestinationDirectory()->getClonePath() ."/config/sync"
+                $this->getDestinationDirectory()->getClonePath() . "/config/sync"
             ),
             $result,
             $status
@@ -541,7 +539,7 @@ class ProcessCommand extends TerminusCommand implements SiteAwareInterface
         }
         $output->writeln([
             PHP_EOL,
-            "===> Done Copying Config Files"
+            "===> Done Copying Config Files",
         ]);
         return true;
     }
