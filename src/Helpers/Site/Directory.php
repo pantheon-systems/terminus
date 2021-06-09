@@ -268,7 +268,8 @@ class Directory implements ContainerAwareInterface, IOAwareInterface, SiteAwareI
         yaml_emit_file($yamlFile, $pantheonYaml);
     }
 
-    public function getInfo() : Site {
+    public function getInfo() : Site
+    {
         return $this->getSite($this->siteID);
     }
 }

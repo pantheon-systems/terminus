@@ -507,8 +507,8 @@ class ProcessCommand extends TerminusCommand implements SiteAwareInterface
         $configFiles = $this->getSourceDirectory()
             ->spelunkFilesFromRegex('/[!^core]\/(system\.site\.yml$)/', $output);
         $configDirectory = @dirname(
-                reset($configFiles)
-            ) ?? null;
+            reset($configFiles)
+        ) ?? null;
 
         if ($configDirectory === null) {
             $output->writeln([

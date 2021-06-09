@@ -2,7 +2,6 @@
 
 namespace Pantheon\Terminus\Exceptions;
 
-
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
