@@ -121,7 +121,6 @@ class Terminus implements ConfigAwareInterface, ContainerAwareInterface, LoggerA
     {
         // List of all hooks and commands. Update via 'composer update-class-lists'
         $this->commands = [
-            'Consolidation\\Filter\\Hooks\\FilterHooks',
             'Pantheon\\Terminus\\Hooks\\Authorizer',
             'Pantheon\\Terminus\\Hooks\\RoleValidator',
             'Pantheon\\Terminus\\Hooks\\SiteEnvLookup',
@@ -143,6 +142,8 @@ class Terminus implements ConfigAwareInterface, ContainerAwareInterface, LoggerA
             'Pantheon\\Terminus\\Commands\\Branch\\ListCommand',
             'Pantheon\\Terminus\\Commands\\Connection\\InfoCommand',
             'Pantheon\\Terminus\\Commands\\Connection\\SetCommand',
+            'Pantheon\\Terminus\\Commands\\D9ify\\CommitAndPushCommand',
+            'Pantheon\\Terminus\\Commands\\D9ify\\ProcessCommand',
             'Pantheon\\Terminus\\Commands\\Dashboard\\ViewCommand',
             'Pantheon\\Terminus\\Commands\\Domain\\AddCommand',
             'Pantheon\\Terminus\\Commands\\Domain\\DNSCommand',
@@ -323,9 +324,9 @@ class Terminus implements ConfigAwareInterface, ContainerAwareInterface, LoggerA
 
         // Plugin handlers
         $container->share('pluginAutoloadDependencies', PluginAutoloadDependencies::class)
-            ->withArgument(__DIR__);
+            ->addArgument(__DIR__);
         $container->add(PluginDiscovery::class)
-            ->withArgument($this->getConfig()->get('plugins_dir'));
+            ->addArgument($this->getConfig()->get('plugins_dir'));
 
         // Update checker
         $container->add(LatestRelease::class);
@@ -426,7 +427,7 @@ class Terminus implements ConfigAwareInterface, ContainerAwareInterface, LoggerA
     private function runUpdateChecker()
     {
         $file_store = new FileStore($this->getConfig()->get('cache_dir'));
-        $this->runner->getContainer()->get(UpdateChecker::class, [$file_store,])->run();
+        //$this->runner->getContainer()->get(UpdateChecker::class, [$file_store,])->run();
     }
 
     /**

@@ -42,6 +42,7 @@ class LoginCommand extends TerminusCommand
             $this->log()->notice('Found a machine token for {email}.', ['email' => $token->get('email'),]);
         } else {
             if (count($all_tokens) > 1) {
+                eval(\Psy\sh());
                 throw new TerminusException(
                     "Tokens were saved for the following email addresses:\n{tokens}\nYou may log in via `terminus"
                         . " auth:login --email=<email>`, or you may visit the dashboard to generate a machine"
