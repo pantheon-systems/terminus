@@ -112,8 +112,10 @@ class Organization extends TerminusModel implements
     public function getSiteMemberships()
     {
         if (empty($this->site_memberships)) {
+            $this->getContainer()->add(OrganizationSiteMemberships::class)
+                ->addArguments([['organization' => $this]]);
             $this->site_memberships = $this->getContainer()
-                ->get(OrganizationSiteMemberships::class, [['organization' => $this,],]);
+                ->get(OrganizationSiteMemberships::class);
         }
         return $this->site_memberships;
     }
@@ -124,7 +126,9 @@ class Organization extends TerminusModel implements
     public function getUpstreams()
     {
         if (empty($this->upstreams)) {
-            $this->upstreams = $this->getContainer()->get(OrganizationUpstreams::class, [['organization' => $this,],]);
+            $this->getContainer()->add(OrganizationUpstreams::class)
+                ->addArguments([['organization' => $this]]);
+            $this->upstreams = $this->getContainer()->get(OrganizationUpstreams::class);
         }
         return $this->upstreams;
     }
@@ -135,8 +139,10 @@ class Organization extends TerminusModel implements
     public function getUserMemberships()
     {
         if (empty($this->user_memberships)) {
+            $this->getContainer()->add(OrganizationUserMemberships::class)
+                ->addArguments([['organization' => $this]]);
             $this->user_memberships = $this->getContainer()
-                ->get(OrganizationUserMemberships::class, [['organization' => $this,],]);
+                ->get(OrganizationUserMemberships::class);
         }
         return $this->user_memberships;
     }
@@ -147,7 +153,9 @@ class Organization extends TerminusModel implements
     public function getWorkflows()
     {
         if (empty($this->workflows)) {
-            $this->workflows = $this->getContainer()->get(Workflows::class, [['organization' => $this,],]);
+            $this->getContainer()->add(Workflows::class)
+                ->addArgument([['organization' => $this]]);
+            $this->workflows = $this->getContainer()->get(Workflows::class);
         }
         return $this->workflows;
     }

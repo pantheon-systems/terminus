@@ -391,7 +391,9 @@ class Environment extends TerminusModel implements ContainerAwareInterface, Site
     public function getBackups()
     {
         if (empty($this->backups)) {
-            $this->backups = $this->getContainer()->get(Backups::class, [['environment' => $this,],]);
+            $this->getContainer()->add(Backups::class)
+                ->addArguments([['environment' => $this]]);
+            $this->backups = $this->getContainer()->get(Backups::class);
         }
         return $this->backups;
     }
@@ -402,7 +404,9 @@ class Environment extends TerminusModel implements ContainerAwareInterface, Site
     public function getBindings()
     {
         if (empty($this->bindings)) {
-            $this->bindings = $this->getContainer()->get(Bindings::class, [['environment' => $this,],]);
+            $this->getContainer()->add(Bindings::class)
+                ->addArguments([['environment' => $this]]);
+            $this->bindings = $this->getContainer()->get(Bindings::class);
         }
         return $this->bindings;
     }
@@ -421,7 +425,9 @@ class Environment extends TerminusModel implements ContainerAwareInterface, Site
     public function getCommits()
     {
         if (empty($this->commits)) {
-            $this->commits = $this->getContainer()->get(Commits::class, [['environment' => $this,],]);
+            $this->getContainer()->add(Commits::class)
+                ->addArguments([['environment' => $this]]);
+            $this->commits = $this->getContainer()->get(Commits::class);
         }
         return $this->commits;
     }
@@ -432,9 +438,10 @@ class Environment extends TerminusModel implements ContainerAwareInterface, Site
     public function getEnvironmentMetrics()
     {
         if (empty($this->environment_metrics)) {
+            $this->getContainer()->add(EnvironmentMetrics::class)
+                ->addArguments([['environment' => $this,],]);
             $this->environment_metrics = $this->getContainer()->get(
-                EnvironmentMetrics::class,
-                [['environment' => $this,],]
+                EnvironmentMetrics::class
             );
         }
         return $this->environment_metrics;
@@ -446,7 +453,9 @@ class Environment extends TerminusModel implements ContainerAwareInterface, Site
     public function getDomains()
     {
         if (empty($this->domains)) {
-            $this->domains = $this->getContainer()->get(Domains::class, [['environment' => $this,],]);
+            $this->getContainer()->add(Domains::class)
+                ->addArguments([['environment' => $this]]);
+            $this->domains = $this->getContainer()->get(Domains::class);
         }
         return $this->domains;
     }
@@ -456,7 +465,9 @@ class Environment extends TerminusModel implements ContainerAwareInterface, Site
      */
     public function getPrimaryDomainModel()
     {
-        return $this->getContainer()->get(PrimaryDomain::class, [$this]);
+        $this->getContainer()->add(PrimaryDomain::class)
+            ->addArguments([$this]);
+        return $this->getContainer()->get(PrimaryDomain::class);
     }
 
     /**
@@ -477,7 +488,9 @@ class Environment extends TerminusModel implements ContainerAwareInterface, Site
     public function getLock()
     {
         if (empty($this->lock)) {
-            $this->lock = $this->getContainer()->get(Lock::class, [$this->get('lock'), ['environment' => $this],]);
+            $this->getContainer()->add(Lock::class)
+                ->addArguments([$this->get('lock'), ['environment' => $this]]);
+            $this->lock = $this->getContainer()->get(Lock::class);
         }
         return $this->lock;
     }
@@ -531,9 +544,10 @@ class Environment extends TerminusModel implements ContainerAwareInterface, Site
     public function getUpstreamStatus()
     {
         if (empty($this->upstream_status)) {
+            $this->getContainer()->add(UpstreamStatus::class)
+                ->addArguments([[], ['environment' => $this,],]);
             $this->upstream_status = $this->getContainer()->get(
-                UpstreamStatus::class,
-                [[], ['environment' => $this,],]
+                UpstreamStatus::class
             );
         }
         return $this->upstream_status;
@@ -545,7 +559,9 @@ class Environment extends TerminusModel implements ContainerAwareInterface, Site
     public function getWorkflows()
     {
         if (empty($this->workflows)) {
-            $this->workflows = $this->getContainer()->get(Workflows::class, [['environment' => $this,],]);
+            $this->getContainer()->add(Workflows::class)
+                ->addArguments([['environment' => $this]]);
+            $this->workflows = $this->getContainer()->get(Workflows::class);
         }
         return $this->workflows;
     }
@@ -791,7 +807,9 @@ class Environment extends TerminusModel implements ContainerAwareInterface, Site
         );
 
         // The response is actually a workflow
-        return $this->getContainer()->get(Workflow::class, [$response['data'], ['environment' => $this,],]);
+        $this->getContainer()->add(Workflow::class)
+            ->addArguments([$response['data'], ['environment' => $this]]);
+        return $this->getContainer()->get(Workflow::class);
     }
 
     /**

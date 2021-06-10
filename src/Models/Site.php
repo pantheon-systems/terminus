@@ -144,7 +144,9 @@ class Site extends TerminusModel implements ContainerAwareInterface, Organizatio
     public function getAuthorizations()
     {
         if (empty($this->authorizations)) {
-            $this->authorizations = $this->getContainer()->get(SiteAuthorizations::class, [['site' => $this,],]);
+            $this->getContainer()->add(SiteAuthorizations::class)
+                ->addArguments([['site' => $this]]);
+            $this->authorizations = $this->getContainer()->get(SiteAuthorizations::class);
         }
         return $this->authorizations;
     }
@@ -155,7 +157,9 @@ class Site extends TerminusModel implements ContainerAwareInterface, Organizatio
     public function getBranches()
     {
         if (empty($this->branches)) {
-            $this->branches = $this->getContainer()->get(Branches::class, [['site' => $this,],]);
+            $this->getContainer()->add(Branches::class)
+                ->addArguments([['site' => $this,],]);
+            $this->branches = $this->getContainer()->get(Branches::class);
         }
         return $this->branches;
     }
@@ -176,7 +180,9 @@ class Site extends TerminusModel implements ContainerAwareInterface, Organizatio
     public function getEnvironments()
     {
         if (empty($this->environments)) {
-            $this->environments = $this->getContainer()->get(Environments::class, [['site' => $this,],]);
+            $this->getContainer()->add(Environments::class)
+                ->addArgument(['site' => $this]);
+            $this->environments = $this->getContainer()->get(Environments::class);
         }
         return $this->environments;
     }
@@ -225,7 +231,9 @@ class Site extends TerminusModel implements ContainerAwareInterface, Organizatio
     public function getNewRelic()
     {
         if (empty($this->new_relic)) {
-            $this->new_relic = $this->getContainer()->get(NewRelic::class, [null, ['site' => $this,],]);
+            $this->getContainer()->add(NewRelic::class)
+                ->addArgumentss([null, ['site' => $this]]);
+            $this->new_relic = $this->getContainer()->get(NewRelic::class);
         }
         return $this->new_relic;
     }
