@@ -2,9 +2,12 @@
 
 namespace Pantheon\Terminus\Commands\D9ify;
 
+use Pantheon\Terminus\Commands\Site\CreateCommand;
 use Pantheon\Terminus\Commands\TerminusCommand;
 use Pantheon\Terminus\Config\ConfigAwareTrait;
+use Pantheon\Terminus\Exceptions\TerminusException;
 use Pantheon\Terminus\Helpers\Site\Directory;
+use Pantheon\Terminus\Models\Site;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -52,8 +55,10 @@ class ProcessCommand extends TerminusCommand implements SiteAwareInterface
      *
      * @aliases d9p
      *
-     * @param string $site
+     * @param string $sourceSite
      *   Pantheon Site name/ID.
+     * @param ?string $destinationSite
+     *   Pantheon Destination Site (optional)
      *
      * @return void
      * @throws \JsonException
@@ -61,18 +66,76 @@ class ProcessCommand extends TerminusCommand implements SiteAwareInterface
      * @usage terminus d9ify:process {sourceSiteName}
      * @usage terminus d9ify:process {sourceSiteName} {destinationSiteName}
      */
-    public function process($site)
+    public function process($sourceSite, $destinationSite = null)
     {
-
+        $this->output()->writeln(static::$HELP_TEXT);
         try {
-            $this->getContainer()->add(Directory::class)
-                ->addArgument($site);
-            $source = $this->getContainer()->get(Directory::class);
-            $this->output()->writeln(static::$HELP_TEXT);
-            $this->setSourceDirectory($source);
-            $org = $this->getSourceDirectory()->getInfo()->getOrganizations();
-            \Kint::dump($org);
+            // Handle Source Site.
+            if ($sourceSite instanceof Site) {
+                $sourceSiteObject = $sourceSite;
+            }
+            if (is_string($sourceSite)) {
+                $sourceSiteObject = $this->getSite($sourceSite);
+            }
+            if (isset($sourceSiteObject) && $sourceSiteObject instanceof Site) {
+                $this->getContainer()->add("sourceDir", Directory::class)
+                    ->addArgument(['site' => $sourceSiteObject]);
+                $this->sourceDirectory = $this->getContainer()->get("sourceDir");
+            }
+
+            // Create destination Site if not exists or value is null.
+            if ($destinationSite == null) {
+                $destinationSite = $sourceSiteObject->getName() . "-" . date("Y");
+            }
+            if ($destinationSite instanceof Site) {
+                $destinationSiteObject = $destinationSite;
+            }
+            if (is_string($destinationSite)) {
+                $destinationSiteObject = $this->sites()->get($destinationSite);
+            }
+            \Kint::dump($this->sites());
             exit();
+            if (!isset($destinationSiteObject) || !$destinationSiteObject instanceof Site) {
+                $this->getContainer()->add(CreateCommand::class);
+                $createCommand = $this->getContainer()->get(CreateCommand::class);
+                $createCommand->create(
+                    $destinationSite,
+                    $destinationSite,
+                    'drupal9',
+                    ['org' => null]
+                );
+                $destinationSiteObject = $this->getSite($destinationSite);
+            }
+            if (isset($destinationSiteObject) || $destinationSiteObject instanceof Site) {
+                $this->getContainer()->add('destinationDir', Directory::class)
+                    ->addArgument(['site' => $destinationSiteObject ]);
+                $this->destinationDirectory = $this->getContainer()->get('destinationDir');
+            }
+
+
+
+            $this->output()->writeln([
+                PHP_EOL,
+                PHP_EOL,
+                PHP_EOL,
+                "*************************************************************",
+                PHP_EOL,
+                sprintf(
+                    "Source Site: %s (%s) ",
+                    $sourceSiteObject->getName(),
+                    $sourceSiteObject->get('id')
+                ),
+                PHP_EOL,
+                sprintf(
+                    "Destination Site: %s (%s) ",
+                    $destinationSiteObject->getName(),
+                    $destinationSiteObject->get('id')
+                ),
+                PHP_EOL,
+                "*************************************************************",
+            ]);
+
+
             $this->setDestinationDirectory(
                 Directory::factory(
                     $input->getArgument('destination') ??

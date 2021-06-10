@@ -30,7 +30,7 @@ class Directory implements ContainerAwareInterface, IOAwareInterface, SiteAwareI
     use IO;
     use SiteAwareTrait;
 
-    protected string $siteID;
+    protected $site;
 
     /**
      * @var \SplFileInfo
@@ -45,13 +45,16 @@ class Directory implements ContainerAwareInterface, IOAwareInterface, SiteAwareI
     /**
      * Directory constructor.
      *
-     * @param Site $site
+     * @param Site|string $site
      *
      * @throws \JsonException
      */
-    public function __construct(string $site)
+    public function __construct($site)
     {
-        $this->siteID = $site;
+        if (is_string($site)) {
+            $site = $this->getSite($site);
+        }
+        $this->site = $site;
     }
 
     /**
