@@ -113,7 +113,7 @@ class Organization extends TerminusModel implements
     {
         if (empty($this->site_memberships)) {
             $this->getContainer()->add(OrganizationSiteMemberships::class)
-                ->addArguments([['organization' => $this]]);
+                ->addArgument(['organization' => $this]);
             $this->site_memberships = $this->getContainer()
                 ->get(OrganizationSiteMemberships::class);
         }
@@ -127,7 +127,7 @@ class Organization extends TerminusModel implements
     {
         if (empty($this->upstreams)) {
             $this->getContainer()->add(OrganizationUpstreams::class)
-                ->addArguments([['organization' => $this]]);
+                ->addArgument(['organization' => $this]);
             $this->upstreams = $this->getContainer()->get(OrganizationUpstreams::class);
         }
         return $this->upstreams;
@@ -140,7 +140,7 @@ class Organization extends TerminusModel implements
     {
         if (empty($this->user_memberships)) {
             $this->getContainer()->add(OrganizationUserMemberships::class)
-                ->addArguments([['organization' => $this]]);
+                ->addArgument(['organization' => $this]);
             $this->user_memberships = $this->getContainer()
                 ->get(OrganizationUserMemberships::class);
         }
@@ -154,7 +154,7 @@ class Organization extends TerminusModel implements
     {
         if (empty($this->workflows)) {
             $this->getContainer()->add(Workflows::class)
-                ->addArgument([['organization' => $this]]);
+                ->addArgument(['organization' => $this]);
             $this->workflows = $this->getContainer()->get(Workflows::class);
         }
         return $this->workflows;

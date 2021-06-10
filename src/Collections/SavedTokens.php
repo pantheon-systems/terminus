@@ -44,10 +44,12 @@ class SavedTokens extends TerminusCollection implements ConfigAwareInterface, Da
      */
     public function create($token_string)
     {
-        $token =  $this->getContainer()->get(
-            SavedToken::class,
-            [(object)['token' => $token_string,], ['collection' => $this,]]
-        );
+        $this->getContainer()->add(SavedToken::class)
+            ->addArguments([
+                (object)['token' => $token_string],
+                ['collection' => $this,]
+            ]);
+        $token =  $this->getContainer()->get(SavedToken::class);
         $token->setDataStore($this->getDataStore());
         $user = $token->logIn();
         $user->fetch();

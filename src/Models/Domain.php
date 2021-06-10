@@ -44,10 +44,9 @@ class Domain extends TerminusModel implements ContainerAwareInterface, Environme
     public function getDNSRecords()
     {
         if (empty($this->dns_records)) {
-            $this->dns_records = $this->getContainer()->get(
-                DNSRecords::class,
-                [['data' => $this->get('dns_status_details')->dns_records, 'domain' => $this,],]
-            );
+            $this->getContainer()->add(DNSRecords::class)
+                ->addArguments([['data' => $this->get('dns_status_details')->dns_records, 'domain' => $this]);
+            $this->dns_records = $this->getContainer()->get(DNSRecords::class);
         }
         return $this->dns_records;
     }

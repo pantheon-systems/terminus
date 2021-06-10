@@ -72,7 +72,9 @@ class Session implements ContainerAwareInterface, ConfigAwareInterface, DataStor
      */
     public function getUser()
     {
-        return $this->getContainer()->get(User::class, [(object)['id' => $this->get('user_id'),],]);
+        $this->getContainer()->add(User::class)
+            ->addArguments([(object)['id' => $this->get('user_id')]]);
+        return $this->getContainer()->get(User::class);
     }
 
     /**

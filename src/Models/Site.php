@@ -145,7 +145,7 @@ class Site extends TerminusModel implements ContainerAwareInterface, Organizatio
     {
         if (empty($this->authorizations)) {
             $this->getContainer()->add(SiteAuthorizations::class)
-                ->addArguments([['site' => $this]]);
+                ->addArgument(['site' => $this]);
             $this->authorizations = $this->getContainer()->get(SiteAuthorizations::class);
         }
         return $this->authorizations;
@@ -158,7 +158,7 @@ class Site extends TerminusModel implements ContainerAwareInterface, Organizatio
     {
         if (empty($this->branches)) {
             $this->getContainer()->add(Branches::class)
-                ->addArguments([['site' => $this,],]);
+                ->addArgument(['site' => $this]);
             $this->branches = $this->getContainer()->get(Branches::class);
         }
         return $this->branches;
@@ -259,7 +259,7 @@ class Site extends TerminusModel implements ContainerAwareInterface, Organizatio
     {
         if (empty($this->plan)) {
             $this->getContainer()->add(Plan::class)
-                ->addArguments([['site' => $this]]);
+                ->addArgument(['site' => $this]);
             $this->plan = $this->getContainer()->get(Plan::class);
         }
         return $this->plan;

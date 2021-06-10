@@ -18,7 +18,9 @@ trait WorkflowProcessingTrait
     public function processWorkflow(Workflow $workflow)
     {
         if ($this->input()->isInteractive()) {
-            return $this->getContainer()->get(WorkflowProgressBar::class, [$this->output, $workflow,])->cycle();
+            $this->getContainer()->add(WorkflowProgressBar::class)
+                ->addArguments([$this->output, $workflow]);
+            return $this->getContainer()->get(WorkflowProgressBar::class)->cycle();
         }
         $retry_interval = $this->getConfig()->get('http_retry_delay_ms', 100);
         do {
