@@ -72,9 +72,10 @@ class Session implements ContainerAwareInterface, ConfigAwareInterface, DataStor
      */
     public function getUser()
     {
-        $this->getContainer()->add(User::class)
+        $me = "me-" . uniqid();
+        $this->getContainer()->add($me, User::class)
             ->addArguments([(object)['id' => $this->get('user_id')]]);
-        return $this->getContainer()->get(User::class);
+        return $this->getContainer()->get($me);
     }
 
     /**
@@ -106,10 +107,11 @@ class Session implements ContainerAwareInterface, ConfigAwareInterface, DataStor
      */
     public function getTokens()
     {
+        $nickname = uniqid();
         if (empty($this->tokens)) {
-            $this->getContainer()->add(SavedTokens::class)
-                ->addArgument($this->data_store);
-            $this->tokens = $this->getContainer()->get(SavedTokens::class);
+            $this->getContainer()->add($nickname, SavedTokens::class)
+                ->addMethodCall('setDataStore', [ $this->data_store ]);
+            $this->tokens = $this->getContainer()->get($nickname);
         }
         return $this->tokens;
     }

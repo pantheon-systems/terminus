@@ -32,7 +32,7 @@ class SavedToken extends TerminusModel implements SessionAwareInterface, DataSto
      */
     public function getReferences()
     {
-        return [$this->id, $this->get('token'),];
+        return [$this->id, $this->get('token')];
     }
 
     /**
@@ -69,7 +69,6 @@ class SavedToken extends TerminusModel implements SessionAwareInterface, DataSto
      */
     protected function parseAttributes($data)
     {
-        eval(\Psy\sh());
         if (property_exists($data, 'email')) {
             $data->id = $data->email;
         }

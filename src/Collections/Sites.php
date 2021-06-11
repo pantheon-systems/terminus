@@ -187,15 +187,16 @@ class Sites extends APICollection implements SessionAwareInterface
             // If the full model set hasn't been fetched then request the item individually from the API
             // This can be a lot faster when there are a lot of items.
             try {
+                $injectionNickname = "site-".\uniqid();
                 $uuid = $this->findUUIDByNameOrUUID($id);
-                $this->getContainer()->add($this->collected_class)
+                $this->getContainer()->add($injectionNickname, $this->collected_class)
                     ->addArguments(
                         [
                             (object)['id' => $uuid,],
                             ['id' => $uuid, 'collection' => $this,]
                         ]
                     );
-                $site = $this->getContainer()->get($this->collected_class);
+                $site = $this->getContainer()->get($injectionNickname);
                 $site->fetch();
             } catch (\Exception $e) {
                 throw new TerminusException(

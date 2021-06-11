@@ -53,14 +53,14 @@ abstract class TerminusCollection implements ContainerAwareInterface, RequestAwa
     public function add($model_data, array $options = [])
     {
         $options = array_merge(
-            ['id' => $model_data->id, 'collection' => $this,],
+            ['id' => $model_data->id, 'collection' => $this],
             $options
         );
-        $this->getContainer()->add($this->collected_class)
-            ->addArgument($model_data)
-            ->addArgument($options);
-        $model = $this->getContainer()->get($this->collected_class);
-        $this->models[$model_data->id] = $model;
+
+        $this->getContainer()->add($model_data->id, $this->collected_class)
+            ->addArguments([$model_data, $options]);
+        $model = $this->getContainer()->get($model_data->id);
+        $this->models[] = $model;
         return $model;
     }
 
@@ -95,7 +95,7 @@ abstract class TerminusCollection implements ContainerAwareInterface, RequestAwa
     }
 
     /**
-     * Filters the members of this collection
+     * Filters the members of this collectin
      *
      * @param callable $filter Filter function
      */
@@ -129,6 +129,7 @@ abstract class TerminusCollection implements ContainerAwareInterface, RequestAwa
      */
     public function get($id)
     {
+        $all = $this->all();
         foreach ($this->all() as $member) {
             if (in_array($id, $member->getReferences())) {
                 return $member;
@@ -149,7 +150,7 @@ abstract class TerminusCollection implements ContainerAwareInterface, RequestAwa
      *
      * @return string
      */
-    public function getCollectedClass()
+    public function getCollectedClass() : string
     {
         return $this->collected_class;
     }

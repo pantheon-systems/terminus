@@ -35,26 +35,37 @@ class LoginCommand extends TerminusCommand
                 $this->log()->notice('Logging in via machine token.');
                 $tokens->create($token_string);
             }
-        } elseif (isset($options['email']) && !is_null($email = $options['email'])) {
+        }
+
+        if (isset($options['email']) && !is_null($email = $options['email'])) {
             $token = $tokens->get($email);
-        } elseif (count($all_tokens = $tokens->all()) == 1) {
-            $token = array_shift($all_tokens);
-            $this->log()->notice('Found a machine token for {email}.', ['email' => $token->get('email'),]);
-        } else {
+        }
+
+        $all_tokens = $tokens->all();
+
+        if (!isset($token)) {
             if (count($all_tokens) > 1) {
                 throw new TerminusException(
                     "Tokens were saved for the following email addresses:\n{tokens}\nYou may log in via `terminus"
-                        . " auth:login --email=<email>`, or you may visit the dashboard to generate a machine"
-                        . " token:\n{url}",
+                    . " auth:login --email=<email>`, or you may visit the dashboard to generate a machine"
+                    . " token:\n{url}",
                     ['tokens' => implode("\n", $tokens->ids()), 'url' => $this->getMachineTokenCreationURL(),]
                 );
-            } else {
-                throw new TerminusException(
-                    "Please visit the dashboard to generate a machine token:\n{url}",
-                    ['url' => $this->getMachineTokenCreationURL(),]
-                );
+            }
+
+            if (count($all_tokens) == 1) {
+                $token = array_shift($all_tokens);
+                $this->log()->notice('Found a machine token for {email}.', ['email' => $token->get('email'),]);
             }
         }
+
+        if (count($all_tokens) == 0) {
+            throw new TerminusException(
+                "Please visit the dashboard to generate a machine token:\n{url}",
+                ['url' => $this->getMachineTokenCreationURL(),]
+            );
+        }
+
         if (isset($token)) {
             $this->log()->notice('Logging in via machine token.');
             $token->logIn();

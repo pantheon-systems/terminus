@@ -44,12 +44,13 @@ class SavedTokens extends TerminusCollection implements ConfigAwareInterface, Da
      */
     public function create($token_string)
     {
-        $this->getContainer()->add(SavedToken::class)
+        $token_nickname = "token-" . \uniqid();
+        $this->getContainer()->add($token_nickname, SavedToken::class)
             ->addArguments([
                 (object)['token' => $token_string],
-                ['collection' => $this,]
+                ['collection' => $this]
             ]);
-        $token =  $this->getContainer()->get(SavedToken::class);
+        $token =  $this->getContainer()->get($token_nickname);
         $token->setDataStore($this->getDataStore());
         $user = $token->logIn();
         $user->fetch();
@@ -76,9 +77,11 @@ class SavedTokens extends TerminusCollection implements ConfigAwareInterface, Da
     public function getData()
     {
         if (empty(parent::getData())) {
+            $keys = $this->getDataStore()->keys();
+
             $tokens = [];
-            foreach ($this->getDataStore()->keys() as $key) {
-                $tokens[] = (object)$this->getDataStore()->get($key);
+            foreach ($keys as $key) {
+                $tokens[] = $this->getDataStore()->get($key);
             }
             $this->setData($tokens);
         }

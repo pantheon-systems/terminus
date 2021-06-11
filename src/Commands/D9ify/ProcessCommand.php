@@ -1,13 +1,16 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Pantheon\Terminus\Commands\D9ify;
 
+use Consolidation\OutputFormatters\Options\FormatterOptions;
 use Pantheon\Terminus\Commands\Site\CreateCommand;
+use Pantheon\Terminus\Commands\Site\InfoCommand;
 use Pantheon\Terminus\Commands\TerminusCommand;
 use Pantheon\Terminus\Config\ConfigAwareTrait;
 use Pantheon\Terminus\Exceptions\TerminusException;
 use Pantheon\Terminus\Helpers\Site\Directory;
 use Pantheon\Terminus\Models\Site;
+use Pantheon\Terminus\Models\TerminusModel;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -66,8 +69,9 @@ class ProcessCommand extends TerminusCommand implements SiteAwareInterface
      * @usage terminus d9ify:process {sourceSiteName}
      * @usage terminus d9ify:process {sourceSiteName} {destinationSiteName}
      */
-    public function process($sourceSite, $destinationSite = null)
+    public function process($sourceSite, $destinationSite = null, $options = [])
     {
+        $GLOBALS['_kint_settings']['depthLimit'] = 3;
         $this->output()->writeln(static::$HELP_TEXT);
         try {
             // Handle Source Site.
@@ -84,17 +88,22 @@ class ProcessCommand extends TerminusCommand implements SiteAwareInterface
             }
 
             // Create destination Site if not exists or value is null.
+            $destinationSiteObject = null;
             if ($destinationSite == null) {
                 $destinationSite = $sourceSiteObject->getName() . "-" . date("Y");
             }
             if ($destinationSite instanceof Site) {
                 $destinationSiteObject = $destinationSite;
             }
+            $this->getContainer()->add('destintationSiteInfoCommand', InfoCommand::class);
+            $destinationSiteInfoCommand = $this->getContainer()->get('destintationSiteInfoCommand');
             if (is_string($destinationSite)) {
-                $destinationSiteObject = $this->sites()->get($destinationSite);
+                $results = $this->sites()->nameIsTaken($destinationSite);
+                if ($results) {
+                    $info = $this->sites()->get($destinationSite);
+                }
             }
-            \Kint::dump($this->sites());
-            exit();
+
             if (!isset($destinationSiteObject) || !$destinationSiteObject instanceof Site) {
                 $this->getContainer()->add(CreateCommand::class);
                 $createCommand = $this->getContainer()->get(CreateCommand::class);
@@ -104,7 +113,10 @@ class ProcessCommand extends TerminusCommand implements SiteAwareInterface
                     'drupal9',
                     ['org' => null]
                 );
-                $destinationSiteObject = $this->getSite($destinationSite);
+                $destinationSiteInfo = $destinationSiteInfoCommand->info($destinationSite)->getArrayCopy();
+                $this->getContainer()->add('destinationSiteModel', Site::class)
+                    ->addArgument($destinationSiteInfo);
+                $destinationSiteObject = $this->getContainer()->get('destinationSiteModel');
             }
             if (isset($destinationSiteObject) || $destinationSiteObject instanceof Site) {
                 $this->getContainer()->add('destinationDir', Directory::class)
@@ -112,7 +124,9 @@ class ProcessCommand extends TerminusCommand implements SiteAwareInterface
                 $this->destinationDirectory = $this->getContainer()->get('destinationDir');
             }
 
-
+            if (!isset($this->sourceDirectory) || !isset($this->destinationDirectory) ) {
+                throw new TerminusException("Cannot instantiate source/destination");
+            }
 
             $this->output()->writeln([
                 PHP_EOL,
@@ -135,16 +149,10 @@ class ProcessCommand extends TerminusCommand implements SiteAwareInterface
                 "*************************************************************",
             ]);
 
+            \Kint::dump($this->sites());
+            exit();
 
-            $this->setDestinationDirectory(
-                Directory::factory(
-                    $input->getArgument('destination') ??
-                    $this->sourceDirectory->getSiteInfo()->getName() . "-" . date('Y'),
-                    $io->output(),
-                    $org
-                )
-            );
-            $this->copyRepositoriesFromSource($io->output());
+            $this->copyRepositoriesFromSource();
             $this->updateDestModulesAndThemesFromSource($output);
             $this->updateDestEsLibrariesFromSource($output);
             $this->writeComposer($output);

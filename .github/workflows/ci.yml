@@ -1,0 +1,41 @@
+# https://circleci.com/docs/2.0/workflows/#using-workspaces-to-share-data-among-jobs
+name: Terminus
+on:
+  push:
+  pull_request:
+  repository_dispatch:
+  schedule:
+    - cron: '0 0 * * *'
+jobs:
+  functional:
+    runs-on: ${{ matrix.operating-system }}
+    name: PHP ${{ matrix.php-versions }}
+    strategy:
+      matrix:
+        operating-system: [ 'ubuntu-latest', 'windows-latest', 'macos-latest' ]
+        include:
+          - operating-system: 'ubuntu-latest'
+            php-versions: '7.2'
+            phpunit-versions: '8.5.13'
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      # Install without dev components to build a smaller phar
+      - name: Composer Install - no dev
+        run: composer install --no-dev --no-interaction --prefer-dist
+      - name: Install Phar Tools
+        run: composer phar:install-tools
+      - name: Phar Build
+        run: composer phar:build
+      # Re-install with dev components so that we can run phpunit
+      - name: Composer full install
+        run: composer install --no-interaction --prefer-dist
+      - name: Functional Tests
+        run: composer functional
+    environment:
+      TZ: "/usr/share/zoneinfo/America/Los_Angeles"
+      TERM: dumb
+
+
+
