@@ -111,8 +111,7 @@ class User extends TerminusModel implements
     {
         if (empty($this->machine_tokens)) {
             $nickname = uniqid(__FUNCTION__ . "-");
-
-            $this->getContainer()->add(MachineTokens::class)
+            $this->getContainer()->add($nickname, MachineTokens::class)
                 ->addArgument(['user' => $this]);
             $this->machine_tokens = $this->getContainer()
                 ->get($nickname);

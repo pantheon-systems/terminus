@@ -247,7 +247,6 @@ class Site extends TerminusModel implements ContainerAwareInterface, Organizatio
      */
     public function getOrganizationMemberships()
     {
-        eval(\Psy\sh());
         if (empty($this->user_memberships)) {
             $nickname = uniqid(__FUNCTION__ . "-");
             $this->getContainer()->add($nickname, SiteOrganizationMemberships::class)

@@ -22,7 +22,9 @@ use Pantheon\Terminus\Session\SessionAwareTrait;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 use Psr\Log\LoggerInterface;
+use Robo\Common\IO;
 use Robo\Contract\ConfigAwareInterface;
+use Robo\Contract\IOAwareInterface;
 
 /**
  * Class Request
@@ -36,13 +38,18 @@ use Robo\Contract\ConfigAwareInterface;
  *
  * @package Pantheon\Terminus\Request
  */
-class Request implements ConfigAwareInterface, ContainerAwareInterface, LoggerAwareInterface, SessionAwareInterface
+class Request implements
+    ConfigAwareInterface,
+    ContainerAwareInterface,
+    LoggerAwareInterface,
+    SessionAwareInterface,
+    IOAwareInterface
 {
     use ConfigAwareTrait;
     use ContainerAwareTrait;
     use LoggerAwareTrait;
     use SessionAwareTrait;
-
+    use IO;
 
     const PAGED_REQUEST_ENTRY_LIMIT = 100;
 
@@ -97,8 +104,14 @@ class Request implements ConfigAwareInterface, ContainerAwareInterface, LoggerAw
             $stack = HandlerStack::create(new CurlHandler());
             $stack->push(Middleware::retry(
                 $this->createRetryDecider($this->logger),
-                function ($numberOfRetries) {
-                    return 1000 * $numberOfRetries;
+                function (
+                    $retries,
+                    Response $response = null
+                ) {
+                    if ($response->getStatusCode() !== 202) {
+                        return 1000 * $retries;
+                    }
+                    return 1000;
                 }
             ));
             $params = $config->get('client_options') + [
@@ -131,18 +144,15 @@ class Request implements ConfigAwareInterface, ContainerAwareInterface, LoggerAw
             $config
         ) {
             $retry_max = $config->get('http_max_retries', 5);
-            if ($retries >= $retry_max) {
-                throw new TerminusException(
-                    'HTTPS request failed with error {error}. Maximum retry attempts reached.',
-                    ['error' => $e->getMessage()]
-                );
-            }
+            $logger->debug(@\Kint::dump(get_defined_vars()));
             if ($e instanceof ClientException or $e instanceof TooManyRedirectsException) {
                 throw $e;
             }
 
             switch ($response->getStatusCode()) {
                 case 200:
+                case 201:
+                case 202:
                 case 500:
                 case 405:
                 case 403:
@@ -158,10 +168,17 @@ class Request implements ConfigAwareInterface, ContainerAwareInterface, LoggerAw
                         $retry_max,
                         $response ? 'status code: ' . $response->getStatusCode() : $e->getMessage()
                     ), [$request->getHeader('Host')[0]]);
+                    if ($retries >= $retry_max) {
+                        throw new TerminusException(
+                            'HTTPS request failed with error {error}. Maximum retry attempts reached.',
+                            ['error' => $e->getMessage()]
+                        );
+                    }
                     return true;
             }
         };
     }
+
 
     /**
      * Parses the base URI for requests
@@ -276,7 +293,7 @@ class Request implements ConfigAwareInterface, ContainerAwareInterface, LoggerAw
                 'headers' => json_encode($this->stripSensitiveInfo($headers), JSON_UNESCAPED_SLASHES),
                 'uri' => $uri,
                 'method' => $method,
-                'body' => json_encode($this->stripSensitiveInfo($debug_body), JSON_UNESCAPED_SLASHES)
+                'body' => json_encode($this->stripSensitiveInfo($debug_body), JSON_UNESCAPED_SLASHES),
             ]
         );
         //Required objects and arrays stir benign warnings.
@@ -311,7 +328,7 @@ class Request implements ConfigAwareInterface, ContainerAwareInterface, LoggerAw
     {
         return [
             'User-Agent' => $this->userAgent(),
-            'Accept' => 'application/json'
+            'Accept' => 'application/json',
         ];
     }
 

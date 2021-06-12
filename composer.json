@@ -61,6 +61,8 @@
     ],
     "phar:build": [
       "vendor/bin/phar-composer.phar build ."
+      "mv terminus.phar t3",
+      "chmod +x t3"
     ],
     "update-class-lists": [
       "\\Terminus\\UpdateClassLists::update"
@@ -86,11 +88,15 @@
     "lint": [
       "@cs"
     ],
-    "phpunit": "SHELL_INTERACTIVE=true phpunit --colors=always  -c tests/config/phpunit.xml.dist --debug",
+    "phpunit": [
+      "@functional"
+    ],
     "functional": [
       "phpunit --colors=always -c tests/config/functional.phpunit.xml.dist --debug"
     ],
-    "test": "set -ex ; composer cs ; composer phpunit ; composer behat ; composer functional",
+    "test": [
+      "@functional"
+    ],
     "post-install-cmd": [
       "scripts/setup-precommit.sh",
       "Tooly\\ScriptHandler::installPharTools"
