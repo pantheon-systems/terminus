@@ -86,9 +86,10 @@ class Workflow extends TerminusModel implements ContainerAwareInterface, Session
     public function getOperations()
     {
         if (empty($this->workflow_operations)) {
-            $this->getContainer()->add(WorkflowOperations::class)
+            $nickname = uniqid(__FUNCTION__ . "-");
+            $this->getContainer()->add($nickname, WorkflowOperations::class)
                 ->addArgument(['data' => $this->get('operations')]);
-            $this->workflow_operations = $this->getContainer()->get(WorkflowOperations::class);
+            $this->workflow_operations = $this->getContainer()->get($nickname);
         }
         return $this->workflow_operations;
     }

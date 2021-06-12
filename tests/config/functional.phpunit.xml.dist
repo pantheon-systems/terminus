@@ -1,10 +1,10 @@
 <phpunit
-  bootstrap="../functional_tests/bootstrap.php"
+  bootstrap="../Functional/bootstrap.php"
   colors="true"
   >
   <testsuites>
     <testsuite name="functional">
-      <directory suffix="Test.php">../functional_tests/</directory>
+      <directory suffix="Test.php">../Functional/</directory>
     </testsuite>
   </testsuites>
   <filter>

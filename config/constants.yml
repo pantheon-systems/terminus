@@ -7,7 +7,7 @@
 ---
 
 # App
-TERMINUS_VERSION: '2.6.1-dev'
+TERMINUS_VERSION: '3.0.0-alpha'
 
 # Connectivity
 TERMINUS_HOST:      'terminus.pantheon.io'
@@ -54,3 +54,7 @@ TERMINUS_VCR_MODE:     null
 # TERMINUS_PHP
 # TERMINUS_ROOT
 # TERMINUS_SCRIPT
+
+TERMINUS_CLIENT_OPTIONS:
+  debug: false
+  http_errors: false

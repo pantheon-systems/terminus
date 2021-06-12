@@ -110,10 +110,12 @@ class User extends TerminusModel implements
     public function getMachineTokens()
     {
         if (empty($this->machine_tokens)) {
+            $nickname = uniqid(__FUNCTION__ . "-");
+
             $this->getContainer()->add(MachineTokens::class)
                 ->addArgument(['user' => $this]);
             $this->machine_tokens = $this->getContainer()
-                ->get(MachineTokens::class);
+                ->get($nickname);
         }
         return $this->machine_tokens;
     }
@@ -134,10 +136,11 @@ class User extends TerminusModel implements
     public function getOrganizationMemberships()
     {
         if (empty($this->org_memberships)) {
-            $this->getContainer()->add(UserOrganizationMemberships::class)
+            $nickname = uniqid(__FUNCTION__ . "-");
+            $this->getContainer()->add($nickname, UserOrganizationMemberships::class)
                 ->addArgument(['user' => $this]);
             $this->org_memberships = $this->getContainer()
-                ->get(UserOrganizationMemberships::class);
+                ->get($nickname);
         }
         return $this->org_memberships;
     }
@@ -148,9 +151,10 @@ class User extends TerminusModel implements
     public function getPaymentMethods()
     {
         if (empty($this->payment_methods)) {
-            $this->getContainer()->add(PaymentMethods::class)
+            $nickname = uniqid(__FUNCTION__ . "-");
+            $this->getContainer()->add($nickname, PaymentMethods::class)
                 ->addArgument(['user' => $this]);
-            $this->payment_methods = $this->getContainer()->get(PaymentMethods::class);
+            $this->payment_methods = $this->getContainer()->get($nickname);
         }
         return $this->payment_methods;
     }
@@ -169,9 +173,10 @@ class User extends TerminusModel implements
     public function getSiteMemberships()
     {
         if (empty($this->site_memberships)) {
-            $this->getContainer()->add(UserSiteMemberships::class)
+            $nickname = uniqid(__FUNCTION__ . "-");
+            $this->getContainer()->add($nickname, UserSiteMemberships::class)
                 ->addArgument(['user' => $this]);
-            $this->site_memberships = $this->getContainer()->get(UserSiteMemberships::class);
+            $this->site_memberships = $this->getContainer()->get($nickname);
         }
         return $this->site_memberships;
     }
@@ -182,9 +187,10 @@ class User extends TerminusModel implements
     public function getSSHKeys()
     {
         if (empty($this->ssh_keys)) {
-            $this->getContainer()->add(SSHKeys::class)
+            $nickname = uniqid(__FUNCTION__ . "-");
+            $this->getContainer()->add($nickname, SSHKeys::class)
                 ->addArgument(['user' => $this]);
-            $this->ssh_keys = $this->getContainer()->get(SSHKeys::class);
+            $this->ssh_keys = $this->getContainer()->get($nickname);
         }
         return $this->ssh_keys;
     }
@@ -195,9 +201,10 @@ class User extends TerminusModel implements
     public function getUpstreams()
     {
         if (empty($this->upstreams)) {
-            $this->getContainer()->add(Upstreams::class)
+            $nickname = uniqid(__FUNCTION__ . "-");
+            $this->getContainer()->add($nickname, Upstreams::class)
                 ->addArgument(['user' => $this]);
-            $this->upstreams = $this->getContainer()->get(Upstreams::class);
+            $this->upstreams = $this->getContainer()->get($nickname);
         }
         return $this->upstreams;
     }
@@ -208,9 +215,10 @@ class User extends TerminusModel implements
     public function getWorkflows()
     {
         if (empty($this->workflows)) {
-            $this->getContainer()->add(Workflows::class)
+            $nickname = uniqid(__FUNCTION__ . "-");
+            $this->getContainer()->add($nickname, Workflows::class)
                 ->addArgument(['user' => $this]);
-            $this->workflows = $this->getContainer()->get(Workflows::class);
+            $this->workflows = $this->getContainer()->get($nickname);
         }
         return $this->workflows;
     }

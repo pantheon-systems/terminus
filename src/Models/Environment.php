@@ -184,6 +184,7 @@ class Environment extends TerminusModel implements ContainerAwareInterface, Site
      */
     public function commitChanges($commit = null)
     {
+        $nickname = uniqid(__FUNCTION__ . "-");
         $local = $this->getContainer()->get(LocalMachineHelper::class);
 
         $git_email_result = $local->exec('git config user.email');
@@ -391,9 +392,11 @@ class Environment extends TerminusModel implements ContainerAwareInterface, Site
     public function getBackups()
     {
         if (empty($this->backups)) {
-            $this->getContainer()->add(Backups::class)
+            $nickname = uniqid(__FUNCTION__ . "-");
+
+            $this->getContainer()->add($nickname, Backups::class)
                 ->addArguments([['environment' => $this]]);
-            $this->backups = $this->getContainer()->get(Backups::class);
+            $this->backups = $this->getContainer()->get($nickname);
         }
         return $this->backups;
     }
@@ -404,9 +407,11 @@ class Environment extends TerminusModel implements ContainerAwareInterface, Site
     public function getBindings()
     {
         if (empty($this->bindings)) {
-            $this->getContainer()->add(Bindings::class)
+            $nickname = uniqid(__FUNCTION__ . "-");
+
+            $this->getContainer()->add($nickname, Bindings::class)
                 ->addArguments([['environment' => $this]]);
-            $this->bindings = $this->getContainer()->get(Bindings::class);
+            $this->bindings = $this->getContainer()->get($nickname);
         }
         return $this->bindings;
     }
@@ -425,9 +430,11 @@ class Environment extends TerminusModel implements ContainerAwareInterface, Site
     public function getCommits()
     {
         if (empty($this->commits)) {
-            $this->getContainer()->add(Commits::class)
+            $nickname = uniqid(__FUNCTION__ . "-");
+
+            $this->getContainer()->add($nickname, Commits::class)
                 ->addArguments([['environment' => $this]]);
-            $this->commits = $this->getContainer()->get(Commits::class);
+            $this->commits = $this->getContainer()->get($nickname);
         }
         return $this->commits;
     }
@@ -438,10 +445,12 @@ class Environment extends TerminusModel implements ContainerAwareInterface, Site
     public function getEnvironmentMetrics()
     {
         if (empty($this->environment_metrics)) {
-            $this->getContainer()->add(EnvironmentMetrics::class)
+            $nickname = uniqid(__FUNCTION__ . "-");
+
+            $this->getContainer()->add($nickname, EnvironmentMetrics::class)
                 ->addArguments([['environment' => $this,],]);
             $this->environment_metrics = $this->getContainer()->get(
-                EnvironmentMetrics::class
+                $nickname
             );
         }
         return $this->environment_metrics;
@@ -453,9 +462,11 @@ class Environment extends TerminusModel implements ContainerAwareInterface, Site
     public function getDomains()
     {
         if (empty($this->domains)) {
-            $this->getContainer()->add(Domains::class)
+            $nickname = uniqid(__FUNCTION__ . "-");
+
+            $this->getContainer()->add($nickname, Domains::class)
                 ->addArguments([['environment' => $this]]);
-            $this->domains = $this->getContainer()->get(Domains::class);
+            $this->domains = $this->getContainer()->get($nickname);
         }
         return $this->domains;
     }
@@ -465,9 +476,11 @@ class Environment extends TerminusModel implements ContainerAwareInterface, Site
      */
     public function getPrimaryDomainModel()
     {
-        $this->getContainer()->add(PrimaryDomain::class)
+        $nickname = uniqid(__FUNCTION__ . "-");
+
+        $this->getContainer()->add($nickname, PrimaryDomain::class)
             ->addArguments([$this]);
-        return $this->getContainer()->get(PrimaryDomain::class);
+        return $this->getContainer()->get($nickname);
     }
 
     /**
@@ -488,9 +501,10 @@ class Environment extends TerminusModel implements ContainerAwareInterface, Site
     public function getLock()
     {
         if (empty($this->lock)) {
-            $this->getContainer()->add(Lock::class)
+            $nickname = uniqid(__FUNCTION__ . "-");
+            $this->getContainer()->add($nickname, Lock::class)
                 ->addArguments([$this->get('lock'), ['environment' => $this]]);
-            $this->lock = $this->getContainer()->get(Lock::class);
+            $this->lock = $this->getContainer()->get($nickname);
         }
         return $this->lock;
     }
@@ -544,11 +558,10 @@ class Environment extends TerminusModel implements ContainerAwareInterface, Site
     public function getUpstreamStatus()
     {
         if (empty($this->upstream_status)) {
-            $this->getContainer()->add(UpstreamStatus::class)
+            $nickname = uniqid(__FUNCTION__ . "-");
+            $this->getContainer()->add($nickname, UpstreamStatus::class)
                 ->addArguments([[], ['environment' => $this,],]);
-            $this->upstream_status = $this->getContainer()->get(
-                UpstreamStatus::class
-            );
+            $this->upstream_status = $this->getContainer()->get($nickname);
         }
         return $this->upstream_status;
     }
@@ -559,9 +572,10 @@ class Environment extends TerminusModel implements ContainerAwareInterface, Site
     public function getWorkflows()
     {
         if (empty($this->workflows)) {
-            $this->getContainer()->add(Workflows::class)
+            $nickname = uniqid(__FUNCTION__ . "-");
+            $this->getContainer()->add($nickname, Workflows::class)
                 ->addArguments([['environment' => $this]]);
-            $this->workflows = $this->getContainer()->get(Workflows::class);
+            $this->workflows = $this->getContainer()->get($nickname);
         }
         return $this->workflows;
     }
@@ -805,11 +819,11 @@ class Environment extends TerminusModel implements ContainerAwareInterface, Site
             "sites/{$this->getSite()->id}/environments/{$this->id}/add-ssl-cert",
             ['method' => 'POST', 'form_params' => array_filter($certificate),]
         );
-
+        $nickname = uniqid(__FUNCTION__ . "-");
         // The response is actually a workflow
-        $this->getContainer()->add(Workflow::class)
+        $this->getContainer()->add($nickname, Workflow::class)
             ->addArguments([$response['data'], ['environment' => $this]]);
-        return $this->getContainer()->get(Workflow::class);
+        return $this->getContainer()->get($nickname);
     }
 
     /**

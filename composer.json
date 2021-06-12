@@ -14,6 +14,7 @@
   "prefer-stable": true,
   "require": {
     "php": ">=7.4",
+    "ext-json": "*",
     "composer/composer": "^2",
     "composer/semver": "^3",
     "consolidation/comments": "^1.0.2",
@@ -26,7 +27,8 @@
     "symfony/console": "^5",
     "symfony/finder": "^5",
     "symfony/process": "^5",
-    "symfony/yaml": "^5"
+    "symfony/yaml": "^5",
+    "tm/tooly-composer-script": "^1.4"
   },
   "require-dev": {
     "behat/behat": "^3.2.2",
@@ -44,25 +46,21 @@
   },
   "autoload-dev": {
     "psr-4": {
-      "Pantheon\\Terminus\\UnitTests\\": "tests/unit_tests/",
-      "Pantheon\\Terminus\\FeatureTests\\": "tests/features/bootstrap/"
+      "Pantheon\\Terminus\\Tests\\Functional\\": "tests/Functional/"
     },
     "classmap": [
       "scripts/UpdateClassLists.php"
     ]
   },
   "bin": [
-    "bin/terminus"
+    "bin/t3"
   ],
   "scripts": {
     "phar:install-tools": [
-      "gem install mime-types -v 2.6.2",
-      "curl -LSs https://box-project.github.io/box2/installer.php | php",
-      "mkdir -p tools",
-      "mv -f box.phar tools/box"
+      "composer install --with-dev"
     ],
     "phar:build": [
-      "env PATH=tools:$PATH box build"
+      "vendor/bin/phar-composer.phar build ."
     ],
     "update-class-lists": [
       "\\Terminus\\UpdateClassLists::update"
@@ -71,7 +69,7 @@
       "SHELL_INTERACTIVE=true behat --colors --config tests/config/behat.yml --suite=default"
     ],
     "cbf": [
-      "phpcbf --standard=tests/config/linting_ruleset.xml tests/unit_tests/* bin/terminus src/*"
+      "phpcbf --standard=tests/config/linting_ruleset.xml tests/unit_tests/* bin/t3 src/*"
     ],
     "clover": [
       "phpunit -c tests/config/phpunit.xml.dist --coverage-clover tests/logs/clover.xml"
@@ -80,7 +78,7 @@
       "php vendor/bin/php-coveralls -v -c tests/config/coveralls.yml"
     ],
     "cs": [
-      "phpcs --standard=tests/config/linting_ruleset.xml tests/unit_tests bin/terminus src"
+      "phpcs --standard=tests/config/linting_ruleset.xml tests/unit_tests bin/t3 src"
     ],
     "docs": [
       "php scripts/make-docs.php"
@@ -89,8 +87,23 @@
       "@cs"
     ],
     "phpunit": "SHELL_INTERACTIVE=true phpunit --colors=always  -c tests/config/phpunit.xml.dist --debug",
-    "functional": "phpunit --colors=always -c tests/config/functional.phpunit.xml.dist --debug",
-    "test": "set -ex ; composer cs ; composer phpunit ; composer behat ; composer functional"
+    "functional": [
+      "phpunit --colors=always -c tests/config/functional.phpunit.xml.dist --debug"
+    ],
+    "test": "set -ex ; composer cs ; composer phpunit ; composer behat ; composer functional",
+    "post-install-cmd": [
+      "scripts/setup-precommit.sh",
+      "Tooly\\ScriptHandler::installPharTools"
+    ],
+    "post-update-cmd": [
+      "scripts/setup-precommit.sh",
+      "Tooly\\ScriptHandler::installPharTools"
+    ],
+    "pre-commit": [
+      "@cbf",
+      "@lint",
+      "composer validate --strict"
+    ]
   },
   "config": {
     "process-timeout": 3600,
@@ -108,6 +121,12 @@
     "kint": {
       "disable-helpers": true,
       "depth-limit": 3
+    },
+    "tools": {
+      "phar-composer": {
+        "url": "https://clue.engineering/phar-composer-latest.phar",
+        "dev-only":  true
+      }
     }
   }
 }

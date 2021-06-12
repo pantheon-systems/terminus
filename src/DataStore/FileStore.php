@@ -23,17 +23,19 @@ class FileStore extends \DirectoryIterator implements DataStoreInterface
     public function get($key)
     {
         $tokenFilename = $this->getRealPath() . DIRECTORY_SEPARATOR . $this->cleanKey($key);
-        try {
-            $toReturn = json_decode(
-                file_get_contents($tokenFilename),
-                false,
-                512,
-                JSON_THROW_ON_ERROR
-            );
-            $toReturn->id = $key;
-            return $toReturn;
-        } catch (\Exception $e) {
-            // TODO: handle not found error
+        if (file_exists($tokenFilename)) {
+            try {
+                $toReturn = json_decode(
+                    file_get_contents($tokenFilename),
+                    false,
+                    512,
+                    JSON_THROW_ON_ERROR
+                );
+                $toReturn->id = $key;
+                return $toReturn;
+            } catch (\Exception $e) {
+                // TODO: handle not found error
+            }
         }
         return null;
     }
@@ -145,5 +147,4 @@ class FileStore extends \DirectoryIterator implements DataStoreInterface
             throw new TerminusException('The filesystem directory exists but is not writable');
         }
     }
-
 }

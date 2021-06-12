@@ -70,7 +70,7 @@ class Terminus implements ConfigAwareInterface, ContainerAwareInterface, LoggerA
     public function __construct(Config $config, InputInterface $input = null, OutputInterface $output = null)
     {
         $this->setConfig($config);
-        $classLoader = require realpath(dirname(Factory::getComposerFile()) . "/vendor/autoload.php");
+
         $application = new Application('Terminus', $config->get('version'));
         $container = new Container();
         Robo::configureContainer(
@@ -78,8 +78,7 @@ class Terminus implements ConfigAwareInterface, ContainerAwareInterface, LoggerA
             $application,
             $config,
             $input,
-            $output,
-            $classLoader
+            $output
         );
         $this->setContainer($container);
         $this->addDefaultArgumentsAndOptions($application);
@@ -122,8 +121,7 @@ class Terminus implements ConfigAwareInterface, ContainerAwareInterface, LoggerA
 
         // Add the services
         // Request
-        $container->add(Client::class);
-        $container->add(HttpRequest::class);
+
         $container->share('request', Request::class);
         $container->inflector(RequestAwareInterface::class)
             ->invokeMethod('setRequest', ['request']);

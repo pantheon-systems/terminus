@@ -9,14 +9,14 @@ namespace Pantheon\Terminus\Request;
 trait RequestAwareTrait
 {
     /**
-     * @var Request
+     * @var \Pantheon\Terminus\Request\Request
      */
     protected $request;
 
     /**
      * Inject a pre-configured request object.
      *
-     * @param Request $request
+     * @param \Pantheon\Terminus\Request\Request $request
      * @return mixed
      */
     public function setRequest(Request $request)
@@ -27,7 +27,7 @@ trait RequestAwareTrait
     /**
      * Return the request object.
      *
-     * @return \Terminus\Request
+     * @return \Pantheon\Terminus\Request\Request
      */
     public function request()
     {

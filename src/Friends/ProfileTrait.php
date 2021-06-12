@@ -21,7 +21,11 @@ trait ProfileTrait
     public function getProfile()
     {
         if (empty($this->profile)) {
-            $this->setProfile($this->getContainer()->get(Profile::class, [$this->get('profile'),]));
+            $nickname = uniqid(__FUNCTION__ . "-");
+            $this->getContainer()->add($nickname, Profile::class)
+                ->addArgument([$this->get('profile')]);
+            $profile = $this->getContainer()->get($nickname);
+            $this->setProfile($profile);
         }
         return $this->profile;
     }

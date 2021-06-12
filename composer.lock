@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "7988bc90c27c2ca166c878c3ec4c832c",
+    "content-hash": "ffc80fa09a80c28ef4822cc8db34f7ad",
     "packages": [
         {
             "name": "composer/ca-bundle",
@@ -3276,6 +3276,90 @@
                 }
             ],
             "time": "2021-05-26T17:43:10+00:00"
+        },
+        {
+            "name": "tm/tooly-composer-script",
+            "version": "1.4.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/tommy-muehle/tooly-composer-script.git",
+                "reference": "0f2d81f1051d155702229abf1c8f7a0d8bec75c7"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/tommy-muehle/tooly-composer-script/zipball/0f2d81f1051d155702229abf1c8f7a0d8bec75c7",
+                "reference": "0f2d81f1051d155702229abf1c8f7a0d8bec75c7",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.6.0"
+            },
+            "require-dev": {
+                "composer/composer": "1.*",
+                "mikey179/vfsstream": "1.6.*",
+                "php-mock/php-mock-phpunit": "1.1.*",
+                "symfony/console": "^3.0"
+            },
+            "suggest": {
+                "tm/gpg-verifier": "Allows verification over GPG for PHAR tools."
+            },
+            "type": "library",
+            "extra": {
+                "tools": {
+                    "phpunit": {
+                        "url": "https://phar.phpunit.de/phpunit-5.7.27.phar"
+                    },
+                    "phpcpd": {
+                        "url": "https://phar.phpunit.de/phpcpd-2.0.4.phar"
+                    },
+                    "phpcs": {
+                        "url": "https://squizlabs.github.io/PHP_CodeSniffer/phpcs.phar",
+                        "force-replace": true
+                    },
+                    "phpmd": {
+                        "url": "http://static.phpmd.org/php/latest/phpmd.phar",
+                        "fallback-url": "https://github.com/jakzal/phpmd/releases/download/2.6.0-jakzal-2/phpmd.phar",
+                        "force-replace": true
+                    },
+                    "security-checker": {
+                        "url": "http://get.sensiolabs.org/security-checker.phar",
+                        "force-replace": true
+                    }
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Tooly\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Tommy Muehle",
+                    "email": "tommy.muehle@gmail.com",
+                    "homepage": "https://tommy-muehle.de"
+                }
+            ],
+            "description": "Simple composer script to manage phar files.",
+            "homepage": "https://github.com/tommy-muehle/tooly-composer-script",
+            "keywords": [
+                "composer",
+                "composer-phar",
+                "composer-script",
+                "phar",
+                "phar-handling",
+                "phar-management"
+            ],
+            "support": {
+                "docs": "https://github.com/tommy-muehle/tooly-composer-script/blob/master/README.md",
+                "email": "tommy.muehle@gmail.com",
+                "issues": "https://github.com/tommy-muehle/tooly-composer-script/issues",
+                "source": "https://github.com/tommy-muehle/tooly-composer-script/tree/master"
+            },
+            "time": "2019-06-24T20:52:52+00:00"
         }
     ],
     "packages-dev": [
@@ -6129,7 +6213,8 @@
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
-        "php": ">=7.4"
+        "php": ">=7.4",
+        "ext-json": "*"
     },
     "platform-dev": [],
     "platform-overrides": {

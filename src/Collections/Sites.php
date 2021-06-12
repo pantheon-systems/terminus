@@ -181,34 +181,29 @@ class Sites extends APICollection implements SessionAwareInterface
      */
     public function get($id)
     {
-        $site = null;
-
-        if ($this->models === null) {
-            // If the full model set hasn't been fetched then request the item individually from the API
-            // This can be a lot faster when there are a lot of items.
-            try {
-                $injectionNickname = "site-".\uniqid();
-                $uuid = $this->findUUIDByNameOrUUID($id);
+        try {
+            $uuid = $this->findUUIDByNameOrUUID($id);
+            $site = $this->models[$uuid] ?? null;
+            if (!$site instanceof Site) {
+                $injectionNickname = $id . "-" . \uniqid();
                 $this->getContainer()->add($injectionNickname, $this->collected_class)
                     ->addArguments(
                         [
-                            (object)['id' => $uuid,],
-                            ['id' => $uuid, 'collection' => $this,]
+                            (object)['id' => $uuid],
+                            ['id' => $uuid, 'collection' => $this]
                         ]
                     );
                 $site = $this->getContainer()->get($injectionNickname);
                 $site->fetch();
-            } catch (\Exception $e) {
-                throw new TerminusException(
-                    'Could not locate a site your user may access identified by {id}.',
-                    compact('id'),
-                    1
-                );
+                $this->models[$uuid] = $site;
             }
-        } else {
-            $site = parent::get($id);
+        } catch (\Exception $e) {
+            throw new TerminusException(
+                'Could not locate a site your user may access identified by {id}.',
+                compact('id'),
+                1
+            );
         }
-
         return $site;
     }
 
@@ -218,16 +213,9 @@ class Sites extends APICollection implements SessionAwareInterface
      * @param string $name Name of the site to look up
      * @return boolean
      */
-    public function nameIsTaken($name)
+    public function nameIsTaken($name) : bool
     {
-        try {
-            $this->findUUIDByName($name);
-            //If this has not been caught, the name is taken.
-            $name_is_taken = true;
-        } catch (\Exception $e) {
-            $name_is_taken = strpos($e->getMessage(), '404 Not Found') === false;
-        }
-        return $name_is_taken;
+        return (bool) $this->findUUIDByName($name) ?? false;
     }
 
     /**
@@ -236,13 +224,14 @@ class Sites extends APICollection implements SessionAwareInterface
      * @param string $name Name of the site to look up
      * @return string
      */
-    protected function findUUIDByName($name)
+    protected function findUUIDByName($name): ?string
     {
         $response = $this->request()->request(
             "site-names/$name",
             ['method' => 'get',]
         );
-        return $response['data']->id;
+
+        return $response['data']->id ?? null;
     }
 
     /**
@@ -251,7 +240,7 @@ class Sites extends APICollection implements SessionAwareInterface
      * @param string $id Name of the site to look up
      * @return string
      */
-    protected function findUUIDByNameOrUUID($id)
+    protected function findUUIDByNameOrUUID($id): ?string
     {
         // If it LOOKS like a uuid, then we assume it is. Since a user is unlikely to name a site with this exact
         // pattern this is a reasonably good test.
@@ -269,9 +258,9 @@ class Sites extends APICollection implements SessionAwareInterface
      * where x is any hexidecimal character. This is close enough for our purposes.
      *
      * @param $id
-     * @return int
+     * @return bool
      */
-    protected function isUUID($id)
+    protected function isUUID($id): bool
     {
         return preg_match('/[a-f0-9]{8}-([a-f0-9]{4}-){3}[a-f0-9]{12}/', strtolower($id));
     }

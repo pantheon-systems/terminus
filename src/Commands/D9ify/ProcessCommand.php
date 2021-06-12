@@ -77,6 +77,7 @@ class ProcessCommand extends TerminusCommand implements SiteAwareInterface
             // Handle Source Site.
             if ($sourceSite instanceof Site) {
                 $sourceSiteObject = $sourceSite;
+                $sourceSite = $sourceSiteObject->getName();
             }
             if (is_string($sourceSite)) {
                 $sourceSiteObject = $this->getSite($sourceSite);
@@ -94,13 +95,20 @@ class ProcessCommand extends TerminusCommand implements SiteAwareInterface
             }
             if ($destinationSite instanceof Site) {
                 $destinationSiteObject = $destinationSite;
+                $destinationSite = $destinationSiteObject->getName();
             }
-            $this->getContainer()->add('destintationSiteInfoCommand', InfoCommand::class);
-            $destinationSiteInfoCommand = $this->getContainer()->get('destintationSiteInfoCommand');
             if (is_string($destinationSite)) {
                 $results = $this->sites()->nameIsTaken($destinationSite);
+                if ($results === false) {
+                    $this->sites()->create([
+                       $destinationSite,
+                       $destinationSite,
+                       "drupal9"
+                    ]);
+                }
+
                 if ($results) {
-                    $info = $this->sites()->get($destinationSite);
+                    $destinationSiteObject = $this->sites()->get($destinationSite);
                 }
             }
 
@@ -124,7 +132,7 @@ class ProcessCommand extends TerminusCommand implements SiteAwareInterface
                 $this->destinationDirectory = $this->getContainer()->get('destinationDir');
             }
 
-            if (!isset($this->sourceDirectory) || !isset($this->destinationDirectory) ) {
+            if (!isset($this->sourceDirectory) || !isset($this->destinationDirectory)) {
                 throw new TerminusException("Cannot instantiate source/destination");
             }
 

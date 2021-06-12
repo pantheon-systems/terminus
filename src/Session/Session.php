@@ -60,8 +60,8 @@ class Session implements ContainerAwareInterface, ConfigAwareInterface, DataStor
      */
     public function get($key)
     {
-        if (isset($this->data->$key)) {
-            return $this->data->$key;
+        if (isset($this->data->{$key})) {
+            return $this->data->{$key};
         }
         return null;
     }
@@ -72,10 +72,11 @@ class Session implements ContainerAwareInterface, ConfigAwareInterface, DataStor
      */
     public function getUser()
     {
-        $me = "me-" . uniqid();
-        $this->getContainer()->add($me, User::class)
-            ->addArguments([(object)['id' => $this->get('user_id')]]);
-        return $this->getContainer()->get($me);
+        $user_id = $this->get('user_id');
+        $this->getContainer()
+            ->add($user_id, User::class)
+            ->addArguments([(object)['id' => $user_id]]);
+        return $this->getContainer()->get($user_id);
     }
 
     /**

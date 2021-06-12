@@ -1,0 +1,24 @@
+#!/bin/sh
+
+PROJECT=`php -r "echo dirname(dirname(dirname(realpath('$0'))));"`
+STAGED_FILES_CMD=`git diff --name-only --diff-filter=ACMR HEAD | grep \\\\.php`
+SFILES=${SFILES:-$STAGED_FILES_CMD}
+
+echo "Simple PHP Syntax check for changed files...\n"
+for FILE in $SFILES
+do
+	php -l -d display_errors=0 $PROJECT/$FILE
+	if [ $? != 0 ]
+	then
+		echo "Fix the error before commit."
+		exit 1
+	fi
+	FILES="$FILES $PROJECT/$FILE"
+done
+composer pre-commit
+if [ $? != 0 ] ;
+then
+    echo "Fix the errors before commit."
+    exit 1
+fi
+exit $?

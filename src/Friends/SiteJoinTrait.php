@@ -29,8 +29,13 @@ trait SiteJoinTrait
     public function getSite()
     {
         if (empty($this->site)) {
-            $site = $this->getContainer()->get(Site::class, [$this->get('site'),]);
-            $site->memberships = [$this,];
+            $nickname = uniqid(__FUNCTION__ . "-");
+            $this->getContainer()
+                ->add($nickname, Site::class)
+                ->addArgument([$this->get('site')]);
+            $site = $this->getContainer()
+                ->get($nickname);
+            $site->memberships = [$this];
             $this->setSite($site);
         }
         return $this->site;

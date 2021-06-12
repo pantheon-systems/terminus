@@ -62,10 +62,12 @@ class UpdateChecker implements
         }
         $running_version = $this->getRunningVersion();
         try {
-            $latest_version = $this->getContainer()->get(
-                LatestRelease::class,
-                [$this->getDataStore(),]
-            )->get('version');
+            $nickname = uniqid(__CLASS__ . "-");
+            $this->getContainer()
+                ->add($nickname, LatestRelease::class)
+                ->addArgument([$this->getDataStore()]);
+            $version_tester = $this->getContainer()->get($nickname);
+            $latest_version = $version_tester->get('version');
         } catch (TerminusNotFoundException $e) {
             $this->logger->debug('Terminus has no saved release information.');
             return;
