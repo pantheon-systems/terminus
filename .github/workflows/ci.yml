@@ -1,0 +1,85 @@
+name: Terminus
+on:
+  push:
+  pull_request:
+  repository_dispatch:
+  schedule:
+    - cron: '0 0 * * *'
+jobs:
+  # Checkout in separate job because docker image is alpine based and checkout action doesn't work.
+  checkout:
+    runs-on: ubuntu-latest
+    name: Checkout
+    env:
+      TZ: "/usr/share/zoneinfo/America/Los_Angeles"
+      TERM: dumb
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Save repo content as artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: full-workspace
+          path: /home/runner/work/terminus/terminus
+
+  build_phar:
+    runs-on: ubuntu-latest
+    name: Build PHAR
+    env:
+      TZ: "/usr/share/zoneinfo/America/Los_Angeles"
+      TERM: dumb
+    container:
+      image: quay.io/pantheon-public/php-ci:1.x
+    needs: [checkout]
+    steps:
+      - name: Download repo content from artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: full-workspace
+      # Install without dev components to build a smaller phar
+      - name: Composer Install - no dev
+        run: composer install --no-dev --no-interaction --prefer-dist
+      - name: Install Phar Tools
+        run: composer phar:install-tools
+      - name: Phar Build
+        run: composer phar:build
+      - name: Save terminus.phar as artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: terminus-phar
+          path: terminus.phar
+
+  functional:
+    runs-on: ${{ matrix.operating-system }}
+    name: PHP ${{ matrix.php-versions }} on ${{ matrix.operating-system }}
+    strategy:
+      matrix:
+        operating-system: ['ubuntu-latest', 'macos-latest']
+        php-versions: ['7.2', '7.3', '7.4']
+    env:
+      TZ: "/usr/share/zoneinfo/America/Los_Angeles"
+      TERM: dumb
+      TERMINUS_TOKEN: ${{ secrets.TERMINUS_TOKEN }}
+      TERMINUS_SITE: ${{ secrets.TERMINUS_SITE }}
+    needs: [build_phar]
+    steps:
+      - name: Download repo content from artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: full-workspace
+      - name: Download terminus.phar as artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: terminus-phar
+      - name: Setup PHP with PECL extension
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php-versions }}
+          extensions: gd, mbstring, zip
+      # Install with dev components so that we can run phpunit
+      - name: Composer full install
+        run: composer install --no-interaction --prefer-dist
+      - name: Change permissions
+        run: chmod +x terminus.phar
+      - name: Functional Tests
+        run: composer functional
