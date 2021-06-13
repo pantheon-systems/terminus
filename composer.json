@@ -60,7 +60,8 @@
       "composer install --with-dev"
     ],
     "phar:build": [
-      "vendor/bin/phar-composer.phar build ."
+      "rm -Rf ./t3",
+      "vendor/bin/phar-composer.phar build .",
       "mv terminus.phar t3",
       "chmod +x t3"
     ],

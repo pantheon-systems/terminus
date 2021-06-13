@@ -76,7 +76,11 @@ class SiteTest extends TestCase
     protected static function call_terminus($command)
     {
         $project_dir = dirname(dirname(__DIR__));
-        exec("$project_dir/terminus.phar " . $command, $output, $status);
+        exec(
+            sprintf("%s/%s %s", $project_dir, TERMINUE_BIN_FILE, $command, ),
+            $output,
+            $status
+        );
         $output = implode("\n", $output);
 
         return [$output, $status];

@@ -4,10 +4,7 @@ declare(strict_types=1);
 namespace Pantheon\Terminus;
 
 use Composer\Autoload\ClassLoader;
-use Composer\Factory;
 use Composer\Semver\Semver;
-use GuzzleHttp\Client;
-use GuzzleHttp\Psr7\Request as HttpRequest;
 use League\Container\Container;
 use League\Container\ContainerAwareInterface;
 use League\Container\ContainerAwareTrait;
@@ -87,11 +84,6 @@ class Terminus implements ConfigAwareInterface, ContainerAwareInterface, LoggerA
         $this->setLogger($container->get('logger'));
         $this->addBuiltInCommandsAndHooks();
         $this->addPluginsCommandsAndHooks();
-
-        if (\Phar::running(true)) {
-            $cmd = new SelfUpdateCommand('Terminus', $config->get('version'), 'pantheon-systems/terminus');
-            $application->add($cmd);
-        }
 
         $this->runner = new RoboRunner();
         $this->runner->setContainer($container);

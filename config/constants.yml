@@ -56,5 +56,5 @@ TERMINUS_VCR_MODE:     null
 # TERMINUS_SCRIPT
 
 TERMINUS_CLIENT_OPTIONS:
-  debug: true
+  debug: false
   http_errors: false

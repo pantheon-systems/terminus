@@ -42,14 +42,12 @@ class Request implements
     ConfigAwareInterface,
     ContainerAwareInterface,
     LoggerAwareInterface,
-    SessionAwareInterface,
-    IOAwareInterface
+    SessionAwareInterface
 {
     use ConfigAwareTrait;
     use ContainerAwareTrait;
     use LoggerAwareTrait;
     use SessionAwareTrait;
-    use IO;
 
     const PAGED_REQUEST_ENTRY_LIMIT = 100;
 
@@ -108,10 +106,7 @@ class Request implements
                     $retries,
                     Response $response = null
                 ) {
-                    if ($response->getStatusCode() !== 202) {
-                        return 1000 * $retries;
-                    }
-                    return 1000;
+                    return 1000 * $retries;
                 }
             ));
             $params = $config->get('client_options') + [
@@ -154,6 +149,7 @@ class Request implements
                 case 201:
                 case 202:
                 case 500:
+                case 400:
                 case 405:
                 case 403:
                 case 404:
@@ -287,7 +283,7 @@ class Request implements
         }
 
         $method = isset($options['method']) ? strtoupper($options['method']) : 'GET';
-        $this->logger->debug(
+        $this->logger->info(
             self::DEBUG_REQUEST_STRING,
             [
                 'headers' => json_encode($this->stripSensitiveInfo($headers), JSON_UNESCAPED_SLASHES),
@@ -304,7 +300,8 @@ class Request implements
                 $uri,
                 $headers,
                 $body
-            )
+            ),
+            $options
         );
         $body = \json_decode(
             $response->getBody()->getContents(),

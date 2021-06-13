@@ -2,6 +2,7 @@
 
 namespace Pantheon\Terminus\Collections;
 
+use Pantheon\Terminus\Exceptions\TerminusException;
 use Pantheon\Terminus\Models\Environment;
 use Pantheon\Terminus\Models\Organization;
 use Pantheon\Terminus\Models\Site;
@@ -90,8 +91,8 @@ class Workflows extends APICollection implements SessionAwareInterface
      */
     public function create($type, array $options = [])
     {
-        $params = isset($options['params']) ? $options['params'] : [];
 
+        $params = isset($options['params']) ? $options['params'] : [];
         $results = $this->request()->request(
             $this->getUrl(),
             [
@@ -102,11 +103,18 @@ class Workflows extends APICollection implements SessionAwareInterface
                 ],
             ]
         );
+        if ($results['status_code'] !== 202 || is_string($results['data'])) {
+            throw new TerminusException($results['data']);
+        }
         $nickname = uniqid(__CLASS__ . "-");
         $this->getContainer()->add($nickname, $this->collected_class)
             ->addArguments([
                 $results['data'],
-                ['id' => $results['data']->id, 'collection' => $this,]
+                [
+                    'id' => $results['data']->id,
+                    'collection' => $this,
+                    'owner' => $this->owner
+                ]
             ]);
         $model = $this->getContainer()->get($nickname);
         $this->add($model);
@@ -156,7 +164,7 @@ class Workflows extends APICollection implements SessionAwareInterface
      */
     public function fetchWithOperations()
     {
-        $this->setFetchArgs(['query' => ['hydrate' => 'operations',],]);
+        $this->setFetchArgs(['query' => ['hydrate' => 'operations']]);
         $this->fetch();
     }
 

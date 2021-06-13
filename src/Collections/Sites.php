@@ -31,7 +31,7 @@ class Sites extends APICollection implements SessionAwareInterface
      *   string organization_id Organization to which this site belongs' UUID
      * @return Workflow
      */
-    public function create($params = [])
+    public function create($params = []) :? Workflow
     {
         return $this->getUser()->getWorkflows()->create('create_site', compact('params'));
     }

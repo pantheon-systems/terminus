@@ -30,3 +30,6 @@ if (empty(getenv('TERMINUS_TOKEN'))) {
         putenv("TERMINUS_TOKEN={$tokenData->token}");
     }
 }
+
+
+define("TERMINUE_BIN_FILE", "./t3");

@@ -271,4 +271,20 @@ class Workflow extends TerminusModel implements ContainerAwareInterface, Session
     {
         return $this->get('finished_at') > $timestamp;
     }
+
+    /**
+     * @return \Pantheon\Terminus\Models\TerminusModel
+     */
+    public function getOwner()
+    {
+        return $this->owner;
+    }
+
+    /**
+     * @param \Pantheon\Terminus\Models\TerminusModel $owner
+     */
+    public function setOwner($owner): void
+    {
+        $this->owner = $owner;
+    }
 }
