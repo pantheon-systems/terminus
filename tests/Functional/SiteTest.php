@@ -34,22 +34,22 @@ class SiteTest extends TestCase
      * Test to see if we can use terminus.phar and get rational results
      * back from the Hermes API.
      */
-    public function testSiteCreate()
+    public function testSiteCreateInfoDelete()
     {
         $sitename = uniqid('terminus-test-');
         $this->terminus(
             "site:create {$sitename} {$sitename} drupal9  --yes --org=5ae1fa30-8cc4-4894-8ca9-d50628dcba17",
-
         );
+        $response = $this->terminus("site:info --format=json {$sitename}");
         $siteInfo = json_decode(
-            $this->terminus("site:info {$sitename} -- format=json"),
+            $response,
             true,
             JSON_THROW_ON_ERROR
         );
         $this->assertIsArray($siteInfo, "Response from newly-created site should be unserializable json");
         $this->assertArrayHasKey('id', $siteInfo, "Response from newly-created site should contain an ID property");
-        $result = $this->terminus(
-            "site:delete {$sitename} --yes --format=json"
+        $this->terminus(
+            "site:delete {$siteInfo['id']} --yes"
         );
     }
 

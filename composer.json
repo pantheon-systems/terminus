@@ -96,6 +96,7 @@
       "phpunit --colors=always -c tests/config/functional.phpunit.xml.dist --debug"
     ],
     "test": [
+      "@phar:build",
       "@functional"
     ],
     "post-install-cmd": [

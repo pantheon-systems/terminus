@@ -103,7 +103,7 @@ class Workflows extends APICollection implements SessionAwareInterface
                 ],
             ]
         );
-        if ($results['status_code'] !== 202 || is_string($results['data'])) {
+        if ($results['status_code'] <= 199 || $results['status_code'] >= 300) {
             throw new TerminusException($results['data']);
         }
         $nickname = uniqid(__CLASS__ . "-");
