@@ -478,4 +478,13 @@ class Site extends TerminusModel implements ContainerAwareInterface, Organizatio
             throw $e;
         }
     }
+
+    public function valid():bool
+    {
+        return (bool) $this->id;
+    }
+
+    public function cloneLocalCopy()
+    {
+    }
 }

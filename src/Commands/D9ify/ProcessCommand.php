@@ -121,6 +121,7 @@ class ProcessCommand extends TerminusCommand implements SiteAwareInterface
                     'drupal9',
                     ['org' => null]
                 );
+                $destinationSiteInfoCommand = $this->getContainer()->get(InfoCommand::class);
                 $destinationSiteInfo = $destinationSiteInfoCommand->info($destinationSite)->getArrayCopy();
                 $this->getContainer()->add('destinationSiteModel', Site::class)
                     ->addArgument($destinationSiteInfo);
@@ -157,21 +158,20 @@ class ProcessCommand extends TerminusCommand implements SiteAwareInterface
                 "*************************************************************",
             ]);
 
-            \Kint::dump($this->sites());
-            exit();
+
 
             $this->copyRepositoriesFromSource();
-            $this->updateDestModulesAndThemesFromSource($output);
-            $this->updateDestEsLibrariesFromSource($output);
-            $this->writeComposer($output);
-            $this->destinationComposerInstall($output);
-            $this->copyCustomCode($output);
-            $this->copyConfigFiles($output);
-            $this->downloadDatabase($output);
-            $this->downloadSourceSiteFilesDirectory($output);
+            $this->updateDestModulesAndThemesFromSource();
+            $this->updateDestEsLibrariesFromSource();
+            $this->writeComposer();
+            $this->destinationComposerInstall();
+            $this->copyCustomCode();
+            $this->copyConfigFiles();
+            $this->downloadDatabase();
+            $this->downloadSourceSiteFilesDirectory();
         } catch (D9ifyExceptionBase $d9ifyException) {
             // TODO: Composer install exception help text
-            $io->writeln((string)$d9ifyException);
+            $this->output()->writeln((string)$d9ifyException);
         } catch (\Exception $e) {
             // TODO: General help text and how to restart the process
             $this->output()->writeln("Script ended in Exception state. " . $e->getMessage());
@@ -213,9 +213,9 @@ class ProcessCommand extends TerminusCommand implements SiteAwareInterface
      *
      * @param \Symfony\Component\Console\Output\OutputInterface $output
      */
-    protected function copyRepositoriesFromSource(OutputInterface $output)
+    protected function copyRepositoriesFromSource()
     {
-        $output->writeln([
+        $this->output()->writeln([
             "===> Ensuring source and destination folders exist.",
             PHP_EOL,
             "*********************************************************************",
@@ -224,12 +224,13 @@ class ProcessCommand extends TerminusCommand implements SiteAwareInterface
             "*********************************************************************",
             PHP_EOL,
         ]);
-        $this->getSourceDirectory()->ensure(false);
-        $this->getDestinationDirectory()->ensure(true);
+        $this->getSourceDirectory()->ensureLocalCopyOfRepo(false);
+        $this->getDestinationDirectory()->ensureLocalCopyOfRepo(true);
         $this->destinationDirectory->getComposerObject()->setRepositories(
             $this->sourceDirectory->getComposerObject()->getOriginal()['repositories'] ?? []
         );
-        $output->writeln([
+        exit();
+        $this->output()->writeln([
             "*********************************************************************",
             sprintf("Source Folder: %s", $this->getSourceDirectory()->getClonePath()),
             sprintf("Destination Folder: %s", $this->getDestinationDirectory()->getClonePath()),

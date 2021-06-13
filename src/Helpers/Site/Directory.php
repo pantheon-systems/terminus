@@ -4,6 +4,8 @@ namespace Pantheon\Terminus\Helpers\Site;
 
 use League\Container\ContainerAwareInterface;
 use League\Container\ContainerAwareTrait;
+use Pantheon\Terminus\Exceptions\TerminusException;
+use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
 use Pantheon\Terminus\Helpers\Composer\ComposerFile;
 use Pantheon\Terminus\Exceptions\ComposerInstallException;
 use Pantheon\Terminus\Helpers\Traits\CommandExecutorTrait;
@@ -30,6 +32,9 @@ class Directory implements ContainerAwareInterface, IOAwareInterface, SiteAwareI
     use IO;
     use SiteAwareTrait;
 
+    /**
+     * @var
+     */
     protected $site;
 
     /**
@@ -51,10 +56,7 @@ class Directory implements ContainerAwareInterface, IOAwareInterface, SiteAwareI
      */
     public function __construct($site)
     {
-        if (is_string($site)) {
-            $site = $this->getSite($site);
-        }
-        $this->site = $site;
+        $this->setSource($site);
     }
 
     /**
@@ -77,9 +79,9 @@ class Directory implements ContainerAwareInterface, IOAwareInterface, SiteAwareI
     /**
      * @throws \Exception
      */
-    public function ensure(bool $create = false)
+    public function ensureLocalCopyOfRepo(bool $create = false)
     {
-        $valid = $this->getSource()->valid();
+        $valid = $this->getSource()->valid() ?? false;
         if ($valid === false) {
             // if site doesn't exist
             if ($create === true) {
@@ -91,11 +93,11 @@ class Directory implements ContainerAwareInterface, IOAwareInterface, SiteAwareI
         }
         $this->clonePath = new \SplFileInfo(
             $this->getDefaultClonePathBase() .
-            DIRECTORY_SEPARATOR . $this->getSource()->getSiteInfo()->getName()
+            DIRECTORY_SEPARATOR . $this->getSource()->getName()
         );
         if (!$this->clonePath->isDir()) {
             // -oStrictHostKeyChecking=no
-            $this->getSource()->cloneFiles($this->getOutput());
+            $this->getSource()->cloneLocalCopy();
         }
 
         $this->setComposerFile();
@@ -184,12 +186,12 @@ class Directory implements ContainerAwareInterface, IOAwareInterface, SiteAwareI
     {
         is_file($this->clonePath . "/composer.lock") ?
             unlink($this->clonePath . "/composer.lock") : [];
-        $this->execute("rm -Rf %s && cd %s && composer upgrade --with-dependencies", [
+        $result = $this->execute("rm -Rf %s && cd %s && composer upgrade --with-dependencies", [
             $this->clonePath . "/vendor",
             $this->clonePath
         ]);
         if ($this->execResult[0] !== 0) {
-            throw new ComposerInstallException($result, $output);
+            throw new ComposerInstallException($result, $this->output());
         }
         return $result;
     }
@@ -239,10 +241,13 @@ class Directory implements ContainerAwareInterface, IOAwareInterface, SiteAwareI
         }
     }
 
+    /**
+     * @return string
+     */
     public function getDefaultClonePathBase()
     {
         // Get path resoltion from default composer file directory
-        return dirname(\Composer\Factory::getComposerFile()) . "/local-copies";
+        return $_SERVER['HOME'] . "/pantheon-local-copies";
     }
 
     /**
@@ -271,8 +276,38 @@ class Directory implements ContainerAwareInterface, IOAwareInterface, SiteAwareI
         yaml_emit_file($yamlFile, $pantheonYaml);
     }
 
-    public function getInfo() : Site
+    /**
+     * @return \Pantheon\Terminus\Models\Site|null
+     */
+    public function getSource(): ? Site
     {
-        return $this->getSite($this->siteID);
+        return $this->site ?? null;
+    }
+
+
+    /**
+     * @param string|Site $site
+     */
+    public function setSource($site)
+    {
+        if (is_string($site)) {
+            $this->site = $this->getSite($site);
+        }
+        if ($site instanceof Site) {
+            $this->site = $site;
+        }
+        if (is_object($site)) {
+            $site = (array)$site;
+        }
+        if (is_array($site) && isset($site['id'])) {
+            $this->site = $this->getSite($site['id']);
+        }
+        if (is_array($site) && isset($site['site'])) {
+            $this->site = $site['site'];
+        }
+        if (!$this->site instanceof Site) {
+            \Kint::dump($site);
+            throw new TerminusNotFoundException("Site not found: ");
+        }
     }
 }
