@@ -279,7 +279,9 @@ class Request implements
         if (isset($options['form_params'])) {
             $debug_body = $this->stripSensitiveInfo($options['form_params']);
             $body = json_encode($options['form_params'], JSON_UNESCAPED_SLASHES);
+            unset($options['form_params']);
             $headers['Content-Type'] = "application/json";
+            $headers['Content-Length'] = strlen($body);
         }
 
         $method = isset($options['method']) ? strtoupper($options['method']) : 'GET';

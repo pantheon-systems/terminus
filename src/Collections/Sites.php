@@ -29,9 +29,9 @@ class Sites extends APICollection implements SessionAwareInterface
      *   string label The site's human-friendly name
      *   string site_name The site's name
      *   string organization_id Organization to which this site belongs' UUID
-     * @return Workflow
+     * @return \Pantheon\Terminus\Models\Workflow
      */
-    public function create($params = []) :? Workflow
+    public function create($params = []): \Pantheon\Terminus\Models\Workflow
     {
         return $this->getUser()->getWorkflows()->create('create_site', compact('params'));
     }
@@ -44,9 +44,9 @@ class Sites extends APICollection implements SessionAwareInterface
      *   string site_name The site's name
      *   string organization_id Organization to which this site belongs' UUID
      *   string type Workflow type for imports
-     * @return Workflow
+     * @return \Pantheon\Terminus\Models\Workflow
      */
-    public function createForMigration($params = [])
+    public function createForMigration($params = []): \Pantheon\Terminus\Models\Workflow
     {
         return $this->getUser()->getWorkflows()->create('create_site_for_migration', compact('params'));
     }
