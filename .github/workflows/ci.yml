@@ -67,7 +67,7 @@ jobs:
       - name: Download terminus.phar as artifact
         uses: actions/download-artifact@v2
         with:
-          name: terminus-phar
+          name: t3-phar
       - name: Setup PHP with PECL extension
         uses: shivammathur/setup-php@v2
         with:
