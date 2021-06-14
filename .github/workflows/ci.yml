@@ -37,7 +37,7 @@ jobs:
         with:
           name: full-workspace
       - name: Full Composer Install
-        run: composer install --no-interaction --prefer-dist
+        run: composer install --no-interaction --prefer-dist --allow-root
       - name: Phar Build
         run: composer phar:build
       - name: Save terminus.phar as artifact
