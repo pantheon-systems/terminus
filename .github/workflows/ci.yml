@@ -28,6 +28,7 @@ jobs:
     env:
       TZ: "/usr/share/zoneinfo/America/Los_Angeles"
       TERM: dumb
+      COMPOSER_ALLOW_SUPERUSER: 1
     container:
       image: quay.io/pantheon-public/php-ci:1.x
     needs: [checkout]
@@ -37,7 +38,7 @@ jobs:
         with:
           name: full-workspace
       - name: Full Composer Install
-        run: composer install --no-interaction --prefer-dist --allow-root
+        run: composer install --no-interaction --prefer-dist
       - name: Phar Build
         run: composer phar:build
       - name: Save terminus.phar as artifact
