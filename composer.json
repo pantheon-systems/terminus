@@ -100,11 +100,11 @@
       "@functional"
     ],
     "post-install-cmd": [
-      "scripts/setup-precommit.sh",
+      "[ -z ${GITHUB_WORKFLOW} ] || scripts/setup-precommit.sh",
       "Tooly\\ScriptHandler::installPharTools"
     ],
     "post-update-cmd": [
-      "scripts/setup-precommit.sh",
+      "[ -z ${GITHUB_WORKFLOW} ] || scripts/setup-precommit.sh",
       "Tooly\\ScriptHandler::installPharTools"
     ],
     "pre-commit": [
