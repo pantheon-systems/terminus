@@ -36,18 +36,15 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: full-workspace
-      # Install without dev components to build a smaller phar
-      - name: Composer Install - no dev
-        run: composer install --no-dev --no-interaction --prefer-dist
-      - name: Install Phar Tools
-        run: composer phar:install-tools
+      - name: Full Composer Install
+        run: composer install --no-interaction --prefer-dist
       - name: Phar Build
         run: composer phar:build
       - name: Save terminus.phar as artifact
         uses: actions/upload-artifact@v2
         with:
-          name: terminus-phar
-          path: terminus.phar
+          name: t3-phar
+          path: t3
 
   functional:
     runs-on: ${{ matrix.operating-system }}
@@ -55,7 +52,7 @@ jobs:
     strategy:
       matrix:
         operating-system: ['ubuntu-latest', 'macos-latest']
-        php-versions: ['7.2', '7.3', '7.4']
+        php-versions: ['7.4']
     env:
       TZ: "/usr/share/zoneinfo/America/Los_Angeles"
       TERM: dumb
@@ -76,10 +73,5 @@ jobs:
         with:
           php-version: ${{ matrix.php-versions }}
           extensions: gd, mbstring, zip
-      # Install with dev components so that we can run phpunit
-      - name: Composer full install
-        run: composer install --no-interaction --prefer-dist
-      - name: Change permissions
-        run: chmod +x terminus.phar
       - name: Functional Tests
         run: composer functional

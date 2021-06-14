@@ -56,9 +56,6 @@
     "bin/t3"
   ],
   "scripts": {
-    "phar:install-tools": [
-      "composer install --dev"
-    ],
     "phar:build": [
       "rm -Rf ./t3",
       "vendor/bin/phar-composer.phar build .",
