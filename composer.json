@@ -57,7 +57,7 @@
   ],
   "scripts": {
     "phar:install-tools": [
-      "composer install --with-dev"
+      "composer install --dev"
     ],
     "phar:build": [
       "rm -Rf ./t3",
