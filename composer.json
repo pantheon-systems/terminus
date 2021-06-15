@@ -77,7 +77,7 @@
       "\\Terminus\\UpdateClassLists::update"
     ],
     "code:fix": [
-      "phpcbf --standard=tests/config/linting_ruleset.xml --fix bin/t3 src/*"
+      "phpcbf --standard=tests/config/linting_ruleset.xml bin/t3 src/*"
     ],
     "code:lint": [
       "@cs"
