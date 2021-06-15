@@ -90,7 +90,7 @@ jobs:
     container:
       image: quay.io/pantheon-public/php-ci:1.x
     needs: [functional]
-    if: ${{ startsWith(github.ref, 'refs/tags/')  && github.repository_owner == 'kporras07' }}
+    if: ${{ startsWith(github.ref, 'refs/tags/')  && github.repository_owner == 'pantheon-systems' }}
     steps:
       - name: Download terminus.phar as artifact
         uses: actions/download-artifact@v2
