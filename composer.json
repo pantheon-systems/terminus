@@ -87,6 +87,9 @@
       "@update-class-lists",
       "bin/t3 self:clear-cache"
     ],
+    "code:setup-precommit": [
+      "bash scripts/setup-precommit.sh"
+    ],
     "test:behat": [
       "SHELL_INTERACTIVE=true behat --colors --config tests/config/behat.yml --suite=default"
     ],
@@ -113,11 +116,9 @@
       "phpunit --colors=always -c tests/config/functional.phpunit.xml.dist --debug"
     ],
     "post-install-cmd": [
-      "bash scripts/setup-precommit.sh 2>&1",
       "Tooly\\ScriptHandler::installPharTools"
     ],
     "post-update-cmd": [
-      "bash scripts/setup-precommit.sh 2>&1",
       "Tooly\\ScriptHandler::installPharTools"
     ],
     "pre-commit": [
