@@ -2,13 +2,9 @@
 
 namespace Pantheon\Terminus\Commands\Local;
 
-use Consolidation\OutputFormatters\StructuredData\AbstractStructuredList;
-use Consolidation\OutputFormatters\StructuredData\PropertyList;
-use Pantheon\Terminus\Collections\Backups;
 use Pantheon\Terminus\Commands\TerminusCommand;
 use Pantheon\Terminus\Commands\WorkflowProcessingTrait;
 use Pantheon\Terminus\Config\ConfigAwareTrait;
-use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
 use Pantheon\Terminus\Exceptions\TerminusProcessException;
 use Pantheon\Terminus\Friends\LocalCopiesTrait;
 use Pantheon\Terminus\Helpers\Traits\CommandExecutorTrait;
@@ -39,6 +35,7 @@ class DownloadLiveFilesBackupCommand extends TerminusCommand implements
     use WorkflowProcessingTrait;
     use LoggerAwareTrait;
     use RequestAwareTrait;
+    use LocalCopiesTrait;
 
     /**
      *  Create new backup of your live site's Files folder and download to $HOME/pantheon-local-copies/{Site}/db
@@ -57,13 +54,22 @@ class DownloadLiveFilesBackupCommand extends TerminusCommand implements
      * @throws \Pantheon\Terminus\Exceptions\TerminusException
      *
      */
-    public function downloadLiveDbBackup(string $site, $options = ['overwrite' => false])
+    public function downloadLiveFilesBackup($site, $options = ['overwrite' => false])
     {
-        $siteData = $this->getSite($site);
+        $siteData = $site;
+        if (!$siteData instanceof Site) {
+            $siteData = $this->getSite($site);
+            if (!$siteData instanceof Site) {
+                throw new TerminusException(
+                    "Cannot find site with the ID: {site}",
+                    ["site" => $site]
+                );
+            }
+        }
         $liveEnv = $siteData
             ->getEnvironments()
             ->get('live');
-        $files_folder = $siteData->getLocalCopyFolder() . DIRECTORY_SEPARATOR . "db";
+        $files_folder = $this->getLocalCopiesFolder() . DIRECTORY_SEPARATOR . "files";
         $files_local_filename =  sprintf(
             '%s%s%s-files.tgz',
             $files_folder,
@@ -72,9 +78,11 @@ class DownloadLiveFilesBackupCommand extends TerminusCommand implements
         );
         if (!is_dir($files_folder)) {
             mkdir($files_folder);
-            // TODO: update .gitignore
             if (!is_dir($files_folder)) {
-                throw new TerminusException("Cannot create 'db' folder inside local copy of site");
+                throw new TerminusException(
+                    "Cannot create {path}",
+                    ['path' => $files_folder]
+                );
             }
         }
         if (!$liveEnv instanceof Environment) {

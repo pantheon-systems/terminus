@@ -2,9 +2,6 @@
 
 namespace Pantheon\Terminus\Commands\D9ify;
 
-use Consolidation\OutputFormatters\Options\FormatterOptions;
-use Pantheon\Terminus\Collections\Backups;
-use Pantheon\Terminus\Commands\Backup\BackupCommand;
 use Pantheon\Terminus\Commands\Local\DownloadLiveDbBackupCommand;
 use Pantheon\Terminus\Commands\Local\DownloadLiveFilesBackupCommand;
 use Pantheon\Terminus\Commands\Site\CreateCommand;
@@ -13,20 +10,12 @@ use Pantheon\Terminus\Commands\TerminusCommand;
 use Pantheon\Terminus\Commands\WorkflowProcessingTrait;
 use Pantheon\Terminus\Config\ConfigAwareTrait;
 use Pantheon\Terminus\Exceptions\TerminusException;
-use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
-use Pantheon\Terminus\Exceptions\TerminusProcessException;
 use Pantheon\Terminus\Helpers\Site\Directory;
-use Pantheon\Terminus\Models\Environment;
 use Pantheon\Terminus\Models\Site;
-use Pantheon\Terminus\Models\TerminusModel;
-use Pantheon\Terminus\Models\Workflow;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
-use Pantheon\Terminus\UnitTests\Commands\WorkflowProgressTrait;
 use Robo\Common\IO;
 use Robo\Contract\ConfigAwareInterface;
-use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Question\ConfirmationQuestion;
 use Symfony\Component\Yaml\Yaml;
 
 /**
@@ -198,7 +187,7 @@ class ProcessCommand extends TerminusCommand implements SiteAwareInterface, Conf
     }
 
     /**
-     * @return \D9ify\Site\Directory
+     * @return Directory
      */
     protected function getSourceDirectory(): Directory
     {
@@ -211,7 +200,7 @@ class ProcessCommand extends TerminusCommand implements SiteAwareInterface, Conf
      * Source Param is not optional and needs to be
      * a pantheon site ID or name.
      *
-     * @param \D9ify\Site\Directory $sourceDirectory
+     * @param Directory $sourceDirectory
      */
     protected function setSourceDirectory(Directory $sourceDirectory): void
     {
@@ -251,7 +240,7 @@ class ProcessCommand extends TerminusCommand implements SiteAwareInterface, Conf
     }
 
     /**
-     * @return \D9ify\Site\Directory
+     * @return Directory
      */
     protected function getDestinationDirectory(): Directory
     {
@@ -264,7 +253,7 @@ class ProcessCommand extends TerminusCommand implements SiteAwareInterface, Conf
      * Destination name will be {source}-{THIS YEAR} by default
      * if you don't provide a value.
      *
-     * @param \D9ify\Site\Directory $destinationDirectory
+     * @param Directory $destinationDirectory
      */
     protected function setDestinationDirectory(Directory $destinationDirectory): void
     {
@@ -653,7 +642,7 @@ class ProcessCommand extends TerminusCommand implements SiteAwareInterface, Conf
     {
         $this->getContainer()->add(DownloadLiveDbBackupCommand::class);
         $downloadDbCommand = $this->getContainer()->get(DownloadLiveDbBackupCommand::class);
-        $downloadDbCommand->downloadLiveDbBackup($this->getSourceDirectory()->getSite());
+        $downloadDbCommand->downloadLiveDbBackup($this->getSourceDirectory()->getSource());
     }
 
     /**
@@ -671,6 +660,6 @@ class ProcessCommand extends TerminusCommand implements SiteAwareInterface, Conf
     {
         $this->getContainer()->add(DownloadLiveFilesBackupCommand::class);
         $downloadFilesCommand = $this->getContainer()->get(DownloadLiveFilesBackupCommand::class);
-        $downloadFilesCommand->downloadLiveFilesBackup($this->getSourceDirectory()->getSite());
+        $downloadFilesCommand->downloadLiveFilesBackup($this->getSourceDirectory()->getSource());
     }
 }

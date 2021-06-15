@@ -9,6 +9,7 @@ use Pantheon\Terminus\Commands\WorkflowProcessingTrait;
 use Pantheon\Terminus\Config\ConfigAwareTrait;
 use Pantheon\Terminus\Friends\LocalCopiesTrait;
 use Pantheon\Terminus\Helpers\Traits\CommandExecutorTrait;
+use Pantheon\Terminus\Models\Site;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 use Pantheon\Terminus\Exceptions\TerminusException;
@@ -40,19 +41,29 @@ class CloneCommand extends TerminusCommand implements SiteAwareInterface, Config
      * @throws \Pantheon\Terminus\Exceptions\TerminusException
      *
      */
-    public function clone(string $site) : string
+    public function clone($site) : string
     {
-        $site = $this->getSite($site);
-        $env = $site->getEnvironments()->get('dev');
-        $clone_path = $site->getLocalCopiesFolder();
+        $siteData = $site;
+        if (!$siteData instanceof Site) {
+            $siteData = $this->getSite($site);
+            if (!$siteData instanceof Site) {
+                throw new TerminusException(
+                    "Cannot find site with the ID: {site}",
+                    ["site" => $site]
+                );
+            }
+        }
+
+        $env = $siteData->getEnvironments()->get('dev');
+        $clone_path = $siteData->getLocalCopyFolder();
         $connection =  $env->connectionInfo();
-        if (!is_dir($clone_path)) {
+        if (!is_dir($clone_path . DIRECTORY_SEPARATOR . ".git")) {
             $this->execute(
                 "git clone %s %s",
                 [$connection['git_url'], $clone_path]
             );
         }
-        if (!is_dir($clone_path)) {
+        if (!is_dir($clone_path . DIRECTORY_SEPARATOR . ".git")) {
             throw new TerminusException(
                 "Clone from Pantheon's Development repository failed.",
                 ['folder' => $clone_path]

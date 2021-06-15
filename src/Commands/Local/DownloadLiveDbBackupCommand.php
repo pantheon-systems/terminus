@@ -2,13 +2,9 @@
 
 namespace Pantheon\Terminus\Commands\Local;
 
-use Consolidation\OutputFormatters\StructuredData\AbstractStructuredList;
-use Consolidation\OutputFormatters\StructuredData\PropertyList;
-use Pantheon\Terminus\Collections\Backups;
 use Pantheon\Terminus\Commands\TerminusCommand;
 use Pantheon\Terminus\Commands\WorkflowProcessingTrait;
 use Pantheon\Terminus\Config\ConfigAwareTrait;
-use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
 use Pantheon\Terminus\Exceptions\TerminusProcessException;
 use Pantheon\Terminus\Friends\LocalCopiesTrait;
 use Pantheon\Terminus\Helpers\Traits\CommandExecutorTrait;
@@ -39,6 +35,7 @@ class DownloadLiveDbBackupCommand extends TerminusCommand implements
     use WorkflowProcessingTrait;
     use LoggerAwareTrait;
     use RequestAwareTrait;
+    use LocalCopiesTrait;
 
     /**
      *  Create new backup of your live site's db and download to $HOME/pantheon-local-copies/{Site}/db
@@ -62,11 +59,17 @@ class DownloadLiveDbBackupCommand extends TerminusCommand implements
         $siteData = $site;
         if (!$siteData instanceof Site) {
             $siteData = $this->getSite($site);
+            if (!$siteData instanceof Site) {
+                throw new TerminusException(
+                    "Cannot find site with the ID: {site}",
+                    ["site" => $site]
+                );
+            }
         }
         $liveEnv = $siteData
             ->getEnvironments()
             ->get('live');
-        $db_folder = $siteData->getLocalCopyFolder() . DIRECTORY_SEPARATOR . "db";
+        $db_folder = $this->getLocalCopiesFolder() . DIRECTORY_SEPARATOR . "db";
         $db_local_filename =  sprintf(
             '%s%s%s-db.tgz',
             $db_folder,
@@ -75,9 +78,11 @@ class DownloadLiveDbBackupCommand extends TerminusCommand implements
         );
         if (!is_dir($db_folder)) {
             mkdir($db_folder);
-            // TODO: update .gitignore
             if (!is_dir($db_folder)) {
-                throw new TerminusException("Cannot create 'files' folder inside local copy of site");
+                throw new TerminusException(
+                    "Cannot create {path}:",
+                    ["path" => $db_folder]
+                );
             }
         }
 

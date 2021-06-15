@@ -5,7 +5,6 @@ namespace Pantheon\Terminus\Helpers\Site;
 use League\Container\ContainerAwareInterface;
 use League\Container\ContainerAwareTrait;
 use Pantheon\Terminus\Commands\Local\CloneCommand;
-use Pantheon\Terminus\Exceptions\TerminusException;
 use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
 use Pantheon\Terminus\Helpers\Composer\ComposerFile;
 use Pantheon\Terminus\Exceptions\ComposerInstallException;
@@ -19,7 +18,6 @@ use Psr\Log\LoggerAwareTrait;
 use Robo\Common\IO;
 use Robo\Contract\IOAwareInterface;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
 
 /**
  * Class Directory
@@ -97,7 +95,7 @@ class Directory implements ContainerAwareInterface, IOAwareInterface, SiteAwareI
         }
         $this->getContainer()->add(CloneCommand::class);
         $cloneCommand = $this->getContainer()->get(CloneCommand::class);
-        $clonePath = $cloneCommand->clone($this->getSource()->getName());
+        $clonePath = $cloneCommand->clone($this->getSource());
         $this->logger->info("Clone Path:" . $clonePath);
         $this->setClonePath($clonePath);
         $this->execute(
