@@ -15,7 +15,7 @@ trait WorkflowProcessingTrait
      * @param Workflow $model A workflow to run
      * @return Workflow That same workflow
      */
-    public function processWorkflow(Workflow $workflow): Workflow
+    public function processWorkflow(Workflow $workflow): ?Workflow
     {
         if ($this->input()->isInteractive()) {
             $nickname = uniqid(__METHOD__);
