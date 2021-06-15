@@ -7,6 +7,7 @@ use Pantheon\Terminus\Commands\TerminusCommand;
 use Pantheon\Terminus\Config\ConfigAwareTrait;
 use Pantheon\Terminus\Helpers\Site\Directory;
 use Pantheon\Terminus\Site\SiteAwareTrait;
+use Robo\Common\IO;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
@@ -21,6 +22,8 @@ class CommitAndPushCommand extends TerminusCommand
 
     use SiteAwareTrait;
     use ConfigAwareTrait;
+    use IO;
+    use SiteAwareTrait;
 
     /**
      * @var string
@@ -74,9 +77,9 @@ class CommitAndPushCommand extends TerminusCommand
                 $this->output(),
             )
         );
-        $this->restoreDatabaseToDestinationSite($this->output());
-        $this->unpackSiteFilesAndRsyncToDestination($this->output());
-        $this->checkinVersionManagedFilesAndPush($this->output());
+        $this->restoreDatabaseToDestinationSite();
+        $this->unpackSiteFilesAndRsyncToDestination();
+        $this->checkinVersionManagedFilesAndPush();
     }
 
 

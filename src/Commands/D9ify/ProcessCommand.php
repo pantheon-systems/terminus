@@ -74,7 +74,6 @@ class ProcessCommand extends TerminusCommand implements SiteAwareInterface, Conf
      */
     public function process($sourceSite, $destinationSite = null, $options = [])
     {
-        $GLOBALS['_kint_settings']['depthLimit'] = 3;
         $this->output()->writeln(static::$HELP_TEXT);
         try {
             // Handle Source Site.
