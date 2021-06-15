@@ -11,8 +11,9 @@ use Pantheon\Terminus\Models\Backup;
  */
 class Backups extends EnvironmentOwnedCollection
 {
-    const DAILY_BACKUP_TTL = 691200;
-    const WEEKLY_BACKUP_TTL = 2764800;
+    const DAILY_BACKUP_TTL = 8;
+    const SECONDS_IN_A_DAY = 86400;
+    const WEEKLY_BACKUP_TTL = 32;
 
     const PRETTY_NAME = 'backups';
     /**
@@ -61,7 +62,7 @@ class Backups extends EnvironmentOwnedCollection
         } else {
             $params['code'] = $params['database'] = $params['files'] = true;
         }
-        $params['ttl'] = ceil((integer)$options['keep-for'] * 86400);
+        $params['ttl'] = self::convertDaysToSeconds($options['keep-for']);
 
         return $this->getEnvironment()->getWorkflows()->create('do_export', compact('params'));
     }
@@ -152,6 +153,7 @@ class Backups extends EnvironmentOwnedCollection
         $response_data = (array)$response['data'];
         $data          = [
             'daily_backup_hour' => null,
+            'expiry' => null,
             'weekly_backup_day' => null,
         ];
 
@@ -161,12 +163,18 @@ class Backups extends EnvironmentOwnedCollection
             foreach ((array)$response['data'] as $day_number => $info) {
                 $schedule[$day_number] = $info->ttl;
             }
-            $day_number      = array_search(max($schedule), $schedule);
+            $weekly_ttl = max($schedule);
+            $day_number = array_search($weekly_ttl, $schedule);
             $data['weekly_backup_day'] = date(
                 'l',
                 strtotime("Sunday +{$day_number} days")
             );
             $data['daily_backup_hour'] = date('H T', strtotime($info->hour . ':00'));
+            $weekly_ttl_days = self::convertSecondsToDays($weekly_ttl);
+            $data['expiry'] = $weekly_ttl_days . ' day';
+            if ($weekly_ttl_days > 1) {
+                $data['expiry'] .= 's';
+            }
         }
         return $data;
     }
@@ -206,18 +214,37 @@ class Backups extends EnvironmentOwnedCollection
      * Sets an environment's regular backup schedule
      *
      * @param array $options Elements as follow:
-     *    string  day  A day of the week
-     *    integer hour Hour of the day to run the backups at, 0 = 00:00 23 = 23:00
+     *    integer daily-ttl  Days to keep the daily backups for
+     *    string  day        A day of the week
+     *    integer hour       Hour of the day to run the backups at, 0 = 00:00 23 = 23:00
+     *    integer weekly-ttl Days to keep the weekly backups for
      * @return Workflow
      */
-    public function setBackupSchedule(array $options = ['day' => null, 'hour' => null,])
+    public function setBackupSchedule(array $options = [
+        'daily-ttl' => null,
+        'day' => null,
+        'hour' => null,
+        'weekly-ttl' => null,
+    ])
     {
-        $backup_hour = (isset($options['hour']) && !is_null($options['hour'])) ? $options['hour'] : null;
-        $day_number = isset($options['day']) ? $this->getDayNumber($options['day']) : rand(0, 6);
+        $option_exists = function ($option_name) use ($options) {
+            return isset($options[$option_name]) && !is_null($options[$option_name]);
+        };
+        $daily_ttl = self::convertDaysToSeconds(
+            $option_exists('daily-ttl') ? $options['daily-ttl'] : Backups::DAILY_BACKUP_TTL
+        );
+        $weekly_ttl = self::convertDaysToSeconds(
+            $option_exists('weekly-ttl') ? $options['weekly-ttl'] : Backups::WEEKLY_BACKUP_TTL
+        );
+        $backup_hour = $option_exists('hour') ? $options['hour'] : null;
+        $day_number = (int)$option_exists('day') ? $this->getDayNumber($options['day']) : rand(0, 6);
+
         $schedule = [];
         for ($day = 0; $day < 7; $day++) {
-            $schedule[$day] = (object)['hour' => $backup_hour, 'ttl' => null,];
-            $schedule[$day]->ttl = ($day == $day_number) ? self::WEEKLY_BACKUP_TTL: self::DAILY_BACKUP_TTL;
+            $schedule[$day] = (object)[
+                'hour' => $backup_hour,
+                'ttl' => ($day === $day_number) ? $weekly_ttl : $daily_ttl,
+            ];
         }
         $schedule = (object)$schedule;
 
@@ -226,6 +253,28 @@ class Backups extends EnvironmentOwnedCollection
             ['params' => ['backup_schedule' => $schedule,],]
         );
         return $workflow;
+    }
+
+    /**
+     * Converts seconds to days
+     *
+     * @param integer $number_of_days
+     * @return integer The number of seconds in as many days
+     */
+    public static function convertDaysToSeconds($number_of_days)
+    {
+        return (integer)ceil((integer)$number_of_days * self::SECONDS_IN_A_DAY);
+    }
+
+    /**
+     * Converts days to seconds
+     *
+     * @param integer $number_of_seconds
+     * @return integer The number of days in as many seconds
+     */
+    public static function convertSecondsToDays($number_of_seconds)
+    {
+        return (integer)ceil((integer)$number_of_seconds / self::SECONDS_IN_A_DAY);
     }
 
     /**
