@@ -65,6 +65,14 @@
       "mv terminus.phar t3",
       "chmod +x t3"
     ],
+    "phar:install": [
+      "rm -rf /usr/local/bin/t3",
+      "ln -s `realpath ./t3` /usr/local/bin/t3"
+    ],
+    "phar:update": [
+      "@phar:build",
+      "@phar:install"
+    ],
     "update-class-lists": [
       "\\Terminus\\UpdateClassLists::update"
     ],

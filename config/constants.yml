@@ -56,6 +56,7 @@ TERMINUS_VCR_MODE:     null
 # TERMINUS_ROOT
 # TERMINUS_SCRIPT
 
+# Debug Guzzle Calls here:
 TERMINUS_CLIENT_OPTIONS:
   debug: false
   http_errors: false
