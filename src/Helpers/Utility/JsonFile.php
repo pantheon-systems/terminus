@@ -186,7 +186,7 @@ class JsonFile extends \SplFileObject
         copy(
             $this->getRealPath(),
             dirname($this->getRealPath()) .
-            sprintf("/composer-%s.json", uniqid())
+            sprintf("/composer-%s.json", \uniqid())
         );
     }
 }

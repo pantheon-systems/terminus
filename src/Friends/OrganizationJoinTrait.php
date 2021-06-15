@@ -29,7 +29,7 @@ trait OrganizationJoinTrait
     public function getOrganization()
     {
         if (empty($this->organization)) {
-            $nickname = uniqid(__FUNCTION__ . "-");
+            $nickname = \uniqid(__FUNCTION__ . "-");
             $this->getContainer()
                 ->add($nickname, Organization::class)
                 ->addArgument($this->get('organization'));

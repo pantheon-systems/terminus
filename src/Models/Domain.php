@@ -44,7 +44,7 @@ class Domain extends TerminusModel implements ContainerAwareInterface, Environme
     public function getDNSRecords()
     {
         if (empty($this->dns_records)) {
-            $nickname = uniqid(__FUNCTION__ . "-");
+            $nickname = \uniqid(__FUNCTION__ . "-");
             $this->getContainer()->add($nickname, DNSRecords::class)
                 ->addArgument([
                     'data' => $this->get('dns_status_details')->dns_records,

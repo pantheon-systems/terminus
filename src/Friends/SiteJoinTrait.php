@@ -29,7 +29,7 @@ trait SiteJoinTrait
     public function getSite()
     {
         if (empty($this->site)) {
-            $nickname = uniqid(__FUNCTION__ . "-");
+            $nickname = \uniqid(__FUNCTION__ . "-");
             $this->getContainer()
                 ->add($nickname, Site::class)
                 ->addArgument([$this->get('site')]);

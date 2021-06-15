@@ -76,11 +76,23 @@
     "update-class-lists": [
       "\\Terminus\\UpdateClassLists::update"
     ],
-    "behat": [
+    "code:fix": [
+      "phpcbf --standard=tests/config/linting_ruleset.xml --fix bin/t3 src/*"
+    ],
+    "code:lint": [
+      "@cs"
+    ],
+    "code:new-command": [
+      "rm -Rf ~/.terminus/cache/commands",
+      "@update-class-lists",
+      "bin/t3 self:clear-cache"
+    ],
+    "test:behat": [
       "SHELL_INTERACTIVE=true behat --colors --config tests/config/behat.yml --suite=default"
     ],
-    "cbf": [
-      "phpcbf --standard=tests/config/linting_ruleset.xml bin/t3 src/*"
+    "test": [
+      "@phar:build",
+      "@functional"
     ],
     "clover": [
       "phpunit -c tests/config/phpunit.xml.dist --coverage-clover tests/logs/clover.xml"
@@ -94,18 +106,11 @@
     "docs": [
       "php scripts/make-docs.php"
     ],
-    "lint": [
-      "@cs"
-    ],
     "phpunit": [
       "@functional"
     ],
     "functional": [
       "phpunit --colors=always -c tests/config/functional.phpunit.xml.dist --debug"
-    ],
-    "test": [
-      "@phar:build",
-      "@functional"
     ],
     "post-install-cmd": [
       "bash scripts/setup-precommit.sh 2>&1",
@@ -116,14 +121,9 @@
       "Tooly\\ScriptHandler::installPharTools"
     ],
     "pre-commit": [
-      "@cbf",
-      "@lint",
+      "@code:fix",
+      "@code:lint",
       "composer validate --strict"
-    ],
-    "dev:new-command": [
-      "rm -Rf ~/.terminus/cache/commands",
-      "@update-class-lists",
-      "bin/t3 self:clear-cache"
     ]
   },
   "config": {
@@ -146,7 +146,7 @@
     "tools": {
       "phar-composer": {
         "url": "https://clue.engineering/phar-composer-latest.phar",
-        "dev-only":  true
+        "dev-only": true
       }
     }
   }

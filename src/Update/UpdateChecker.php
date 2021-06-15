@@ -62,7 +62,7 @@ class UpdateChecker implements
         }
         $running_version = $this->getRunningVersion();
         try {
-            $nickname = uniqid(__CLASS__ . "-");
+            $nickname = \uniqid(__CLASS__ . "-");
             $this->getContainer()
                 ->add($nickname, LatestRelease::class)
                 ->addArgument([$this->getDataStore()]);

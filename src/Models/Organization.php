@@ -112,7 +112,7 @@ class Organization extends TerminusModel implements
     public function getSiteMemberships()
     {
         if (empty($this->site_memberships)) {
-            $nickname = uniqid(__FUNCTION__ . '-');
+            $nickname = \uniqid(__FUNCTION__ . '-');
             $this->getContainer()->add($nickname, OrganizationSiteMemberships::class)
                 ->addArgument(['organization' => $this]);
             $this->site_memberships = $this->getContainer()
@@ -127,7 +127,7 @@ class Organization extends TerminusModel implements
     public function getUpstreams()
     {
         if (empty($this->upstreams)) {
-            $nickname = uniqid(__FUNCTION__ . '-');
+            $nickname = \uniqid(__FUNCTION__ . '-');
             $this->getContainer()->add($nickname, OrganizationUpstreams::class)
                 ->addArgument(['organization' => $this]);
             $this->upstreams = $this->getContainer()->get($nickname);
@@ -141,7 +141,7 @@ class Organization extends TerminusModel implements
     public function getUserMemberships()
     {
         if (empty($this->user_memberships)) {
-            $nickname = uniqid(__FUNCTION__ . '-');
+            $nickname = \uniqid(__FUNCTION__ . '-');
             $this->getContainer()->add($nickname, OrganizationUserMemberships::class)
                 ->addArgument(['organization' => $this]);
             $this->user_memberships = $this->getContainer()
@@ -156,7 +156,7 @@ class Organization extends TerminusModel implements
     public function getWorkflows()
     {
         if (empty($this->workflows)) {
-            $nickname = uniqid(__FUNCTION__ . '-');
+            $nickname = \uniqid(__FUNCTION__ . '-');
             $this->getContainer()->add($nickname, Workflows::class)
                 ->addArgument(['organization' => $this]);
             $this->workflows = $this->getContainer()->get($nickname);

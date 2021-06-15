@@ -18,7 +18,7 @@ trait WorkflowProcessingTrait
     public function processWorkflow(Workflow $workflow): ?Workflow
     {
         if ($this->input()->isInteractive()) {
-            $nickname = uniqid(__METHOD__);
+            $nickname = \uniqid(__METHOD__);
             $this->getContainer()->add($nickname, WorkflowProgressBar::class)
                 ->addArguments([$this->output(), $workflow]);
             return $this->getContainer()->get($nickname)->cycle();

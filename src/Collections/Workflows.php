@@ -106,7 +106,7 @@ class Workflows extends APICollection implements SessionAwareInterface
         if ($results['status_code'] <= 199 || $results['status_code'] >= 300) {
             throw new TerminusException($results['data']);
         }
-        $nickname = uniqid(__CLASS__ . "-");
+        $nickname = \uniqid(__CLASS__ . "-");
         $this->getContainer()->add($nickname, $this->collected_class)
             ->addArguments([
                 $results['data'],

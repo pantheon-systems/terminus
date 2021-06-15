@@ -4,18 +4,32 @@ namespace Pantheon\Terminus\Tests\Functional;
 
 use PHPUnit\Framework\TestCase;
 
-class SiteTest extends TestCase
+class DrupalSiteTest extends TestCase
 {
-    /**
-     * If there is a terminus token, then log in.
-     */
-    public static function setUpBeforeClass()
+
+    protected $testSitename;
+
+    public function setUp()
     {
+        $this->testSitename = \uniqid('terminus-test-');
         $token = getenv('TERMINUS_TOKEN');
         if ($token) {
             static::call_terminus("auth:login --machine-token=$token");
+
         }
+        $this->terminus(
+            "site:create {$this->testSitename} {$this->testSitename} "
+            ."drupal9  --yes --org=5ae1fa30-8cc4-4894-8ca9-d50628dcba17",
+        );
     }
+
+    public function tearDown()
+    {
+        $this->terminus(
+            "site:delete {$this->testSitename} --yes"
+        );
+    }
+
 
     /**
      * @test
@@ -24,23 +38,7 @@ class SiteTest extends TestCase
      */
     public function testSiteInfo()
     {
-        $sitename = getenv('TERMINUS_SITE') ?: 'ci-wordpress-core';
-        $output = $this->terminus("site:info {$sitename} --format=yaml");
-        $this->assertContains('framework: wordpress', $output);
-    }
-
-    /**
-     * @test
-     * Test to see if we can use terminus.phar and get rational results
-     * back from the Hermes API.
-     */
-    public function testSiteCreateInfoDelete()
-    {
-        $sitename = uniqid('terminus-test-');
-        $this->terminus(
-            "site:create {$sitename} {$sitename} drupal9  --yes --org=5ae1fa30-8cc4-4894-8ca9-d50628dcba17",
-        );
-        $response = $this->terminus("site:info --format=json {$sitename}");
+        $response = $this->terminus("site:info {$this->testSitename} --format=yaml");
         if (is_array($response)) {
             $response = join("", $response);
         }
@@ -49,11 +47,27 @@ class SiteTest extends TestCase
             true,
             JSON_THROW_ON_ERROR
         );
-        $this->assertIsArray($siteInfo, "Response from newly-created site should be unserialized json");
-        $this->assertArrayHasKey('id', $siteInfo, "Response from newly-created site should contain an ID property");
-        $this->terminus(
-            "site:delete {$siteInfo['id']} --yes"
-        );
+        $this->assertIsArray($siteInfo,
+            "Response from newly-created site should be unserialized json");
+        $this->assertArrayHasKey('id', $siteInfo,
+            "Response from newly-created site should contain an ID property");
+        $this->assertEquals($this->testSitename, $siteInfo['name'],
+            "Site info name should equal generated test name");
+    }
+
+    /**
+     *
+     */
+
+    /**
+     * @test
+     * Test to see if we can use terminus.phar and get rational results
+     * back from the Hermes API.
+     */
+    public function testEnvCreateInfoDelete()
+    {
+
+
     }
 
     /**
