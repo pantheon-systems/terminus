@@ -159,9 +159,6 @@ class ProcessCommand extends TerminusCommand implements SiteAwareInterface, Conf
                 PHP_EOL,
                 "*************************************************************",
             ]);
-
-
-
             $this->copyRepositoriesFromSource();
             $this->updateDestModulesAndThemesFromSource();
             $this->updateDestEsLibrariesFromSource();
@@ -278,10 +275,7 @@ class ProcessCommand extends TerminusCommand implements SiteAwareInterface, Conf
     protected function updateDestModulesAndThemesFromSource()
     {
         $this->output()->writeln("===> Updating Getting Modules and Themes from source.");
-        $infoFiles = $this->sourceDirectory->spelunkFilesFromRegex(
-            '/(\.info\.yml|\.info\.yaml?)/',
-            $this->output
-        );
+        $infoFiles = $this->sourceDirectory->spelunkFilesFromRegex('/(\.info\.yml|\.info\.yaml?)/');
         $toMerge = [];
         $composerFile = $this->getDestinationDirectory()
             ->getComposerObject();

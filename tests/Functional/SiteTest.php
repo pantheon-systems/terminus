@@ -41,12 +41,15 @@ class SiteTest extends TestCase
             "site:create {$sitename} {$sitename} drupal9  --yes --org=5ae1fa30-8cc4-4894-8ca9-d50628dcba17",
         );
         $response = $this->terminus("site:info --format=json {$sitename}");
+        if (is_array($response)) {
+            $response = join("", $response);
+        }
         $siteInfo = json_decode(
             $response,
             true,
             JSON_THROW_ON_ERROR
         );
-        $this->assertIsArray($siteInfo, "Response from newly-created site should be unserializable json");
+        $this->assertIsArray($siteInfo, "Response from newly-created site should be unserialized json");
         $this->assertArrayHasKey('id', $siteInfo, "Response from newly-created site should contain an ID property");
         $this->terminus(
             "site:delete {$siteInfo['id']} --yes"
