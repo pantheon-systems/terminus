@@ -4,6 +4,7 @@ namespace Pantheon\Terminus\Models;
 
 use League\Container\ContainerAwareInterface;
 use League\Container\ContainerAwareTrait;
+use Pantheon\Terminus\Friends\LocalCopiesTrait;
 use Pantheon\Terminus\Friends\OrganizationsInterface;
 use Pantheon\Terminus\Friends\OrganizationsTrait;
 use Pantheon\Terminus\Collections\Branches;
@@ -24,6 +25,7 @@ class Site extends TerminusModel implements ContainerAwareInterface, Organizatio
 {
     use ContainerAwareTrait;
     use OrganizationsTrait;
+    use LocalCopiesTrait;
 
     const PRETTY_NAME = 'site';
 
@@ -179,7 +181,7 @@ class Site extends TerminusModel implements ContainerAwareInterface, Organizatio
     /**
      * @return Environments
      */
-    public function getEnvironments()
+    public function getEnvironments(): Environments
     {
         if (empty($this->environments)) {
             $nickname = uniqid(__FUNCTION__ . "-");
@@ -484,7 +486,18 @@ class Site extends TerminusModel implements ContainerAwareInterface, Organizatio
         return (bool) $this->id;
     }
 
-    public function cloneLocalCopy()
+    public function getLocalCopyFolder(): string
     {
+        $local_copy_folder = $this->getLocalCopiesFolder() . DIRECTORY_SEPARATOR . $this->getName();
+        if (!is_dir($local_copy_folder)) {
+            mkdir($local_copy_folder);
+            if (!is_dir($local_copy_folder)) {
+                throw new TerminusException(
+                    "Cannot create local copy folder for site: {site}",
+                    ['site' => $this->getName()]
+                );
+            }
+        }
+        return $local_copy_folder;
     }
 }

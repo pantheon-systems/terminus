@@ -13,6 +13,7 @@ use Pantheon\Terminus\Collections\Sites;
 use Pantheon\Terminus\Config\ConfigAwareTrait;
 use Pantheon\Terminus\DataStore\FileStore;
 use Pantheon\Terminus\Helpers\LocalMachineHelper;
+use Pantheon\Terminus\Helpers\Traits\CommandExecutorTrait;
 use Pantheon\Terminus\Plugins\PluginAutoloadDependencies;
 use Pantheon\Terminus\Plugins\PluginDiscovery;
 use Pantheon\Terminus\ProgressBars\ProcessProgressBar;
@@ -155,6 +156,9 @@ class Terminus implements ConfigAwareInterface, ContainerAwareInterface, LoggerA
 
         // Install our command cache into the command factory
         $commandCacheDir = $this->getConfig()->get('command_cache_dir');
+        if (!is_dir($commandCacheDir)) {
+            mkdir($commandCacheDir);
+        }
         $commandCacheDataStore = new FileStore($commandCacheDir);
 
         $factory = $container->get('commandFactory');
@@ -295,6 +299,9 @@ class Terminus implements ConfigAwareInterface, ContainerAwareInterface, LoggerA
             'Pantheon\\Terminus\\Commands\\Import\\DatabaseCommand',
             'Pantheon\\Terminus\\Commands\\Import\\FilesCommand',
             'Pantheon\\Terminus\\Commands\\Import\\SiteCommand',
+            'Pantheon\\Terminus\\Commands\\Local\\CloneCommand',
+            'Pantheon\\Terminus\\Commands\\Local\\DownloadLiveDbBackupCommand',
+            'Pantheon\\Terminus\\Commands\\Local\\DownloadLiveFilesBackupCommand',
             'Pantheon\\Terminus\\Commands\\Lock\\DisableCommand',
             'Pantheon\\Terminus\\Commands\\Lock\\EnableCommand',
             'Pantheon\\Terminus\\Commands\\Lock\\InfoCommand',
@@ -370,7 +377,7 @@ class Terminus implements ConfigAwareInterface, ContainerAwareInterface, LoggerA
             'Pantheon\\Terminus\\Commands\\Workflow\\Info\\OperationsCommand',
             'Pantheon\\Terminus\\Commands\\Workflow\\Info\\StatusCommand',
             'Pantheon\\Terminus\\Commands\\Workflow\\ListCommand',
-            'Pantheon\\Terminus\\Commands\\Workflow\\WatchCommand',
+            'Pantheon\\Terminus\\Commands\\Workflow\\WatchCommand'
         ];
     }
 

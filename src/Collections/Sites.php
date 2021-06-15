@@ -3,6 +3,7 @@
 namespace Pantheon\Terminus\Collections;
 
 use Pantheon\Terminus\Models\Site;
+use Pantheon\Terminus\Models\TerminusModel;
 use Pantheon\Terminus\Session\SessionAwareInterface;
 use Pantheon\Terminus\Session\SessionAwareTrait;
 use Pantheon\Terminus\Exceptions\TerminusException;
@@ -179,7 +180,7 @@ class Sites extends APICollection implements SessionAwareInterface
      * @return Site
      * @throws TerminusException
      */
-    public function get($id)
+    public function get($id): TerminusModel
     {
         try {
             $uuid = $this->findUUIDByNameOrUUID($id);

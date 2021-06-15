@@ -3,16 +3,28 @@
 namespace Pantheon\Terminus\Commands\D9ify;
 
 use Consolidation\OutputFormatters\Options\FormatterOptions;
+use Pantheon\Terminus\Collections\Backups;
+use Pantheon\Terminus\Commands\Backup\BackupCommand;
+use Pantheon\Terminus\Commands\Local\DownloadLiveDbBackupCommand;
+use Pantheon\Terminus\Commands\Local\DownloadLiveFilesBackupCommand;
 use Pantheon\Terminus\Commands\Site\CreateCommand;
 use Pantheon\Terminus\Commands\Site\InfoCommand;
 use Pantheon\Terminus\Commands\TerminusCommand;
+use Pantheon\Terminus\Commands\WorkflowProcessingTrait;
 use Pantheon\Terminus\Config\ConfigAwareTrait;
 use Pantheon\Terminus\Exceptions\TerminusException;
+use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
+use Pantheon\Terminus\Exceptions\TerminusProcessException;
 use Pantheon\Terminus\Helpers\Site\Directory;
+use Pantheon\Terminus\Models\Environment;
 use Pantheon\Terminus\Models\Site;
 use Pantheon\Terminus\Models\TerminusModel;
+use Pantheon\Terminus\Models\Workflow;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
+use Pantheon\Terminus\UnitTests\Commands\WorkflowProgressTrait;
+use Robo\Common\IO;
+use Robo\Contract\ConfigAwareInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
 use Symfony\Component\Yaml\Yaml;
@@ -23,10 +35,12 @@ use Symfony\Component\Yaml\Yaml;
  *
  * @package Pantheon\Terminus\Commands\D9ify
  */
-class ProcessCommand extends TerminusCommand implements SiteAwareInterface
+class ProcessCommand extends TerminusCommand implements SiteAwareInterface, ConfigAwareInterface
 {
     use SiteAwareTrait;
     use ConfigAwareTrait;
+    use IO;
+    use WorkflowProcessingTrait;
 
     /**
      * @var string
@@ -211,7 +225,6 @@ class ProcessCommand extends TerminusCommand implements SiteAwareInterface
      * If destination does not exist, create the using Pantheon's
      * Terminus API. If destination doesn't exist, Create it.
      *
-     * @param \Symfony\Component\Console\Output\OutputInterface $output
      */
     protected function copyRepositoriesFromSource()
     {
@@ -229,7 +242,6 @@ class ProcessCommand extends TerminusCommand implements SiteAwareInterface
         $this->destinationDirectory->getComposerObject()->setRepositories(
             $this->sourceDirectory->getComposerObject()->getOriginal()['repositories'] ?? []
         );
-        exit();
         $this->output()->writeln([
             "*********************************************************************",
             sprintf("Source Folder: %s", $this->getSourceDirectory()->getClonePath()),
@@ -269,17 +281,19 @@ class ProcessCommand extends TerminusCommand implements SiteAwareInterface
      * those values are in the composer.json 'require' array. Your old composer
      * file will re renamed backup-*-composer.json.
      *
-     * @param \Symfony\Component\Console\Output\OutputInterface $output
      *
      * @regex
      * [REGEX](https://regex101.com/r/60GonN/1)
      *
      * Get every .info.y{a}ml file in source.
      */
-    protected function updateDestModulesAndThemesFromSource(OutputInterface $output)
+    protected function updateDestModulesAndThemesFromSource()
     {
-        $output->writeln("===> Updating Getting Modules and Themes from source.");
-        $infoFiles = $this->sourceDirectory->spelunkFilesFromRegex('/(\.info\.yml|\.info\.yaml?)/', $output);
+        $this->output()->writeln("===> Updating Getting Modules and Themes from source.");
+        $infoFiles = $this->sourceDirectory->spelunkFilesFromRegex(
+            '/(\.info\.yml|\.info\.yaml?)/',
+            $this->output
+        );
         $toMerge = [];
         $composerFile = $this->getDestinationDirectory()
             ->getComposerObject();
@@ -296,9 +310,9 @@ class ProcessCommand extends TerminusCommand implements SiteAwareInterface
                 }
             }
         }
-        $output->write(PHP_EOL);
-        $output->write(PHP_EOL);
-        $output->writeln([
+        $this->output()->write(PHP_EOL);
+        $this->output()->write(PHP_EOL);
+        $this->output()->writeln([
             "*******************************************************************************",
             "* Found new Modules & themes from the source site:                            *",
             "*******************************************************************************",
@@ -314,8 +328,6 @@ class ProcessCommand extends TerminusCommand implements SiteAwareInterface
      * Process /libraries folder if exists & Add ES Libraries to the composer
      * install payload.
      *
-     * @param \Symfony\Component\Console\Output\OutputInterface $output
-     *
      * @throws \JsonException
      *
      * @regex
@@ -324,10 +336,10 @@ class ProcessCommand extends TerminusCommand implements SiteAwareInterface
      * Get every package.json in the libraries folder.
      *
      */
-    protected function updateDestEsLibrariesFromSource(OutputInterface $output)
+    protected function updateDestEsLibrariesFromSource()
     {
-        $output->writeln("===> Updating ES /libraries from source directory");
-        $fileList = $this->sourceDirectory->spelunkFilesFromRegex('/libraries\/[0-9a-z-]*\/(package\.json$)/', $output);
+        $this->output()->writeln("===> Updating ES /libraries from source directory");
+        $fileList = $this->sourceDirectory->spelunkFilesFromRegex('/libraries\/[0-9a-z-]*\/(package\.json$)/');
         $repos = $this->sourceDirectory->getComposerObject()->getOriginal()['repositories'];
         $composerFile = $this->getDestinationDirectory()->getComposerObject();
         foreach ($fileList as $key => $file) {
@@ -338,7 +350,7 @@ class ProcessCommand extends TerminusCommand implements SiteAwareInterface
                     $package['repository'] : $package['repository']['url'];
             }
             if (empty($repoString) || is_array($repoString)) {
-                $output->writeln([
+                $this->output()->writeln([
                     "*******************************************************************************",
                     "* Skipping the file below because the package.json file does not have         *",
                     "* a 'name' or 'repository' property. Add it by hand to the composer file.     *",
@@ -386,9 +398,9 @@ class ProcessCommand extends TerminusCommand implements SiteAwareInterface
                 ])
             )
         );
-        $output->write(PHP_EOL);
-        $output->write(PHP_EOL);
-        $output->writeln([
+        $this->output()->write(PHP_EOL);
+        $this->output()->write(PHP_EOL);
+        $this->output()->writeln([
             "*******************************************************************************",
             "* Found new ESLibraries from the source site:                                 *",
             "*******************************************************************************",
@@ -401,15 +413,14 @@ class ProcessCommand extends TerminusCommand implements SiteAwareInterface
      * @description
      * Write the composer file to disk.
      *
-     * @param \Symfony\Component\Console\Output\OutputInterface $output
      *
      * @return int|mixed
      */
-    protected function writeComposer(OutputInterface $output)
+    protected function writeComposer()
     {
-        $output->writeln("===> Writing Composer file to destination");
+        $this->output()->writeln("===> Writing Composer file to destination");
 
-        $output->writeln([
+        $this->output()->writeln([
             "*********************************************************************",
             "* These changes are being applied to the destination site composer: *",
             "*********************************************************************",
@@ -417,30 +428,31 @@ class ProcessCommand extends TerminusCommand implements SiteAwareInterface
         $this->getDestinationDirectory()
             ->getComposerObject()
             ->addRequirement("drupal/core", "^9.1");
-        $output->writeln(print_r($this->destinationDirectory
+        $this->output()->writeln(print_r($this->destinationDirectory
             ->getComposerObject()
             ->getDiff(), true));
-        $output->writeln(
-            sprintf(
-                "Write these changes to the composer file at %s?",
-                $this->destinationDirectory
-                    ->getComposerObject()
-                    ->getRealPath()
-            )
-        );
+
         $this->destinationDirectory
             ->getComposerObject()
             ->backupFile();
-        $question = new ConfirmationQuestion(" Type '(y)es' to continue: ", false);
-        $helper = $this->getHelper('question');
-        if ($helper->ask($input, $output, $question)) {
+        $response = "y";
+        if ($this->input()->isInteractive()) {
+            $response = $this->ask(sprintf(
+                "Write these changes to the composer file at %s? (y/n)",
+                $this->destinationDirectory
+                    ->getComposerObject()
+                    ->getRealPath()
+            ));
+        }
+
+        if ("y" == strtolower($response)) {
             $this->getDestinationDirectory()
                 ->getComposerObject()
                 ->write();
-            $output->writeln("===> Composer File Written");
-            return true;
+            $this->output()->writeln("===> Composer File Written");
+            return 0;
         }
-        $output->writeln("===> The composer File was not changed");
+        $this->output()->writeln("===> The composer File was not changed");
         return 0;
     }
 
@@ -450,10 +462,10 @@ class ProcessCommand extends TerminusCommand implements SiteAwareInterface
      * Exception will be thrown if install fails.
      *
      */
-    protected function destinationComposerInstall(OutputInterface $output)
+    protected function destinationComposerInstall()
     {
         $this->getDestinationDirectory()
-            ->install($output);
+            ->install();
     }
 
     /**
@@ -463,7 +475,6 @@ class ProcessCommand extends TerminusCommand implements SiteAwareInterface
      * in the path. If they have THEME in the path it copies them to web/themes/custom.
      * If they have "module" in the path, it copies the folder to web/modules/custom.
      *
-     * @param \Symfony\Component\Console\Output\OutputInterface $output
      *
      * @return bool
      *
@@ -478,22 +489,22 @@ class ProcessCommand extends TerminusCommand implements SiteAwareInterface
      * | ✓ | web/modules/custom/milken_base/milken_base.info.yaml       |
      *
      */
-    protected function copyCustomCode(OutputInterface $output): bool
+    protected function copyCustomCode(): bool
     {
-        $output->writeln("===> Copying Custom Code");
+        $this->output()->writeln("===> Copying Custom Code");
 
         $failure_list = [];
 
         $infoFiles = $this
             ->sourceDirectory
-            ->spelunkFilesFromRegex('/custom\/[0-9a-z-_]*\/[0-9a-z-_]*(\.info\.yml|\.info\.yaml?)/', $output);
-        $this->getDestinationDirectory()->ensureCustomCodeFoldersExist($input, $output);
+            ->spelunkFilesFromRegex('/custom\/[0-9a-z-_]*\/[0-9a-z-_]*(\.info\.yml|\.info\.yaml?)/');
+        $this->getDestinationDirectory()->ensureCustomCodeFoldersExist();
         foreach ($infoFiles as $fileName => $fileInfo) {
             try {
                 $contents = Yaml::parse(file_get_contents($fileName));
             } catch (\Exception $exception) {
-                if ($output->isVerbose()) {
-                    $output->writeln($exception->getTraceAsString());
+                if ($this->output()->isVerbose()) {
+                    $this->output()->writeln($exception->getTraceAsString());
                 }
                 continue;
             }
@@ -522,8 +533,8 @@ class ProcessCommand extends TerminusCommand implements SiteAwareInterface
                 $sourceDir,
                 $destination
             );
-            if ($output->isVerbose()) {
-                $output->writeln($command);
+            if ($this->output()->isVerbose()) {
+                $this->output()->writeln($command);
             }
 
             exec(
@@ -543,10 +554,10 @@ class ProcessCommand extends TerminusCommand implements SiteAwareInterface
                 file_put_contents($fileName, Yaml::dump($contents, 1, 5));
             }
         }
-        $output->write(PHP_EOL);
-        $output->write(PHP_EOL);
+        $this->output()->write(PHP_EOL);
+        $this->output()->write(PHP_EOL);
         $failures = count($failure_list);
-        $output->writeln(sprintf("Copy operations are complete with %d errors.", $failures));
+        $this->output()->writeln(sprintf("Copy operations are complete with %d errors.", $failures));
         if ($failures) {
             $toWrite = [
                     "*******************************************************************************",
@@ -558,12 +569,12 @@ class ProcessCommand extends TerminusCommand implements SiteAwareInterface
                     "* with the --verbose switch.                                                  *",
                     "*******************************************************************************",
                 ] + array_keys($failure_list);
-            $output->writeln($toWrite);
-            if ($output->isVerbose()) {
-                $output->write(print_r($failure_list, true));
+            $this->output()->writeln($toWrite);
+            if ($this->output()->isVerbose()) {
+                $this->output()->write(print_r($failure_list, true));
             }
         }
-        $output->writeln("===> Done Copying Custom Code");
+        $this->output()->writeln("===> Done Copying Custom Code");
 
         return true;
     }
@@ -573,25 +584,27 @@ class ProcessCommand extends TerminusCommand implements SiteAwareInterface
      * @description
      * Write known values to the pantheon.yml file.
      *
-     * @param \Symfony\Component\Console\Output\OutputInterface $output
      *
      * @extra
      * [REGEX](https://regex101.com/r/vWIStG/1)
      *
      *  Try to find the config directory based on the system.site.yml
      */
-    protected function copyConfigFiles(OutputInterface $output)
+    protected function copyConfigFiles()
     {
-        $output->writeln("===> Copying Config Files");
+        $this->output()->writeln("===> Copying Config Files");
 
         $configFiles = $this->getSourceDirectory()
-            ->spelunkFilesFromRegex('/[!^core]\/(system\.site\.yml$)/', $output);
+            ->spelunkFilesFromRegex(
+                '/[!^core]\/(system\.site\.yml$)/',
+                $this->output()
+            );
         $configDirectory = @dirname(
-            reset($configFiles)
+            (string) reset($configFiles)
         ) ?? null;
 
         if ($configDirectory === null) {
-            $output->writeln([
+            $this->output()->writeln([
                 "A config directory was not found for this site. ",
                 "Expectation was that it was in `{site root directory}/config`",
             ]);
@@ -615,9 +628,9 @@ class ProcessCommand extends TerminusCommand implements SiteAwareInterface
             $status
         );
         if ($status !== 0) {
-            $output->writeln($result);
+            $this->output()->writeln($result);
         }
-        $output->writeln([
+        $this->output()->writeln([
             PHP_EOL,
             "===> Done Copying Config Files",
         ]);
@@ -636,35 +649,11 @@ class ProcessCommand extends TerminusCommand implements SiteAwareInterface
      *
      *
      */
-    protected function downloadDatabase(OutputInterface $output)
+    protected function downloadDatabase()
     {
-        $output->writeln("===> Downloading Database");
-        $root = dirname(\Composer\Factory::getComposerFile()) . "/local-copies";
-        exec(
-            sprintf(
-                "terminus backup:create %s.live --element=database --yes",
-                $this->getSourceDirectory()->getSiteInfo()->getId()
-            ),
-            $result,
-            $status
-        );
-        if ($status !== 0) {
-            $output->writeln($result);
-        }
-
-        exec(
-            sprintf(
-                "terminus backup:get %s.live --element=database --yes --to='%s'",
-                $this->getSourceDirectory()->getSiteInfo()->getId(),
-                $root . DIRECTORY_SEPARATOR .
-                ($this->getSourceDirectory()->getSiteInfo()->getName() ?? "backup") . ".tgz"
-            ),
-            $result,
-            $status
-        );
-        if ($status !== 0) {
-            $output->writeln($result);
-        }
+        $this->getContainer()->add(DownloadLiveDbBackupCommand::class);
+        $downloadDbCommand = $this->getContainer()->get(DownloadLiveDbBackupCommand::class);
+        $downloadDbCommand->downloadLiveDbBackup($this->getSourceDirectory()->getSite());
     }
 
     /**
@@ -678,34 +667,10 @@ class ProcessCommand extends TerminusCommand implements SiteAwareInterface
      * | This is going to have a tendency to be faster with site archives > 1gb      |
      *
      */
-    protected function downloadSourceSiteFilesDirectory(OutputInterface $output)
+    protected function downloadSourceSiteFilesDirectory()
     {
-        $output->writeln("===> Downloading Files Directory");
-        $root = dirname(\Composer\Factory::getComposerFile()) . "/local-copies";
-        exec(
-            sprintf(
-                "terminus backup:create %s.live --element=files --yes",
-                $this->getSourceDirectory()->getSiteInfo()->getId()
-            ),
-            $result,
-            $status
-        );
-        if ($status !== 0) {
-            $output->writeln($result);
-        }
-
-        exec(
-            sprintf(
-                "terminus backup:get %s.live --element=files --yes --to='%s'",
-                $this->getSourceDirectory()->getSiteInfo()->getId(),
-                $root . DIRECTORY_SEPARATOR .
-                ($this->getSourceDirectory()->getSiteInfo()->getName() ?? "backup") . "-files.tgz"
-            ),
-            $result,
-            $status
-        );
-        if ($status !== 0) {
-            $output->writeln($result);
-        }
+        $this->getContainer()->add(DownloadLiveFilesBackupCommand::class);
+        $downloadFilesCommand = $this->getContainer()->get(DownloadLiveFilesBackupCommand::class);
+        $downloadFilesCommand->downloadLiveFilesBackup($this->getSourceDirectory()->getSite());
     }
 }

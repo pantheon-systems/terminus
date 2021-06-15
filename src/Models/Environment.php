@@ -389,7 +389,7 @@ class Environment extends TerminusModel implements ContainerAwareInterface, Site
     /**
      * @return Backups
      */
-    public function getBackups()
+    public function getBackups() : Backups
     {
         if (empty($this->backups)) {
             $nickname = uniqid(__FUNCTION__ . "-");

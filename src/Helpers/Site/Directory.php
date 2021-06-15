@@ -4,6 +4,7 @@ namespace Pantheon\Terminus\Helpers\Site;
 
 use League\Container\ContainerAwareInterface;
 use League\Container\ContainerAwareTrait;
+use Pantheon\Terminus\Commands\Local\CloneCommand;
 use Pantheon\Terminus\Exceptions\TerminusException;
 use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
 use Pantheon\Terminus\Helpers\Composer\ComposerFile;
@@ -13,6 +14,8 @@ use Pantheon\Terminus\Helpers\Traits\DefaultClonePathTrait;
 use Pantheon\Terminus\Models\Site;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareTrait;
 use Robo\Common\IO;
 use Robo\Contract\IOAwareInterface;
 use Symfony\Component\Console\Input\InputInterface;
@@ -23,7 +26,7 @@ use Symfony\Component\Console\Output\OutputInterface;
  *
  * @package D9ify\Site
  */
-class Directory implements ContainerAwareInterface, IOAwareInterface, SiteAwareInterface
+class Directory implements ContainerAwareInterface, IOAwareInterface, SiteAwareInterface, LoggerAwareInterface
 {
 
     use CommandExecutorTrait;
@@ -31,6 +34,7 @@ class Directory implements ContainerAwareInterface, IOAwareInterface, SiteAwareI
     use ContainerAwareTrait;
     use IO;
     use SiteAwareTrait;
+    use LoggerAwareTrait;
 
     /**
      * @var
@@ -38,9 +42,9 @@ class Directory implements ContainerAwareInterface, IOAwareInterface, SiteAwareI
     protected $site;
 
     /**
-     * @var \SplFileInfo
+     * @var string
      */
-    protected $clonePath;
+    protected string $clonePath;
 
     /**
      * @var ComposerFile
@@ -91,15 +95,14 @@ class Directory implements ContainerAwareInterface, IOAwareInterface, SiteAwareI
                 throw new \Exception("Site does not exist and cannot be created.");
             }
         }
-        $this->clonePath = new \SplFileInfo(
-            $this->getDefaultClonePathBase() .
-            DIRECTORY_SEPARATOR . $this->getSource()->getName()
+        $this->getContainer()->add(CloneCommand::class);
+        $cloneCommand = $this->getContainer()->get(CloneCommand::class);
+        $clonePath = $cloneCommand->clone($this->getSource()->getName());
+        $this->logger->info("Clone Path:" . $clonePath);
+        $this->setClonePath($clonePath);
+        $this->execute(
+            \sprintf("rm -Rf %s/vendor", $this->getClonePath())
         );
-        if (!$this->clonePath->isDir()) {
-            // -oStrictHostKeyChecking=no
-            $this->getSource()->cloneLocalCopy();
-        }
-
         $this->setComposerFile();
     }
 
@@ -134,12 +137,12 @@ class Directory implements ContainerAwareInterface, IOAwareInterface, SiteAwareI
      *
      * @return \SplFileInfo[]
      */
-    public function spelunkFilesFromRegex($regex, OutputInterface $output): array
+    public function spelunkFilesFromRegex($regex): array
     {
-        $output->writeln(sprintf("Searching files for regex: %s", $regex));
+        $this->output()->writeln(sprintf("Searching files for regex: %s", $regex));
         $allFiles = iterator_to_array(
             new \RecursiveIteratorIterator(
-                new \RecursiveDirectoryIterator($this->clonePath)
+                new \RecursiveDirectoryIterator($this->getClonePath())
             )
         );
         $max = count($allFiles);
@@ -166,7 +169,7 @@ class Directory implements ContainerAwareInterface, IOAwareInterface, SiteAwareI
      * @param $done
      * @param $total
      */
-    protected function progressBar($done, $total, OutputInterface $output)
+    protected function progressBar($done, $total)
     {
         $perc = floor(($done / $total) * 100);
         $left = 100 - $perc;
@@ -175,14 +178,14 @@ class Directory implements ContainerAwareInterface, IOAwareInterface, SiteAwareI
             "",
             ""
         );
-        $output->write($write);
+        $this->output->write($write);
     }
 
     /**
-     * @return int
+     * @return array
      * @throws \Exception
      */
-    public function install()
+    public function install(): array
     {
         is_file($this->clonePath . "/composer.lock") ?
             unlink($this->clonePath . "/composer.lock") : [];
@@ -190,7 +193,7 @@ class Directory implements ContainerAwareInterface, IOAwareInterface, SiteAwareI
             $this->clonePath . "/vendor",
             $this->clonePath
         ]);
-        if ($this->execResult[0] !== 0) {
+        if ($this->lastStatus !== 0) {
             throw new ComposerInstallException($result, $this->output());
         }
         return $result;
@@ -199,28 +202,27 @@ class Directory implements ContainerAwareInterface, IOAwareInterface, SiteAwareI
     /**
      * @return \SplFileInfo
      */
-    public function getClonePath(): \SplFileInfo
+    public function getClonePath(): ?string
     {
         return $this->clonePath;
     }
 
     /**
-     * @param \SplFileInfo $clonePath
+     * @param string $clonePath
      */
-    public function setClonePath(\SplFileInfo $clonePath): void
+    public function setClonePath(string $clonePath): void
     {
         $this->clonePath = $clonePath;
     }
 
     /**
-     * @param \Symfony\Component\Console\Input\InputInterface $input
-     * @param \Symfony\Component\Console\Output\OutputInterface $output
+     * Add "custom" code folders in modules and themes.
      */
-    public function ensureCustomCodeFoldersExist(InputInterface $input, OutputInterface $output)
+    public function ensureCustomCodeFoldersExist()
     {
-        $output->write(PHP_EOL);
+        $this->output->write(PHP_EOL);
         $custom = $this->getClonePath() . "/web/themes/custom";
-        $output->writeln(sprintf('Ensure custom theme folder exists: %s', $custom));
+        $this->output->writeln(sprintf('Ensure custom theme folder exists: %s', $custom));
         if (!file_exists($custom)) {
             mkdir(
                 $custom,
@@ -229,7 +231,7 @@ class Directory implements ContainerAwareInterface, IOAwareInterface, SiteAwareI
             );
         }
         $custom = $this->getClonePath() . "/web/modules/custom";
-        $output->writeln(
+        $this->output->writeln(
             sprintf('Ensure custom modules folder exists: %s', $custom)
         );
         if (!file_exists($custom)) {
@@ -254,7 +256,7 @@ class Directory implements ContainerAwareInterface, IOAwareInterface, SiteAwareI
      * @param \Symfony\Component\Console\Input\InputInterface $input
      * @param \Symfony\Component\Console\Output\OutputInterface $output
      */
-    public function ensurePantheonYamlValues(InputInterface $input, OutputInterface $output)
+    public function ensurePantheonYamlValues(InputInterface $input)
     {
         $pantheonYaml = [];
         $yamlFile = $this->clonePath . "/pantheon.yaml";
@@ -269,7 +271,7 @@ class Directory implements ContainerAwareInterface, IOAwareInterface, SiteAwareI
            "/sites/default/files/private/",
             "/sites/default/files/config/"
         ];
-        $output->writeln([
+        $this->output->writeln([
             "Updating Pantheon.yaml file in destination directory:",
             print_r($pantheonYaml, true)
         ]);

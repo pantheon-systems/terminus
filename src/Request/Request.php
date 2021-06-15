@@ -81,13 +81,17 @@ class Request implements
                 $target = $target . DIRECTORY_SEPARATOR . strtok(basename($url), '?');
             }
         }
+        $this->logger->notice("Downloading {url} to {target}", [
+            "url" => strtok(basename($url), '?'),
+            "target" => $target,
+        ]);
 
         if ($this->getContainer()->get(LocalMachineHelper::class)->getFilesystem()->exists($target)) {
             throw new TerminusException('Target file {target} already exists.', compact('target'));
         }
 
         $parsed_url = parse_url($url);
-        $this->getClient($parsed_url['host'])->request('GET', $url, ['sink' => $target,]);
+        $this->getClient($parsed_url['host'])->request('GET', $url, ['sink' => $target]);
     }
 
     /**
@@ -139,7 +143,7 @@ class Request implements
             $config
         ) {
             $retry_max = $config->get('http_max_retries', 5);
-            $logger->debug(@\Kint::dump(get_defined_vars()));
+            //$logger->debug(@\Kint::dump(get_defined_vars()));
             if ($e instanceof ClientException or $e instanceof TooManyRedirectsException) {
                 throw $e;
             }
@@ -148,11 +152,13 @@ class Request implements
                 case 200:
                 case 201:
                 case 202:
-                case 500:
                 case 400:
-                case 405:
+                case 401:
+                case 402:
                 case 403:
                 case 404:
+                case 405:
+                case 500:
                     return false;
 
                 default:

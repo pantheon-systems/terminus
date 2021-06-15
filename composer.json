@@ -21,6 +21,7 @@
     "consolidation/filter-via-dot-access-data": "^1.0",
     "consolidation/output-formatters": "^4",
     "consolidation/robo": "^3",
+    "czproject/git-php": "^4.0",
     "guzzlehttp/guzzle": "^6.2",
     "justinrainbow/json-schema": "^5.2",
     "rogervila/array-diff-multidimensional": "^2.0",
@@ -69,7 +70,7 @@
       "SHELL_INTERACTIVE=true behat --colors --config tests/config/behat.yml --suite=default"
     ],
     "cbf": [
-      "phpcbf --standard=tests/config/linting_ruleset.xml tests/unit_tests/* bin/t3 src/*"
+      "phpcbf --standard=tests/config/linting_ruleset.xml bin/t3 src/*"
     ],
     "clover": [
       "phpunit -c tests/config/phpunit.xml.dist --coverage-clover tests/logs/clover.xml"
@@ -78,7 +79,7 @@
       "php vendor/bin/php-coveralls -v -c tests/config/coveralls.yml"
     ],
     "cs": [
-      "phpcs --standard=tests/config/linting_ruleset.xml tests/unit_tests bin/t3 src"
+      "phpcs --standard=tests/config/linting_ruleset.xml bin/t3 src"
     ],
     "docs": [
       "php scripts/make-docs.php"
@@ -108,6 +109,11 @@
       "@cbf",
       "@lint",
       "composer validate --strict"
+    ],
+    "dev:new-command": [
+      "rm -Rf ~/.terminus/cache/commands",
+      "@update-class-lists",
+      "bin/t3 self:clear-cache"
     ]
   },
   "config": {
