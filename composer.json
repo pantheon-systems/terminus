@@ -66,7 +66,8 @@
       "chmod +x t3"
     ],
     "phar:install": [
-      "rm -rf /usr/local/bin/t3",
+      "touch /usr/local/bin/t3",
+      "rm -rf /usr/local/bin/t3 || true",
       "ln -s `realpath ./t3` /usr/local/bin/t3"
     ],
     "phar:update": [
@@ -83,7 +84,7 @@
       "@cs"
     ],
     "code:new-command": [
-      "rm -Rf ~/.terminus/cache/commands",
+      "rm -Rf ~/.terminus/cache/commands || true",
       "@update-class-lists",
       "bin/t3 self:clear-cache"
     ],
