@@ -64,7 +64,7 @@ chmod(TERMINUE_BIN_FILE, 0700);
 if ($token) {
     exec(
         sprintf(
-            "%s auth:login --token=%s",
+            "%s auth:login --machine-token=%s",
             TERMINUE_BIN_FILE,
             $token
         )
