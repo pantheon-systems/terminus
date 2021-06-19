@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "241219f63c73993512e1873032d6b583",
+    "content-hash": "49d4ca19fd3d52ac3c7b13961b327d11",
     "packages": [
         {
             "name": "composer/ca-bundle",
@@ -6842,6 +6842,63 @@
                 }
             ],
             "time": "2020-07-12T23:59:07+00:00"
+        },
+        {
+            "name": "wdalmut/php-deb-packager",
+            "version": "0.0.14",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/wdalmut/php-deb-packager.git",
+                "reference": "22b2fcf74207220c65ae57125548dfb4c55ac646"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/wdalmut/php-deb-packager/zipball/22b2fcf74207220c65ae57125548dfb4c55ac646",
+                "reference": "22b2fcf74207220c65ae57125548dfb4c55ac646",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.3"
+            },
+            "require-dev": {
+                "mikey179/vfsstream": "1.4.*",
+                "phpunit/phpunit": "~4"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "wdm": [
+                        "src/",
+                        "tests/"
+                    ]
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Walter Dal Mut",
+                    "email": "walter.dalmut@gmail.com",
+                    "homepage": "http://walterdalmut.com",
+                    "role": "Developer"
+                }
+            ],
+            "description": "A simple debian packager for PHP applications",
+            "keywords": [
+                "deb",
+                "debian",
+                "packager",
+                "php-deb",
+                "ubuntu"
+            ],
+            "support": {
+                "email": "walter.dalmut@gmail.com",
+                "issues": "https://github.com/wdalmut/php-deb-packager/issues",
+                "source": "https://github.com/wdalmut/php-deb-packager/tree/master"
+            },
+            "time": "2017-07-18T10:07:15+00:00"
         },
         {
             "name": "webmozart/assert",

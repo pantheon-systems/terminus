@@ -45,7 +45,8 @@
     "phpunit/phpcov": "^8.2",
     "phpunit/phpunit": "^9",
     "psy/psysh": "^0.10.8",
-    "squizlabs/php_codesniffer": "^3.5"
+    "squizlabs/php_codesniffer": "^3.5",
+    "wdalmut/php-deb-packager": "^0.0.14"
   },
   "autoload": {
     "psr-4": {
