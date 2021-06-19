@@ -57,7 +57,7 @@ if (empty($token)) {
 }
 
 
-define("TERMINUE_BIN_FILE", "./t3");
+define("TERMINUE_BIN_FILE", "php ./t3");
 
 chmod(TERMINUE_BIN_FILE, 0700);
 
