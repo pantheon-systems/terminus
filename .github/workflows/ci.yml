@@ -80,6 +80,8 @@ jobs:
         run: composer install
       - name: permissions
         run: chmod +x ./t3
+      - name: Setup tmate session
+        uses: mxschmitt/action-tmate@v3
       - name: Functional Tests
         run: composer functional:short
         env:
