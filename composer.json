@@ -73,9 +73,8 @@
       "chmod +x t3"
     ],
     "phar:install": [
-      "touch /usr/local/bin/t3",
       "rm -rf /usr/local/bin/t3 || true",
-      "ln -s `realpath ./t3` /usr/local/bin/t3"
+      "mv ./t3 /usr/local/bin/t3"
     ],
     "phar:update": [
       "@phar:build",
