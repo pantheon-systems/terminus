@@ -515,6 +515,4 @@ class ComposerFile extends JsonFile
     {
         $this->type = $type;
     }
-
-
 }

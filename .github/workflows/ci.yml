@@ -116,5 +116,7 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           files: t3
+          # Everything is a prerelease until we make it a release
+          prerelease: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
