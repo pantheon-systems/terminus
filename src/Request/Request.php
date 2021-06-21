@@ -148,7 +148,7 @@ class Request implements
                 throw $e;
             }
 
-            switch ($response->getStatusCode()) {
+            switch ($response->getStatusCode() ?? 500) {
                 case 200:
                 case 201:
                 case 202:
