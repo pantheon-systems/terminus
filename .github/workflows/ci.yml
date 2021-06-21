@@ -104,10 +104,14 @@ jobs:
     needs: [ functional ]
     if: ${{ startsWith(github.ref, 'refs/tags/')  && github.repository_owner == 'pantheon-systems' }}
     steps:
-      - name: Download terminus.phar as artifact
+      - name: Download repo content from artifact
         uses: actions/download-artifact@v2
         with:
-          name: t3-phar
+          name: full-workspace
+    #  - name: Long testing scheme
+    #    run: composer functional:long
+    #  - name: Build Deb package
+    #    run: composer build:packages
       - name: Release
         uses: softprops/action-gh-release@v1
         with:

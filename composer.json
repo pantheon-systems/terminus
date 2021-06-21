@@ -83,7 +83,7 @@
     ],
     "build:packages": [
       "echo 'Building Debian/Ubuntu package'",
-      "`php scrips/BuildDebianPackage.php`",
+      "scripts/BuildDebianPackage.php",
       "echo 'Building Mac Homebrew bottle'",
       "echo 'TODO: build this receipt/bottle'"
     ],
