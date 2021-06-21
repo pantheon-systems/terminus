@@ -18,7 +18,7 @@ class PluginDiscovery implements LoggerAwareInterface
     /**
      * List of all Terminus plugins that have been rolled into Terminus core.
      */
-    const BLACKLIST = [
+    const DENYLIST = [
         'pantheon-systems/terminus-aliases-plugin'
     ];
 
@@ -45,7 +45,7 @@ class PluginDiscovery implements LoggerAwareInterface
     public function discover()
     {
         $out = [];
-        try {
+        try {y
             $di = new \DirectoryIterator($this->directory_path);
         } catch (\Exception $e) {
             return $out;
@@ -56,7 +56,7 @@ class PluginDiscovery implements LoggerAwareInterface
             if ($dir->isDir() && !$dir->isDot() && $dir->isReadable()) {
                 try {
                     $plugin = new PluginInfo($dir->getPathname());
-                    if (!in_array($plugin->getName(), self::BLACKLIST)) {
+                    if (!in_array($plugin->getName(), self::DENYLIST)) {
                         $out[] = $plugin;
                     }
                 } catch (TerminusException $e) {
