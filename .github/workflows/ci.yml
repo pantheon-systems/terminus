@@ -51,7 +51,7 @@ jobs:
     name: PHP ${{ matrix.php-versions }} on ${{ matrix.operating-system }}
     strategy:
       matrix:
-        operating-system: ['ubuntu-latest', 'macos-latest']
+        operating-system: ['macos-latest']
         php-versions: ['7.4', '8.0']
     env:
       TZ: "/usr/share/zoneinfo/America/Los_Angeles"
