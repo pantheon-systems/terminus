@@ -78,6 +78,8 @@ jobs:
           coverage: pcov
       - name: Install
         run: composer install
+      - name: Install
+        run: composer phar:build
       - name: permissions
         run: chmod +x ./t3
       - name: Functional Tests

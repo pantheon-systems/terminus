@@ -81,6 +81,12 @@
       "@phar:build",
       "@phar:install"
     ],
+    "build:packages": [
+      "echo 'Building Debian/Ubuntu package'",
+      "`php scrips/BuildDebianPackage.php`",
+      "echo 'Building Mac Homebrew bottle'",
+      "echo 'TODO: build this receipt/bottle'"
+    ],
     "update-class-lists": [
       "\\Terminus\\UpdateClassLists::update"
     ],
