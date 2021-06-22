@@ -45,7 +45,7 @@ class SiteCommandsTest extends TestCase
 
         $this->assertEquals(
             $org,
-            $site['organization']
+            $site['memberships']
         );
     }
 
