@@ -1,6 +1,6 @@
 <?php
 
-namespace Pantheon\Terminus\Commands\Help;
+namespace Pantheon\Terminus\Commands\Doc;
 
 use Behat\Testwork\Output\Printer\Factory\FilesystemOutputFactory;
 use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
@@ -46,8 +46,7 @@ class DocCommand extends TerminusCommand implements SiteAwareInterface
         $context = $this->getConfig()->exportAll()['process'] ?? [];
         $loader = new FilesystemLoader($context['root'] . DIRECTORY_SEPARATOR . "templates");
         $twig = new Environment($loader, [
-            'cache' => false ,
-            'is_safe' => ['html'],
+            'cache' => false
         ]);
         $twig->getExtension(\Twig\Extension\EscaperExtension::class)
             ->setEscaper('raw', 'utf8_decode');

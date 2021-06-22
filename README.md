@@ -50,13 +50,13 @@ These packages will install when you install Terminus.
 
 ### Mac OS:
 
-`> brew tap `
+`> brew tap *** TBD ***`
 
-`> brew install `
+`> brew install *** TBD ***`
 
 ### Ubuntu / WinWSL+Ubuntu:
 
-``
+`*** TBD ***`
 
 
 

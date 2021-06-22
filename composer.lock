@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "d71e75db71c74f325e1026560b304421",
+    "content-hash": "311bad817c73305408bf66bdd328fed1",
     "packages": [
         {
             "name": "composer/ca-bundle",
@@ -1083,67 +1083,6 @@
                 }
             ],
             "time": "2021-06-15T09:39:16+00:00"
-        },
-        {
-            "name": "dan-da/strictmode-php",
-            "version": "v1.0.1",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/dan-da/strictmode-php.git",
-                "reference": "c58bcf128d658ecbaa48a619f00e3082279a032d"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/dan-da/strictmode-php/zipball/c58bcf128d658ecbaa48a619f00e3082279a032d",
-                "reference": "c58bcf128d658ecbaa48a619f00e3082279a032d",
-                "shasum": ""
-            },
-            "suggest": {
-                "dan-da/tester-php": "For running the test cases"
-            },
-            "type": "library",
-            "autoload": {
-                "classmap": [
-                    "strictmode.php"
-                ]
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "support": {
-                "issues": "https://github.com/dan-da/strictmode-php/issues",
-                "source": "https://github.com/dan-da/strictmode-php/tree/v1.0.1"
-            },
-            "time": "2018-07-18T08:39:26+00:00"
-        },
-        {
-            "name": "dan-da/texttable-php",
-            "version": "v1.0.4",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/dan-da/texttable-php.git",
-                "reference": "801c1e7a76caf2435234bff9191973320ea5375d"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/dan-da/texttable-php/zipball/801c1e7a76caf2435234bff9191973320ea5375d",
-                "reference": "801c1e7a76caf2435234bff9191973320ea5375d",
-                "shasum": ""
-            },
-            "require": {
-                "dan-da/strictmode-php": "^1.0"
-            },
-            "type": "library",
-            "autoload": {
-                "classmap": [
-                    "texttable.class.php",
-                    "texttable_markdown.class.php"
-                ]
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "support": {
-                "issues": "https://github.com/dan-da/texttable-php/issues",
-                "source": "https://github.com/dan-da/texttable-php/tree/master"
-            },
-            "time": "2019-10-21T21:18:47+00:00"
         },
         {
             "name": "dflydev/dot-access-data",
