@@ -17,52 +17,35 @@ class SiteCommandsTest extends TestCase
 
     /**
      * @test
-     * @covers \Pantheon\Terminus\Commands\Site\InfoCommand
+     * @covers \Pantheon\Terminus\Commands\Site\ListCommand
      * @group site
      * @group short
      */
     public function testSiteInfoCommand()
     {
-        $sitename = getenv('TERMINUS_SITE');
-        $siteInfo = $this->terminusJsonResponse(
-            "site:info {$sitename}"
+        $org = getenv("TERMINUS_ORG");
+        $siteList = $this->terminusJsonResponse(
+            "site:list --org=" . $org
         );
         $this->assertIsArray(
-            $siteInfo,
+            $siteList,
             "Response from site:info should be an array of values"
         );
+        $this->assertGreaterThan(
+            0,
+            count($siteList),
+            "count of sites should be a non-zero number"
+        );
+        $site = array_shift($siteList);
         $this->assertArrayHasKey(
             'id',
-            $siteInfo,
+            $site,
             "Response from site should contain an ID property"
         );
 
         $this->assertEquals(
-            $this->org,
-            $siteInfo['organization']
-        );
-    }
-
-    /**
-     * Test Site List command
-     *
-     * @test
-     * @covers \Pantheon\Terminus\Commands\Site\ListCommand
-     * @throws \JsonException
-     * @group site
-     * @group short
-     */
-    public function testSiteListCommand()
-    {
-        $list = $this->terminusJsonResponse("site:list --org=" . getenv('TERMINUS_ORG'));
-        $this->assertIsArray(
-            $list,
-            "Response from Site List should be an array"
-        );
-        $this->assertGreaterThan(
-            0,
-            count($list),
-            "count of sites should be a non-zero number"
+            $org,
+            $site['organization']
         );
     }
 
@@ -120,25 +103,37 @@ class SiteCommandsTest extends TestCase
      * @test
      * @covers \Pantheon\Terminus\Commands\Site\CreateCommand
      * @covers \Pantheon\Terminus\Commands\Site\DeleteCommand
+     * @covers \Pantheon\Terminus\Commands\Site\InfoCommand
      * @group site
      * @group long
      */
-    public function testSiteCreateCommand()
+    public function testSiteCreateInfoDeleteCommand()
     {
-        // TODO:
-        $this->fail("To be written");
+        $sitename = \uniqid(__METHOD__ . "-");
+        $org = getenv('TERMINUS_SITE');
+
+        $this->terminus(
+            vprintf(
+                'site:create %s %s, drupal9 --org=%s',
+                [ $sitename, $sitename, $org ]
+            ),
+            null
+        );
+        sleep(10);
+        $info = $this->terminusJsonResponse(
+            vprintf(
+                "site:info %s",
+                [$sitename]
+            )
+        );
+        $this->assertEquals($org, $info['organization']);
+        $this->terminus(
+            sprintf(
+                'site:delete %d',
+                [$sitename]
+            ),
+            null
+        );
     }
 
-    /**
-     * Test Site:delete command.
-     *
-     * @test
-     * @group site
-     * @group long
-     */
-    public function testSiteDeleteCommand()
-    {
-        //TODO:
-        $this->fail("To be written");
-    }
 }

@@ -103,9 +103,14 @@
     "code:setup-precommit": [
       "bash scripts/setup-precommit.sh"
     ],
-    "test": [
+    "test:short": [
       "@phar:build",
       "@functional:short",
+      "@coverage"
+    ],
+    "test:long": [
+      "@phar:build",
+      "@functional:long",
       "@coverage"
     ],
     "coverage": [
@@ -121,7 +126,7 @@
       "XDEBUG_MODE=coverage phpunit --colors=always -c ./phpunit.xml --debug --group=short --do-not-cache-result"
     ],
     "functional:long": [
-      "XDEBUG_MODE=coverage phpunit --colors=always -c ./phpunit.xml --debug --group=long --do-not-cache-result"
+      "XDEBUG_MODE=coverage phpunit --colors=always -c ./phpunit.xml --debug --do-not-cache-result"
     ],
     "post-install-cmd": [
       "Tooly\\ScriptHandler::installPharTools"

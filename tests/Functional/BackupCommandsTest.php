@@ -34,7 +34,7 @@ class BackupCommandsTest extends TestCase
     public function testCreateListInfoGetCommand()
     {
         $siteName = getenv('TERMINUS_SITE');
-        $this->terminus("backup:create {$siteName}.live --element=database");
+        $this->terminus("backup:create {$siteName}.live --element=database", null);
         $backupList = $this->terminusJsonResponse("backup:list {$siteName}.live --element=database");
         $this->assertIsArray($backupList, "Backup list response should be an array");
         $backup = array_shift($backupList);

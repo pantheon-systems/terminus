@@ -14,7 +14,7 @@ trait TerminusTestTrait {
      *
      * @param string $command The command to run
      */
-    protected static function call_terminus($command)
+    protected static function call_terminus(string $command)
     {
         $project_dir = dirname(dirname(__DIR__));
         exec(
@@ -30,14 +30,17 @@ trait TerminusTestTrait {
     /**
      * Run a terminus command.
      *
-     * @param string $command The command to run
-     * @param integer $status The required status code for the
-     *   provided command
+     * @param string $command
+     *   The command to run.
+     * @param integer $status
+     *   Status code. Null = no status check
      */
-    protected function terminus($command, $expected_status = 0): ?string
+    protected function terminus(string $command, ?int $expected_status = 0): ?string
     {
         [$output, $status] = static::call_terminus($command);
-        $this->assertEquals($expected_status, $status, $output);
+        if ($expected_status !== null) {
+            $this->assertEquals($expected_status, $status, $output);
+        }
         if (is_array($output)) {
             join("", $output);
         }
@@ -51,7 +54,7 @@ trait TerminusTestTrait {
      * @return array|null
      * @throws \JsonException
      */
-    protected function terminusJsonResponse($command, $expected_status = 0): array
+    protected function terminusJsonResponse($command, ?int $expected_status = 0): array
     {
         $response = $this->terminus(
             $command . " --format=json",

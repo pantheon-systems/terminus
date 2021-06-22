@@ -108,10 +108,10 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: full-workspace
-    #  - name: Long testing scheme
-    #    run: composer functional:long
-    #  - name: Build Deb package
-    #    run: composer build:packages
+      - name: Long testing scheme
+        run: composer functional:long
+      #- name: Build Deb package
+      #  run: composer build:packages
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
