@@ -17,7 +17,7 @@ class SetCommand extends TerminusCommand implements SiteAwareInterface
     use WorkflowProcessingTrait;
 
     /**
-     * Upgrades or downgrades a site's service level.
+     * Upgrades or downgrades a site service level.
      *
      * @deprecated 2.0.0 This will be removed in the future. Please use plan:set and plan:list instead.
      *

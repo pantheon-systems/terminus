@@ -14,7 +14,7 @@ class RoleCommand extends TerminusCommand
     use WorkflowProcessingTrait;
 
     /**
-     * Changes a user's role within an organization.
+     * Changes a user role within an organization.
      *
      * @authorize
      *

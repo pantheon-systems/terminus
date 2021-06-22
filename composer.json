@@ -23,6 +23,7 @@
     "consolidation/robo": "^3",
     "consolidation/site-alias": "^3.1",
     "czproject/git-php": "^4.0",
+    "dan-da/texttable-php": "^1.0",
     "guzzlehttp/guzzle": "^6.2",
     "justinrainbow/json-schema": "^5.2",
     "monolog/monolog": "^2.2",
@@ -31,7 +32,8 @@
     "symfony/finder": "^5",
     "symfony/process": "^5",
     "symfony/yaml": "^5",
-    "tm/tooly-composer-script": "^1.4"
+    "tm/tooly-composer-script": "^1.4",
+    "twig/twig": "^3.3"
   },
   "require-dev": {
     "ext-pcov": "*",
@@ -137,7 +139,9 @@
     "pre-commit": [
       "@code:fix",
       "@code:lint",
-      "composer validate --strict"
+      "composer validate --strict",
+      "composer doc:generate --file=README.md",
+      "git add README.md"
     ]
   },
   "config": {

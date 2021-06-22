@@ -17,7 +17,7 @@ class SetCommand extends TerminusCommand implements SiteAwareInterface
     use WorkflowProcessingTrait;
 
     /**
-     * Changes a site's plan.
+     * Changes a site plan.
      *
      * @authorize
      *

@@ -38,7 +38,7 @@ class DownloadLiveFilesBackupCommand extends TerminusCommand implements
     use LocalCopiesTrait;
 
     /**
-     *  Create new backup of your live site's Files folder and download to $HOME/pantheon-local-copies/{Site}/db
+     *  Create new backup of your live site FILES folder and download to $HOME/pantheon-local-copies/{Site}/db
      *
      * @authorize
      *

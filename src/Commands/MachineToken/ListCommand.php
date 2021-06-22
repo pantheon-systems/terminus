@@ -15,7 +15,7 @@ class ListCommand extends TerminusCommand
     use StructuredListTrait;
 
     /**
-     * Lists the currently logged-in user's machine tokens.
+     * Lists the currently logged-in user machine tokens.
      *
      * @authorize
      * @filter-output

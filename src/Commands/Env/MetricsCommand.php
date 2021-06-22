@@ -30,7 +30,7 @@ class MetricsCommand extends TerminusCommand implements SiteAwareInterface
 
     /**
      * Displays the pages served and unique visit metrics for the specified
-     * site's environment. The most recent data up to the current day is returned.
+     * site environment. The most recent data up to the current day is returned.
      *
      * @authorize
      *

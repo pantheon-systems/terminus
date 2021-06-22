@@ -50,10 +50,25 @@ These packages will install when you install Terminus.
 
 ### Mac OS:
 
-`> brew tap {INJECT_BREW_TAP}`
+`> brew tap {{ brew_tap }}`
 
-`> brew install {INJECT_BREW_PACKAGE}`
+`> brew install {{ brew_package }}`
 
 ### Ubuntu / WinWSL+Ubuntu:
 
-`{INJECT_DEBIAN_PACKAGE_INSTALL}`
+`{{ debian_package_install | raw }}`
+
+
+
+| {{ "%-30s" | format("Command") }} | {{ "%-50s" | format("Description") }} |
+| {{ "%'-30s" | format("") }} | {{ "%'-50s" | format("") }} |
+{% for command in commands %}
+{% set desc = command.description %}
+{% set command = command.command %}
+{% for row in desc %}
+| {{ "%-30s" | format(command) }} | {{ "%-50s" | format(row | raw) }} |
+{% set command = "" %}
+{% endfor %}
+{% endfor %}
+| {{ "%'-30s" | format("") }} | {{ "%'-50s" | format("") }} |
+

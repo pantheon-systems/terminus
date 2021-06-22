@@ -27,7 +27,7 @@ class CommitAndPushCommand extends TerminusCommand implements SiteAwareInterface
     use CommandExecutorTrait;
 
     /**
-     *  CLone's a local copy of the site's code into "$HOME/pantheon-local-copies"
+     *  CLone a copy of site code into $HOME/pantheon-local-copies
      *
      * @authorize
      *

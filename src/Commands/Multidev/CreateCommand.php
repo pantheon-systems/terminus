@@ -18,7 +18,8 @@ class CreateCommand extends TerminusCommand implements SiteAwareInterface
 
     /**
      * Creates a multidev environment.
-     * If there is an existing Git branch with the multidev's name, then it will be used when the new environment is created.
+     * If there is an existing Git branch with the multidev name,
+     * then it will be used when the new environment is created.
      *
      * @authorize
      *
