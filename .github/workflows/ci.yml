@@ -31,7 +31,7 @@ jobs:
       COMPOSER_ALLOW_SUPERUSER: 1
     container:
       image: quay.io/pantheon-public/php-ci:v7.4
-    needs: [checkout]
+    needs: [ checkout ]
     steps:
       - name: Download repo content from artifact
         uses: actions/download-artifact@v2
@@ -46,13 +46,14 @@ jobs:
         with:
           name: t3-phar
           path: t3
-  functional:
+  commit:
     runs-on: ${{ matrix.operating-system }}
     name: PHP ${{ matrix.php-versions }} on ${{ matrix.operating-system }}
+    if: ${{ ! startsWith(github.ref, 'refs/tags/')  && github.repository_owner == 'pantheon-systems' }}
     strategy:
       matrix:
-        operating-system: ['macos-latest']
-        php-versions: ['7.4', '8.0']
+        operating-system: [ 'macos-latest' ]
+        php-versions: [ '7.4', '8.0' ]
     env:
       TZ: "/usr/share/zoneinfo/America/Los_Angeles"
       TERM: dumb
@@ -60,7 +61,7 @@ jobs:
       COMPOSER_ALLOW_SUPERUSER: 1
       TERMINUS_TOKEN: ${{ secrets.TERMINUS_TOKEN }}
       TERMINUS_SITE: ${{ secrets.TERMINUS_SITE }}
-    needs: [build_phar]
+    needs: [ build_phar ]
     steps:
       - name: Download repo content from artifact
         uses: actions/download-artifact@v2
@@ -76,9 +77,9 @@ jobs:
           php-version: ${{ matrix.php-versions }}
           extensions: gd, mbstring, zip
           coverage: pcov
-      - name: Install
-        run: composer install
-      - name: Install
+      - name: Install Composer Dependencies
+        run: composer install --no-interaction --prefer-dist
+      - name: Phar Build
         run: composer phar:build
       - name: permissions
         run: chmod +x ./t3
@@ -96,27 +97,80 @@ jobs:
           name: CoverageReport
           path: docs/TestCoverage.md
 
-  release:
+  tagged:
     runs-on: ubuntu-latest
-    name: Release
-    container:
-      image: quay.io/pantheon-public/php-ci:1.x
-    needs: [ functional ]
+    name: Tagged
+    needs: [ build_phar ]
+    strategy:
+      matrix:
+        # TODO: test on Win10/WSL+Ubunutu
+        operating-system: [ 'macos-latest', 'ubuntu-latest' ]
+        php-versions: [ '7.4', '8.0' ]
     if: ${{ startsWith(github.ref, 'refs/tags/')  && github.repository_owner == 'pantheon-systems' }}
     steps:
       - name: Download repo content from artifact
         uses: actions/download-artifact@v2
         with:
           name: full-workspace
-      - name: Long testing scheme
-        run: composer functional:all
-      #- name: Build Deb package
-      #  run: composer build:packages
-      - name: Release
-        uses: softprops/action-gh-release@v1
+      - name: Download terminus.phar as artifact
+        uses: actions/download-artifact@v2
         with:
-          files: t3
-          # Everything is a prerelease until we make it a release
-          prerelease: true
+          name: t3-phar
+      - name: Setup PHP with PECL extension
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php-versions }}
+          extensions: gd, mbstring, zip
+          coverage: pcov
+      - name: Install
+        run: composer install --no-interaction --prefer-dist
+      - name: Full testing scheme
+        run: composer functional:all
+      - name: Coverage Report
+        run: composer coverage
+      - name: Save coverage as artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: CoverageReport
+          path: docs/TestCoverage.md
+
+  package_macos:
+    runs-on: macos-latest
+    name: PackageMacRelease
+    if: ${{ startsWith(github.ref, 'refs/tags/')  && github.repository_owner == 'pantheon-systems' }}
+    needs: [ 'tagged' ]
+    steps:
+      - name: Download repo content from artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: full-workspace
+      - name: Download terminus.phar as artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: t3-phar
+      - name: Passegers, gather ye packages
+        run: composer bundle:macos
+      - name: Push homebrew repo update
+        run: echo "tbd"
+
+  package_linux:
+    runs-on: ubuntu-latest
+    name: PackageLinuxRelease
+    if: ${{ startsWith(github.ref, 'refs/tags/')  && github.repository_owner == 'pantheon-systems' }}
+    needs: [ 'tagged' ]
+    steps:
+      - name: Download repo content from artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: full-workspace
+      - name: Download terminus.phar as artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: t3-phar
+      - name: Passegers, gather ye packages
+        run: composer bundle:macos
+      - uses: docker://lpenz/ghaction-packagecloud:v0.2
+        with:
+          repository: stovak/terminus
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PACKAGECLOUD_TOKEN: ${{ secrets.PACKAGECLOUD_TOKEN }}
