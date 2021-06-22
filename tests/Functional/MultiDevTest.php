@@ -37,7 +37,8 @@ class MultiDevTest extends TestCase
             vprintf(
                 "multidev:list %s",
                 [$sitename]
-            )
+            ),
+            null
         );
         $envInfo = null;
         foreach ($list as $environment) {

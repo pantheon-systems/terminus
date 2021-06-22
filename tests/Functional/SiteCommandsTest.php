@@ -124,7 +124,8 @@ class SiteCommandsTest extends TestCase
             vprintf(
                 "site:info %s",
                 [$sitename]
-            )
+            ),
+            null
         );
         $this->assertEquals($org, $info['organization']);
         $this->terminus(
@@ -135,5 +136,4 @@ class SiteCommandsTest extends TestCase
             null
         );
     }
-
 }
