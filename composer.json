@@ -125,7 +125,7 @@
     "functional:short": [
       "XDEBUG_MODE=coverage phpunit --colors=always -c ./phpunit.xml --debug --group=short --do-not-cache-result"
     ],
-    "functional:long": [
+    "functional:all": [
       "XDEBUG_MODE=coverage phpunit --colors=always -c ./phpunit.xml --debug --do-not-cache-result"
     ],
     "post-install-cmd": [

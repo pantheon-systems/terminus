@@ -109,7 +109,7 @@ jobs:
         with:
           name: full-workspace
       - name: Long testing scheme
-        run: composer functional:long
+        run: composer functional:all
       #- name: Build Deb package
       #  run: composer build:packages
       - name: Release
