@@ -43,8 +43,7 @@ class EnvCommandsTest extends TestCase
      */
     public function testCloneContentCommand()
     {
-        $sitename = $this->getRandomSiteFromCIFixtures();
-        $this->fail("Figure out how to test.");
+        $this->fail("To Be Written");
     }
 
     /**
@@ -92,8 +91,7 @@ class EnvCommandsTest extends TestCase
      */
     public function testCommitCommand()
     {
-        $sitename = $this->getRandomSiteFromCIFixtures();
-        $this->fail("Figure out how to test.");
+        $this->fail("To Be Written");
     }
 
 

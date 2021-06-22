@@ -24,7 +24,7 @@ use Robo\Contract\ConfigAwareInterface;
  * Class CloneCommand
  * @package Pantheon\Terminus\Commands\Local
  */
-class DownloadLiveFilesBackupCommand extends TerminusCommand implements
+class GetLiveDBCommand extends TerminusCommand implements
     SiteAwareInterface,
     ConfigAwareInterface,
     RequestAwareInterface
@@ -38,12 +38,12 @@ class DownloadLiveFilesBackupCommand extends TerminusCommand implements
     use LocalCopiesTrait;
 
     /**
-     *  Create new backup of your live site's Files folder and download to $HOME/pantheon-local-copies/{Site}/db
+     *  Create new backup of your live site db and download to $HOME/pantheon-local-copies/{Site}/db
      *
      * @authorize
      *
-     * @command local:downloadLiveFilesBackup
-     * @aliases ldf
+     * @command local:getLiveDB
+     * @aliases ldb
      *
      * @param string $site Site
      * @option bool $overwrite Overwrite existing file
@@ -54,7 +54,7 @@ class DownloadLiveFilesBackupCommand extends TerminusCommand implements
      * @throws \Pantheon\Terminus\Exceptions\TerminusException
      *
      */
-    public function downloadLiveFilesBackup($site, $options = ['overwrite' => false])
+    public function downloadLiveDbBackup($site, $options = ['overwrite' => false])
     {
         $siteData = $site;
         if (!$siteData instanceof Site) {
@@ -69,22 +69,23 @@ class DownloadLiveFilesBackupCommand extends TerminusCommand implements
         $liveEnv = $siteData
             ->getEnvironments()
             ->get('live');
-        $files_folder = $this->getLocalCopiesFolder() . DIRECTORY_SEPARATOR . "files";
-        $files_local_filename =  sprintf(
-            '%s%s%s-files.tgz',
-            $files_folder,
+        $db_folder = $this->getLocalCopiesFolder() . DIRECTORY_SEPARATOR . "db";
+        $db_local_filename =  sprintf(
+            '%s%s%s-db.tgz',
+            $db_folder,
             DIRECTORY_SEPARATOR,
             $siteData->getName()
         );
-        if (!is_dir($files_folder)) {
-            mkdir($files_folder);
-            if (!is_dir($files_folder)) {
+        if (!is_dir($db_folder)) {
+            mkdir($db_folder);
+            if (!is_dir($db_folder)) {
                 throw new TerminusException(
-                    "Cannot create {path}",
-                    ['path' => $files_folder]
+                    "Cannot create {path}:",
+                    ["path" => $db_folder]
                 );
             }
         }
+
         if (!$liveEnv instanceof Environment) {
             throw new TerminusException("Cannot locate site's Live Environment.");
         }
@@ -94,35 +95,31 @@ class DownloadLiveFilesBackupCommand extends TerminusCommand implements
         );
         $backups = $liveEnv->getBackups();
         $backups->fetch();
-        $this->logger->notice(
-            "===> Creating Live Files folder Backup for Site: {name}",
-            ['name' => $liveEnv->getName()]
-        );
-        $this->logger->emergency(
-            "Depending on how big your files directory is, this could take a while...."
-        );
-        $backupWorkflow = $backups->create(['element' => ['files'] ]);
-        if (!$backupWorkflow instanceof Workflow) {
-            throw new TerminusException("Cannot initiate backup workflow.");
+        $db_backups = $backups->getBackupsByElement('database');
+        if (count($db_backups) === 0) {
+            $this->logger->notice(
+                "===> Creating  Live Database Backup for Site: {name}",
+                ['name' => $liveEnv->getName()]
+            );
+            $backupWorkflow = $backups->create(['element' => ['database'] ]);
+            if ($backupWorkflow instanceof Workflow) {
+                $this->processWorkflow($backupWorkflow);
+                if (!$backupWorkflow->isSuccessful()) {
+                    throw new TerminusProcessException("Backup Workflow Failed.");
+                }
+            }
+            $backups->fetch();
+            $db_backups = $backups->getBackupsByElement('database');
         }
-        $this->processWorkflow($backupWorkflow);
-        if (!$backupWorkflow->isSuccessful()) {
-            throw new TerminusProcessException("Backup Workflow Failed.");
-        }
-        $backups->fetch();
-        $files_backups = $backups->getBackupsByElement('files');
-        $lastBackup = reset($files_backups);
+        $lastBackup = reset($db_backups);
         $this->logger->notice(
             "===> Downloading db backup of {site} to {folder}.",
-            ["site" => $liveEnv->getName(), 'folder' => $files_folder]
+            ["site" => $liveEnv->getName(), 'folder' => $db_folder]
         );
         $this->request()->download(
             $lastBackup->getArchiveURL(),
-            $files_local_filename
+            $db_local_filename
         );
-        if (!is_file($files_local_filename)) {
-            throw new TerminusException("Cannot download backup file.");
-        }
-        $this->logger->notice("Files Backup Downloaded to: {path}", ["path" => $files_local_filename]);
+        $this->logger->notice("DB Backup Downloaded to: {path}", ["path" => $db_local_filename]);
     }
 }

@@ -14,7 +14,7 @@ class InfoCommand extends SiteCommand
     use StructuredListTrait;
 
     /**
-     * Displays a site's information.
+     * Displays a site information.
      *
      * @authorize
      *

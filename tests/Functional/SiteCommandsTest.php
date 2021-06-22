@@ -21,7 +21,7 @@ class SiteCommandsTest extends TestCase
      * @group site
      * @group short
      */
-    public function testSiteInfoCommand()
+    public function testSiteListCommand()
     {
         $org = getenv("TERMINUS_ORG");
         $siteList = $this->terminusJsonResponse(
@@ -43,9 +43,10 @@ class SiteCommandsTest extends TestCase
             "Response from site should contain an ID property"
         );
 
-        $this->assertEquals(
-            $org,
-            $site['organization']
+        $this->assertArrayHasKey(
+            'memberships',
+            $site,
+            'Site information should have a membership property'
         );
     }
 
@@ -110,30 +111,30 @@ class SiteCommandsTest extends TestCase
     public function testSiteCreateInfoDeleteCommand()
     {
         $sitename = \uniqid(__METHOD__ . "-");
-        $org = getenv('TERMINUS_SITE');
+        $org = getenv('TERMINUS_ORG');
 
         $this->terminus(
-            vprintf(
-                'site:create %s %s, drupal9 --org=%s',
+            vsprintf(
+                'site:create %s %s drupal9 --org=%s',
                 [ $sitename, $sitename, $org ]
             ),
             null
         );
         sleep(10);
         $info = $this->terminusJsonResponse(
-            vprintf(
+            vsprintf(
                 "site:info %s",
                 [$sitename]
-            )
+            ),
+            null
         );
         $this->assertEquals($org, $info['organization']);
         $this->terminus(
-            sprintf(
+            vsprintf(
                 'site:delete %d',
                 [$sitename]
             ),
             null
         );
     }
-
 }

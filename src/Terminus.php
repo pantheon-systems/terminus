@@ -23,31 +23,42 @@ use Pantheon\Terminus\Request\RequestAwareInterface;
 use Pantheon\Terminus\Session\Session;
 use Pantheon\Terminus\Session\SessionAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareInterface;
-use Pantheon\Terminus\Update\LatestRelease;
-use Pantheon\Terminus\Update\UpdateChecker;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
+use Robo\Common\IO;
 use Robo\Config\Config;
 use Robo\Contract\ConfigAwareInterface;
+use Robo\Contract\IOAwareInterface;
 use Robo\Robo;
 use Robo\Runner as RoboRunner;
-use SelfUpdate\SelfUpdateCommand;
-use Symfony\Component\Console\Application;
+use Robo\Application;
+use Symfony\Component\Console\Input\ArgvInput;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\Console\Output\OutputInterface;
 use VCR\VCR;
+use Pantheon\Terminus\Config\DefaultsConfig;
+use Pantheon\Terminus\Config\DotEnvConfig;
+use Pantheon\Terminus\Config\EnvConfig;
+use Pantheon\Terminus\Config\YamlConfig;
 
 /**
  * Class Terminus
  *
  * @package Pantheon\Terminus
  */
-class Terminus implements ConfigAwareInterface, ContainerAwareInterface, LoggerAwareInterface
+class Terminus implements
+    ConfigAwareInterface,
+    ContainerAwareInterface,
+    LoggerAwareInterface,
+    IOAwareInterface
 {
     use ConfigAwareTrait;
     use ContainerAwareTrait;
     use LoggerAwareTrait;
+    use CommandExecutorTrait;
+    use IO;
 
     /**
      * @var \Robo\Runner
@@ -58,6 +69,8 @@ class Terminus implements ConfigAwareInterface, ContainerAwareInterface, LoggerA
      */
     private $commands = [];
 
+    private Application $application;
+
     /**
      * Object constructor
      *
@@ -65,10 +78,11 @@ class Terminus implements ConfigAwareInterface, ContainerAwareInterface, LoggerA
      * @param \Symfony\Component\Console\Input\InputInterface $input
      * @param \Symfony\Component\Console\Output\OutputInterface $output
      */
-    public function __construct(Config $config, InputInterface $input = null, OutputInterface $output = null)
+    public function __construct(Config $config, InputInterface $input, OutputInterface $output)
     {
         $this->setConfig($config);
-
+        $this->setInput($input);
+        $this->setOutput($output);
         $application = new Application('Terminus', $config->get('version'));
         $container = new Container();
         Robo::configureContainer(
@@ -86,6 +100,7 @@ class Terminus implements ConfigAwareInterface, ContainerAwareInterface, LoggerA
         $this->addBuiltInCommandsAndHooks();
         $this->addPluginsCommandsAndHooks();
 
+        $this->setApplication($application);
         $this->runner = new RoboRunner();
         $this->runner->setContainer($container);
 
@@ -145,10 +160,6 @@ class Terminus implements ConfigAwareInterface, ContainerAwareInterface, LoggerA
             ->addArgument(__DIR__);
         $container->add(PluginDiscovery::class)
             ->addArgument($this->getConfig()->get('plugins_dir'));
-
-        // Update checker
-        $container->add(LatestRelease::class);
-        $container->add(UpdateChecker::class);
 
         $container->share('sites', Sites::class);
         $container->inflector(SiteAwareInterface::class)
@@ -270,7 +281,6 @@ class Terminus implements ConfigAwareInterface, ContainerAwareInterface, LoggerA
             'Pantheon\\Terminus\\Commands\\Branch\\ListCommand',
             'Pantheon\\Terminus\\Commands\\Connection\\InfoCommand',
             'Pantheon\\Terminus\\Commands\\Connection\\SetCommand',
-            'Pantheon\\Terminus\\Commands\\D9ify\\CommitAndPushCommand',
             'Pantheon\\Terminus\\Commands\\D9ify\\ProcessCommand',
             'Pantheon\\Terminus\\Commands\\Dashboard\\ViewCommand',
             'Pantheon\\Terminus\\Commands\\Domain\\AddCommand',
@@ -300,8 +310,9 @@ class Terminus implements ConfigAwareInterface, ContainerAwareInterface, LoggerA
             'Pantheon\\Terminus\\Commands\\Import\\FilesCommand',
             'Pantheon\\Terminus\\Commands\\Import\\SiteCommand',
             'Pantheon\\Terminus\\Commands\\Local\\CloneCommand',
-            'Pantheon\\Terminus\\Commands\\Local\\DownloadLiveDbBackupCommand',
-            'Pantheon\\Terminus\\Commands\\Local\\DownloadLiveFilesBackupCommand',
+            'Pantheon\\Terminus\\Commands\\Local\\CommitAndPushCommand',
+            'Pantheon\\Terminus\\Commands\\Local\\GetLiveDBCommand',
+            'Pantheon\\Terminus\\Commands\\Local\\GetLiveFilesCommand',
             'Pantheon\\Terminus\\Commands\\Lock\\DisableCommand',
             'Pantheon\\Terminus\\Commands\\Lock\\EnableCommand',
             'Pantheon\\Terminus\\Commands\\Lock\\InfoCommand',
@@ -413,17 +424,21 @@ class Terminus implements ConfigAwareInterface, ContainerAwareInterface, LoggerA
      *
      * @return integer $status_code The exiting status code of the application
      */
-    public function run(InputInterface $input, OutputInterface $output)
+    public function run(InputInterface $input = null, OutputInterface $output = null)
     {
+        if ($input === null) {
+            $input = $this->input();
+        }
+        if ($output === null) {
+            $output = $this->output();
+        }
         $config = $this->getConfig();
         if (!empty($cassette = $config->get('vcr_cassette')) && !empty($mode = $config->get('vcr_mode'))) {
             $this->startVCR(array_merge(compact('cassette'), compact('mode')));
         }
-        $status_code = $this->runner->run($input, $output, null, $this->commands);
+        $status_code = $this->runner->run($input, $output, $this->getApplication(), $this->commands);
         if (!empty($cassette) && !empty($mode)) {
             $this->stopVCR();
-        } elseif ($input->isInteractive()) {
-            $this->runUpdateChecker();
         }
         return $status_code;
     }
@@ -453,11 +468,48 @@ class Terminus implements ConfigAwareInterface, ContainerAwareInterface, LoggerA
     }
 
     /**
-     * Runs the UpdateChecker to check for new Terminus versions
+     * @return Application
      */
-    private function runUpdateChecker()
+    public function getApplication(): Application
     {
-        $file_store = new FileStore($this->getConfig()->get('cache_dir'));
-        //$this->runner->getContainer()->get(UpdateChecker::class, [$file_store,])->run();
+        return $this->application;
+    }
+
+    /**
+     * @param Application $application
+     */
+    public function setApplication(Application $application): void
+    {
+        $this->application = $application;
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getCommands(): array
+    {
+        return $this->commands;
+    }
+
+    /**
+     * @param string[] $commands
+     */
+    public function setCommands(array $commands): void
+    {
+        $this->commands = $commands;
+    }
+
+
+
+    public static function factory(): Terminus
+    {
+        $input = new ArgvInput($_SERVER['argv']);
+        $output = new ConsoleOutput();
+        $config = new DefaultsConfig();
+        $config->extend(new YamlConfig($config->get('root') . '/config/constants.yml'));
+        $config->extend(new YamlConfig($config->get('user_home') . '/.terminus/config.yml'));
+        $config->extend(new DotEnvConfig(getcwd()));
+        $config->extend(new EnvConfig());
+        return new static($config, $input, $output);
     }
 }

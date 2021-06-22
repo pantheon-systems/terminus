@@ -15,7 +15,7 @@ class InfoCommand extends SiteCommand
     use StructuredListTrait;
 
     /**
-     * Displays information about a site's plan.
+     * Displays information about a site plan.
      *
      * @authorize
      *

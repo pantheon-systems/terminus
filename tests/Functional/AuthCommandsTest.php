@@ -21,8 +21,10 @@ class AuthCommandsTest extends TestCase
     /**
      * @test
      * @covers \Pantheon\Terminus\Commands\Auth\LoginCommand
+     * @covers \Pantheon\Terminus\Commands\Auth\LogoutCommand
+     *
      * @group auth
-     * @gropu short
+     * @group short
      */
     public function testAuthLogin()
     {

@@ -110,8 +110,7 @@ trait SiteAwareTrait
      */
     public function getUnfrozenSiteEnv($site_env_id, $default_env = null)
     {
-        list($site, $env) = $this->getSiteEnv($site_env_id, $default_env);
-
+        [$site, $env] = $this->getSiteEnv($site_env_id, $default_env);
         if ($site->isFrozen()) {
             throw new TerminusException(
                 'This site is frozen. Its test and live environments and many commands will be '
@@ -119,6 +118,6 @@ trait SiteAwareTrait
             );
         }
 
-        return [$site, $env,];
+        return [$site, $env];
     }
 }

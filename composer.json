@@ -31,7 +31,8 @@
     "symfony/finder": "^5",
     "symfony/process": "^5",
     "symfony/yaml": "^5",
-    "tm/tooly-composer-script": "^1.4"
+    "tm/tooly-composer-script": "^1.4",
+    "twig/twig": "^3.3"
   },
   "require-dev": {
     "ext-pcov": "*",
@@ -76,15 +77,18 @@
       "rm -rf /usr/local/bin/t3 || true",
       "mv ./t3 /usr/local/bin/t3"
     ],
+    "phar:compat": [
+      "ln -s /usr/local/bin/t3 /usr/local/bin/terminus"
+    ],
     "phar:update": [
       "@phar:build",
       "@phar:install"
     ],
-    "build:packages": [
-      "echo 'Building Debian/Ubuntu package'",
-      "scripts/BuildDebianPackage.php",
-      "echo 'Building Mac Homebrew bottle'",
-      "echo 'TODO: build this receipt/bottle'"
+    "bundle:macos": [
+      "vendor/bin/robo bundle:mac"
+    ],
+    "bundle:linux": [
+      "vendor/bin/robo bundle:linux"
     ],
     "update-class-lists": [
       "\\Terminus\\UpdateClassLists::update"
@@ -108,24 +112,25 @@
       "@functional:short",
       "@coverage"
     ],
-    "test:long": [
+    "test:all": [
       "@phar:build",
-      "@functional:long",
+      "@functional:all",
       "@coverage"
     ],
     "coverage": [
-      "Pantheon\\Terminus\\Helpers\\CommandCoverageReport::getReport"
+      "vendor/bin/robo coverage ./docs/TestCoverage.md"
     ],
     "cs": [
       "phpcs --standard=tests/config/linting_ruleset.xml bin/t3 src"
     ],
     "docs": [
-      "php scripts/make-docs.php"
+      "vendor/bin/robo doc ./README.md",
+      "git add README.md"
     ],
     "functional:short": [
       "XDEBUG_MODE=coverage phpunit --colors=always -c ./phpunit.xml --debug --group=short --do-not-cache-result"
     ],
-    "functional:long": [
+    "functional:all": [
       "XDEBUG_MODE=coverage phpunit --colors=always -c ./phpunit.xml --debug --do-not-cache-result"
     ],
     "post-install-cmd": [
@@ -137,7 +142,8 @@
     "pre-commit": [
       "@code:fix",
       "@code:lint",
-      "composer validate --strict"
+      "composer validate --strict",
+      "composer docs"
     ]
   },
   "config": {

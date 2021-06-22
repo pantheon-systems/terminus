@@ -3,15 +3,48 @@
 
 namespace Pantheon\Terminus\Helpers;
 
+use Consolidation\AnnotatedCommand\AnnotatedCommandFactory;
 use Consolidation\AnnotatedCommand\CommandFileDiscovery;
+use Consolidation\AnnotatedCommand\Output\OutputAwareInterface;
+use Consolidation\AnnotatedCommand\Parser\CommandInfo;
+use Consolidation\Config\ConfigInterface;
+use Pantheon\Terminus\Config\ConfigAwareTrait;
+use Pantheon\Terminus\Config\DefaultsConfig;
+use Pantheon\Terminus\Config\DotEnvConfig;
+use Pantheon\Terminus\Config\EnvConfig;
+use Pantheon\Terminus\Config\YamlConfig;
+use PhpParser\Node\Stmt\Static_;
+use Robo\Common\IO;
+use Robo\Common\OutputAwareTrait;
+use Robo\Contract\ConfigAwareInterface;
+use Robo\Contract\IOAwareInterface;
+use Robo\Symfony\ConsoleIO;
+use Symfony\Component\Console\Input\ArgvInput;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\ConsoleOutput;
+use Symfony\Component\Console\Output\OutputInterface;
+use Twig\Environment;
+use Twig\Loader\FilesystemLoader;
 
 /**
  * Class CommandCoverageReport
  *
  * @package Pantheon\Terminus\Helpers
  */
-class CommandCoverageReport
+class CommandCoverageReport implements ConfigAwareInterface, IOAwareInterface
 {
+    use ConfigAwareTrait;
+    use IO;
+
+    public static $STATUS_ICON = [
+        '-1' => "❌",
+        '0' =>'✅',
+        '1' => '💩',
+        '2' => '💩',
+        '3' => '❌',
+        '4' => '🤮',
+        '5' => '❓'
+    ];
 
     /**
      * @var string
@@ -31,55 +64,92 @@ class CommandCoverageReport
         "********************************************************************************",
     ];
 
-    /**
-     * @var string[]
-     */
-    public static $statusIcon = [
-        "✅",
-        "💩",
-        "🤮",
-        "❌️️",
-        "⚠️",
-    ];
+
+
+    public function __construct(ConfigInterface $config, ConsoleIO $io)
+    {
+        $this->setConfig($config);
+        $this->io = $io;
+    }
+
+    public static function factory(OutputInterface $output = null)
+    {
+        $input = new ArgvInput($_SERVER['argv']);
+        $output = new ConsoleOutput();
+        $config = new DefaultsConfig();
+        $config->extend(new YamlConfig($config->get('root') . '/config/constants.yml'));
+        $config->extend(new YamlConfig($config->get('user_home') . '/.terminus/config.yml'));
+        $config->extend(new DotEnvConfig(getcwd()));
+        $config->extend(new EnvConfig());
+        return new static($config, new ConsoleIO($input, $output));
+    }
+
 
     /**
      *
      */
-    public static function getReport()
+    public function getReport($template = 'README.twig') : string
     {
-        $root_dir = dirname(\Composer\Factory::getComposerFile());
-        $commandsFolder = $root_dir . DIRECTORY_SEPARATOR . "src" . DIRECTORY_SEPARATOR . "Commands";
+        $total_tests = 0;
+        $passing_tests = 0;
+        $missing_tests = 0;
+        $context = $this->getConfig()->exportAll()['process'] ?? [];
+        $commandsFolder = $context['root'] . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'Commands';
         $commands = static::getCommands($commandsFolder, "\\Pantheon\\Terminus\\Commands");
-        $parsed = static::getTestResults();
-        $report = [];
+        $parsedTestResults = static::getTestResults();
+        $loader = new FilesystemLoader($context['root'] . DIRECTORY_SEPARATOR . 'templates');
+        $twig = new Environment($loader, [
+            'cache' => false,
+            'debug' => true,
+        ]);
+        $twig->addExtension(new \Twig\Extension\DebugExtension());
+        $twig->getExtension(\Twig\Extension\EscaperExtension::class)
+            ->setEscaper('raw', 'utf8_decode');
+        $factory = new AnnotatedCommandFactory();
         foreach ($commands as $file => $className) {
-            $groupName = static::classToGroupName($className);
-            $commandName = static::classToCommandName($className);
-            $report[$groupName][$commandName] = $parsed[$groupName][$commandName] ?? "❓";
+            $reflector = new \ReflectionClass($className);
+            if (!$reflector->isAbstract()) {
+                $total_tests += 1;
+
+                $commandInfo = $factory->getCommandInfoListFromClass($className);
+                $commandName = static::classToCommandName($className);
+                $groupNameSafe = static::classToGroupName($className);
+                if (is_array($commandInfo)) {
+                    $commandInfo = array_shift($commandInfo);
+                }
+                $test_result = ($parsedTestResults[$groupNameSafe][$commandName] ?? 5);
+                if ($test_result == 5) {
+                    $missing_tests += 1;
+                }
+                if ($commandInfo instanceof CommandInfo) {
+                    if ($test_result == 0) {
+                        $passing_tests += 1;
+                    }
+                    $command = $commandInfo->getAnnotation('command');
+                    [$group] = explode(':', $command);
+                    $context['commands'][$commandName] = [
+                        'groupNameSafe' => $groupNameSafe,
+                        'commandName' => $commandName,
+                        'group' => $group,
+                        'command' => $command,
+                        'status' => static::$STATUS_ICON[$test_result],
+                        'description' => explode(
+                            PHP_EOL,
+                            wordwrap(
+                                html_entity_decode($commandInfo->getDescription()),
+                                60,
+                                PHP_EOL
+                            )
+                        )
+                    ];
+                }
+            }
         }
-        krsort($report);
-        $report = array_reverse($report);
-        $toWrite = "---" . PHP_EOL . "# Terminus Test Coverage #" . PHP_EOL . PHP_EOL . PHP_EOL;
-        $toWrite .= join(PHP_EOL, static::$HELP_TEXT) . PHP_EOL . PHP_EOL;
-        $toWrite .= 'Legend: ✅ Pass     💩 Bad test     🤮 Exception     ❌ Fail️️     ⚠️ Warning     ❓ Not Written' .
-            PHP_EOL . PHP_EOL;
-        foreach ($report as $group => $members) {
-            # Group line
-            $toWrite .= '| ' . str_pad($group, 40, " ") . ' | ' .
-                str_pad(" ", 10, " ") . ' | ' . PHP_EOL;
-            $toWrite .= '| ' . str_pad(":--- ", 40, " ") . ' | ' .
-                str_pad(" :---: ", 10, " ", STR_PAD_BOTH) . ' | ' . PHP_EOL;
-            foreach ($members as $command => $icon) {
-                $toWrite .= "| " . str_pad($command, 40, " ") . " | " .
-                    str_pad($icon, 10, " ") . " | " . PHP_EOL;
-            };
-            $toWrite .= '| ' . str_pad(":--- ", 40, " ") . ' | ' .
-                str_pad(" :---: ", 10, " ", STR_PAD_BOTH) . ' | ' . PHP_EOL;
-        }
-        file_put_contents(
-            $root_dir . DIRECTORY_SEPARATOR . "docs" . DIRECTORY_SEPARATOR . "TestCoverage.md",
-            $toWrite
-        );
+        ksort($context['commands']);
+        $context['total_tests'] = $total_tests;
+        $context['passing_tests'] = $passing_tests;
+        $context['missing_tests'] = $missing_tests;
+        return $twig->render($template, $context);
     }
 
     /**
@@ -115,7 +185,7 @@ class CommandCoverageReport
             foreach ($test['covers'] ?? [] as $coveredClass) {
                 $commandName = static::classToCommandName($coveredClass['@attributes']['target']);
                 $commandGroup = static::classToGroupName($coveredClass['@attributes']['target']);
-                $toReturn[$commandGroup][$commandName] = static::$statusIcon[$test['@attributes']['status']];
+                $toReturn[$commandGroup][$commandName] = $test['@attributes']['status'];
             }
         }
         return $toReturn;
@@ -157,5 +227,48 @@ class CommandCoverageReport
         $exploded_class = explode("\\Commands\\", $class);
         $exploded_again = explode("\\", $exploded_class[1]);
         return strtolower($exploded_again[0]);
+    }
+
+    /**
+     * Parses PHP internal documentation into chunks
+     *
+     * @param string $doc_string The raw doc string from the PHP file
+     * @return array
+     */
+    public function parseDocString(string $doc_string)
+    {
+        $exploded_docs = explode("\n", $doc_string);
+        $lines         = array();
+        foreach ($exploded_docs as $doc_line) {
+            $line = trim(str_replace(array('/**', '*/', '*'), '', trim($doc_line)));
+            if (!empty($line)) {
+                $lines[] = $line;
+            }
+        }
+        $parsed_doc = ['description' => [], 'param' => [], 'return' => [], 'throws' => [],];
+        $current    = 'description';
+        do {
+            $line = array_shift($lines);
+            if ($line[0] == '@') {
+                $breakdown = explode(' ', $line);
+                $current   = substr($breakdown[0], 1);
+                unset($breakdown[0]);
+                if ($current == 'param' || $current == 'return') {
+                    if (substr($breakdown[1], 0, 1) != '[') {
+                        $breakdown[1] = '[' . $breakdown[1] . ']';
+                    }
+                }
+                $line = implode(' ', $breakdown);
+            } elseif ($current != 'description') {
+                $line = "-$line";
+            }
+            $parsed_doc[$current][] = $line;
+        } while (!empty($lines));
+        return $parsed_doc;
+    }
+
+    public function __toString()
+    {
+        return $this->getReport();
     }
 }

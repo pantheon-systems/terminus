@@ -21,23 +21,24 @@ class MultiDevTest extends TestCase
      * @group multidev
      * @group long
      */
-    public function testMultidevCreateCommand()
+    public function testMultidevCreateListDeleteCommands()
     {
         $sitename = getenv('TERMINUS_SITE');
-        $envname = uniqid('multidev-test-');
+        $envname = substr(uniqid('md-'), 0, 11);
         $this->terminus(
-            vprintf(
-                "multidev:create %s.%s -no-interactions",
+            vsprintf(
+                "multidev:create %s.dev %s",
                 [$sitename, $envname]
             ),
             null
         );
         sleep(10);
         $list = $this->terminusJsonResponse(
-            vprintf(
+            vsprintf(
                 "multidev:list %s",
                 [$sitename]
-            )
+            ),
+            null
         );
         $envInfo = null;
         foreach ($list as $environment) {
@@ -47,8 +48,8 @@ class MultiDevTest extends TestCase
         }
         $this->assertNotNull($envInfo, "newly-created environment should be in the environment list");
         $this->terminus(
-            vprintf(
-                "multisite:delete %s.%s",
+            vsprintf(
+                "multidev:delete %s.%s --delete-branch --yes",
                 [$sitename, $envname]
             ),
             null

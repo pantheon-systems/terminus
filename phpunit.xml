@@ -23,5 +23,6 @@
     <php>
         <server name="TERMINUS_TOKEN" value="${TERMINUS_TOKEN}" />
         <server name="TERMINUS_SITE" value="${TERMINUS_SITE}" />
+        <server name="TERMINUS_ORG" value="${TERMINUS_ORG}" />
     </php>
 </phpunit>

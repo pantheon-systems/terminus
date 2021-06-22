@@ -18,7 +18,7 @@ class CommitCommand extends TerminusCommand implements SiteAwareInterface
 
     /**
      * Commits code changes on a development environment.
-     * Note: The environment's connection mode must be set to SFTP.
+     * Note: The environment connection mode must be set to SFTP.
      *
      * @authorize
      *

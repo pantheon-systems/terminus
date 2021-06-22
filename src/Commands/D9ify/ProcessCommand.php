@@ -2,8 +2,8 @@
 
 namespace Pantheon\Terminus\Commands\D9ify;
 
-use Pantheon\Terminus\Commands\Local\DownloadLiveDbBackupCommand;
-use Pantheon\Terminus\Commands\Local\DownloadLiveFilesBackupCommand;
+use Pantheon\Terminus\Commands\Local\GetLiveDBCommand;
+use Pantheon\Terminus\Commands\Local\GetLiveFilesCommand;
 use Pantheon\Terminus\Commands\Site\CreateCommand;
 use Pantheon\Terminus\Commands\Site\InfoCommand;
 use Pantheon\Terminus\Commands\TerminusCommand;
@@ -633,8 +633,8 @@ class ProcessCommand extends TerminusCommand implements SiteAwareInterface, Conf
      */
     protected function downloadDatabase()
     {
-        $this->getContainer()->add(DownloadLiveDbBackupCommand::class);
-        $downloadDbCommand = $this->getContainer()->get(DownloadLiveDbBackupCommand::class);
+        $this->getContainer()->add(GetLiveDBCommand::class);
+        $downloadDbCommand = $this->getContainer()->get(GetLiveDBCommand::class);
         $downloadDbCommand->downloadLiveDbBackup($this->getSourceDirectory()->getSource());
     }
 
@@ -651,8 +651,8 @@ class ProcessCommand extends TerminusCommand implements SiteAwareInterface, Conf
      */
     protected function downloadSourceSiteFilesDirectory()
     {
-        $this->getContainer()->add(DownloadLiveFilesBackupCommand::class);
-        $downloadFilesCommand = $this->getContainer()->get(DownloadLiveFilesBackupCommand::class);
+        $this->getContainer()->add(GetLiveFilesCommand::class);
+        $downloadFilesCommand = $this->getContainer()->get(GetLiveFilesCommand::class);
         $downloadFilesCommand->downloadLiveFilesBackup($this->getSourceDirectory()->getSource());
     }
 }
