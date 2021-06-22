@@ -30,7 +30,6 @@ class EnvCommandsTest extends TestCase
      */
     public function testClearCacheCommand()
     {
-        $this->expectNotToPerformAssertions();
         $sitename = getenv('TERMINUS_SITE');
         $this->terminus("env:clear-cache {$sitename}.dev");
     }
