@@ -21,7 +21,7 @@ class SiteCommandsTest extends TestCase
      * @group site
      * @group short
      */
-    public function testSiteInfoCommand()
+    public function testSiteListCommand()
     {
         $org = getenv("TERMINUS_ORG");
         $siteList = $this->terminusJsonResponse(
@@ -43,9 +43,10 @@ class SiteCommandsTest extends TestCase
             "Response from site should contain an ID property"
         );
 
-        $this->assertEquals(
-            $org,
-            $site['memberships']
+        $this->assertArrayHasKey(
+            'memberships',
+            $site,
+            'Site information should have a membership property'
         );
     }
 
