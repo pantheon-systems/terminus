@@ -77,6 +77,9 @@
       "rm -rf /usr/local/bin/t3 || true",
       "mv ./t3 /usr/local/bin/t3"
     ],
+    "phar:compat": [
+      "ln -s /usr/local/bin/t3 /usr/local/bin/terminus"
+    ],
     "phar:update": [
       "@phar:build",
       "@phar:install"

@@ -7,45 +7,36 @@ on:
     - cron: '0 0 * * *'
 jobs:
   # Checkout in separate job because docker image is alpine based and checkout action doesn't work.
-  checkout:
+  checkout_build:
     runs-on: ubuntu-latest
-    name: Checkout
+    container:
+      image: quay.io/pantheon-public/php-ci:v7.4
+    name: Checkout & build Phar
     env:
       TZ: "/usr/share/zoneinfo/America/Los_Angeles"
       TERM: dumb
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+      - name: Full Composer Install
+        run: composer install
+      - name: Phar Build
+        run: composer phar:build
+      - name: permissions
+        run: chmod +x ./t3
       - name: Save repo content as artifact
         uses: actions/upload-artifact@v2
         with:
           name: full-workspace
           path: /home/runner/work/terminus/terminus
-
-  build_phar:
-    runs-on: ubuntu-latest
-    name: Build PHAR
-    env:
-      TZ: "/usr/share/zoneinfo/America/Los_Angeles"
-      TERM: dumb
-      COMPOSER_ALLOW_SUPERUSER: 1
-    container:
-      image: quay.io/pantheon-public/php-ci:v7.4
-    needs: [ checkout ]
-    steps:
-      - name: Download repo content from artifact
-        uses: actions/download-artifact@v2
-        with:
-          name: full-workspace
-      - name: Full Composer Install
-        run: composer install --no-interaction --prefer-dist
-      - name: Phar Build
-        run: composer phar:build
-      - name: Save terminus.phar as artifact
+      - name: Save t3.phar as artifact
         uses: actions/upload-artifact@v2
         with:
           name: t3-phar
           path: t3
+          if-no-files-found: error
+
+
   commit:
     runs-on: ${{ matrix.operating-system }}
     name: PHP ${{ matrix.php-versions }} on ${{ matrix.operating-system }}
@@ -61,8 +52,14 @@ jobs:
       COMPOSER_ALLOW_SUPERUSER: 1
       TERMINUS_TOKEN: ${{ secrets.TERMINUS_TOKEN }}
       TERMINUS_SITE: ${{ secrets.TERMINUS_SITE }}
-    needs: [ build_phar ]
+    needs: [ checkout_build ]
     steps:
+      - name: Setup PHP with PECL extension
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php-versions }}
+          extensions: gd, mbstring, zip
+          coverage: pcov
       - name: Download repo content from artifact
         uses: actions/download-artifact@v2
         with:
@@ -71,18 +68,8 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: t3-phar
-      - name: Setup PHP with PECL extension
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: ${{ matrix.php-versions }}
-          extensions: gd, mbstring, zip
-          coverage: pcov
       - name: Install Composer Dependencies
         run: composer install --no-interaction --prefer-dist
-      - name: Phar Build
-        run: composer phar:build
-      - name: permissions
-        run: chmod +x ./t3
       - name: Functional Tests
         run: composer functional:short
         env:
@@ -99,8 +86,8 @@ jobs:
 
   tagged:
     runs-on: ubuntu-latest
-    name: Tagged
-    needs: [ build_phar ]
+    name: Tagged Release Tests
+    needs: [ checkout_build ]
     strategy:
       matrix:
         # TODO: test on Win10/WSL+Ubunutu
@@ -133,10 +120,18 @@ jobs:
         with:
           name: CoverageReport
           path: docs/TestCoverage.md
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: t3
+          # Everything is a prerelease until we make it a release manually
+          prerelease: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   package_macos:
     runs-on: macos-latest
-    name: PackageMacRelease
+    name: Package a Homebrew release
     if: ${{ startsWith(github.ref, 'refs/tags/')  && github.repository_owner == 'pantheon-systems' }}
     needs: [ 'tagged' ]
     steps:
@@ -144,18 +139,15 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: full-workspace
-      - name: Download terminus.phar as artifact
-        uses: actions/download-artifact@v2
-        with:
-          name: t3-phar
-      - name: Passegers, gather ye packages
-        run: composer bundle:macos
-      - name: Push homebrew repo update
-        run: echo "tbd"
+      - name: Brew Tap Terminus
+        run: brew install stovak/t3/terminus
+      - name: Update tap with new release
+        run: brew bump-formula-pr --url=${{ steps.tagged.outputs.url }} --no-browse --no-audit --commit stovak/t3/terminus
+
 
   package_linux:
     runs-on: ubuntu-latest
-    name: PackageLinuxRelease
+    name: Package .deb Release
     if: ${{ startsWith(github.ref, 'refs/tags/')  && github.repository_owner == 'pantheon-systems' }}
     needs: [ 'tagged' ]
     steps:
@@ -168,9 +160,10 @@ jobs:
         with:
           name: t3-phar
       - name: Passegers, gather ye packages
-        run: composer bundle:macos
+        run: composer bundle:linux
       - uses: docker://lpenz/ghaction-packagecloud:v0.2
         with:
           repository: stovak/terminus
+          files: *.deb
         env:
           PACKAGECLOUD_TOKEN: ${{ secrets.PACKAGECLOUD_TOKEN }}

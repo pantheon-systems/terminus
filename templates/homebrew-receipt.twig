@@ -1,0 +1,24 @@
+# Documentation: https://rubydoc.brew.sh/Formula
+class Terminus < Formula
+    desc "Pantheon Terminus"
+    homepage "https://pantheon.io/terminus"
+    license "MIT"
+    url "{{ download_url }}"
+    sha256 "{{ sha256 }}"
+    version "{{ version }}"
+
+    depends_on "php@7.4"
+    depends_on "composer"
+    depends_on "git"
+
+    def install
+        ENV.deparallelize
+        system "composer install"
+        system "composer phar:build"
+        bin.install "t3" => "t3"
+    end
+
+    test do
+        system "true"
+    end
+end
