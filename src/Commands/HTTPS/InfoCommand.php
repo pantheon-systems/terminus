@@ -38,7 +38,7 @@ class InfoCommand extends TerminusCommand implements SiteAwareInterface
      */
     public function info($site_env)
     {
-        list(, $env) = $this->getSiteEnv($site_env);
+        list(, $env) = $this->getOptionalSiteEnv($site_env);
         return $this->getRowsOfFields($env->getDomains()->fetchWithRecommendations());
     }
 }

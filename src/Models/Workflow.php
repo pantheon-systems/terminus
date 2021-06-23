@@ -86,10 +86,10 @@ class Workflow extends TerminusModel implements ContainerAwareInterface, Session
     public function getOperations()
     {
         if (empty($this->workflow_operations)) {
-            $this->workflow_operations = $this->getContainer()->get(
-                WorkflowOperations::class,
-                [['data' => $this->get('operations'),],]
-            );
+            $nickname = \uniqid(__FUNCTION__ . "-");
+            $this->getContainer()->add($nickname, WorkflowOperations::class)
+                ->addArgument(['data' => $this->get('operations')]);
+            $this->workflow_operations = $this->getContainer()->get($nickname);
         }
         return $this->workflow_operations;
     }
@@ -244,7 +244,7 @@ class Workflow extends TerminusModel implements ContainerAwareInterface, Session
             'user' => $user,
             'status' => $this->getStatus(),
             'time' => sprintf('%ds', $elapsed_time),
-            'finished_at' => $this->get('finished_at'),
+            'finished_at' => $this->get('finished_at') ?? null,
             'started_at' => $this->get('started_at'),
             'operations' => $this->getOperations()->serialize(),
         ];
@@ -270,5 +270,21 @@ class Workflow extends TerminusModel implements ContainerAwareInterface, Session
     public function wasFinishedAfter($timestamp)
     {
         return $this->get('finished_at') > $timestamp;
+    }
+
+    /**
+     * @return \Pantheon\Terminus\Models\TerminusModel
+     */
+    public function getOwner()
+    {
+        return $this->owner;
+    }
+
+    /**
+     * @param \Pantheon\Terminus\Models\TerminusModel $owner
+     */
+    public function setOwner($owner): void
+    {
+        $this->owner = $owner;
     }
 }

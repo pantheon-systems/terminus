@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd"
+         bootstrap="./tests/config/bootstrap.php"
+         colors="true"
+         failOnRisky="true"
+         failOnWarning="true">
+    <testsuites>
+        <testsuite name="functional">
+            <directory suffix="Test.php">tests/Functional/</directory>
+        </testsuite>
+    </testsuites>
+    <coverage
+            processUncoveredFiles="true"
+            cacheDirectory="reports">
+        <include>
+            <directory suffix="Command.php">src/Commands</directory>
+        </include>
+    </coverage>
+    <logging>
+        <testdoxXml outputFile="reports/logfile.xml"/>
+    </logging>
+    <php>
+        <server name="TERMINUS_TOKEN" value="${TERMINUS_TOKEN}" />
+        <server name="TERMINUS_SITE" value="${TERMINUS_SITE}" />
+    </php>
+</phpunit>

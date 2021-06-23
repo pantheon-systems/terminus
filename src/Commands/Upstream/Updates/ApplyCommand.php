@@ -14,7 +14,7 @@ class ApplyCommand extends UpdatesCommand
     use WorkflowProcessingTrait;
 
     /**
-     * Applies upstream updates to a site's development environment.
+     * Applies upstream updates to a site development environment.
      *
      * @authorize
      *

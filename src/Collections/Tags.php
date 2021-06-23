@@ -7,11 +7,13 @@ use Pantheon\Terminus\Models\Tag;
 
 /**
  * Class Tags
+ *
  * @package Pantheon\Terminus\Collections
  */
 class Tags extends APICollection
 {
     const PRETTY_NAME = 'tags';
+
     /**
      * @var string
      */
@@ -34,6 +36,7 @@ class Tags extends APICollection
      * Creates a tag for an organization-site relationship
      *
      * @param string $tag Name of tag to create
+     *
      * @return Tag $this->models[$tag] The newly created tag
      */
     public function create($tag)
@@ -43,10 +46,12 @@ class Tags extends APICollection
             "organizations/{$this->org_site_membership->getOrganization()->id}/tags",
             ['method' => 'put', 'form_params' => $params,]
         );
-        $this->models[$tag] = $this->getContainer()->get(
-            $this->collected_class,
-            [(object)['id' => $tag,], ['collection' => $this,]]
-        );
+        $this->getContainer()->add($this->collected_class)
+            ->addArguments([
+                (object)['id' => $tag],
+                ['collection' => $this],
+            ]);
+        $this->models[$tag] = $this->getContainer()->get($this->collected_class);
         return $this->models[$tag];
     }
 

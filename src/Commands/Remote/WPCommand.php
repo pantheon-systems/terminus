@@ -15,7 +15,7 @@ class WPCommand extends SSHBaseCommand
     protected $command = 'wp';
 
     /**
-     * Runs a WP-CLI command remotely on a site's environment.
+     * Runs a WP-CLI command remotely on a site environment.
      *
      * @authorize
      *

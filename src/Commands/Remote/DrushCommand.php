@@ -15,7 +15,7 @@ class DrushCommand extends SSHBaseCommand
     protected $command = 'drush';
 
     /**
-     * Runs a Drush command remotely on a site's environment.
+     * Runs a Drush command remotely on a site environment.
      *
      * @authorize
      *

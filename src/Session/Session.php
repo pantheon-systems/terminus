@@ -9,12 +9,13 @@ use Pantheon\Terminus\Config\ConfigAwareTrait;
 use Pantheon\Terminus\DataStore\DataStoreAwareInterface;
 use Pantheon\Terminus\DataStore\DataStoreAwareTrait;
 use Pantheon\Terminus\DataStore\DataStoreInterface;
-use Robo\Contract\ConfigAwareInterface;
 use Pantheon\Terminus\Exceptions\TerminusException;
 use Pantheon\Terminus\Models\User;
+use Robo\Contract\ConfigAwareInterface;
 
 /**
  * Class Session
+ *
  * @package Pantheon\Terminus\Session
  */
 class Session implements ContainerAwareInterface, ConfigAwareInterface, DataStoreAwareInterface
@@ -43,6 +44,15 @@ class Session implements ContainerAwareInterface, ConfigAwareInterface, DataStor
     }
 
     /**
+     * @param DataStoreInterface $data_store
+     */
+    public function setDataStore(DataStoreInterface $data_store)
+    {
+        $this->data_store = $data_store;
+        $this->data = (object)$data_store->get('session');
+    }
+
+    /**
      * Removes the session from the cache
      */
     public function destroy()
@@ -52,27 +62,45 @@ class Session implements ContainerAwareInterface, ConfigAwareInterface, DataStor
     }
 
     /**
+     * Returns a user with the current session user id
+     *
+     * @return \Pantheon\Terminus\Models\User [user] $session user
+     */
+    public function getUser()
+    {
+        $user_id = $this->get('user_id');
+        if (empty($user_id)) {
+            throw new TerminusException(
+                "No user ID. Please login via t3 auth:login"
+            );
+        }
+        $nickname = \uniqid(__METHOD__ . "-");
+        $this->getContainer()
+            ->add($nickname, User::class)
+            ->addArgument((object)['id' => $user_id]);
+        $user = $this->getContainer()->get($nickname);
+        if (!$user instanceof User) {
+            throw new TerminusException(
+                "No User ID. Please ling via t3 auth:login"
+            );
+        }
+        return $user;
+    }
+
+    /**
      * Returns given data property or default if DNE.
      *
      * @param string $key Name of property to return
+     *
      * @return mixed
      * @throws TerminusException If the given key is not located
      */
     public function get($key)
     {
-        if (isset($this->data->$key)) {
-            return $this->data->$key;
+        if (isset($this->data->{$key})) {
+            return $this->data->{$key};
         }
         return null;
-    }
-
-    /**
-     * Returns a user with the current session user id
-     * @return \Pantheon\Terminus\Models\User [user] $session user
-     */
-    public function getUser()
-    {
-        return $this->getContainer()->get(User::class, [(object)['id' => $this->get('user_id'),],]);
     }
 
     /**
@@ -105,17 +133,11 @@ class Session implements ContainerAwareInterface, ConfigAwareInterface, DataStor
     public function getTokens()
     {
         if (empty($this->tokens)) {
-            $this->tokens = $this->getContainer()->get(SavedTokens::class, [['session' => $this,],]);
+            $nickname = \uniqid(__METHOD__ . "-");
+            $this->getContainer()->add($nickname, SavedTokens::class)
+                ->addMethodCall('setDataStore', [$this->data_store]);
+            $this->tokens = $this->getContainer()->get($nickname);
         }
         return $this->tokens;
-    }
-
-    /**
-     * @param DataStoreInterface $data_store
-     */
-    public function setDataStore(DataStoreInterface $data_store)
-    {
-        $this->data_store = $data_store;
-        $this->data = (object)$data_store->get('session');
     }
 }

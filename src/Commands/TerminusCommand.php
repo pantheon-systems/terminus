@@ -29,9 +29,7 @@ abstract class TerminusCommand implements
     use LoggerAwareTrait;
     use ConfigAwareTrait;
     use ContainerAwareTrait;
-    use IO {
-        io as roboIo;
-    }
+    use IO;
     use SessionAwareTrait;
 
     /**

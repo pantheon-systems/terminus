@@ -112,8 +112,11 @@ class Organization extends TerminusModel implements
     public function getSiteMemberships()
     {
         if (empty($this->site_memberships)) {
+            $nickname = \uniqid(__FUNCTION__ . '-');
+            $this->getContainer()->add($nickname, OrganizationSiteMemberships::class)
+                ->addArgument(['organization' => $this]);
             $this->site_memberships = $this->getContainer()
-                ->get(OrganizationSiteMemberships::class, [['organization' => $this,],]);
+                ->get($nickname);
         }
         return $this->site_memberships;
     }
@@ -124,7 +127,10 @@ class Organization extends TerminusModel implements
     public function getUpstreams()
     {
         if (empty($this->upstreams)) {
-            $this->upstreams = $this->getContainer()->get(OrganizationUpstreams::class, [['organization' => $this,],]);
+            $nickname = \uniqid(__FUNCTION__ . '-');
+            $this->getContainer()->add($nickname, OrganizationUpstreams::class)
+                ->addArgument(['organization' => $this]);
+            $this->upstreams = $this->getContainer()->get($nickname);
         }
         return $this->upstreams;
     }
@@ -135,8 +141,11 @@ class Organization extends TerminusModel implements
     public function getUserMemberships()
     {
         if (empty($this->user_memberships)) {
+            $nickname = \uniqid(__FUNCTION__ . '-');
+            $this->getContainer()->add($nickname, OrganizationUserMemberships::class)
+                ->addArgument(['organization' => $this]);
             $this->user_memberships = $this->getContainer()
-                ->get(OrganizationUserMemberships::class, [['organization' => $this,],]);
+                ->get($nickname);
         }
         return $this->user_memberships;
     }
@@ -147,7 +156,10 @@ class Organization extends TerminusModel implements
     public function getWorkflows()
     {
         if (empty($this->workflows)) {
-            $this->workflows = $this->getContainer()->get(Workflows::class, [['organization' => $this,],]);
+            $nickname = \uniqid(__FUNCTION__ . '-');
+            $this->getContainer()->add($nickname, Workflows::class)
+                ->addArgument(['organization' => $this]);
+            $this->workflows = $this->getContainer()->get($nickname);
         }
         return $this->workflows;
     }

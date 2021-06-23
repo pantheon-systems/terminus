@@ -29,8 +29,12 @@ trait UserJoinTrait
     public function getUser()
     {
         if (empty($this->user)) {
-            $user = $this->getContainer()->get(User::class, [$this->get('user'),]);
-            $user->memberships = [$this,];
+            $nickname = \uniqid(__FUNCTION__ . '-');
+            $this->getContainer()
+                ->add($nickname, User::class)
+                ->addArgument([$this->get('user')]);
+            $user = $this->getContainer()->get($nickname);
+            $user->memberships = [$this];
             $this->setUser($user);
         }
         return $this->user;

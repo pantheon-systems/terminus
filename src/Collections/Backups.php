@@ -4,6 +4,7 @@ namespace Pantheon\Terminus\Collections;
 
 use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
 use Pantheon\Terminus\Models\Backup;
+use Pantheon\Terminus\Models\Workflow;
 
 /**
  * Class Backups
@@ -45,7 +46,7 @@ class Backups extends EnvironmentOwnedCollection
      *   string  element  Which element of the site to back up (database, code, files, or null for all)
      * @return Workflow
      */
-    public function create(array $arg_options = [])
+    public function create(array $arg_options = []): Workflow
     {
         $default_options = ['element' => null, 'keep-for' => 365,];
         $options = array_merge($default_options, $arg_options);
@@ -72,7 +73,7 @@ class Backups extends EnvironmentOwnedCollection
      *
      * @return Backups $this
      */
-    public function fetch()
+    public function fetch(): Backups
     {
         foreach ($this->getData() as $id => $model_data) {
             if (isset($model_data->filename)) {

@@ -17,7 +17,7 @@ class RemoveCommand extends TerminusCommand implements SiteAwareInterface
     use WorkflowProcessingTrait;
 
     /**
-     * Removes a user from a site's team.
+     * Removes a user from a site team.
      *
      * @authorize
      *

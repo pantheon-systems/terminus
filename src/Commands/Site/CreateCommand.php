@@ -59,6 +59,7 @@ class CreateCommand extends SiteCommand
             $workflow_options['organization_id'] = $org->id;
         }
 
+
         // Create the site
         $this->log()->notice('Creating a new site...');
         $workflow = $this->sites()->create($workflow_options);

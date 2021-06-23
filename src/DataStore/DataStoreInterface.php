@@ -6,7 +6,7 @@ namespace Pantheon\Terminus\DataStore;
  * Interface DataStoreInterface
  * @package Pantheon\Terminus\DataStore
  */
-interface DataStoreInterface
+interface DataStoreInterface extends \Iterator
 {
     /**
      * Reads retrieves data from the store

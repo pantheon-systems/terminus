@@ -7,7 +7,7 @@ use Pantheon\Terminus\Commands\TerminusCommand;
 class DeleteCommand extends TerminusCommand
 {
     /**
-     * Deletes a currently logged-in user's machine token.
+     * Deletes a currently logged-in user machine token.
      *
      * @authorize
      *

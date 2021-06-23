@@ -10,3 +10,11 @@
 .idea
 .vagrant
 Vagrantfile
+/tests/config/logfile.txt
+/tests/config/.phpunit.result.cache
+/t3
+reports/*
+.phpunit.result.cache
+/package
+/Formula
+*.deb
