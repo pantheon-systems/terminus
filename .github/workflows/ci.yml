@@ -164,6 +164,7 @@ jobs:
       - uses: docker://lpenz/ghaction-packagecloud:v0.2
         with:
           repository: stovak/terminus
-          files: *.deb
+          files: |
+            *.deb
         env:
           PACKAGECLOUD_TOKEN: ${{ secrets.PACKAGECLOUD_TOKEN }}
