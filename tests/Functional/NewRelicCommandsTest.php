@@ -31,7 +31,5 @@ class NewRelicCommandsTest extends TestCase
     {
         $sitename = getenv('TERMINUS_SITE');
         $info = $this->terminusJsonResponse("newrelic:info {$sitename}");
-
     }
-
 }

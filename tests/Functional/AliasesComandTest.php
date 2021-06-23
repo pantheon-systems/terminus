@@ -31,5 +31,4 @@ class AliasesComandTest extends TestCase
         // Suggestions: get site list then make sure there's
         // an alias file for each one in the list?
     }
-
 }

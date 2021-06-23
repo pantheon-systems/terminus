@@ -2,7 +2,6 @@
 
 namespace Pantheon\Terminus\Tests\Functional;
 
-
 use Pantheon\Terminus\Tests\Traits\TerminusTestTrait;
 use Pantheon\Terminus\UnitTests\TerminusTestCase;
 
@@ -11,7 +10,8 @@ use Pantheon\Terminus\UnitTests\TerminusTestCase;
  *
  * @package Pantheon\Terminus\Tests\Functional
  */
-class WorkflowCommandsTest extends TerminusTestCase {
+class WorkflowCommandsTest extends TerminusTestCase
+{
 
     use TerminusTestTrait;
 
@@ -27,5 +27,4 @@ class WorkflowCommandsTest extends TerminusTestCase {
     {
             $this->fail("Figure out how to test.");
     }
-
 }

@@ -447,6 +447,4 @@ class Terminus implements ConfigAwareInterface, ContainerAwareInterface, LoggerA
         VCR::eject();
         VCR::turnOff();
     }
-
-
 }
