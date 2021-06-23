@@ -112,9 +112,9 @@
       "@functional:short",
       "@coverage"
     ],
-    "test:long": [
+    "test:all": [
       "@phar:build",
-      "@functional:long",
+      "@functional:all",
       "@coverage"
     ],
     "coverage": [

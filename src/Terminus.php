@@ -48,6 +48,7 @@ class Terminus implements ConfigAwareInterface, ContainerAwareInterface, LoggerA
     use ConfigAwareTrait;
     use ContainerAwareTrait;
     use LoggerAwareTrait;
+    use CommandExecutorTrait;
 
     /**
      * @var \Robo\Runner
@@ -145,10 +146,6 @@ class Terminus implements ConfigAwareInterface, ContainerAwareInterface, LoggerA
             ->addArgument(__DIR__);
         $container->add(PluginDiscovery::class)
             ->addArgument($this->getConfig()->get('plugins_dir'));
-
-        // Update checker
-        $container->add(LatestRelease::class);
-        $container->add(UpdateChecker::class);
 
         $container->share('sites', Sites::class);
         $container->inflector(SiteAwareInterface::class)
@@ -423,8 +420,6 @@ class Terminus implements ConfigAwareInterface, ContainerAwareInterface, LoggerA
         $status_code = $this->runner->run($input, $output, null, $this->commands);
         if (!empty($cassette) && !empty($mode)) {
             $this->stopVCR();
-        } elseif ($input->isInteractive()) {
-            $this->runUpdateChecker();
         }
         return $status_code;
     }
@@ -453,12 +448,5 @@ class Terminus implements ConfigAwareInterface, ContainerAwareInterface, LoggerA
         VCR::turnOff();
     }
 
-    /**
-     * Runs the UpdateChecker to check for new Terminus versions
-     */
-    private function runUpdateChecker()
-    {
-        $file_store = new FileStore($this->getConfig()->get('cache_dir'));
-        //$this->runner->getContainer()->get(UpdateChecker::class, [$file_store,])->run();
-    }
+
 }

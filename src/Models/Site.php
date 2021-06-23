@@ -27,6 +27,9 @@ class Site extends TerminusModel implements ContainerAwareInterface, Organizatio
     use OrganizationsTrait;
     use LocalCopiesTrait;
 
+    /**
+     *
+     */
     const PRETTY_NAME = 'site';
 
     /**
@@ -238,7 +241,7 @@ class Site extends TerminusModel implements ContainerAwareInterface, Organizatio
         if (empty($this->new_relic)) {
             $nickname = \uniqid(__FUNCTION__ . "-");
             $this->getContainer()->add($nickname, NewRelic::class)
-                ->addArgumentss([null, ['site' => $this]]);
+                ->addArguments([null, ['site' => $this]]);
             $this->new_relic = $this->getContainer()->get($nickname);
         }
         return $this->new_relic;
@@ -481,11 +484,18 @@ class Site extends TerminusModel implements ContainerAwareInterface, Organizatio
         }
     }
 
+    /**
+     * @return bool
+     */
     public function valid():bool
     {
         return (bool) $this->id;
     }
 
+    /**
+     * @return string
+     * @throws \Pantheon\Terminus\Exceptions\TerminusException
+     */
     public function getLocalCopyFolder(): string
     {
         $local_copy_folder = $this->getLocalCopiesFolder() . DIRECTORY_SEPARATOR . $this->getName();

@@ -1,5 +1,9 @@
 # terminus : Pantheon's Command-Line Interface
 
+## ***COTRIBUTING***
+
+We need help with testing. Take a look in `tests/Functional` and any test that's just `$this->fail("figure out how to test");` and feel free to file a pull request against that.
+
 ## Status
 
 [![Commit Build](https://github.com/pantheon-systems/terminus/actions/workflows/ci.yml/badge.svg?branch=v3.0)](https://github.com/pantheon-systems/terminus/actions/workflows/ci.yml)

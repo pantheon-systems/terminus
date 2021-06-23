@@ -42,12 +42,14 @@ class Request implements
     ConfigAwareInterface,
     ContainerAwareInterface,
     LoggerAwareInterface,
-    SessionAwareInterface
+    SessionAwareInterface,
+    IOAwareInterface
 {
     use ConfigAwareTrait;
     use ContainerAwareTrait;
     use LoggerAwareTrait;
     use SessionAwareTrait;
+    use IO;
 
     const PAGED_REQUEST_ENTRY_LIMIT = 100;
 
@@ -311,12 +313,16 @@ class Request implements
             ),
             $options
         );
-        $body = \json_decode(
-            $response->getBody()->getContents(),
-            false,
-            512,
-            JSON_THROW_ON_ERROR
-        );
+        $body = $response->getBody()->getContents();
+        if ($body !== null) {
+            $body = \json_decode(
+                $body,
+                false,
+                512,
+                JSON_THROW_ON_ERROR
+            );
+        }
+
         return [
             'data' => $body,
             'headers' => $response->getHeaders(),

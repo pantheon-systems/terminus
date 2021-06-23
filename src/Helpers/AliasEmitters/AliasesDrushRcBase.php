@@ -2,45 +2,44 @@
 
 namespace Pantheon\Terminus\Helpers\AliasEmitters;
 
-use Symfony\Component\Filesystem\Filesystem;
+use Consolidation\Config\ConfigAwareInterface;
+use Pantheon\Terminus\Config\ConfigAwareTrait;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareTrait;
+use Twig\Environment;
+use Twig\Loader\FilesystemLoader;
 
-abstract class AliasesDrushRcBase implements AliasEmitterInterface
+abstract class AliasesDrushRcBase implements
+    AliasEmitterInterface,
+    ConfigAwareInterface,
+    LoggerAwareInterface
 {
+
+    use ConfigAwareTrait;
+    use LoggerAwareTrait;
+
     /**
      * Generate the contents for an aliases.drushrc.php file.
      *
      * @param array $alias_replacements
+     *
      * @return string
      */
     protected function getAliasContents(array $alias_replacements)
     {
-        $alias_file_contents = $this->getAliasHeader();
+        $loader = new FilesystemLoader($this->getConfigValue('root') . DIRECTORY_SEPARATOR . "templates");
+        $twig = new Environment($loader, [
+            'cache' => false,
+        ]);
+        $twig->getExtension(\Twig\Extension\EscaperExtension::class)
+            ->setDefaultStrategy('url');
+        $toReturn = $twig->load('aliases/header.aliases.drushrc.php.twig');
 
         foreach ($alias_replacements as $name => $replacements) {
-            $alias_fragment = $this->getAliasFragment($replacements);
-            $alias_file_contents .= $alias_fragment . "\n";
+            $this->logger->debug("Creating alias: " . print_r($replacements, true));
+            $toReturn .= $twig->render('', $replacements) . PHP_EOL;
         }
 
-        return $alias_file_contents;
-    }
-
-    /**
-     * Get the header that goes at the beginning of each alias file
-     *
-     * @return string
-     */
-    protected function getAliasHeader()
-    {
-        return Template::load('header.aliases.drushrc.php.tmpl');
-    }
-
-    /**
-     * Get the template for just one alias record and run the replacements
-     *
-     * @return string
-     */
-    protected function getAliasFragment($replacements)
-    {
-        return Template::process('fragment.aliases.drushrc.php.tmpl', $replacements);
+        return $twig->render('aliases/fragment.aliases.drushrc.php.twig', $alias_replacements);
     }
 }

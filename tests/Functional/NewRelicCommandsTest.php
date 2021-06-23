@@ -1,0 +1,37 @@
+<?php
+
+namespace Pantheon\Terminus\Tests\Functional;
+
+use Pantheon\Terminus\Tests\Traits\LoginHelperTrait;
+use Pantheon\Terminus\Tests\Traits\SiteBaseSetupTrait;
+use Pantheon\Terminus\Tests\Traits\TerminusTestTrait;
+use Pantheon\Terminus\Tests\Traits\UrlStatusCodeHelperTrait;
+use PHPUnit\Framework\TestCase;
+
+/**
+ * Class BackupCommandsTest
+ *
+ * @package Pantheon\Terminus\Tests\Functional
+ */
+class NewRelicCommandsTest extends TestCase
+{
+    use TerminusTestTrait;
+    use LoginHelperTrait;
+
+    /**
+     * @test
+     * @covers \Pantheon\Terminus\Commands\NewRelic\EnableCommand
+     * @covers \Pantheon\Terminus\Commands\NewRelic\DisableCommand
+     * @covers \Pantheon\Terminus\Commands\NewRelic\InfoCommand
+     *
+     * @group auth
+     * @gropu short
+     */
+    public function testAuthLogin()
+    {
+        $sitename = getenv('TERMINUS_SITE');
+        $info = $this->terminusJsonResponse("newrelic:info {$sitename}");
+
+    }
+
+}

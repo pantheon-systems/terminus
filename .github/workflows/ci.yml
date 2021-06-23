@@ -18,17 +18,17 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+      - name: Save repo content as artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: full-workspace
+          path: /home/runner/work/terminus/terminus
       - name: Full Composer Install
         run: composer install
       - name: Phar Build
         run: composer phar:build
       - name: permissions
         run: chmod +x ./t3
-      - name: Save repo content as artifact
-        uses: actions/upload-artifact@v2
-        with:
-          name: full-workspace
-          path: /home/runner/work/terminus/terminus
       - name: Save t3.phar as artifact
         uses: actions/upload-artifact@v2
         with:
@@ -39,7 +39,7 @@ jobs:
 
   commit:
     runs-on: ${{ matrix.operating-system }}
-    name: PHP ${{ matrix.php-versions }} on ${{ matrix.operating-system }}
+    name: Commit testing matrix - PHP ${{ matrix.php-versions }} on ${{ matrix.operating-system }}
     if: ${{ ! startsWith(github.ref, 'refs/tags/')  && github.repository_owner == 'pantheon-systems' }}
     strategy:
       matrix:
@@ -120,14 +120,18 @@ jobs:
         with:
           name: CoverageReport
           path: docs/TestCoverage.md
+      # If you've gotten this far, tag it as a release
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
-          files: t3
+          files: |
+          t3
           # Everything is a prerelease until we make it a release manually
           prerelease: true
+          # TODO: add a changelog to the release process
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
 
   package_macos:
     runs-on: macos-latest
@@ -135,10 +139,6 @@ jobs:
     if: ${{ startsWith(github.ref, 'refs/tags/')  && github.repository_owner == 'pantheon-systems' }}
     needs: [ 'tagged' ]
     steps:
-      - name: Download repo content from artifact
-        uses: actions/download-artifact@v2
-        with:
-          name: full-workspace
       - name: Brew Tap Terminus
         run: brew install stovak/t3/terminus
       - name: Update tap with new release

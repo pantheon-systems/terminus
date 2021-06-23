@@ -2,10 +2,19 @@
 
 namespace Pantheon\Terminus\Helpers\AliasEmitters;
 
+use Pantheon\Terminus\Config\ConfigAwareTrait;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareTrait;
+use Robo\Contract\ConfigAwareInterface;
 use Symfony\Component\Filesystem\Filesystem;
 
-class AliasesDrushRcEmitter extends AliasesDrushRcBase
+class AliasesDrushRcEmitter extends AliasesDrushRcBase implements
+    ConfigAwareInterface,
+    LoggerAwareInterface
 {
+    use ConfigAwareTrait;
+    use LoggerAwareTrait;
+
     protected $location;
 
     /**
@@ -43,7 +52,7 @@ class AliasesDrushRcEmitter extends AliasesDrushRcBase
         // Add in our directory location to the Drush alias file search path
         $drushRCEditor = new DrushRcEditor($this->base_dir);
         $drushConfig = $drushRCEditor->getDrushConfig();
-        $drushConfigFiltered = implode("\n", array_filter($drushConfig, array($this, 'filterForPantheon')));
+        $drushConfigFiltered = implode("\n", array_filter($drushConfig, [$this, 'filterForPantheon']));
         $drushConfigFiltered .= "\n" . '$options["include"][] = drush_server_home() . "/.drush/pantheon/drush8";';
         $drushRCEditor->writeDrushConfig($drushConfigFiltered);
 

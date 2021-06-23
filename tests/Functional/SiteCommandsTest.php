@@ -114,15 +114,15 @@ class SiteCommandsTest extends TestCase
         $org = getenv('TERMINUS_SITE');
 
         $this->terminus(
-            vprintf(
-                'site:create %s %s, drupal9 --org=%s',
+            vsprintf(
+                'site:create %s %s drupal9 --org=%s',
                 [ $sitename, $sitename, $org ]
             ),
             null
         );
         sleep(10);
         $info = $this->terminusJsonResponse(
-            vprintf(
+            vsprintf(
                 "site:info %s",
                 [$sitename]
             ),
@@ -130,7 +130,7 @@ class SiteCommandsTest extends TestCase
         );
         $this->assertEquals($org, $info['organization']);
         $this->terminus(
-            sprintf(
+            vsprintf(
                 'site:delete %d',
                 [$sitename]
             ),
