@@ -126,7 +126,6 @@ jobs:
         with:
           files: |
           t3
-          # Everything is a prerelease until we make it a release manually
           prerelease: true
           # TODO: add a changelog to the release process
         env:
