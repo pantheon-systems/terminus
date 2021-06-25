@@ -65,7 +65,7 @@ These packages will install when you install Terminus.
 
 
 | Command                   | Description                                                  | ⚖️ |
-| ========================= | ------------------------------------------------------------ | -- |
+| ------------------------- | ------------------------------------------------------------ | -- |
 | aliases                   | Generates Pantheon Drush aliases for sites on which the      | ❌ |
 |                           | currently logged-in user is on the team.                     |    |
 | art                       | Displays Pantheon ASCII artwork.                             | ❓ |

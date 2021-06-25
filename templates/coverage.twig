@@ -1,7 +1,7 @@
 
 
 | {{ "%-25s" | format("Command") }} | {{ "%-60s" | format("Description") }} | {{ "%2s" | format("⚖️") }} |
-| {{ "%'=25s" | format("") }} | {{ "%'-60s" | format("") }} | {{ "%'-2s" | format("") }} |
+| {{ "%'-25s" | format("") }} | {{ "%'-60s" | format("") }} | {{ "%'-2s" | format("") }} |
 {% for command in commands %}
 {% set desc = command.description %}{% set cmd = command.command %}{% set testResult = command.status %}
 {% for row in desc %}
