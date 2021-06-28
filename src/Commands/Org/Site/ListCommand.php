@@ -5,11 +5,13 @@ namespace Pantheon\Terminus\Commands\Org\Site;
 use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
 use Pantheon\Terminus\Commands\TerminusCommand;
 use Pantheon\Terminus\Commands\StructuredListTrait;
+use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 
 /**
  * Class ListCommand
+ *
  * @package Pantheon\Terminus\Commands\Org\Site
  */
 class ListCommand extends TerminusCommand implements SiteAwareInterface
@@ -35,20 +37,26 @@ class ListCommand extends TerminusCommand implements SiteAwareInterface
      *     created: Created
      *     tags: Tags
      *     frozen: Is Frozen?
-     * @return RowsOfFields
+     * @param        string $organization Organization name, label, or ID
+     * @param        null[] $options
+     * @return       RowsOfFields
      *
-     * @param string $organization Organization name, label, or ID
+     * @throws TerminusNotFoundException
      * @option plan DEPRECATED Plan filter; filter by the plan's label
-     * @option string $tag DEPRECATED Tag name to filter
+     * @option string $tag A comma-separated list of tags to filter by (ANY can match)
+     * @option string $tags A comma-separated list of tags to filter by (ALL must match)
      * @option string $upstream Upstream name to filter
      *
      * @usage <organization> Displays the list of sites associated with <organization>.
      * @usage <organization> --plan=<plan> Displays the list of sites associated with <organization> having the plan named <plan>.
-     * @usage <organization> --tag=<tag> Displays the list of sites associated with <organization> that have the <tag> tag.
+     * @usage <organization> --tag=<tag> Displays the list of sites associated with <organization> that have ANY <tag> tag.
+     * @usage <organization> --tags=<tags> Displays the list of sites associated with <organization> that have ALL <tags> tags.
      * @usage <organization> --upstream=<upstream> Displays the list of sites associated with <organization> with the upstream having UUID <upstream>.
      */
-    public function listSites($organization, $options = ['plan' => null, 'tag' => null, 'upstream' => null,])
-    {
+    public function listSites(
+        $organization,
+        $options = ['plan' => null, 'tag' => null, 'tags' => null, 'upstream' => null,]
+    ) {
         $org = $this->session()->getUser()->getOrganizationMemberships()->get($organization)->getOrganization();
         $this->sites->fetch(['org_id' => $org->id,]);
         if (isset($options['plan']) && !is_null($plan = $options['plan'])) {
@@ -56,6 +64,9 @@ class ListCommand extends TerminusCommand implements SiteAwareInterface
         }
         if (!is_null($tag = $options['tag'])) {
             $this->sites->filterByTag($tag);
+        }
+        if (!is_null($tags = $options['tags'])) {
+            $this->sites->filterByTags($tags);
         }
         if (!is_null($upstream = $options['upstream'])) {
             $this->sites->filterByUpstream($upstream);
