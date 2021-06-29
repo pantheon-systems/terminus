@@ -7,6 +7,7 @@ use Pantheon\Terminus\Tests\Traits\SiteBaseSetupTrait;
 use Pantheon\Terminus\Tests\Traits\TerminusTestTrait;
 use Pantheon\Terminus\Tests\Traits\ValidUuidTrait;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\Console\Output\ConsoleOutput;
 
 class SiteCommandsTest extends TestCase
 {
@@ -103,38 +104,36 @@ class SiteCommandsTest extends TestCase
      *
      * @test
      * @covers \Pantheon\Terminus\Commands\Site\CreateCommand
-     * @covers \Pantheon\Terminus\Commands\Site\DeleteCommand
      * @covers \Pantheon\Terminus\Commands\Site\InfoCommand
      * @group site
      * @group long
+     * @throws \JsonException
      */
     public function testSiteCreateInfoDeleteCommand()
     {
-        $sitename = \uniqid(__METHOD__ . "-");
+        $output = new ConsoleOutput();
+        $sitename = \strtolower(\substr(\uniqid('site-create-'), -50));
         $org = getenv('TERMINUS_ORG');
-
-        $this->terminus(
-            vsprintf(
-                'site:create %s %s drupal9 --org=%s',
-                [ $sitename, $sitename, $org ]
-            ),
-            null
+        $output->writeln("Step 1 => Sitename => Creating... {$sitename}");
+        $command = vsprintf(
+            'site:create %s %s drupal9 --org=%s',
+            [ $sitename, $sitename, $org ]
         );
-        sleep(10);
-        $info = $this->terminusJsonResponse(
-            vsprintf(
-                "site:info %s",
-                [$sitename]
-            ),
-            null
+        $output->writeln($command);
+        $this->terminus($command, null);
+        $output->writeln("Step 2 => get info => {$sitename}");
+        $command = vsprintf(
+            'site:info %s',
+            [$sitename]
         );
+        $info = $this->terminusJsonResponse($command, null);
         $this->assertEquals($org, $info['organization']);
-        $this->terminus(
-            vsprintf(
-                'site:delete %d',
-                [$sitename]
-            ),
-            null
+        $output->writeln("Step 3 => Delete Site => {$sitename}");
+        $command = vsprintf(
+            'site:delete %s --yes',
+            [$info['id']]
         );
+        $output->writeln($command);
+        $this->terminus($command, null);
     }
 }

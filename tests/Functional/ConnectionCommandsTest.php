@@ -31,14 +31,14 @@ class ConnectionCommandsTest extends TestCase
     {
         $sitename = getenv('TERMINUS_SITE');
         $info = $this->terminusJsonResponse(
-            "connection:info {$sitename}"
+            "connection:info {$sitename}.dev"
         );
         $this->assertIsArray(
             $info,
             "returned data should be an array"
         );
         $this->assertArrayHasKey(
-            "sftp_commend",
+            "sftp_command",
             $info,
             "returned data should have sftp command."
         );

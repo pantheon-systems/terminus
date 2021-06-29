@@ -1,3 +1,5 @@
 brew "php@7.4"
 brew "git"
 brew "bash"
+brew "gh"
+

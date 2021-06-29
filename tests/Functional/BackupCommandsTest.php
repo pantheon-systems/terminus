@@ -63,4 +63,40 @@ class BackupCommandsTest extends TestCase
         $statusCode = $this->getStatusCodeForUrl($url);
         $this->assertEquals(200, $statusCode, "Status Code from backup url should be 200");
     }
+
+    /**
+     * @test
+     * @covers \Pantheon\Terminus\Commands\Backup\Automatic\InfoCommand
+     * @covers \Pantheon\Terminus\Commands\Backup\Automatic\EnableCommand
+     * @covers \Pantheon\Terminus\Commands\Backup\Automatic\DisableCommand
+     *
+     * @group backup
+     * @group long
+     */
+    public function testAutomaticBackupInfoEnableDisable()
+    {
+        $siteName = getenv('TERMINUS_SITE');
+        $auto = $this->terminusJsonResponse("backup:automatic:info {$siteName}.live");
+        $this->assertIsArray(
+            $auto,
+            "returned auto database backup call should return an array"
+        );
+        $this->assertArrayHasKey(
+            'daily_backup_hour',
+            $auto,
+            'Backup info response should have file property'
+        );
+        $this->assertArrayHasKey(
+            'expiry',
+            $auto,
+            'Backup info response should have file property'
+        );
+        $newValue = $auto['weekly_backup_day'] === null ? "enable" : "disable";
+        $this->terminus("backup:automatic:{$newValue} {$siteName}.live", null);
+        sleep(20);
+        $auto2 = $this->terminusJsonResponse("backup:automatic:info {$siteName}.live");
+        $newValue2 = $auto2['weekly_backup_day'] === null ? 'enable' : 'disable';
+        $this->assertNotEquals($newValue, $newValue2);
+        $this->terminus("backup:automatic:{$newValue2} {$siteName}.live", null);
+    }
 }

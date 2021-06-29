@@ -114,8 +114,7 @@
     ],
     "test:all": [
       "@phar:build",
-      "@functional:all",
-      "@coverage"
+      "@functional:all"
     ],
     "coverage": [
       "vendor/bin/robo coverage ./docs/TestCoverage.md"
