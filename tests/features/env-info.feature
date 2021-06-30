@@ -9,7 +9,7 @@ Feature: Displaying environmental information
 
   @vcr env-info.yml
   Scenario: Checking environmental information
-    When I run "terminus env:info [[test_site_name]].dev"
+    When I run "[[executable]] env:info [[test_site_name]].dev"
     Then I should see a table with rows like:
     """
       ID
@@ -25,7 +25,7 @@ Feature: Displaying environmental information
   Scenario: Checking environmental information
     When I set the environment variable "TERMINUS_SITE" to "[[test_site_name]]"
     And I set the environment variable "TERMINUS_ENV" to "dev"
-    And I run "terminus env:info"
+    And I run "[[executable]] env:info"
     Then I should see a table with rows like:
     """
       ID
@@ -39,19 +39,19 @@ Feature: Displaying environmental information
 
   @vcr env-info.yml
   Scenario: Checking an information field of an environment
-    When I run "terminus env:info [[test_site_name]].dev --field=connection_mode"
+    When I run "[[executable]] env:info [[test_site_name]].dev --field=connection_mode"
     Then I should get one of the following: "git, sftp"
 
   @vcr env-info.yml
   Scenario: Checking an information field of an environment
     When I set the environment variable "TERMINUS_SITE" to "[[test_site_name]]"
     And I set the environment variable "TERMINUS_ENV" to "dev"
-    And I run "terminus env:info --field=connection_mode"
+    And I run "[[executable]] env:info --field=connection_mode"
     Then I should get one of the following: "git, sftp"
 
   @vcr env-info.yml
   Scenario: Failing to check an invalid field
-    When I run "terminus env:info [[test_site_name]].dev --field=invalid"
+    When I run "[[executable]] env:info [[test_site_name]].dev --field=invalid"
     Then I should get:
     """
     The requested field, 'invalid', is not defined.

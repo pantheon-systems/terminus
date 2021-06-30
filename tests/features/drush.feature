@@ -10,5 +10,5 @@ Feature: Running Drush Commands on a Drupal Site
   @vcr drush.yml
   Scenario: Running a simple drush command
     When I run: terminus drush [[test_site_name]].dev -- version
-    Then I should get: "Terminus is in test mode"
+    Then I should get: "[[executable]] is in test mode"
     And I should get: "drush version"

@@ -9,7 +9,7 @@ Feature: Get a particular backup for a site
 
   @vcr backup-get-file.yml
   Scenario: Gets information about the latest code backup made
-    When I run "terminus backup:info [[test_site_name]].dev --element=code"
+    When I run "[[executable]] backup:info [[test_site_name]].dev --element=code"
     Then I should get: "----------- -----------------------------------------------------"
     And I should get: "Filename    [[test_site_name]]_dev_2016-08-18T23-16-20_UTC_code.tar.gz"
     And I should get: "Size        31.8MB"
@@ -20,7 +20,7 @@ Feature: Get a particular backup for a site
 
   @vcr backup-get-file.yml
   Scenario: Gets informtion about a backup selected by filename
-    When I run "terminus backup:info [[test_site_name]].dev --file=[[test_site_name]]_dev_2016-08-18T23-16-20_UTC_code.tar.gz"
+    When I run "[[executable]] backup:info [[test_site_name]].dev --file=[[test_site_name]]_dev_2016-08-18T23-16-20_UTC_code.tar.gz"
     Then I should get: "----------- -----------------------------------------------------"
     And I should get: "Filename    [[test_site_name]]_dev_2016-08-18T23-16-20_UTC_code.tar.gz"
     And I should get: "Size        31.8MB"
@@ -31,7 +31,7 @@ Feature: Get a particular backup for a site
 
   @vcr backup-get-none.yml
   Scenario: Failing to find a matching backup
-    When I run "terminus backup:info [[test_site_name]].test --element=database"
+    When I run "[[executable]] backup:info [[test_site_name]].test --element=database"
     Then I should get:
     """
     No backups available. Create one with `terminus backup:create [[test_site_name]].test`

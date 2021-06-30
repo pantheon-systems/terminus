@@ -9,7 +9,7 @@ Feature: Listing a site's environments
 
   @vcr env-list.yml
   Scenario: Listing all environments belonging to a site
-    When I run "terminus env:list [[test_site_name]]"
+    When I run "[[executable]] env:list [[test_site_name]]"
     Then I should see a table with rows like:
     """
       ID
@@ -22,7 +22,7 @@ Feature: Listing a site's environments
 
   @vcr env-list-empty.yml
   Scenario: Listing all environments belonging to a site when none are returned
-    When I run "terminus env:list [[test_site_name]]"
+    When I run "[[executable]] env:list [[test_site_name]]"
     Then I should get the warning: "You have no environments."
     And I should see a table with rows like:
     """

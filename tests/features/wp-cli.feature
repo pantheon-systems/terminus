@@ -10,5 +10,5 @@ Feature: Running WP-CLI Commands on a Drupal Site
   @vcr wp.yml
   Scenario: Running a simple WP-CLI command
     When I run: terminus wp [[test_site_name]].dev -- cli version
-    Then I should get: "Terminus is in test mode"
+    Then I should get: "[[executable]] is in test mode"
     And I should get: "wp cli version"

@@ -9,7 +9,7 @@ Feature: New Relic
 
   @vcr new-relic-info.yml
   Scenario: Accessing New Relic data
-    When I run "terminus new-relic:info [[test_site_name]]"
+    When I run "[[executable]] new-relic:info [[test_site_name]]"
     Then I should get: "--------------- --"
     And I should get: "Name"
     And I should get: "Status"
@@ -19,10 +19,10 @@ Feature: New Relic
 
   @vcr new-relic-enable.yml
   Scenario: Enabling New Relic data
-    When I run "terminus new-relic:enable [[test_site_name]]"
+    When I run "[[executable]] new-relic:enable [[test_site_name]]"
     Then I should get: "Enable New Relic"
 
   @vcr new-relic-disable.yml
   Scenario: Disabling New Relic data
-    When I run "terminus new-relic:disable [[test_site_name]]"
+    When I run "[[executable]] new-relic:disable [[test_site_name]]"
     Then I should get: "Disabling New Relic"

@@ -9,5 +9,5 @@ Feature: Clearing a site's code cache
 
   @vcr site-upstream-cache-clear.yml
   Scenario: Clear the site's code cache
-    When I run "terminus site:upstream:clear-cache [[test_site_name]]"
+    When I run "[[executable]] site:upstream:clear-cache [[test_site_name]]"
     Then I should get: "Code cache cleared on [[test_site_name]]."

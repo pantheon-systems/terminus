@@ -9,7 +9,7 @@ Feature: Merging into dev from an environment
 
   @vcr multidev-merge-to-dev.yml
   Scenario: Merge a multidev to dev environment
-    When I run "terminus multidev:merge-to-dev [[test_site_name]].multidev"
+    When I run "[[executable]] multidev:merge-to-dev [[test_site_name]].multidev"
     Then I should get:
     """
     Merged the multidev environment into dev

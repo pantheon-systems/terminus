@@ -9,5 +9,5 @@ Feature: Complete site migration
 
   @vcr site-import-complete.yml
   Scenario: Complete a site migration
-    When I run "terminus site:import:complete [[test_site_name]]"
+    When I run "[[executable]] site:import:complete [[test_site_name]]"
     Then I should get: "The import of [[test_site_name]] has been marked as complete."

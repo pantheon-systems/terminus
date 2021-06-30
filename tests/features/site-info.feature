@@ -9,7 +9,7 @@ Feature: View site information
 
   @vcr site-info.yml
   Scenario: Site Info
-    When I run "terminus site:info [[test_site_name]]"
+    When I run "[[executable]] site:info [[test_site_name]]"
     Then I should see a table with rows like:
     """
       ID
@@ -30,7 +30,7 @@ Feature: View site information
   @vcr site-info.yml
   Scenario: Site Info
     When I set the environment variable "TERMINUS_SITE" to "[[test_site_name]]"
-    And I run "terminus site:info"
+    And I run "[[executable]] site:info"
     Then I should see a table with rows like:
     """
       ID
@@ -50,6 +50,6 @@ Feature: View site information
 
   @vcr site-info-owner.yml
   Scenario: Site info for a specific field
-    When I run "terminus site:info [[test_site_name]] --field=id"
+    When I run "[[executable]] site:info [[test_site_name]] --field=id"
     Then I should get: "11111111-1111-1111-1111-111111111111"
 

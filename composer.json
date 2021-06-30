@@ -57,7 +57,8 @@
   },
   "autoload-dev": {
     "psr-4": {
-      "Pantheon\\Terminus\\Tests\\Functional\\": "tests/Functional/"
+      "Pantheon\\Terminus\\Tests\\Functional\\": "tests/Functional/",
+      "Pantheon\\Terminus\\FeatureTests\\": "tests/features/bootstrap/"
     },
     "classmap": [
       "scripts/UpdateClassLists.php"
@@ -107,14 +108,20 @@
     "code:setup-precommit": [
       "bash scripts/setup-precommit.sh"
     ],
+    "test:behat": [
+      "SHELL_INTERACTIVE=true behat --colors --config tests/config/behat.yml --suite=default"
+    ],
     "test:short": [
-      "@phar:build",
-      "@functional:short",
+      "XDEBUG_MODE=coverage phpunit --colors=always -c ./phpunit.xml --debug --group=short --do-not-cache-result",
+      "@coverage"
+    ],
+    "test:functional": [
+      "XDEBUG_MODE=coverage phpunit --colors=always -c ./phpunit.xml --debug --do-not-cache-result",
       "@coverage"
     ],
     "test:all": [
-      "@phar:build",
-      "@functional:all"
+      "@test:functional",
+      "@test:behat"
     ],
     "coverage": [
       "vendor/bin/robo coverage ./docs/TestCoverage.md"
@@ -125,12 +132,6 @@
     "docs": [
       "vendor/bin/robo doc ./README.md",
       "git add README.md"
-    ],
-    "functional:short": [
-      "XDEBUG_MODE=coverage phpunit --colors=always -c ./phpunit.xml --debug --group=short --do-not-cache-result"
-    ],
-    "functional:all": [
-      "XDEBUG_MODE=coverage phpunit --colors=always -c ./phpunit.xml --debug --do-not-cache-result"
     ],
     "post-install-cmd": [
       "Tooly\\ScriptHandler::installPharTools"

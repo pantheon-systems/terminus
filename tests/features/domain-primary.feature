@@ -9,7 +9,7 @@ Feature: Adding a primary domain to an environment
 
   @vcr domain-primary-add.yml
   Scenario: Adding a primary domain to an environment
-    When I run "terminus domain:primary:add [[test_site_name]].live testdomain.com"
+    When I run "[[executable]] domain:primary:add [[test_site_name]].live testdomain.com"
     Then I should get "."
     And I should get "."
     Then I should get:
@@ -19,7 +19,7 @@ Feature: Adding a primary domain to an environment
 
   @vcr domain-primary-add.yml
   Scenario: Removing a primary domain from an environment
-    When I run "terminus domain:primary:remove [[test_site_name]].live"
+    When I run "[[executable]] domain:primary:remove [[test_site_name]].live"
     Then I should get "."
     And I should get "."
     Then I should get:

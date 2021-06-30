@@ -9,5 +9,5 @@ Feature: Listing commits on an environment
 
   @vcr env-code-log.yml
   Scenario: Listing the commit log of a site
-    When I run "terminus env:code-log [[test_site_name]].dev"
+    When I run "[[executable]] env:code-log [[test_site_name]].dev"
     Then I should get: "Initial Commit"

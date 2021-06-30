@@ -135,7 +135,9 @@ class Terminus implements
             ->invokeMethod('setRequest', ['request']);
 
         // Session
-        $session_store = new FileStore($this->getConfig()->get('cache_dir'));
+        $session_store = new FileStore(
+            $this->getConfig()->get('cache_dir')
+        );
         $session = new Session($session_store);
         $container->share('session', $session);
         $container->inflector(SessionAwareInterface::class)

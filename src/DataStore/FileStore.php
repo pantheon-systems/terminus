@@ -23,7 +23,7 @@ class FileStore extends \DirectoryIterator implements DataStoreInterface
     public function get($key)
     {
         $tokenFilename = $this->getRealPath() . DIRECTORY_SEPARATOR . $this->cleanKey($key);
-        if (file_exists($tokenFilename)) {
+        if (file_exists($tokenFilename) && is_file($tokenFilename)) {
             try {
                 $toReturn = json_decode(
                     file_get_contents($tokenFilename),
@@ -31,7 +31,9 @@ class FileStore extends \DirectoryIterator implements DataStoreInterface
                     512,
                     JSON_THROW_ON_ERROR
                 );
-                $toReturn->id = $key;
+                if ($toReturn instanceof \stdClass) {
+                    $toReturn->id = $key;
+                }
                 return $toReturn;
             } catch (\Exception $e) {
                 // TODO: handle not found error

@@ -9,7 +9,7 @@ Feature: Adding domains to an environment
 
   @vcr domain-add.yml
   Scenario: Adding a domain to an environment
-    When I run "terminus domain:add [[test_site_name]].live testdomain.com"
+    When I run "[[executable]] domain:add [[test_site_name]].live testdomain.com"
     Then I should get:
     """
     Added testdomain.com to [[test_site_name]].live
@@ -17,7 +17,7 @@ Feature: Adding domains to an environment
 
   @vcr domain-remove.yml
   Scenario: Removing a domain from an environment
-    When I run "terminus domain:remove [[test_site_name]].live testdomain.com"
+    When I run "[[executable]] domain:remove [[test_site_name]].live testdomain.com"
     Then I should get:
     """
     Removed testdomain.com from [[test_site_name]].live
@@ -25,7 +25,7 @@ Feature: Adding domains to an environment
 
   @vcr domain-list.yml
   Scenario: Listing all domains belonging to an environment
-    When I run "terminus domain:list [[test_site_name]].live"
+    When I run "[[executable]] domain:list [[test_site_name]].live"
     Then I should see a table with rows like:
     """
       Domain/ID
@@ -35,13 +35,13 @@ Feature: Adding domains to an environment
 
   @vcr domain-list-empty.yml
   Scenario: Listing all domains belonging to an environment
-    When I run "terminus domain:list [[test_site_name]].live"
+    When I run "[[executable]] domain:list [[test_site_name]].live"
     Then I should get the warning: "You have no domains."
     And I should have "0" records
 
   @vcr domain-lookup.yml
   Scenario: Looking up a domain belonging to [[test_site_name]]
-    When I run "terminus domain:lookup dev-[[test_site_name]].onebox.pantheon.io"
+    When I run "[[executable]] domain:lookup dev-[[test_site_name]].onebox.pantheon.io"
     Then I should get: "This operation may take a long time to run."
     And I should get: "---------------- --------------------------------------"
     And I should get: "Site ID          11111111-1111-1111-1111-111111111111"
@@ -51,7 +51,7 @@ Feature: Adding domains to an environment
 
   @vcr domain-lookup.yml
   Scenario: Failing to look up an invalid domain
-    When I run "terminus domain:lookup invalid"
+    When I run "[[executable]] domain:lookup invalid"
     Then I should get: "This operation may take a long time to run."
     And I should get:
     """
@@ -60,7 +60,7 @@ Feature: Adding domains to an environment
 
   @vcr domain-dns.yml
   Scenario: Looking up the DNS recommendations for [[test_site_name]]
-    When I run "terminus domain:dns [[test_site_name]].dev"
+    When I run "[[executable]] domain:dns [[test_site_name]].dev"
     Then I should get: "-------------------- ------------- ---------------------------------- ---------------------------------- -------- ------------------------"
     And I should get: "Domain               Record Type   Recommended Value                  Detected Value                     Status   Status Message"
     And I should get: "-------------------- ------------- ---------------------------------- ---------------------------------- -------- ------------------------"

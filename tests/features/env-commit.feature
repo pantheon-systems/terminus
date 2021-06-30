@@ -9,9 +9,9 @@ Feature: Committing code to an environment's branch
 
   @vcr env-commit.yml
   Scenario: Committing a change
-    When I run "terminus env:commit [[test_site_name]].dev --message='Behat test commit'"
+    When I run "[[executable]] env:commit [[test_site_name]].dev --message='Behat test commit'"
     Then I should get: "There is no code to commit."
-    When I run "terminus env:code-log [[test_site_name]].dev"
+    When I run "[[executable]] env:code-log [[test_site_name]].dev"
     Then I should get: "--------------------- ---------- ----------------- ------------------------------------------ -------------------"
     And I should get: "Timestamp             Author     Labels            Commit ID                                  Message"
     And I should get: "--------------------- ---------- ----------------- ------------------------------------------ -------------------"

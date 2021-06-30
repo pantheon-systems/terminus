@@ -9,7 +9,7 @@ Feature: Set a site's service level
 
   @vcr plan-set.yml
   Scenario: Changing the plan of a site
-    When I run "terminus plan:set [[test_site_name]] plan-free-preferred-monthly-1"
+    When I run "[[executable]] plan:set [[test_site_name]] plan-free-preferred-monthly-1"
     Then I should get:
     """
     Setting plan of "[[test_site_name]]" to "plan-free-preferred-monthly-1".
@@ -18,5 +18,5 @@ Feature: Set a site's service level
 
   @vcr plan-set-fail.yml
   Scenario: Attempting to change the plan to an ineligible plan
-    When I run "terminus plan:set [[test_site_name]] invalid"
+    When I run "[[executable]] plan:set [[test_site_name]] invalid"
     Then I should get: "Could not find a plan identified by invalid."

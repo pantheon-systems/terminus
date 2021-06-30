@@ -10,15 +10,15 @@ Feature: Check an environment's upstream update status
 
   @vcr upstream-updates.yml
   Scenario: Check for upstream update status when it's current
-    When I run "terminus upstream:updates:status [[test_site_name]].dev"
+    When I run "[[executable]] upstream:updates:status [[test_site_name]].dev"
     Then I should get: "current"
 
   @vcr upstream-updates-no-code.yml
   Scenario: Check for upstream update status when there's no code in the branch
-    When I run "terminus upstream:updates:status [[test_site_name]].dev"
+    When I run "[[executable]] upstream:updates:status [[test_site_name]].dev"
     Then I should get: "current"
 
   @vcr upstream-update-list.yml
   Scenario: Check for upstream updates status when it's outdated
-    When I run "terminus upstream:updates:status [[test_site_name]].dev"
+    When I run "[[executable]] upstream:updates:status [[test_site_name]].dev"
     Then I should get: "outdated"

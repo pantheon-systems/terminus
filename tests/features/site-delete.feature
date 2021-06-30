@@ -9,5 +9,5 @@ Feature: Deleting a site
 
   @vcr site-delete.yml
   Scenario: Delete Site
-    When I run "terminus site:delete [[test_site_name]] --yes"
+    When I run "[[executable]] site:delete [[test_site_name]] --yes"
     Then I should get: "Deleted [[test_site_name]] from Pantheon"

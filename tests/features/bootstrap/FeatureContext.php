@@ -13,6 +13,7 @@ use Pantheon\Terminus\Exceptions\TerminusException;
  */
 class FeatureContext implements Context
 {
+    public $executable;
     public $cliroot = '';
     private $cache_file_name;
     private $cache_token_dir;
@@ -35,9 +36,13 @@ class FeatureContext implements Context
     public function __construct($parameters)
     {
         date_default_timezone_set('UTC');
+        $parameters['system_temp'] = sys_get_temp_dir();
+        $parameters['cache_dir'] = $this->replacePlaceholders($parameters['cache_dir'], $parameters);
+        $this->ensureDirectoryExists($parameters['cache_dir']);
         $tests_root            = dirname(dirname(__DIR__));
-        $this->fixtures_dir    = $tests_root . '/fixtures/functional';
+        $this->fixtures_dir    = $tests_root . DIRECTORY_SEPARATOR . 'fixtures'. DIRECTORY_SEPARATOR .'functional';
         $this->cliroot         = dirname($tests_root);
+        $this->executable      = $this->cliroot . DIRECTORY_SEPARATOR . $parameters['executable'];
         $this->parameters      = $parameters;
         $this->start_time      = time();
         $this->connection_info = [
@@ -48,8 +53,17 @@ class FeatureContext implements Context
 
         $this->cache_dir = $parameters['cache_dir'];
         $this->cache_token_dir = $this->cache_dir . "/tokens";
+        $this->ensureDirectoryExists($this->cache_token_dir);
         $this->plugin_dir = $this->fixtures_dir . '/plugins';
+        $this->ensureDirectoryExists($this->plugin_dir);
         $this->plugin_dir_name = self::DEFAULT_PLUGIN_DIR_NAME;
+    }
+
+    private function ensureDirectoryExists($dir)
+    {
+        if (!is_dir($dir)) {
+            mkdir($dir, 0700, true);
+        }
     }
 
     /**
@@ -65,7 +79,7 @@ class FeatureContext implements Context
     public function aSiteNamed($site)
     {
         try {
-            $this->iRun("terminus site:lookup $site");
+            $this->iRun("[[executable]] site:lookup $site");
         } catch (TerminusException $e) {
             throw new \Exception("Your user does not have a site named $site.");
         }
@@ -114,7 +128,7 @@ class FeatureContext implements Context
     public function selectPluginDir($dir_name)
     {
         $this->plugin_dir_name = $dir_name;
-        $this->iRun('terminus self:clear-cache');
+        $this->iRun('[[executable]]  self:clear-cache');
     }
 
     /**
@@ -130,9 +144,9 @@ class FeatureContext implements Context
     public function connectionMode($site, $mode = null)
     {
         if (is_null($mode)) {
-            $command = "terminus site env:info dev --site=$site --field=connection_mode";
+            $command = "[[executable]] site env:info dev --site=$site --field=connection_mode";
         } else {
-            $command = "terminus connection:set $mode --site=$site --env=dev";
+            $command = "[[executable]] connection:set $mode --site=$site --env=dev";
         }
         $this->iRun($command);
     }
@@ -147,7 +161,7 @@ class FeatureContext implements Context
      */
     public function iAddToTheTeamOn($email, $site)
     {
-        $this->iRun("terminus site:team:add $site $email");
+        $this->iRun("[[executable]] site:team:add $site $email");
     }
 
     /**
@@ -192,7 +206,7 @@ class FeatureContext implements Context
      */
     public function iCheckTheListOfEnvironmentsOn($site)
     {
-        $environments = $this->iRun("terminus env:list --site=$site");
+        $environments = $this->iRun("[[executable]] env:list --site=$site");
         return $environments;
     }
 
@@ -219,7 +233,7 @@ class FeatureContext implements Context
      */
     public function iCheckTheUserAmLoggedInAs()
     {
-        $this->iRun('terminus auth:whoami');
+        $this->iRun($this->executable . '  auth:whoami');
     }
 
     /**
@@ -232,7 +246,7 @@ class FeatureContext implements Context
      */
     public function iClearTheCaches($env, $site)
     {
-        $this->iRun("terminus env:clear-cache $env --site=$site");
+        $this->iRun("[[executable]] env:clear-cache $env --site=$site");
     }
 
     /**
@@ -245,7 +259,7 @@ class FeatureContext implements Context
      */
     public function iCloneTheEnvironment($from_env, $to_env, $site)
     {
-        $this->iRun("terminus env:clone --site=$site --from-env=$from_env --to-env=$to_env --yes");
+        $this->iRun("[[executable]] env:clone --site=$site --from-env=$from_env --to-env=$to_env --yes");
     }
 
     /**
@@ -259,7 +273,7 @@ class FeatureContext implements Context
      */
     public function iCommitChanges($env, $site, $message)
     {
-        $this->iRun("terminus env:commit $env --site=$site --message=" . '"' . $message . '" --yes');
+        $this->iRun("[[executable]] env:commit $env --site=$site --message=" . '"' . $message . '" --yes');
     }
 
     /**
@@ -277,7 +291,7 @@ class FeatureContext implements Context
         if ($org !== false) {
             $append_org = '--org=' . $org;
         }
-        $this->iRun("terminus site:create $name --label=$name --upstream=\"$upstream\" $append_org");
+        $this->iRun("[[executable]] site:create $name --label=$name --upstream=\"$upstream\" $append_org");
     }
 
     /**
@@ -291,7 +305,7 @@ class FeatureContext implements Context
      */
     public function iCreateMultidevEnv($multidev, $env, $site)
     {
-        $this->iRun("terminus multidev:create --site=$site --to-env=$multidev --from-env=$env");
+        $this->iRun("[[executable]] multidev:create --site=$site --to-env=$multidev --from-env=$env");
     }
 
     /**
@@ -303,7 +317,7 @@ class FeatureContext implements Context
      */
     public function iDeleteTheSiteNamed($site)
     {
-        $this->iRun("terminus site:delete $site --yes");
+        $this->iRun("[[executable]] site:delete $site --yes");
     }
 
     /**
@@ -317,7 +331,7 @@ class FeatureContext implements Context
      */
     public function iDeployTheEnvironmentOf($env, $from, $site, $message)
     {
-        $this->iRun("terminus env:deploy --site=$site --to-env=$env --from-env=$from --note=$message");
+        $this->iRun("[[executable]] env:deploy --site=$site --to-env=$env --from-env=$from --note=$message");
     }
 
     /**
@@ -343,7 +357,7 @@ class FeatureContext implements Context
      */
     public function iGetInfoForTheEnvironmentOf($env, $site)
     {
-        $return = json_decode($this->iRun("terminus env:info $env --site=$site --env=$env --format=json"));
+        $return = json_decode($this->iRun("[[executable]] env:info $env --site=$site --env=$env --format=json"));
         return $return;
     }
 
@@ -356,7 +370,7 @@ class FeatureContext implements Context
      */
     public function iGetInfoForTheSite($site)
     {
-        $return = $this->iRun("terminus site:info $site");
+        $return = $this->iRun("[[executable]] site:info $site");
         return $return;
     }
 
@@ -370,7 +384,7 @@ class FeatureContext implements Context
      */
     public function iHaveAtLeastSite($min)
     {
-        $sites       = json_decode($this->iRun('terminus site:list --format=json'));
+        $sites       = json_decode($this->iRun($this->executable . '  site:list --format=json'));
         $has_the_min = ($min <= count($sites));
         if (!$has_the_min) {
             throw new \Exception(count($sites) . ' sites found.');
@@ -426,7 +440,7 @@ class FeatureContext implements Context
      */
     public function iHaveSites($num = 0)
     {
-        $sites      = json_decode($this->iRun('terminus site:list --format=json'));
+        $sites      = json_decode($this->iRun($this->executable . '  site:list --format=json'));
         $has_amount = ($num === count($sites));
         if (!$has_amount) {
             throw new \Exception(count($sites) . ' sites found.');
@@ -443,7 +457,7 @@ class FeatureContext implements Context
      */
     public function iInitializeTheEnvironmentOn($env, $site)
     {
-        $this->iRun("terminus env:deploy $env --site=$site");
+        $this->iRun("[[executable]] env:deploy $env --site=$site");
     }
 
     /**
@@ -456,7 +470,7 @@ class FeatureContext implements Context
      */
     public function iInstallTheModuleTo($module, $site)
     {
-        $this->iRun("terminus drush --command='dl $module -y' --site=$site --env=dev");
+        $this->iRun("[[executable]] drush --command='dl $module -y' --site=$site --env=dev");
     }
 
     /**
@@ -467,7 +481,7 @@ class FeatureContext implements Context
      */
     public function iListTheSites()
     {
-        $this->iRun('terminus site:list');
+        $this->iRun($this->executable . '  site:list');
     }
 
     /**
@@ -479,7 +493,7 @@ class FeatureContext implements Context
      */
     public function iListTheTeamMembersOn($site)
     {
-        $this->iRun("terminus site:team:list $site");
+        $this->iRun("[[executable]] site:team:list $site");
     }
 
     /**
@@ -492,7 +506,7 @@ class FeatureContext implements Context
      */
     public function iListTheBackupsOf($env, $site)
     {
-        $return = $this->iRun("terminus backup:list --site=$site --env=$env");
+        $return = $this->iRun("[[executable]] backup:list --site=$site --env=$env");
         return $return;
     }
 
@@ -507,7 +521,7 @@ class FeatureContext implements Context
      */
     public function iLogIn($token = '[[machine_token]]')
     {
-        $this->iRun("terminus auth:login --machine-token=$token");
+        $this->iRun("[[executable]] auth:login --machine-token=$token");
     }
 
     /**
@@ -519,7 +533,7 @@ class FeatureContext implements Context
      */
     public function iLogInAs($email = '[[username]]')
     {
-        $this->iRun("terminus auth:login --email=$email");
+        $this->iRun("[[executable]] auth:login --email=$email");
     }
 
     /**
@@ -531,7 +545,7 @@ class FeatureContext implements Context
      */
     public function iLogOut()
     {
-        $this->iRun("terminus auth:logout");
+        $this->iRun("[[executable]] auth:logout");
     }
 
     /**
@@ -546,7 +560,7 @@ class FeatureContext implements Context
      */
     public function iMakeBackupElementsOfTheEnvironment($elements, $env, $site)
     {
-        $this->iRun("terminus backup:create --site=$site --env=$env --element=$elements");
+        $this->iRun("[[executable]] backup:create --site=$site --env=$env --element=$elements");
     }
 
     /**
@@ -560,9 +574,9 @@ class FeatureContext implements Context
     public function iMergeTheEnvironment($from_env, $to_env, $site)
     {
         if ($to_env ==='dev') {
-            $this->iRun("terminus env:merge-to-dev $site.$from_env");
+            $this->iRun("[[executable]] env:merge-to-dev $site.$from_env");
         } else {
-            $this->iRun("terminus env:merge-from-dev $site.$to_env");
+            $this->iRun("[[executable]] env:merge-from-dev $site.$to_env");
         }
     }
 
@@ -576,7 +590,7 @@ class FeatureContext implements Context
      */
     public function iRemoveFromTheTeamOn($email, $site)
     {
-        $this->iRun("terminus site:team:remove $site $email");
+        $this->iRun("[[executable]] site:team:remove $site $email");
     }
 
     /**
@@ -588,7 +602,7 @@ class FeatureContext implements Context
      */
     public function iRestoreTheEnvironmentOfFromBackup($env, $site)
     {
-        $this->iRun("terminus backup:restore $site.$env");
+        $this->iRun("[[executable]] backup:restore $site.$env");
     }
 
     /**
@@ -643,7 +657,6 @@ class FeatureContext implements Context
             $value = $this->replacePlaceholders($value);
             $command = "{$var}={$value} $command";
         }
-
         ob_start();
         passthru($command . ' 2>&1');
         $this->output = ob_get_clean();
@@ -940,7 +953,7 @@ class FeatureContext implements Context
      */
     public function isMemberOfTheTeamOn($member, $site)
     {
-        $this->iRun("terminus site:team:list $site");
+        $this->iRun("[[executable]] site:team:list $site");
         $is_member = $this->iShouldGet($member);
         return $is_member;
     }
@@ -955,7 +968,7 @@ class FeatureContext implements Context
      */
     public function isNotMemberOfTheTeamOn($member, $site)
     {
-        $this->iRun("terminus site:team:list $site");
+        $this->iRun("[[executable]] site:team:list $site");
         $is_not_member = $this->iShouldNotGet($member);
         return $is_not_member;
     }
@@ -990,9 +1003,9 @@ class FeatureContext implements Context
     public function serviceLevel($site, $service_level = null)
     {
         if (is_null($service_level)) {
-            $command = "terminus site:info $site --field=service_level";
+            $command = "[[executable]] site:info $site --field=service_level";
         } else {
-            $command = "terminus service-level:set $service_level --site=$site";
+            $command = "[[executable]] service-level:set $service_level --site=$site";
         }
         $this->iRun($command);
     }
