@@ -126,7 +126,7 @@ jobs:
         # TODO: test on Win10/WSL+Ubunutu
         operating-system: [ 'macos-latest', 'ubuntu-latest' ]
         php-versions: [ '7.4', '8.0' ]
-    if: ${{ startsWith(github.ref, 'refs/tags/')  && github.repository_owner == 'pantheon-systems' }}
+    if: ${{ startsWith(github.ref, 'refs/tags/') && github.repository_owner == 'pantheon-systems' }}
     steps:
       - name: Download repo content from artifact
         uses: actions/download-artifact@v2

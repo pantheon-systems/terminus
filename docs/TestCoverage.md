@@ -28,7 +28,7 @@
 |                           | environment (excludes Test and Live).                        |    |
 | d9ify:process             | Clone a pantheon site and spelunk the contents to create new | ❌ |
 |                           | D9 site.                                                     |    |
-| dashboard:view            | Displays the URL for the Pantheon Dashboard or opens the     | ❓ |
+| dashboard:view            | Displays the URL for the Pantheon Dashboard or opens the     | ✅ |
 |                           | Dashboard in a browser.                                      |    |
 | domain:add                | Associates a domain with the environment.                    | ❌ |
 | domain:dns                | Displays recommended DNS settings for the environment.       | ❌ |
@@ -77,7 +77,7 @@
 |                           | site.                                                        |    |
 | local:clone               | CLone a copy of the site code into                           | ❌ |
 |                           | $HOME/pantheon-local-copies                                  |    |
-| local:clone               | CLone a copy of site code into $HOME/pantheon-local-copies   | ❌ |
+| local:commitAndPush       | CLone a copy of site code into $HOME/pantheon-local-copies   | ❌ |
 | local:getLiveDB           | Create new backup of your live site db and download to       | ❌ |
 |                           | $HOME/pantheon-local-copies/{Site}/db                        |    |
 | local:getLiveFiles        | Create new backup of your live site FILES folder and         | ❌ |
@@ -180,4 +180,4 @@
 
 Testing Legend: ✅ Pass     💩 Bad test     🤮 Exception     ❌ Fail️️     ⚠️ Warning     ❓ Missing/Not Written
 
-Tests Passing:  33 / 118 ( 35 not written / missing )
+Tests Passing:  34 / 118 ( 34 not written / missing )

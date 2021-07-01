@@ -21,9 +21,9 @@
         <testdoxXml outputFile="reports/logfile.xml"/>
     </logging>
     <php>
-        <server name="TERMINUS_TOKEN" value="${TERMINUS_TOKEN}" />
-        <server name="TERMINUS_SITE" value="${TERMINUS_SITE}" />
-        <server name="TERMINUS_ORG" value="${TERMINUS_ORG}" />
-        <server name="TERMINUS_LOCAL_SITES" value="${TERMINUS_LOCAL_SITES}" />
+        <server   name="TERMINUS_TOKEN"           value="${TERMINUS_TOKEN}" />
+        <server   name="TERMINUS_SITE"            value="${TERMINUS_SITE}" />
+        <server   name="TERMINUS_ORG"             value="${TERMINUS_ORG}" />
+        <server   name="TERMINUS_LOCAL_SITES"     value="${TERMINUS_LOCAL_SITES}" />
     </php>
 </phpunit>
