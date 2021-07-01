@@ -74,12 +74,12 @@ class UpstreamCommandsTest extends TestCase
     public function testUpstreamUpdatesListStatus()
     {
         $sitename = getenv("TERMINUS_SITE");
-        $updatesList = $this->terminusJsonResponse('upstream:updates:list {$sitename}.dev');
+        $updatesList = $this->terminusJsonResponse("upstream:updates:list {$sitename}.dev", null);
         $this->assertIsArray(
             $updatesList,
             'Response from upstream list should be unserialized json'
         );
-        $status = $this->terminusJsonResponse('upstream:updates:status {$sitename}.dev');
+        $status = $this->terminus("upstream:updates:status {$sitename}.dev");
         if (count($updatesList) == 0) {
             $this->assertEquals("current", $status, "if there are no updates, the status should be 'current'.");
         }
