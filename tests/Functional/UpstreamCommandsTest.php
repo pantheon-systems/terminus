@@ -62,4 +62,29 @@ class UpstreamCommandsTest extends TestCase
         $this->assertArrayHasKey('machine_name', $upstreamInfo, "Upstream data should have a machine_name");
         $this->assertArrayHasKey('type', $upstreamInfo, "Upstream data should have a type");
     }
+
+    /**
+     * @test
+     * @covers \Pantheon\Terminus\Commands\Upstream\Updates\ListCommand
+     * @covers \Pantheon\Terminus\Commands\Upstream\Updates\StatusCommand
+     * @group upstream
+     * @group short
+     * @throws \JsonException
+     */
+    public function testUpstreamUpdatesListStatus()
+    {
+        $sitename = getenv("TERMINUS_SITE");
+        $updatesList = $this->terminusJsonResponse('upstream:updates:list {$sitename}.dev');
+        $this->assertIsArray(
+            $updatesList,
+            'Response from upstream list should be unserialized json'
+        );
+        $status = $this->terminusJsonResponse('upstream:updates:status {$sitename}.dev');
+        if (count($updatesList) == 0) {
+            $this->assertEquals("current", $status, "if there are no updates, the status should be 'current'.");
+        }
+        if (count($updatesList) >= 1) {
+            $this->assertNotEquals('current', $status, "if there are no updates, the status should NOT be 'current'.");
+        }
+    }
 }
