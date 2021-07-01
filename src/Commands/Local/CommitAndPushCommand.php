@@ -31,7 +31,7 @@ class CommitAndPushCommand extends TerminusCommand implements SiteAwareInterface
      *
      * @authorize
      *
-     * @command local:clone
+     * @command local:commitAndPush
      * @aliases lc
      *
      * @param string $site Site

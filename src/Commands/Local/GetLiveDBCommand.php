@@ -121,5 +121,6 @@ class GetLiveDBCommand extends TerminusCommand implements
             $db_local_filename
         );
         $this->logger->notice("DB Backup Downloaded to: {path}", ["path" => $db_local_filename]);
+        return $db_local_filename;
     }
 }

@@ -4,6 +4,7 @@ namespace Pantheon\Terminus\Collections;
 
 use League\Container\ContainerAwareInterface;
 use League\Container\ContainerAwareTrait;
+use Pantheon\Terminus\Exceptions\TerminusException;
 use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
 use Pantheon\Terminus\Models\TerminusModel;
 use Pantheon\Terminus\Request\RequestAwareInterface;
@@ -52,11 +53,15 @@ abstract class TerminusCollection implements ContainerAwareInterface, RequestAwa
      */
     public function add($model_data, array $options = [])
     {
+        if (is_string($model_data)) {
+            throw new TerminusException($model_data);
+        }
         $options = array_merge(
             ['id' => $model_data->id, 'collection' => $this],
             $options
         );
         $nickname = \uniqid($model_data->id);
+
         $this->getContainer()->add($nickname, $this->collected_class)
             ->addArguments([$model_data, $options]);
         $model = $this->getContainer()->get($nickname);

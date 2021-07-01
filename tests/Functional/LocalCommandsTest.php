@@ -42,25 +42,49 @@ class LocalCommandsTest extends TestCase
     public function testLocalClone()
     {
         $sitename = getenv('TERMINUS_SITE');
-        $local_sites_folder = realpath(getenv('TERMINUS_LOCAL_SITES')) . DIRECTORY_SEPARATOR .
-            'pantheon-local-copies';
-        $willBeCreated = $local_sites_folder . DIRECTORY_SEPARATOR . $sitename;
-        $this->terminus("local:clone {$sitename}", null);
-        $this->assertTrue(is_dir($willBeCreated));
+        $result = $this->terminus("local:clone {$sitename}", null);
+        if (!is_string($result)) {
+            throw new \Exception("The response from the local clone command didn't return the path.");
+        }
+        $shouldExist = $result . DIRECTORY_SEPARATOR . '.git';
+        $this->assertTrue(
+            is_dir($shouldExist),
+            "The sites .git directory does not exist: {$shouldExist}"
+        );
     }
 
     /**
      * @test
-     * @covers \Pantheon\Terminus\Commands\Local\CommitAndPushCommand
-     * @covers \Pantheon\Terminus\Commands\Local\GetLiveFilesCommand
      * @covers \Pantheon\Terminus\Commands\Local\GetLiveDBCommand
      *
      * @group local
      * @gropu long
      */
-    public function testCommitDbFiles()
+    public function testCommitDb()
     {
-        $this->fail("To Be Written");
+        $sitename = getenv('TERMINUS_SITE');
+        $result = $this->terminus("local:getLiveDB {$sitename}.live");
+        $this->assertTrue(
+            is_file($result),
+            "The db file failed to download."
+        );
+    }
+
+    /**
+     * @test
+     * @covers \Pantheon\Terminus\Commands\Local\GetLiveFilesCommand
+     *
+     * @group local
+     * @gropu long
+     */
+    public function testCommitFiles()
+    {
+        $sitename = getenv('TERMINUS_SITE');
+        $result = $this->terminus("local:getLiveFiles {$sitename}.live");
+        $this->assertTrue(
+            is_file($result),
+            'The site file failed to download.'
+        );
     }
 
     /**
@@ -68,10 +92,11 @@ class LocalCommandsTest extends TestCase
      */
     public function tearDown(): void
     {
-        $local_sites_folder = realpath(getenv('TERMINUS_LOCAL_SITES')) . DIRECTORY_SEPARATOR .
-            'pantheon-local-copies';
-        if (is_dir($local_sites_folder)) {
-            exec("rm -Rf {$local_sites_folder}");
+        $sitename = getenv('TERMINUS_SITE');
+        $local_site_folder = realpath(getenv('TERMINUS_LOCAL_SITES')) . DIRECTORY_SEPARATOR .
+            'pantheon-local-copies' . DIRECTORY_SEPARATOR . $sitename;
+        if (is_dir($local_site_folder)) {
+            exec("rm -Rf {$local_site_folder}");
         }
     }
 }

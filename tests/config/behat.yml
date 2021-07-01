@@ -22,3 +22,4 @@ default:
               machine_token_id:        'dcr_q4tFMiYiK9DfJO15'
               cache_dir:               '[[system_temp]]/.terminus/cache'
               executable:              'bin/t3'
+              local_copies:            '~/pantheon-local-copies'

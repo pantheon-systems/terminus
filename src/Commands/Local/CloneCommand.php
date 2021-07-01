@@ -37,13 +37,14 @@ class CloneCommand extends TerminusCommand implements SiteAwareInterface, Config
      * @param string $site Site
      *
      * @usage <site> Clone's a local copy into "$HOME/pantheon-local-copies"
-     *@return string
+     * @return string
      * @throws \Pantheon\Terminus\Exceptions\TerminusException
      *
      */
     public function clone($site) : string
     {
         $siteData = $site;
+
         if (!$siteData instanceof Site) {
             $siteData = $this->getSite($site);
             if (!$siteData instanceof Site) {
@@ -55,8 +56,10 @@ class CloneCommand extends TerminusCommand implements SiteAwareInterface, Config
         }
 
         $env = $siteData->getEnvironments()->get('dev');
+
         $clone_path = $siteData->getLocalCopyFolder();
         $connection =  $env->connectionInfo();
+
         if (!is_dir($clone_path . DIRECTORY_SEPARATOR . ".git")) {
             $this->execute(
                 "git clone %s %s",

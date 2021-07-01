@@ -124,5 +124,6 @@ class GetLiveFilesCommand extends TerminusCommand implements
             throw new TerminusException("Cannot download backup file.");
         }
         $this->logger->notice("Files Backup Downloaded to: {path}", ["path" => $files_local_filename]);
+        return $files_local_filename;
     }
 }
