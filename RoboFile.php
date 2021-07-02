@@ -100,7 +100,7 @@ class RoboFile extends \Robo\Tasks
         $control
             ->setPackageName($package)
             ->setVersion($config->get('version'))
-            ->setDepends(['php7.4', 'php7.4-cli'])
+            ->setDepends(['php7.4', 'php7.4-cli', 'php7.4-xml'])
             ->setInstalledSize(27648)
             ->setArchitecture('noarch')
             ->setMaintainer('Terminus 3', 'terminus3@pantheon.io')
