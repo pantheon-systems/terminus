@@ -1,4 +1,4 @@
-#!/usr/bin/env php -d memory_limit=2048M
+#!/usr/bin/env -S php -d memory_limit=2048M
 <?php
 
 /**
