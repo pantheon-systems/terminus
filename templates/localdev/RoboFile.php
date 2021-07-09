@@ -37,26 +37,6 @@ class RoboFile extends \Robo\Tasks
   }
 
   /**
-   * run-clone-livedb: env ## clone the live DB to the docker mysql instance
-   * @echo '** If terminus is set up incorrectly on this machine, the database download will fail. **'
-   * @[[ -f "./db/${BACKUP_FILE_NAME}" ]] && rm "./db/${BACKUP_FILE_NAME}" || true
-   * terminus backup:create ${LIVE_SITE} --element=database --yes > /dev/null
-   * terminus backup:get ${LIVE_SITE} --element=database --yes --to="./db/${BACKUP_FILE_NAME}" > /dev/null
-   * [[ -f "db/${BACKUP_FILE_NAME}" ]] && make run-clone-restore && true
-   *
-   * run-clone-livefiles:  ## YOUR SSH KEY MUST BE REGISTERED WITH PANTHEON AND SHARED WITH THE DOCKER CONTAINER FOR THIS TO WORK
-   * @echo '**If your SSH key is not registered with Pantheon, this will fail.**'
-   * SFTP_COMMAND=$(shell terminus connection:info ${PANTHEON_SITE_NAME}.live --format=json | jq -r '.sftp_command') > /dev/null
-   * SSH_COMMAND=${SFTP_COMMAND}/sftp -o Port=/ssh -p /
-   * FILES_FOLDER=`realpath db/files`
-   * FILES_SYMLINK=`realpath web/sites/default`
-   * rsync -rvlz --copy-unsafe-links --size-only --checksum --ipv4 --progress -e ${SFTP_COMMAND}:files/ ${FILES_FOLDER}
-   * rm -Rf web/sites/default/files
-   * ln -s ${FILES_FOLDER} ${FILES_SYMLINK}
-   */
-
-
-  /**
    * Install drupal using a profile.
    *
    * @param string $profile 'demo_umami'
@@ -159,6 +139,10 @@ class RoboFile extends \Robo\Tasks
   }
 
 
+  /**
+   * Copy these templates back to terminus project
+   * TODO: remove this function before production
+   */
   public function copyBackTemplates()
   {
     $templateDir = getenv('HOME') . '/Projects/terminus/templates/localdev';
@@ -168,4 +152,64 @@ class RoboFile extends \Robo\Tasks
     copy(__DIR__ . '/.envrc', $templateDir . '/.envrc');
   }
 
+  /**
+   * Gets the database from Pantheon.
+   *
+   * @param string $env
+   * @author @megclaypool
+   */
+  function sitePullDatabase(string $env = "live")
+  {
+    $project = getenv('PROJECT_NAME');
+    $siteEnv = $project . '.' . $env;
+    $backup_file_name = "{$project}.sql.gz";
+
+    $this->say('Creating backup on Pantheon.');
+    $this->taskExec('terminus')
+      ->args('backup:create', $siteEnv, '--element=db')
+      ->run();
+    $this->say('Downloading backup file.');
+    $this->taskExec('terminus')
+      ->args('backup:get', $siteEnv, "--to=db/{$backup_file_name}", '--element=db')
+      ->run();
+    $this->say('Unzipping and importing data');
+    $mysqlCommand = vsprintf(
+      'pv \"./db/%s\" | gunzip | mysql -u root --password=%s --host 127.0.0.1 --port 33067 --protocol tcp %s ',
+      [
+        $backup_file_name,
+        getenv('MYSQL_ROOT_PASSWORD'),
+        getenv('MYSQL_DATABASE'),
+      ]
+    );
+    $this->_exec( $mysqlCommand);
+    $this->say('Data Import complete.');
+  }
+
+  /**
+   * Gets files folder from pantheon
+   *
+   * @param $env
+   * @author @megclaypool
+   */
+  function sitePullFiles(string $env = 'live')
+  {
+    $project = getenv('PROJECT_NAME');
+    $siteEnv = $project . '.' . $env;
+    $download = 'files_' . $siteEnv;
+    $this->say('Creating files backup on Pantheon.');
+    $this->taskExec('terminus')
+      ->args('backup:create', $siteEnv, '--element=files')
+      ->run();
+    $this->say('Downloading files.');
+    $this->taskExec('terminus')
+      ->args('backup:get', $siteEnv, '--to=db/files.tar.gz', '--element=files')
+      ->run();
+    $this->say('Unzipping archive');
+    $this->taskExec('tar')
+      ->args('-xvf', './files.tar.gz', __DIR__ . "/db")
+      ->run();
+    $this->say('Copying Files');
+    $this->_symlink(__DIR__ . '/db/files', __DIR__ . 'web/sites/default/files');
+  }
+  
 }
