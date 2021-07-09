@@ -92,7 +92,7 @@ class Workflows extends APICollection implements SessionAwareInterface
     public function create($type, array $options = [])
     {
 
-        $params = isset($options['params']) ? $options['params'] : [];
+        $params = $options['params'] ?? [];
         $results = $this->request()->request(
             $this->getUrl(),
             [
@@ -103,15 +103,18 @@ class Workflows extends APICollection implements SessionAwareInterface
                 ],
             ]
         );
-        if ($results['status_code'] <= 199 || $results['status_code'] >= 300) {
-            throw new TerminusException($results['data']);
+        if ($results->isError()) {
+            throw new TerminusException(
+                "Workflow Creation Failed: {error}",
+                ['error' => $results->getStatusCodeReason()]
+            );
         }
         $nickname = \uniqid(__CLASS__ . "-");
         $this->getContainer()->add($nickname, $this->collected_class)
             ->addArguments([
-                $results['data'],
+                $results->getData(),
                 [
-                    'id' => $results['data']->id,
+                    'id' => $results->getData()->id,
                     'collection' => $this,
                     'owner' => $this->owner
                 ]

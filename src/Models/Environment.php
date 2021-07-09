@@ -255,14 +255,16 @@ class Environment extends TerminusModel implements ContainerAwareInterface, Site
     public function countDeployableCommits()
     {
         $parent_environment = $this->getParentEnvironment();
-        $parent_commits = $parent_environment->getCommits()->all();
         $number_of_commits = 0;
-        foreach ($parent_commits as $commit) {
-            $labels = $commit->get('labels');
-            $number_of_commits += (integer)(
-                !in_array($this->id, $labels)
-                && in_array($parent_environment->id, $labels)
-            );
+        if ($parent_environment instanceof Environment) {
+            $parent_commits = $parent_environment->getCommits()->all();
+            foreach ($parent_commits as $commit) {
+                $labels = $commit->get('labels');
+                $number_of_commits += (integer)(
+                    !in_array($this->id, $labels)
+                    && in_array($parent_environment->id, $labels)
+                );
+            }
         }
         return $number_of_commits;
     }
@@ -942,5 +944,15 @@ class Environment extends TerminusModel implements ContainerAwareInterface, Site
             return false;
         }
         return $response['data']->BUILD_STEP;
+    }
+
+
+    public function __toString()
+    {
+        return sprintf('%s => %s', $this->getSite()->getName(), $this->get('id'));
+    }
+
+    public function isFrozen()
+    {
     }
 }

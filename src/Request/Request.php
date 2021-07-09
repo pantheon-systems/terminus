@@ -151,15 +151,19 @@ class Request implements
             }
 
             switch ($response->getStatusCode() ?? 500) {
+                ## Do not try these status codes again
                 case 200:
                 case 201:
                 case 202:
+                case 203:
+                case 204:
                 case 400:
                 case 401:
                 case 402:
                 case 403:
                 case 404:
                 case 405:
+                case 409:
                 case 500:
                     return false;
 
@@ -261,10 +265,10 @@ class Request implements
      *   string method      GET is default
      *   array form_params  Fed into the body of the request
      *
-     * @return array
+     * @return RequestOperationResult
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    public function request($path, array $options = [])
+    public function request($path, array $options = []) : RequestOperationResult
     {
         // Set headers
 
@@ -314,20 +318,23 @@ class Request implements
             $options
         );
         $body = $response->getBody()->getContents();
-        if ($body !== null) {
+        try {
             $body = \json_decode(
                 $body,
                 false,
                 512,
                 JSON_THROW_ON_ERROR
             );
+        } catch (\JsonException $jsonException) {
+            $this->logger->debug($jsonException->getMessage());
         }
 
-        return [
+        return new RequestOperationResult([
             'data' => $body,
             'headers' => $response->getHeaders(),
             'status_code' => $response->getStatusCode(),
-        ];
+            'status_code_reason' => $response->getReasonPhrase(),
+        ]);
     }
 
     /**

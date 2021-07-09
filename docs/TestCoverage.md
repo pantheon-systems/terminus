@@ -1,3 +1,67 @@
+# terminus : Pantheon's Command-Line Interface
+
+## ***COTRIBUTING***
+
+We need help with testing. Take a look in `tests/Functional` and any test that's just `$this->fail("figure out how to test");` and feel free to file a pull request against that.
+
+## Status
+
+[![Commit Build](https://github.com/pantheon-systems/terminus/actions/workflows/ci.yml/badge.svg?branch=v3.0)](https://github.com/pantheon-systems/terminus/actions/workflows/ci.yml)
+
+## About
+
+Terminus is Pantheon's Command Line Interface (CLI), providing at least equivalent functionality to the Pantheon's
+browser-based Dashboard and easier scripting.
+
+If you would like to contribute, pull requests are welcome!
+
+## The Manual
+
+Our documentation is kept in the Terminus Manual, located here: https://pantheon.io/docs/terminus
+
+## Requirements
+
+| Operating System       | Version    |
+|------------------------|------------|
+| MacOS                  | 10.14+     |
+| Ubuntu                 | Latest LTR |
+| Windows + WSL + Ubuntu | TBD        |
+
+### Package Manager
+
+- [apt](https://ubuntu.com/server/docs/package-management) for Ubuntu/WinWSL-Ubuntu
+
+- [Homebrew](https://brew.sh) for mac
+
+#### Required Packages
+
+These packages will install when you install Terminus.
+
+- [Composer 2](https://getcomposer.org)
+
+- [PHP](https://www.php.net) (v7.4+)
+
+- [Git](https://help.github.com/articles/set-up-git/)
+
+#### Recommended Packages
+
+- [Drush](http://docs.drush.org/en/master/install/) (Useful to run incompatible-with-Terminus Drush commands)
+
+- [WP-CLI](http://wp-cli.org/) (Useful to run incompatible-with-Terminus WP-CLI commands)
+
+
+## Installation
+
+### Mac OS:
+
+`> brew tap *** TBD ***`
+
+`> brew install *** TBD ***`
+
+### Ubuntu / WinWSL+Ubuntu:
+
+`*** TBD ***`
+
 
 
 | Command                   | Description                                                  | ⚖️ |
@@ -30,17 +94,17 @@
 |                           | D9 site.                                                     |    |
 | dashboard:view            | Displays the URL for the Pantheon Dashboard or opens the     | ✅ |
 |                           | Dashboard in a browser.                                      |    |
-| domain:add                | Associates a domain with the environment.                    | ❌ |
-| domain:dns                | Displays recommended DNS settings for the environment.       | ❌ |
-| domain:list               | Displays domains associated with the environment.            | ❌ |
-| domain:lookup             | Displays site and environment with which a given domain is   | ❌ |
+| domain:add                | Associates a domain with the environment.                    | ✅ |
+| domain:dns                | Displays recommended DNS settings for the environment.       | ✅ |
+| domain:list               | Displays domains associated with the environment.            | ✅ |
+| domain:lookup             | Displays site and environment with which a given domain is   | ✅ |
 |                           | associated. Note: Only sites for which the user is           |    |
 |                           | authorized will appear.                                      |    |
 | domain:primary:add        | Sets a domain associated to the environment as primary,      | ❌ |
 |                           | causing all traffic to redirect to it.                       |    |
 | domain:primary:remove     | Removes the primary designation from the primary domain in   | ❌ |
 |                           | the site and environment.                                    |    |
-| domain:remove             | Disassociates a domain from the environment.                 | ❌ |
+| domain:remove             | Disassociates a domain from the environment.                 | ✅ |
 | env:clear-cache           | Clears caches for the environment.                           | ❌ |
 | env:clone-content         | Clones database/files from one environment to another        | ❓ |
 |                           | environment.                                                 |    |
@@ -75,9 +139,9 @@
 | import:files              | Imports a file archive to the environment.                   | ❌ |
 | import:site               | Imports a site archive (code, database, and files) to the    | ❌ |
 |                           | site.                                                        |    |
-| local:clone               | CLone a copy of the site code into                           | ❌ |
+| local:clone               | CLone a copy of the site code into                           | ✅ |
 |                           | $HOME/pantheon-local-copies                                  |    |
-| local:commitAndPush       | CLone a copy of site code into $HOME/pantheon-local-copies   | ❌ |
+| local:commitAndPush       | CLone a copy of site code into $HOME/pantheon-local-copies   | ❓ |
 | local:getLiveDB           | Create new backup of your live site db and download to       | ❌ |
 |                           | $HOME/pantheon-local-copies/{Site}/db                        |    |
 | local:getLiveFiles        | Create new backup of your live site FILES folder and         | ❌ |
@@ -163,11 +227,11 @@
 | upstream:list             | Displays the list of upstreams accessible to the currently   | ✅ |
 |                           | logged-in user.                                              |    |
 | upstream:updates:apply    | Applies upstream updates to a site development environment.  | ❓ |
-| upstream:updates:list     | Displays a cached list of new code commits available from    | ❓ |
+| upstream:updates:list     | Displays a cached list of new code commits available from    | ✅ |
 |                           | the upstream for a site development environment. Note: To    |    |
 |                           | refresh the cache you will need to run                       |    |
 |                           | site:upstream:clear-cache before running this command.       |    |
-| upstream:updates:status   | Displays a whether there are updates available from the      | ❓ |
+| upstream:updates:status   | Displays a whether there are updates available from the      | ✅ |
 |                           | upstream for a site environment.                             |    |
 | workflow:info:logs        | Displays the details of a workflow including Quicksilver     | ❓ |
 |                           | operation logs.                                              |    |
@@ -180,4 +244,4 @@
 
 Testing Legend: ✅ Pass     💩 Bad test     🤮 Exception     ❌ Fail️️     ⚠️ Warning     ❓ Missing/Not Written
 
-Tests Passing:  34 / 118 ( 34 not written / missing )
+Tests Passing:  42 / 118 ( 33 not written / missing )

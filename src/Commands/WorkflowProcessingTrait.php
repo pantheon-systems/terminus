@@ -21,7 +21,8 @@ trait WorkflowProcessingTrait
             $nickname = \uniqid(__METHOD__ . "-");
             $this->getContainer()->add($nickname, WorkflowProgressBar::class)
                 ->addArguments([$this->output(), $workflow]);
-            return $this->getContainer()->get($nickname)->cycle();
+            $progressBar = $this->getContainer()->get($nickname);
+            return $progressBar->cycle();
         }
         $retry_interval = $this->getConfig()->get('http_retry_delay_ms', 100);
         do {

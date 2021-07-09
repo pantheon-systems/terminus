@@ -325,7 +325,17 @@ class ProcessCommand extends TerminusCommand implements SiteAwareInterface, Conf
         $repos = $this->sourceDirectory->getComposerObject()->getOriginal()['repositories'];
         $composerFile = $this->getDestinationDirectory()->getComposerObject();
         foreach ($fileList as $key => $file) {
-            $package = \json_decode(file_get_contents($file->getRealPath()), true, 10, JSON_THROW_ON_ERROR);
+            try {
+                $package = \json_decode(
+                    file_get_contents($file->getRealPath()),
+                    true,
+                    10,
+                    JSON_THROW_ON_ERROR
+                );
+            } catch (\JsonException $jsonException) {
+                continue;
+            }
+
             $repoString = (string)$package['name'];
             if (empty($repoString)) {
                 $repoString = is_string($package['repository']) ?

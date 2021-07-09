@@ -126,6 +126,7 @@ class Site extends TerminusModel implements ContainerAwareInterface, Organizatio
      * Deletes the site represented by this object
      *
      * @return Workflow
+     * @throws TerminusException
      */
     public function delete()
     {
@@ -509,5 +510,10 @@ class Site extends TerminusModel implements ContainerAwareInterface, Organizatio
             }
         }
         return $local_copy_folder;
+    }
+
+    public function __toString()
+    {
+        return $this->getName();
     }
 }

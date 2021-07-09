@@ -68,6 +68,8 @@
     "bin/t3"
   ],
   "scripts": {
+    "build": "@phar:build",
+    "test": "@test:functional",
     "phar:build": [
       "rm -Rf ./t3",
       "vendor/bin/phar-composer.phar build .",
@@ -142,8 +144,7 @@
     "pre-commit": [
       "@code:fix",
       "@code:lint",
-      "composer validate --strict",
-      "composer docs"
+      "composer validate --strict"
     ]
   },
   "config": {

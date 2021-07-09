@@ -32,7 +32,25 @@ class DomainCommandsTest extends TestCase
     public function testAddListLookupRemove()
     {
         $sitename = getenv('TERMINUS_SITE');
-        $this->fail("To Be Written.");
+        $newDomain = uniqid("test-") . ".test";
+
+        $results = $this->terminusJsonResponse("domain:list {$sitename}.live");
+        $this->assertIsArray($results, "Returned values from domain list should be array");
+        $this->assertGreaterThan(
+            0,
+            count($results),
+            "Count of domains should be greater than 0"
+        );
+        $this->terminus("domain:add {$sitename}.live {$newDomain}", null);
+        sleep(10);
+        $results2 = $this->terminusJsonResponse("domain:list {$sitename}.live");
+        $this->assertNotEquals(
+            count($results),
+            count($results2),
+            "response should have a new domain in list"
+        );
+        $lookedUp = $this->terminusJsonResponse("domain:lookup {$newDomain}", null);
+        $this->terminus("domain:remove {$sitename}.live {$newDomain}");
     }
 
     /**

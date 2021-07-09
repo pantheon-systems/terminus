@@ -44,6 +44,7 @@ class RoboFile extends \Robo\Tasks
      */
     public function doc($file = null)
     {
+        //TODO: change this to real documentation building from phpdoc
         $readme = (string) CommandCoverageReport::factory();
         if ($file) {
             file_put_contents($file, $readme);
@@ -61,8 +62,7 @@ class RoboFile extends \Robo\Tasks
      */
     public function coverage($file = null)
     {
-        $readme = CommandCoverageReport::factory()
-            ->getReport('coverage.twig');
+        $readme = CommandCoverageReport::factory();
         if ($file) {
             file_put_contents($file, $readme);
             $readme = './README.md regenerated.';

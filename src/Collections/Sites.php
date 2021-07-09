@@ -2,6 +2,7 @@
 
 namespace Pantheon\Terminus\Collections;
 
+use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
 use Pantheon\Terminus\Models\Site;
 use Pantheon\Terminus\Models\TerminusModel;
 use Pantheon\Terminus\Session\SessionAwareInterface;
@@ -180,22 +181,25 @@ class Sites extends APICollection implements SessionAwareInterface
      * @return Site
      * @throws TerminusException
      */
-    public function get($id): TerminusModel
+    public function get($id): ?TerminusModel
     {
         try {
             $uuid = $this->findUUIDByNameOrUUID($id);
             $site = $this->models[$uuid] ?? null;
             if (!$site instanceof Site) {
-                $injectionNickname = $id . "-" . \uniqid();
-                $this->getContainer()->add($injectionNickname, $this->collected_class)
+                $nickname = 'site-' . $uuid;
+                $this->getContainer()->add($nickname, $this->collected_class)
                     ->addArguments(
                         [
                             (object)['id' => $uuid],
                             ['id' => $uuid, 'collection' => $this]
                         ]
                     );
-                $site = $this->getContainer()->get($injectionNickname);
+                $site = $this->getContainer()->get($nickname);
                 $site->fetch();
+                if (!$site->valid()) {
+                    throw new TerminusException("Site is not valid!");
+                }
                 $this->models[$uuid] = $site;
             }
         } catch (\Exception $e) {
@@ -227,12 +231,17 @@ class Sites extends APICollection implements SessionAwareInterface
      */
     protected function findUUIDByName($name): ?string
     {
+
         $response = $this->request()->request(
-            "site-names/$name",
+            'site-names/' . $name,
             ['method' => 'get',]
         );
 
-        return $response['data']->id ?? null;
+        if ($response->isError()) {
+            throw new TerminusNotFoundException($response->getData());
+        }
+
+        return $response->getData()->id ?? null;
     }
 
     /**

@@ -223,15 +223,15 @@ These packages will install when you install Terminus.
 | tag:add                   | Adds a tag on a site within an organization.                 | ❓ |
 | tag:list                  | Displays the list of tags for a site within an organization. | ❓ |
 | tag:remove                | Removes a tag from a site within an organization.            | ❓ |
-| upstream:info             | Displays information about an upstream.                      | ✅ |
-| upstream:list             | Displays the list of upstreams accessible to the currently   | ✅ |
+| upstream:info             | Displays information about an upstream.                      | ❓ |
+| upstream:list             | Displays the list of upstreams accessible to the currently   | ❓ |
 |                           | logged-in user.                                              |    |
 | upstream:updates:apply    | Applies upstream updates to a site development environment.  | ❓ |
-| upstream:updates:list     | Displays a cached list of new code commits available from    | ✅ |
+| upstream:updates:list     | Displays a cached list of new code commits available from    | ❓ |
 |                           | the upstream for a site development environment. Note: To    |    |
 |                           | refresh the cache you will need to run                       |    |
 |                           | site:upstream:clear-cache before running this command.       |    |
-| upstream:updates:status   | Displays a whether there are updates available from the      | ✅ |
+| upstream:updates:status   | Displays a whether there are updates available from the      | ❓ |
 |                           | upstream for a site environment.                             |    |
 | workflow:info:logs        | Displays the details of a workflow including Quicksilver     | ❓ |
 |                           | operation logs.                                              |    |
@@ -244,4 +244,4 @@ These packages will install when you install Terminus.
 
 Testing Legend: ✅ Pass     💩 Bad test     🤮 Exception     ❌ Fail️️     ⚠️ Warning     ❓ Missing/Not Written
 
-Tests Passing:  4 / 118 ( 114 not written / missing )
+Tests Passing:  0 / 118 ( 118 not written / missing )

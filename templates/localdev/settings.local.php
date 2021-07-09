@@ -18,8 +18,7 @@ if (!defined('PANTHEON_ENVIRONMENT')) {
   $redis_host = getenv('CACHE_HOST');
   if (PHP_SAPI == 'cli') {
     ini_set('max_execution_time', 999);
-  }
-  else {
+  } else {
     $settings['container_yamls'][] = 'modules/contrib/redis/example.services.yml';
     $settings['redis.connection']['interface'] = 'PhpRedis';
     $settings['redis.connection']['host'] = getenv('CACHE_HOST');
@@ -43,13 +42,13 @@ if (!defined('PANTHEON_ENVIRONMENT')) {
   //$config['system.performance']['css']['preprocess'] = getenv('PREPROCESS_CSS');
   //$config['system.performance']['js']['preprocess'] = getenv('PREPROCESS_JS');
 
-  $settings['extension_discovery_scan_tests'] = TRUE;
-  $settings['rebuild_access'] = FALSE;
-  $settings['skip_permissions_hardening'] = TRUE;
+  $settings['extension_discovery_scan_tests'] = true;
+  $settings['rebuild_access'] = false;
+  $settings['skip_permissions_hardening'] = true;
 
   $settings['file_public_path'] = 'sites/default/files';
   $settings['file_private_path'] = 'sites/default/private';
-  $settings["file_temp_path"] = 'sites/default/temp';
+  $settings['file_temp_path'] = 'sites/default/temp';
   $settings['container_yamls'][] = DRUPAL_ROOT . '/sites/development.services.yml';
 
 }

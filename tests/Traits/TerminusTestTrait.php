@@ -51,24 +51,25 @@ trait TerminusTestTrait {
      * @param $command
      * @param int $expected_status
      *
-     * @return array|null
+     * @return array|string|null
      * @throws \JsonException
      */
-    protected function terminusJsonResponse($command, ?int $expected_status = 0): ?array
+    protected function terminusJsonResponse($command, ?int $expected_status = 0)
     {
-        $response = $this->terminus(
+        $response = trim($this->terminus(
             $command . " --format=json",
             $expected_status
-        );
-        if (!empty(trim($response))) {
+        ));
+        try {
             return json_decode(
                 $response,
                 true,
                 512,
                 JSON_THROW_ON_ERROR
             );
+        } catch (\JsonException $jsonException) {
+            return $response;
         }
-        return null;
     }
 
 

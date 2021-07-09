@@ -36,14 +36,28 @@ class EnvCommandsTest extends TestCase
 
     /**
      * @test
-     * @covers \Pantheon\Terminus\Commands\Env\ClearCacheCommand
+     * @covers \Pantheon\Terminus\Commands\Env\DeployCommand
+     * @group env
+     * @group short
+     * @throws \JsonException
+     */
+    public function testDeployCommand()
+    {
+        $sitename = getenv('TERMINUS_SITE');
+        $this->terminus("env:deploy {$sitename}.live");
+    }
+
+    /**
+     * @test
+     * @covers \Pantheon\Terminus\Commands\Env\CloneContentCommand
      * @group env
      * @group long
      * @throws \JsonException
      */
     public function testCloneContentCommand()
     {
-        $this->fail("To Be Written");
+        $sitename = getenv('TERMINUS_SITE');
+        $this->terminus("env:clone {$sitename}.live test");
     }
 
     /**
@@ -84,6 +98,7 @@ class EnvCommandsTest extends TestCase
 
     /**
      * @test
+     * @covers \Pantheon\Terminus\Commands\Env\DiffStatCommand
      * @covers \Pantheon\Terminus\Commands\Env\CommitCommand
      * @group env
      * @group long
@@ -164,21 +179,6 @@ class EnvCommandsTest extends TestCase
 
     /**
      * @test
-     * @covers \Pantheon\Terminus\Commands\Env\DiffStatCommand
-     * @group env
-     * @group short
-     * @throws \JsonException
-     */
-    public function testDiffstatCommand()
-    {
-        $sitename = getenv('TERMINUS_SITE');
-        $metrics = $this->terminusJsonResponse("env:diffstat {$sitename}.dev");
-        $this->assertIsArray($metrics, "Assert returned data from diffstat are made of metrics entries.");
-        // TODO: round trip for uploading changes, seeing the change reflected in the response, committing and pushing.
-    }
-
-    /**
-     * @test
      * @covers \Pantheon\Terminus\Commands\Env\ListCommand
      * @group env
      * @group short
@@ -217,19 +217,7 @@ class EnvCommandsTest extends TestCase
      */
     public function testViewCommand()
     {
-        $this->fail("Figure out how to test.");
-    }
-
-    /**
-     * @test
-     * @covers \Pantheon\Terminus\Commands\Env\WipeCommand
-     * @group env
-     * @group long
-     * @throws \JsonException
-     */
-    public function testWipeCommand()
-    {
         $sitename = getenv('TERMINUS_SITE');
-        $this->fail("Figure out how to test.");
+        $this->terminus("env:view {$sitename}.dev");
     }
 }
