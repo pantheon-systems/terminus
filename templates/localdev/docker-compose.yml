@@ -78,14 +78,13 @@ services:
 
   solr8:
     container_name: ${PROJECT_NAME}-solr
-    image: solr:8
+    image: ${SOLR_CONTAINER}
     expose:
       - "8983"
     ports:
       - "8983:8983"
     volumes:
-      - ./web/modules/composer/solr-conf-templates/8.x:/opt/solr/server/solr/configsets/drupal/conf
-    command: bash -c "docker-entrypoint.sh solr start -c; solr create -c drupal -d server/solr/configsets/drupal/conf -n drupal; solr restart -c -f"
+      - ./web/modules/composer/search_api_solr/solr-conf-templates/8.x:/opt/solr/server/solr/configsets/drupal/conf
 
 
 volumes:
