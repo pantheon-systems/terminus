@@ -9,7 +9,7 @@ use Pantheon\Terminus\Tests\Traits\UrlStatusCodeHelperTrait;
 use PHPUnit\Framework\TestCase;
 
 /**
- * Class BackupCommandsTest
+ * Class AuthCommandsTest
  *
  * @package Pantheon\Terminus\Tests\Functional
  */
