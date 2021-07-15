@@ -20,6 +20,8 @@ services:
       - "9222:9222"
     env_file:
       - .envrc
+    environment:
+      - PROJECT_NAME=${PROJECT_NAME}
 
   php:
     container_name: ${PROJECT_NAME}-php
@@ -44,10 +46,13 @@ services:
     environment:
       - BACKUP_FILE_NAME=${PROJECT_NAME}.sql.gz
       - DATABASE_NAME=drupal8
+      - PROJECT_NAME=${PROJECT_NAME}
 
   mysql:
     container_name: ${PROJECT_NAME}-mysql
     image: ${MYSQL_CONTAINER}
+    environment:
+      - PROJECT_NAME=${PROJECT_NAME}
     volumes:
      - './db:/var/lib/mysql'
     expose:
@@ -79,12 +84,14 @@ services:
   solr8:
     container_name: ${PROJECT_NAME}-solr
     image: ${SOLR_CONTAINER}
+    env_file:
+      - .envrc
+    environment:
+      - PROJECT_NAME=${PROJECT_NAME}
     expose:
       - "8983"
     ports:
       - "8983:8983"
-    volumes:
-      - ./web/modules/composer/search_api_solr/solr-conf-templates/8.x:/opt/solr/server/solr/configsets/drupal/conf
 
 
 volumes:

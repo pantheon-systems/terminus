@@ -1,5 +1,7 @@
 <?php
 
+use GuzzleHttp\HandlerStack;
+
 if (!defined('PANTHEON_ENVIRONMENT')) {
   $env = getenv('ENV');
   $databases['default']['default'] = [
@@ -19,7 +21,7 @@ if (!defined('PANTHEON_ENVIRONMENT')) {
   if (PHP_SAPI == 'cli') {
     ini_set('max_execution_time', 999);
   } else {
-    $settings['container_yamls'][] = 'modules/contrib/redis/example.services.yml';
+    $settings['container_yamls'][] = 'modules/composer/redis/example.services.yml';
     $settings['redis.connection']['interface'] = 'PhpRedis';
     $settings['redis.connection']['host'] = getenv('CACHE_HOST');
     $settings['redis.connection']['port'] = getenv('CACHE_PORT');
@@ -52,3 +54,13 @@ if (!defined('PANTHEON_ENVIRONMENT')) {
   $settings['container_yamls'][] = DRUPAL_ROOT . '/sites/development.services.yml';
 
 }
+
+$settings['http_client_config'] = [
+  'http_errors' => false,
+  'synchronous' => true,
+  'connect_timeout' => 2.5,
+  'timeout' => 10,
+  'verify' => false,
+  'allow_redirects' => true,
+  'debug' => true,
+];

@@ -13,7 +13,7 @@ class RoboFile extends \Robo\Tasks
    */
   public function dockerUp()
   {
-    $this->taskExec('docker-compose up -d')->run();
+    $this->taskExec('docker compose up -d')->run();
   }
 
   /**
@@ -21,7 +21,7 @@ class RoboFile extends \Robo\Tasks
    */
   public function dockerDown()
   {
-    $this->taskExec('docker-compose down')->run();
+    $this->taskExec('docker compose down')->run();
   }
 
   /**
@@ -210,6 +210,16 @@ class RoboFile extends \Robo\Tasks
       ->run();
     $this->say('Copying Files');
     $this->_symlink(__DIR__ . '/db/files', __DIR__ . 'web/sites/default/files');
+  }
+
+
+  /**
+   * @return \Robo\Result
+   */
+  public function redisFlushAll() {
+    return $this->taskDockerExec(getenv('PROJECT_NAME') . "-redis")
+      ->exec('redis-cli flushall')
+      ->run();
   }
 
 }
