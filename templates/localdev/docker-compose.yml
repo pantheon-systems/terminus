@@ -82,7 +82,7 @@ services:
       - "6379"
 
   solr8:
-    container_name: ${PROJECT_NAME}-solr
+    container_name: ${PROJECT_NAME}-solr8
     image: ${SOLR_CONTAINER}
     env_file:
       - .envrc

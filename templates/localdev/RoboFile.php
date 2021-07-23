@@ -64,7 +64,6 @@ class RoboFile extends \Robo\Tasks
       'search_api',
       'search_api_solr',
       'search_api_pantheon',
-      'search_api_solr_admin',
     ]);
   }
 
@@ -114,6 +113,9 @@ class RoboFile extends \Robo\Tasks
   }
 
   /**
+   * Send a command to the docker PHP container's drush.
+   *
+   * @aliases drush dd
    * @param string $drushCommand
    * @param string $container 'php'
    *
@@ -216,10 +218,24 @@ class RoboFile extends \Robo\Tasks
   /**
    * @return \Robo\Result
    */
-  public function redisFlushAll() {
+  public function redisFlush()
+  {
     return $this->taskDockerExec(getenv('PROJECT_NAME') . "-redis")
       ->exec('redis-cli flushall')
       ->run();
+  }
+
+  /**
+   * @return \Robo\Result
+   */
+  public function resetDependencies()
+  {
+    $response = $this->confirm("Are you sure you want to delete the vendor folder and all dependencies installed by composer?");
+    if ($response == true) {
+      $this->_exec("composer clear-cache");
+	    $this->_exec("rm -Rf vendor web/modules/composer web/themes/composer web/modules/contrib web/themes/contrib web/core composer.lock");
+      return exec("composer install");
+    }
   }
 
 }
