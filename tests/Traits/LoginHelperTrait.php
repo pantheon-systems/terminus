@@ -2,16 +2,13 @@
 
 namespace Pantheon\Terminus\Tests\Traits;
 
-
 /**
  * Trait LoginHelperTrait
  *
  * @package Pantheon\Terminus\Tests\Traits
  */
-trait LoginHelperTrait {
-
-
-
+trait LoginHelperTrait
+{
     /**
      * @setup
      */
@@ -19,8 +16,7 @@ trait LoginHelperTrait {
     {
         $token = getenv("TERMINUS_TOKEN");
         if ($token) {
-            static::call_terminus("auth:login --machine-token={$token}");
+            static::callTerminus("auth:login --machine-token={$token}");
         }
     }
-
 }
