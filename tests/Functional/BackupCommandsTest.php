@@ -33,7 +33,7 @@ class BackupCommandsTest extends TestCase
      */
     public function testCreateListInfoGetCommand()
     {
-        $siteName = getenv('TERMINUS_SITE');
+        $siteName = $this->getSiteName();
         $this->terminus("backup:create {$siteName}.live --element=database", null);
         $backupList = $this->terminusJsonResponse("backup:list {$siteName}.live --element=database");
         $this->assertIsArray($backupList, "Backup list response should be an array");
@@ -75,7 +75,7 @@ class BackupCommandsTest extends TestCase
      */
     public function testAutomaticBackupInfoEnableDisable()
     {
-        $siteName = getenv('TERMINUS_SITE');
+        $siteName = $this->getSiteName();
         $auto = $this->terminusJsonResponse("backup:automatic:info {$siteName}.live");
         $this->assertIsArray(
             $auto,

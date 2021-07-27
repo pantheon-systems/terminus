@@ -31,7 +31,7 @@ class DashboardCommandsTest extends TestCase
         $this->assertNotNull($response);
         $this->assertIsString($response);
         $this->assertGreaterThan(0, strlen($response));
-        $siteName = getenv('TERMINUS_SITE');
+        $siteName = $this->getSiteName();
         $env = getenv('TERMINUS_ENV');
         $response = $this->terminus("dashboard {$siteName}.{$env} --print", null);
         $this->assertNotNull($response);

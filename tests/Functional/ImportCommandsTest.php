@@ -30,7 +30,6 @@ class ImportCommandsTest extends TestCase
      */
     public function testBranchList()
     {
-        $sitename = getenv('TERMINUS_SITE');
         $this->fail("To Be Written");
     }
 }

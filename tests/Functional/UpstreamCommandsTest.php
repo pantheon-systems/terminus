@@ -73,7 +73,7 @@ class UpstreamCommandsTest extends TestCase
      */
     public function testUpstreamUpdatesListStatus()
     {
-        $sitename = getenv("TERMINUS_SITE");
+        $sitename = $this->getSiteName();
         $updatesList = $this->terminusJsonResponse("upstream:updates:list {$sitename}.dev", null);
         $this->assertIsArray(
             $updatesList,

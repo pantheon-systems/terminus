@@ -62,7 +62,7 @@ class SiteCommandsTest extends TestCase
      */
     public function testSiteOrgListCommand()
     {
-        $sitename = getenv('TERMINUS_SITE');
+        $sitename = $this->getSiteName();
         $list = $this->terminusJsonResponse("site:org:list {$sitename}");
         $this->assertIsArray(
             $list,
@@ -86,7 +86,7 @@ class SiteCommandsTest extends TestCase
      */
     public function testSiteOrgsCommand()
     {
-        $sitename = getenv('TERMINUS_SITE');
+        $sitename = $this->getSiteName();
         $list = $this->terminusJsonResponse("site:orgs {$sitename}");
         $this->assertIsArray(
             $list,

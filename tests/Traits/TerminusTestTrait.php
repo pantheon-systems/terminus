@@ -72,6 +72,13 @@ trait TerminusTestTrait {
         }
     }
 
-
-
+    /**
+     * Returns the site name.
+     *
+     * @return string
+     */
+    protected function getSiteName(): string
+    {
+        return getenv('TERMINUS_SITE');
+    }
 }

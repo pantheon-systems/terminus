@@ -23,7 +23,7 @@ class LocalCommandsTest extends TestCase
      */
     public function setUp(): void
     {
-        $sitename = getenv('TERMINUS_SITE');
+        $sitename = $this->getSiteName();
         $local_sites_folder = realpath(getenv('TERMINUS_LOCAL_SITES')) . DIRECTORY_SEPARATOR .
             'pantheon-local-copies';
         $willBeCreated = $local_sites_folder . DIRECTORY_SEPARATOR . $sitename;
@@ -41,7 +41,7 @@ class LocalCommandsTest extends TestCase
      */
     public function testLocalClone()
     {
-        $sitename = getenv('TERMINUS_SITE');
+        $sitename = $this->getSiteName();
         $result = $this->terminus("local:clone {$sitename}", null);
         if (!is_string($result)) {
             throw new \Exception("The response from the local clone command didn't return the path.");
@@ -62,7 +62,7 @@ class LocalCommandsTest extends TestCase
      */
     public function testCommitDb()
     {
-        $sitename = getenv('TERMINUS_SITE');
+        $sitename = $this->getSiteName();
         $result = $this->terminus("local:getLiveDB {$sitename}.live");
         $this->assertTrue(
             is_file($result),
@@ -79,7 +79,7 @@ class LocalCommandsTest extends TestCase
      */
     public function testCommitFiles()
     {
-        $sitename = getenv('TERMINUS_SITE');
+        $sitename = $this->getSiteName();
         $result = $this->terminus("local:getLiveFiles {$sitename}.live");
         $this->assertTrue(
             is_file($result),
@@ -92,7 +92,7 @@ class LocalCommandsTest extends TestCase
      */
     public function tearDown(): void
     {
-        $sitename = getenv('TERMINUS_SITE');
+        $sitename = $this->getSiteName();
         $local_site_folder = realpath(getenv('TERMINUS_LOCAL_SITES')) . DIRECTORY_SEPARATOR .
             'pantheon-local-copies' . DIRECTORY_SEPARATOR . $sitename;
         if (is_dir($local_site_folder)) {

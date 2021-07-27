@@ -29,7 +29,7 @@ class NewRelicCommandsTest extends TestCase
      */
     public function testNewRelicInfoEnableDisable()
     {
-        $sitename = getenv('TERMINUS_SITE');
+        $sitename = $this->getSiteName();
         $this->terminus("new-relic:enable {$sitename}");
         $info = $this->terminusJsonResponse("new-relic:info {$sitename}");
         $this->assertIsArray($info, "Returned data from new-relic:info should be an array");

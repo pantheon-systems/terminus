@@ -31,7 +31,7 @@ class DomainCommandsTest extends TestCase
      */
     public function testAddListLookupRemove()
     {
-        $sitename = getenv('TERMINUS_SITE');
+        $sitename = $this->getSiteName();
         $newDomain = uniqid("test-") . ".test";
 
         $results = $this->terminusJsonResponse("domain:list {$sitename}.live");
@@ -63,7 +63,6 @@ class DomainCommandsTest extends TestCase
      */
     public function testPrimaryAddRemove()
     {
-        $sitename = getenv('TERMINUS_SITE');
         $this->fail("To Be Written.");
     }
 }
