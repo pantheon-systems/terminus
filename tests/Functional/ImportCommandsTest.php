@@ -16,9 +16,7 @@ class ImportCommandsTest extends TestCase
     use TerminusTestTrait;
     use LoginHelperTrait;
 
-    // todo: cover \Pantheon\Terminus\Commands\Import\FilesCommand
     // todo: cover \Pantheon\Terminus\Commands\Import\SiteCommand
-    // todo: cover \Pantheon\Terminus\Commands\Import\CompleteCommand
 
     /**
      * @test
@@ -29,39 +27,88 @@ class ImportCommandsTest extends TestCase
      */
     public function testImportDatabase()
     {
-        $backupCreateCommand = sprintf(
-            'backup:create %s.%s --element=database --keep-for=1',
+        $backupUrl = $this->getBackupUrl('database');
+
+        $importDatabaseCommand = sprintf(
+            'import:database --yes %s.%s "%s"',
             $this->getSiteName(),
-            'live'
+            'live',
+            $backupUrl
+        );
+        $this->terminus($importDatabaseCommand);
+    }
+
+    /**
+     * @test
+     * @covers \Pantheon\Terminus\Commands\Import\FilesCommand
+     *
+     * @group import
+     * @group short
+     */
+    public function testImportFiles()
+    {
+        $backupUrl = $this->getBackupUrl('files');
+
+        $importFilesCommand = sprintf(
+            'import:files --yes %s.%s "%s"',
+            $this->getSiteName(),
+            'live',
+            $backupUrl
+        );
+        $this->terminus($importFilesCommand);
+    }
+
+    /**
+     * @test
+     * @covers \Pantheon\Terminus\Commands\Import\CompleteCommand
+     *
+     * @group import
+     * @group short
+     */
+    public function testImportComplete()
+    {
+        $this->terminus("import:complete {$this->getSiteName()}");
+    }
+
+    /**
+     * Creates backup and returns backup URL.
+     *
+     * @param string $element
+     *   The type of the backup (element).
+     *
+     * @return string
+     *   The backup URL.
+     */
+    private function getBackupUrl(string $element): string
+    {
+        $backupCreateCommand = sprintf(
+            'backup:create %s.%s --element=%s --keep-for=1',
+            $this->getSiteName(),
+            'live',
+            $element
         );
         $this->terminus($backupCreateCommand);
 
-        $backupListCommand = sprintf('backup:list %s.%s --element=database', $this->getSiteName(), 'live');
-        $listOfDatabaseBackups = $this->terminusJsonResponse($backupListCommand);
-        $this->assertIsArray($listOfDatabaseBackups, 'List of database backups should be an array');
-        $latestDatabaseBackup = array_shift($listOfDatabaseBackups);
+        $backupListCommand = sprintf('backup:list %s.%s --element=%s', $this->getSiteName(), 'live', $element);
+        $listOfBackups = $this->terminusJsonResponse($backupListCommand);
+        $this->assertIsArray($listOfBackups, 'List of backups should be an array');
+        $latestBackup = array_shift($listOfBackups);
         $this->assertArrayHasKey(
             'file',
-            $latestDatabaseBackup,
-            'An item from the list of database backups should have "file" property'
+            $latestBackup,
+            'An item from the list of backups should have "file" property'
         );
 
         $backupInfoCommand = sprintf(
             'backup:get %s.%s --file=%s',
             $this->getSiteName(),
             'live',
-            $latestDatabaseBackup['file']
+            $latestBackup['file']
         );
-        $latestDatabaseBackupUrl = $this->terminus($backupInfoCommand);
-        $this->assertIsString($latestDatabaseBackupUrl, 'A URL of a backup should be string');
-        $this->assertNotEmpty($latestDatabaseBackupUrl, 'A URL of a backup should be empty');
+        $latestBackupUrl = $this->terminus($backupInfoCommand);
+        $this->assertIsString($latestBackupUrl, 'A URL of a backup should be string');
+        $this->assertNotEmpty($latestBackupUrl, 'A URL of a backup should not be empty');
 
-        $importDatabaseCommand = sprintf(
-            'import:database --yes %s.%s "%s"',
-            $this->getSiteName(),
-            'live',
-            $latestDatabaseBackupUrl
-        );
-        $this->terminus($importDatabaseCommand);
+        return $latestBackupUrl;
     }
 }
