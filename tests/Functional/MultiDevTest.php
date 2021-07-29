@@ -23,7 +23,7 @@ class MultiDevTest extends TestCase
      */
     public function testMultidevCreateListDeleteCommands()
     {
-        $sitename = getenv('TERMINUS_SITE');
+        $sitename = $this->getSiteName();
         $envname = substr(uniqid('md-'), 0, 11);
         $this->terminus(
             vsprintf(

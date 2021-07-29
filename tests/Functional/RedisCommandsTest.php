@@ -3,9 +3,7 @@
 namespace Pantheon\Terminus\Tests\Functional;
 
 use Pantheon\Terminus\Tests\Traits\LoginHelperTrait;
-use Pantheon\Terminus\Tests\Traits\SiteBaseSetupTrait;
 use Pantheon\Terminus\Tests\Traits\TerminusTestTrait;
-use Pantheon\Terminus\Tests\Traits\UrlStatusCodeHelperTrait;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -21,13 +19,24 @@ class RedisCommandsTest extends TestCase
     /**
      * @test
      * @covers \Pantheon\Terminus\Commands\Redis\EnableCommand
+     *
+     * @group redis
+     * @group short
+     */
+    public function testRedisEnable()
+    {
+        $this->terminus("redis:enable {$this->getSiteName()}");
+    }
+
+    /**
+     * @test
      * @covers \Pantheon\Terminus\Commands\Redis\DisableCommand
      *
      * @group redis
-     * @gropu long
+     * @group short
      */
-    public function testConnection()
+    public function testRedisDisable()
     {
-        $this->fail("To Be Written");
+        $this->terminus("redis:disable {$this->getSiteName()}");
     }
 }

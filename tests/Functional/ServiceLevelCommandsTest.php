@@ -27,7 +27,6 @@ class ServiceLevelCommandsTest extends TestCase
      */
     public function testConnection()
     {
-        $sitename = getenv('TERMINUS_SITE');
         $this->fail("To Be Written");
     }
 }

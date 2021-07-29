@@ -3,9 +3,7 @@
 namespace Pantheon\Terminus\Tests\Functional;
 
 use Pantheon\Terminus\Tests\Traits\LoginHelperTrait;
-use Pantheon\Terminus\Tests\Traits\SiteBaseSetupTrait;
 use Pantheon\Terminus\Tests\Traits\TerminusTestTrait;
-use Pantheon\Terminus\Tests\Traits\UrlStatusCodeHelperTrait;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -21,15 +19,24 @@ class SolrCommandsTest extends TestCase
     /**
      * @test
      * @covers \Pantheon\Terminus\Commands\Solr\EnableCommand
+     *
+     * @group solr
+     * @group short
+     */
+    public function testSolrEnable()
+    {
+        $this->terminus("solr:enable {$this->getSiteName()}");
+    }
+
+    /**
+     * @test
      * @covers \Pantheon\Terminus\Commands\Solr\DisableCommand
      *
      * @group solr
-     * @gropu short
+     * @group short
      */
-    public function testSolrEnableDisable()
+    public function testSolrDisable()
     {
-        $sitename = getenv('TERMINUS_SITE');
-        $this->terminus("solr:enable {$sitename}");
-        $this->terminus("solr:disable {$sitename}");
+        $this->terminus("solr:disable {$this->getSiteName()}");
     }
 }

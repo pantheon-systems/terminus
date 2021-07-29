@@ -27,7 +27,7 @@ class BranchCommandsTest extends TestCase
      */
     public function testBranchList()
     {
-        $sitename = getenv('TERMINUS_SITE');
+        $sitename = $this->getSiteName();
         $branches = $this->terminusJsonResponse("branch:list {$sitename}");
         $this->assertIsArray(
             $branches,

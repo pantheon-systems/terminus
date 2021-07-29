@@ -7,18 +7,21 @@ namespace Pantheon\Terminus\Tests\Traits;
  *
  * @package Pantheon\Terminus\Tests\Traits
  */
-trait TerminusTestTrait {
-
+trait TerminusTestTrait
+{
     /**
      * Run a terminus command.
      *
      * @param string $command The command to run
+     *
+     * @reutrn array
+     *   The execution's output and status.
      */
-    protected static function call_terminus(string $command)
+    protected static function callTerminus(string $command): array
     {
         $project_dir = dirname(dirname(__DIR__));
         exec(
-            sprintf("%s/%s %s", $project_dir, TERMINUE_BIN_FILE, $command,),
+            sprintf("%s/%s %s", $project_dir, TERMINUE_BIN_FILE, $command),
             $output,
             $status
         );
@@ -32,12 +35,12 @@ trait TerminusTestTrait {
      *
      * @param string $command
      *   The command to run.
-     * @param integer $status
+     * @param int|null $expected_status
      *   Status code. Null = no status check
      */
     protected function terminus(string $command, ?int $expected_status = 0): ?string
     {
-        [$output, $status] = static::call_terminus($command);
+        [$output, $status] = static::callTerminus($command);
         if ($expected_status !== null) {
             $this->assertEquals($expected_status, $status, $output);
         }
@@ -49,10 +52,9 @@ trait TerminusTestTrait {
 
     /**
      * @param $command
-     * @param int $expected_status
+     * @param int|null $expected_status
      *
      * @return array|string|null
-     * @throws \JsonException
      */
     protected function terminusJsonResponse($command, ?int $expected_status = 0)
     {
@@ -72,6 +74,13 @@ trait TerminusTestTrait {
         }
     }
 
-
-
+    /**
+     * Returns the site name.
+     *
+     * @return string
+     */
+    protected function getSiteName(): string
+    {
+        return getenv('TERMINUS_SITE');
+    }
 }

@@ -30,7 +30,7 @@ class EnvCommandsTest extends TestCase
      */
     public function testClearCacheCommand()
     {
-        $sitename = getenv('TERMINUS_SITE');
+        $sitename = $this->getSiteName();
         $this->terminus("env:clear-cache {$sitename}.dev");
     }
 
@@ -43,7 +43,7 @@ class EnvCommandsTest extends TestCase
      */
     public function testDeployCommand()
     {
-        $sitename = getenv('TERMINUS_SITE');
+        $sitename = $this->getSiteName();
         $this->terminus("env:deploy {$sitename}.live");
     }
 
@@ -56,7 +56,7 @@ class EnvCommandsTest extends TestCase
      */
     public function testCloneContentCommand()
     {
-        $sitename = getenv('TERMINUS_SITE');
+        $sitename = $this->getSiteName();
         $this->terminus("env:clone {$sitename}.live test");
     }
 
@@ -69,7 +69,7 @@ class EnvCommandsTest extends TestCase
      */
     public function testCodelogCommand()
     {
-        $sitename = getenv('TERMINUS_SITE');
+        $sitename = $this->getSiteName();
         $codeLogs = $this->terminusJsonResponse("env:code-log {$sitename}");
         $this->assertIsArray($codeLogs, "Returned data from codelogs should be json.");
         $codeLog = array_shift($codeLogs);
@@ -119,7 +119,7 @@ class EnvCommandsTest extends TestCase
      */
     public function testInfoCommand()
     {
-        $sitename = getenv('TERMINUS_SITE');
+        $sitename = $this->getSiteName();
         $info = $this->terminusJsonResponse("env:info {$sitename}.dev");
         $this->assertIsArray($info, "Assert returned data from environment is array.");
         $this->assertArrayHasKey(
@@ -154,7 +154,7 @@ class EnvCommandsTest extends TestCase
     public function testMetricsCommand()
     {
         // Randomly chosen customer site
-        $sitename = getenv('TERMINUS_SITE');
+        $sitename = $this->getSiteName();
         $metrics = $this->terminusJsonResponse("env:metrics {$sitename}.live");
         $this->assertIsArray($metrics, "Assert returned data from metrics are made of metrics entries.");
         $this->assertArrayHasKey('timeseries', $metrics, "Returned metrics should have a timeseries property.");
@@ -186,7 +186,7 @@ class EnvCommandsTest extends TestCase
      */
     public function testListCommand()
     {
-        $sitename = getenv('TERMINUS_SITE');
+        $sitename = $this->getSiteName();
         $envs = $this->terminusJsonResponse("env:list {$sitename}");
         $this->assertIsArray($envs, "Assert returned data from list are made of env entries.");
         $env = array_shift($envs);
@@ -217,7 +217,7 @@ class EnvCommandsTest extends TestCase
      */
     public function testViewCommand()
     {
-        $sitename = getenv('TERMINUS_SITE');
+        $sitename = $this->getSiteName();
         $this->terminus("env:view {$sitename}.dev");
     }
 }

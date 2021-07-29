@@ -29,7 +29,7 @@ class ConnectionCommandsTest extends TestCase
      */
     public function testConnection()
     {
-        $sitename = getenv('TERMINUS_SITE');
+        $sitename = $this->getSiteName();
         $info = $this->terminusJsonResponse(
             "connection:info {$sitename}.dev"
         );
