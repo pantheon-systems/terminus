@@ -23,7 +23,7 @@ class DashboardCommandsTest extends TestCase
      * @covers \Pantheon\Terminus\Commands\Dashboard\ViewCommand
      *
      * @group dashboard
-     * @gropu short
+     * @group short
      */
     public function testDashboardUrl()
     {

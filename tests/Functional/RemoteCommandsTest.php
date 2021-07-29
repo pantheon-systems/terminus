@@ -24,7 +24,7 @@ class RemoteCommandsTest extends TestCase
      * @covers \Pantheon\Terminus\Commands\Remote\WPCommand
      *
      * @group remote
-     * @gropu long
+     * @group long
      */
     public function testConnection()
     {

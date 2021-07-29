@@ -25,10 +25,27 @@ class TagCommandsTest extends TestCase
      * @covers \Pantheon\Terminus\Commands\Tag\RemoveCommand
      *
      * @group tag
-     * @gropu long
+     * @group short
      */
-    public function testSolrEnableDisable()
-    {
-        $this->fail("To Be Written");
+    public function testTagAddListRemove()
+    {   
+        $siteName = getenv('TERMINUS_SITE');
+        $orgId = getenv('TERMINUS_ORG');
+        $newTag = uniqid("tag-");
+
+        // ADD
+        $this->terminus("tag:add {$siteName} {$orgId} {$newTag}", null);
+
+        // LIST
+        $tagList1 = $this->terminusJsonResponse("tag:list {$siteName} {$orgId}");
+        $this->assertIsArray($tagList1, "Returned values from tag list should be array");
+        $this->assertContains($newTag, $tagList1, "Tag list should contain new tag");
+
+
+        // REMOVE
+        $this->terminus("tag:remove {$siteName} {$orgId} {$newTag}", null);
+        
+        $tagList2 = $this->terminusJsonResponse("tag:list {$siteName} {$orgId}");
+        $this->assertNotContains($newTag, $tagList2, "Tag list should no longer contain new tag");
     }
 }

@@ -25,7 +25,7 @@ class HTTPSCommandsTest extends TestCase
      * @covers \Pantheon\Terminus\Commands\HTTPS\SetCommand
      *
      * @group branch
-     * @gropu long
+     * @group long
      */
     public function testHTTPS()
     {
