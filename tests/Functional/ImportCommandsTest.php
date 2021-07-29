@@ -16,8 +16,6 @@ class ImportCommandsTest extends TestCase
     use TerminusTestTrait;
     use LoginHelperTrait;
 
-    // todo: cover \Pantheon\Terminus\Commands\Import\SiteCommand
-
     /**
      * @test
      * @covers \Pantheon\Terminus\Commands\Import\DatabaseCommand
@@ -56,6 +54,17 @@ class ImportCommandsTest extends TestCase
             $backupUrl
         );
         $this->terminus($importFilesCommand);
+    }
+
+    /**
+     * @test
+     * @covers \Pantheon\Terminus\Commands\Import\SiteCommand
+     *
+     * @group import
+     */
+    public function testImportSite()
+    {
+        $this->fail('Not implemented. Requirement: a Drupal-based test site to create a site archive via Drush.');
     }
 
     /**
