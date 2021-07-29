@@ -23,7 +23,7 @@ class ServiceLevelCommandsTest extends TestCase
      * @covers \Pantheon\Terminus\Commands\ServiceLevel\SetCommand
      *
      * @group service-level
-     * @gropu long
+     * @group long
      */
     public function testConnection()
     {

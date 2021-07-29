@@ -26,7 +26,7 @@ class ImportCommandsTest extends TestCase
      * @covers \Pantheon\Terminus\Commands\Import\SiteCommand
      *
      * @group branch
-     * @gropu long
+     * @group long
      */
     public function testBranchList()
     {

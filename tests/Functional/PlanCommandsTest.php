@@ -25,7 +25,7 @@ class PlanCommandsTest extends TestCase
      * @covers \Pantheon\Terminus\Commands\Plan\SetCommand
      *
      * @group branch
-     * @gropu long
+     * @group long
      */
     public function testConnection()
     {

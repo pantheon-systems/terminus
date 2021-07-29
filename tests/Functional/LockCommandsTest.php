@@ -25,7 +25,7 @@ class LockCommandsTest extends TestCase
      * @covers \Pantheon\Terminus\Commands\Lock\InfoCommand
      *
      * @group branch
-     * @gropu long
+     * @group long
      */
     public function testBranchList()
     {

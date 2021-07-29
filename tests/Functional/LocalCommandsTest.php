@@ -37,7 +37,7 @@ class LocalCommandsTest extends TestCase
      * @covers \Pantheon\Terminus\Commands\Local\CloneCommand
      *
      * @group local
-     * @gropu long
+     * @group long
      */
     public function testLocalClone()
     {
@@ -58,7 +58,7 @@ class LocalCommandsTest extends TestCase
      * @covers \Pantheon\Terminus\Commands\Local\GetLiveDBCommand
      *
      * @group local
-     * @gropu long
+     * @group long
      */
     public function testCommitDb()
     {
@@ -75,7 +75,7 @@ class LocalCommandsTest extends TestCase
      * @covers \Pantheon\Terminus\Commands\Local\GetLiveFilesCommand
      *
      * @group local
-     * @gropu long
+     * @group long
      */
     public function testCommitFiles()
     {
