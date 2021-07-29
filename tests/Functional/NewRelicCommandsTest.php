@@ -30,6 +30,8 @@ class NewRelicCommandsTest extends TestCase
     public function testNewRelicInfoEnableDisable()
     {
         $sitename = $this->getSiteName();
+
+        // ENABLE
         $this->terminus("new-relic:enable {$sitename}");
         $info = $this->terminusJsonResponse("new-relic:info {$sitename}");
         $this->assertIsArray($info, "Returned data from new-relic:info should be an array");
@@ -41,7 +43,22 @@ class NewRelicCommandsTest extends TestCase
         $this->assertEquals(
             "active",
             $info['state'],
-            "Returned data from new-relic:info should have a an active state"
+            "Returned data from new-relic:info should have an active state"
+        );
+
+        // DISABLE
+        $this->terminus("new-relic:disable {$sitename}");
+        $info2 = $this->terminusJsonResponse("new-relic:info {$sitename}");
+        $this->assertIsArray($info2, "Returned data from new-relic:info should be an array");
+        $this->assertArrayHasKey(
+            "state",
+            $info2,
+            "Returned data from new-relic:info should have a state value"
+        );
+        $this->assertNotEquals(
+            "active",
+            $info2['state'],
+            "Returned data from new-relic:info should not have an active state"
         );
     }
 }
