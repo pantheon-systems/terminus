@@ -23,7 +23,7 @@ class BranchCommandsTest extends TestCase
      * @covers \Pantheon\Terminus\Commands\Branch\ListCommand
      *
      * @group branch
-     * @gropu short
+     * @group short
      */
     public function testBranchList()
     {

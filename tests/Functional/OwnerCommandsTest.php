@@ -23,7 +23,7 @@ class OwnerCommandsTest extends TestCase
      * @covers \Pantheon\Terminus\Commands\Owner\SetCommand
      *
      * @group branch
-     * @gropu long
+     * @group long
      */
     public function testConnection()
     {

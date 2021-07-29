@@ -25,7 +25,7 @@ class SSHKeyCommandsTest extends TestCase
      * @covers \Pantheon\Terminus\Commands\SSHKey\RemoveCommand
      *
      * @group sshkey
-     * @gropu long
+     * @group long
      */
     public function testSSHKeyCommand()
     {

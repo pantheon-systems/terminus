@@ -25,7 +25,7 @@ class NewRelicCommandsTest extends TestCase
      * @covers \Pantheon\Terminus\Commands\NewRelic\InfoCommand
      *
      * @group new-relic
-     * @gropu short
+     * @group short
      */
     public function testNewRelicInfoEnableDisable()
     {

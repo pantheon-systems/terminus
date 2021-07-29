@@ -29,7 +29,7 @@ class DomainCommandsTest extends TestCase
      * @covers \Pantheon\Terminus\Commands\Domain\Primary\RemoveCommand
      *
      * @group domain
-     * @gropu long
+     * @group long
      */
     public function testAddListLookupRemove()
     {
