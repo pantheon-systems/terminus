@@ -65,7 +65,7 @@ abstract class TerminusCollection implements ContainerAwareInterface, RequestAwa
         $this->getContainer()->add($nickname, $this->collected_class)
             ->addArguments([$model_data, $options]);
         $model = $this->getContainer()->get($nickname);
-        $this->models[] = $model;
+        $this->models[$model_data->id] = $model;
         return $model;
     }
 
