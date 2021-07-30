@@ -25,6 +25,8 @@ jobs:
           path: /home/runner/work/terminus/terminus
       - name: Full Composer Install
         run: composer install
+      - name: Validate Code
+        run: composer code:lint
       - name: Phar Build
         run: composer phar:build
       - name: permissions
