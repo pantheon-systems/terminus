@@ -99,4 +99,31 @@ class BackupCommandsTest extends TestCase
         $this->assertNotEquals($newValue, $newValue2);
         $this->terminus("backup:automatic:{$newValue2} {$siteName}.live", null);
     }
+
+    /**
+     * @test
+     * @covers \Pantheon\Terminus\Commands\Backup\GetCommand
+     *
+     * @group backup
+     * @group short
+     */
+    public function testBackupGetLatest()
+    {
+        $startOfCommandExecutionTimestamp = time();
+        $this->terminus("backup:create {$this->getSiteName()}.live --element=database --keep-for=1", null);
+
+        $latestBackupUrl = $this->terminus("backup:get {$this->getSiteName()}.live --element=database");
+        $this->assertIsString($latestBackupUrl, 'A URL of a backup should be string');
+        $this->assertNotEmpty($latestBackupUrl, 'A URL of a backup should not be empty');
+
+        preg_match('/(\d+)_backup/', $latestBackupUrl, $matches);
+        if (!isset($matches[1])) {
+            $this->fail('A URL of backup should contain timestamp');
+        }
+        $latestBackupTimestamp = $matches[1];
+
+        if ($latestBackupTimestamp < $startOfCommandExecutionTimestamp) {
+            $this->fail('Command "backup:get" should return URL of the most recent backup');
+        }
+    }
 }
