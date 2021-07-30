@@ -28,7 +28,7 @@ class TagCommandsTest extends TestCase
      * @group short
      */
     public function testTagAddListRemove()
-    {   
+    {
         $siteName = getenv('TERMINUS_SITE');
         $orgId = getenv('TERMINUS_ORG');
         $newTag = uniqid("tag-");

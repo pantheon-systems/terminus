@@ -129,7 +129,7 @@
       "vendor/bin/robo coverage ./docs/TestCoverage.md"
     ],
     "cs": [
-      "phpcs --standard=tests/config/linting_ruleset.xml bin/t3 src"
+      "vendor/bin/phpcs --standard=tests/config/linting_ruleset.xml bin/t3 src tests/Functional"
     ],
     "docs": [
       "vendor/bin/robo doc ./README.md",
