@@ -15,7 +15,7 @@ class SetCommand extends SiteCommand
     use WorkflowProcessingTrait;
 
     /**
-     * Changes a site's upstream.
+     * Changes a site upstream.
      *
      * @authorize
      *

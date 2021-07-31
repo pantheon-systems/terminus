@@ -8,7 +8,7 @@ Feature: Listing available plans
 
   @vcr plan-list.yml
   Scenario: List plans available for my site
-    When I run "terminus plan:list [[test_site_name]]"
+    When I run "[[executable]] plan:list [[test_site_name]]"
     Then I should see a table with rows like:
     """
       SKU
@@ -20,7 +20,7 @@ Feature: Listing available plans
 
   @vcr plan-list-empty.yml
   Scenario: List plans available for my site when none are available
-    When I run "terminus plan:list [[test_site_name]]"
+    When I run "[[executable]] plan:list [[test_site_name]]"
     Then I should see a table with rows like:
     """
       SKU

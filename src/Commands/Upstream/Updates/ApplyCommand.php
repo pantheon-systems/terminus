@@ -14,7 +14,7 @@ class ApplyCommand extends UpdatesCommand
     use WorkflowProcessingTrait;
 
     /**
-     * Applies upstream updates to a site's development environment.
+     * Applies upstream updates to a site development environment.
      *
      * @authorize
      *
@@ -42,18 +42,27 @@ class ApplyCommand extends UpdatesCommand
         }
 
         $updates = $this->getUpstreamUpdatesLog($env);
-        $count = count($updates);
-        if ($count) {
-            $this->log()->notice(
-                'Applying {count} upstream update(s) to the {env} environment of {site_id}...',
-                ['count' => $count, 'env' => $env->id, 'site_id' => $site->get('name'),]
-            );
+        $composerUpdates = $this->getComposerUpdatesLog($env);
 
+        $count = count($updates);
+        $composerCount = count($composerUpdates);
+        if ($count || $composerCount) {
+            $prefix = sprintf("Applying %d upstream update(s)", $count);
+            if ($composerCount) {
+                $prefix .= " and any composer update(s)";
+            }
+            $this->log()->notice(
+                '{prefix} to the {env} environment of {site_id}...',
+                [
+                    'prefix' => $prefix,
+                    'env' => $env->id,
+                    'site_id' => $site->get('name'),
+                ]
+            );
             $workflow = $env->applyUpstreamUpdates(
                 isset($options['updatedb']) ? $options['updatedb'] : false,
                 isset($options['accept-upstream']) ? $options['accept-upstream'] : false
             );
-
             $this->processWorkflow($workflow);
             $this->log()->notice($workflow->getMessage());
         } else {

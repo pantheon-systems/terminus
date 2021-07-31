@@ -9,7 +9,7 @@ Feature: Working with multidev environments
 
   @vcr multidev-create.yml
   Scenario: Create a multidev environment
-    When I run "terminus multidev:create [[test_site_name]].dev multidev"
+    When I run "[[executable]] multidev:create [[test_site_name]].dev multidev"
     Then I should get:
     """
     Creating Multidev environment "multidev"
@@ -17,7 +17,7 @@ Feature: Working with multidev environments
 
   @vcr multidev-create-no-db.yml
   Scenario: Create a multidev environment
-    When I run "terminus multidev:create [[test_site_name]].dev multidev --no-db"
+    When I run "[[executable]] multidev:create [[test_site_name]].dev multidev --no-db"
     Then I should get:
     """
     Creating Multidev environment "multidev"
@@ -25,7 +25,7 @@ Feature: Working with multidev environments
 
   @vcr multidev-create-no-files.yml
   Scenario: Create a multidev environment
-    When I run "terminus multidev:create [[test_site_name]].dev multidev --no-files"
+    When I run "[[executable]] multidev:create [[test_site_name]].dev multidev --no-files"
     Then I should get:
     """
     Creating Multidev environment "multidev"

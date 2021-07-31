@@ -8,30 +8,31 @@ class Solr extends AddOnModel
 
     /**
      * Disables Solr indexing
+     *
+     * @return Workflow
      */
     public function disable()
     {
-        $this->setStatus(false);
+        $site = $this->getSite();
+        return $site->getWorkflows()->create('disable_addon', [
+            'params' => [
+                'addon' => 'indexserver',
+            ]
+        ]);
     }
 
     /**
      * Enables Solr indexing
+     *
+     * @return Workflow
      */
     public function enable()
     {
-        $this->setStatus(true);
-    }
-
-    /**
-     * Sets the site's allow_indexserver setting to this value
-     *
-     * @param boolean $status True to enable Solr, false to disable
-     */
-    private function setStatus($status)
-    {
-        $this->request()->request(
-            "sites/{$this->getSite()->id}/settings",
-            ['method' => 'put', 'form_params' => ['allow_indexserver' => $status,],]
-        );
+        $site = $this->getSite();
+        return $site->getWorkflows()->create('enable_addon', [
+            'params' => [
+                'addon' => 'indexserver',
+            ]
+        ]);
     }
 }

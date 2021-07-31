@@ -8,7 +8,7 @@ Feature: Listing one's organizational memberships
 
   @vcr org-list.yml
   Scenario: List a user's organizational memberships
-    When I run "terminus org:list"
+    When I run "[[executable]] org:list"
     Then I should get: "-------------------------------------- --------------- -------------------"
     And I should get: "ID                                     Name            Label"
     And I should get: "-------------------------------------- --------------- -------------------"
@@ -18,5 +18,5 @@ Feature: Listing one's organizational memberships
 
   @vcr org-list-empty.yml
   Scenario: List a user's organizational memberships when there aren't any
-    When I run "terminus org:list"
+    When I run "[[executable]] org:list"
     Then I should get the warning: "You are not a member of any organizations."

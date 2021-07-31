@@ -5,6 +5,8 @@ namespace Pantheon\Terminus\Commands\Domain;
 use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
 use Pantheon\Terminus\Commands\TerminusCommand;
 use Pantheon\Terminus\Commands\StructuredListTrait;
+use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
+use Pantheon\Terminus\Models\Environment;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 
@@ -40,7 +42,19 @@ class ListCommand extends TerminusCommand implements SiteAwareInterface
      */
     public function listDomains($site_env)
     {
-        list(, $env) = $this->getSiteEnv($site_env);
+        [$site, $env] = explode('.', $site_env);
+        if (empty($site) || empty($env)) {
+            throw new TerminusNotFoundException(
+                'The Site and environment must take the form of {site}.{env} followed by the domain name you are adding'
+            );
+        }
+        $env = $this->sites()->get($site)->getEnvironments()->get($env) ?? null;
+        if (!$env instanceof Environment) {
+            throw new TerminusNotFoundException(
+                'Site/env not found {site}.{env}',
+                ['site' => $site, 'env' => $env]
+            );
+        }
         return $this->getRowsOfFields($env->getDomains());
     }
 }

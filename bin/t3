@@ -1,0 +1,59 @@
+#!/usr/bin/env -S php -d memory_limit=2048M
+<?php
+
+/**
+ * This script runs Terminus. It does the following:
+ *   - Includes the Composer autoload file
+ *   - Starts a container with the input, output, application, and configuration objects
+ *   - Starts a runner instance and runs the command
+ *   - Exits with a status code
+ */
+
+$pharPath = \Phar::running(true);
+if (version_compare(PHP_VERSION, '7.4.0', '<=') === true) {
+    throw new \PharIo\Version\InvalidVersionException("Sorry, but you need to upgrade PHP to version 7.4 or greater.");
+}
+if ($pharPath) {
+    include_once("$pharPath/vendor/autoload.php");
+} elseif (file_exists($path = __DIR__ . '/../vendor/autoload.php')
+    || file_exists($path = __DIR__ . '/../../autoload.php')
+    || file_exists($path = __DIR__ . '/../../../autoload.php')
+) {
+    include_once($path);
+} else {
+    throw new \Exception('Could not locate autoload.php');
+}
+
+use Pantheon\Terminus\Terminus;
+
+$home_tokens_folder = '.terminus' . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR . 'tokens';
+
+// Cannot use $_SERVER superglobal since that's empty during phpunit testing
+// getenv('HOME') isn't set on Windows and generates a Notice.
+$home = @getenv('HOME');
+if (!empty($home)) {
+    // home should never end with a trailing slash.
+    $home = rtrim($home, '/');
+}
+
+if (empty($home) && !empty($_SERVER['HOMEDRIVE']) && !empty($_SERVER['HOMEPATH'])) {
+    // home on windows
+    $home = $_SERVER['HOMEDRIVE'] . $_SERVER['HOMEPATH'];
+    // If HOMEPATH is a root directory the path can end with a slash. Make sure
+    // that doesn't happen.
+    $home = rtrim($home, '\\/');
+    @putenv("HOME={$home}");
+}
+
+$tokens_dir = $home . DIRECTORY_SEPARATOR . $home_tokens_folder;
+if (!is_dir($tokens_dir)) {
+    mkdir(
+            $tokens_dir,
+        0700,
+        true
+    );
+}
+
+$terminus = Terminus::factory();
+$status_code = $terminus->run();
+exit($status_code);

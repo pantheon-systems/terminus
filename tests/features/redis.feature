@@ -9,13 +9,10 @@ Feature: Using Redis
 
   @vcr redis-enable.yml
   Scenario: Enabling Redis
-    When I run "terminus redis:enable [[test_site_name]]"
-    Then I should get: "Redis enabled. Converging bindings."
-    And I should get: "Brought environments to desired configuration state"
+    When I run "[[executable]] redis:enable [[test_site_name]]"
+    Then I should get: "Enabling cacheserver for site"
 
   @vcr redis-disable.yml
   Scenario: Disabling Redis
-    When I run "terminus redis:disable [[test_site_name]]"
-    Then I should get: "Redis disabled. Converging bindings."
-    And I should get: "Brought environments to desired configuration state"
-
+    When I run "[[executable]] redis:disable [[test_site_name]]"
+    Then I should get: "Disabling cacheserver for site"

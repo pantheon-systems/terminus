@@ -15,6 +15,7 @@ class Backup extends TerminusModel implements EnvironmentInterface
     use EnvironmentTrait;
 
     const PRETTY_NAME = 'backup';
+    const DEFAULT_TTL = 365;
 
     /**
      * @var array

@@ -9,7 +9,7 @@ Feature: Managing site organizational memberships
 
   @vcr site-org-add.yml
   Scenario: Adding a supporting organization to a site
-    When I run "terminus site:org:add [[test_site_name]] '[[organization_name]]'"
+    When I run "[[executable]] site:org:add [[test_site_name]] '[[organization_name]]'"
     Then I should get:
     """
     Adding [[organization_name]] as a supporting organization to [[test_site_name]].
@@ -22,7 +22,7 @@ Feature: Managing site organizational memberships
 
   @vcr site-org-remove.yml
   Scenario: Removing a supporting organization from a site
-    When I run "terminus site:org:remove [[test_site_name]] '[[organization_name]]'"
+    When I run "[[executable]] site:org:remove [[test_site_name]] '[[organization_name]]'"
     Then I should get:
     """
     Removing [[organization_name]] as a supporting organization from [[test_site_name]].
@@ -34,7 +34,7 @@ Feature: Managing site organizational memberships
 
   @vcr site-org-remove.yml
   Scenario: Listing the supporting organizations of a site
-    When I run "terminus site:org:list [[test_site_name]]"
+    When I run "[[executable]] site:org:list [[test_site_name]]"
     Then I should not see a warning
     And I should see a table with rows like:
     """
@@ -46,7 +46,7 @@ Feature: Managing site organizational memberships
 
   @vcr site-org-list-empty.yml
   Scenario: Listing the supporting organizations of a site
-    When I run "terminus site:org:list [[test_site_name]]"
+    When I run "[[executable]] site:org:list [[test_site_name]]"
     Then I should get the warning: "This site has no supporting organizations."
     And I should see a table with rows like:
     """

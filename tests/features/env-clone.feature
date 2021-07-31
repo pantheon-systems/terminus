@@ -9,7 +9,7 @@ Feature: Cloning site content
 
   @vcr env-clone.yml
   Scenario: Clone an environment
-    When I run "terminus env:clone-content [[test_site_name]].test dev --yes"
+    When I run "[[executable]] env:clone-content [[test_site_name]].test dev --yes"
     Then I should get:
     """
     Cloning files from "test" to "dev"
@@ -21,7 +21,7 @@ Feature: Cloning site content
 
   @vcr env-clone.yml
   Scenario: Clone an environment's files only
-    When I run "terminus env:clone-content [[test_site_name]].test dev --files-only --yes"
+    When I run "[[executable]] env:clone-content [[test_site_name]].test dev --files-only --yes"
     Then I should get:
     """
     Cloning files from "test" to "dev"
@@ -29,7 +29,7 @@ Feature: Cloning site content
 
   @vcr env-clone.yml
   Scenario: Clone an environment's database only
-    When I run "terminus env:clone-content [[test_site_name]].test dev --db-only --yes"
+    When I run "[[executable]] env:clone-content [[test_site_name]].test dev --db-only --yes"
     Then I should get:
     """
     Cloning database from "test" to "dev"
@@ -37,7 +37,7 @@ Feature: Cloning site content
 
   @vcr env-clone-from-uninitialized.yml
   Scenario: Attempting to clone from an uninitialized environment
-    When I run "terminus env:clone-content [[test_site_name]].test dev --db-only --yes"
+    When I run "[[executable]] env:clone-content [[test_site_name]].test dev --db-only --yes"
     Then I should get:
     """
     [[test_site_name]]'s test environment cannot be cloned from because it has not been initialized. Please run `env:deploy [[test_site_name]].test` to initialize it.
@@ -45,7 +45,7 @@ Feature: Cloning site content
 
   @vcr env-clone-to-uninitialized.yml
   Scenario: Attempting to clone to an uninitialized environment
-    When I run "terminus env:clone-content [[test_site_name]].test live --db-only --yes"
+    When I run "[[executable]] env:clone-content [[test_site_name]].test live --db-only --yes"
     Then I should get:
     """
     [[test_site_name]]'s live environment cannot be cloned into because it has not been initialized. Please run `env:deploy [[test_site_name]].live` to initialize it.

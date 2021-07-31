@@ -14,7 +14,7 @@ class ListCommand extends TerminusCommand implements SiteAwareInterface
     use StructuredListTrait;
 
     /**
-     * Lists a site's Multidev environments.
+     * Lists a site Multidev environments.
      *
      * @authorize
      * @filter-output

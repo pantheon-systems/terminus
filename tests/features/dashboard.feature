@@ -9,17 +9,17 @@ Feature: Accessing the Dashboard
 
   @vcr dashboard.yml
   Scenario: Printing out a user account Dashboard URL
-    When I run "terminus dashboard:view --print"
+    When I run "[[executable]] dashboard:view --print"
     Then I should get: "https://[[dashboard_host]]/users/[[user_id]]#sites"
 
   @vcr dashboard.yml
   Scenario: Printing out the site Dashboard URL
-    When I run "terminus dashboard:view [[test_site_name]] --print"
+    When I run "[[executable]] dashboard:view [[test_site_name]] --print"
     Then I should get: "https://[[dashboard_host]]/sites/11111111-1111-1111-1111-111111111111"
 
   @vcr dashboard.yml
   Scenario: Printing out the site Dashboard URL for a specific environment
-    When I run "terminus dashboard:view [[test_site_name]].dev --print"
+    When I run "[[executable]] dashboard:view [[test_site_name]].dev --print"
     Then I should get: "https://[[dashboard_host]]/sites/11111111-1111-1111-1111-111111111111#dev"
 
   Scenario: Opening a Dashboard window automatically

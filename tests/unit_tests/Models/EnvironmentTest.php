@@ -103,6 +103,7 @@ class EnvironmentTest extends ModelTestCase
         $this->model->id = 'env id';
         $this->binding->id = 'binding id';
         $this->site->id = 'site id';
+        $username = 'username';
         $password = 'password';
         $port = 'port';
         $domain = 'domain';
@@ -110,7 +111,7 @@ class EnvironmentTest extends ModelTestCase
             'password' => $password,
             'host' => $domain,
             'port' => $port,
-            'url' => "redis://pantheon:$password@$domain:$port",
+            'url' => "redis://$username:$password@$domain:$port",
             'command' => "redis-cli -h $domain -p $port -a $password",
         ];
 
@@ -118,6 +119,10 @@ class EnvironmentTest extends ModelTestCase
             ->method('getByType')
             ->with($this->equalTo('cacheserver'))
             ->willReturn([$this->binding,]);
+        $this->binding->expects($this->once())
+            ->method('getUsername')
+            ->with()
+            ->willReturn($username);
         $this->binding->expects($this->at(0))
             ->method('get')
             ->with($this->equalTo('environment'))
@@ -273,7 +278,8 @@ class EnvironmentTest extends ModelTestCase
         $this->site->id = 'site id';
         $password = 'password';
         $port = '2222';
-        $username = $database = 'pantheon';
+        $username = 'username';
+        $database = 'pantheon';
         $sftp_username = "{$this->model->id}.{$this->site->id}";
         $sftp_domain = "appserver.$sftp_username.drush.in";
         $db_domain = "dbserver.{$this->model->id}.{$this->model->getSite()->id}.drush.in";
@@ -321,28 +327,32 @@ class EnvironmentTest extends ModelTestCase
             ->method('getByType')
             ->with($this->equalTo('cacheserver'))
             ->willReturn([$this->binding,]);
-        $this->binding->expects($this->at(3))
+        $this->binding->expects($this->at(4))
             ->method('get')
             ->with($this->equalTo('environment'))
             ->willReturn($this->model->id);
-        $this->binding->expects($this->at(4))
+        $this->binding->expects($this->at(5))
             ->method('get')
             ->with($this->equalTo('password'))
             ->willReturn($password);
-        $this->binding->expects($this->at(5))
+        $this->binding->expects($this->at(6))
             ->method('get')
             ->with($this->equalTo('host'))
             ->willReturn($cache_domain);
-        $this->binding->expects($this->at(6))
+        $this->binding->expects($this->at(7))
             ->method('get')
             ->with($this->equalTo('port'))
             ->willReturn($port);
+        $this->binding->expects($this->exactly(2))
+            ->method('getUsername')
+            ->with()
+            ->willReturn($username);
 
         $cache_expected = [
             'redis_password' => $password,
             'redis_host' => $cache_domain,
             'redis_port' => $port,
-            'redis_url' => "redis://pantheon:$password@$cache_domain:$port",
+            'redis_url' => "redis://$username:$password@$cache_domain:$port",
             'redis_command' => "redis-cli -h $cache_domain -p $port -a $password",
         ];
 
@@ -356,15 +366,6 @@ class EnvironmentTest extends ModelTestCase
 
         $out = $this->model->connectionInfo();
         $this->assertEquals(array_merge($sftp_expected, $db_expected, $cache_expected, $git_expected), $out);
-    }
-
-    public function testConvergeBindings()
-    {
-        $this->setUpWorkflowOperationTest(
-            'convergeBindings',
-            [],
-            'converge_environment'
-        );
     }
 
     public function testCountDeployableCode()
@@ -425,8 +426,15 @@ class EnvironmentTest extends ModelTestCase
         $this->site->id = 'site id';
         $password = 'password';
         $port = 'port';
-        $username = $database = 'pantheon';
+        $username = 'username';
+        $database = 'pantheon';
         $domain = "dbserver.{$this->model->id}.{$this->model->getSite()->id}.drush.in";
+
+        $this->binding->expects($this->once())
+            ->method('getUsername')
+            ->with()
+            ->willReturn($username);
+
         $expected = [
             'username' => $username,
             'password' => $password,
@@ -534,56 +542,17 @@ class EnvironmentTest extends ModelTestCase
             ->method('request')
             ->with(
                 'sites/abc/environments/dev/settings',
-                ['method' => 'get',]
-            )
-            ->willReturn(['data' => (object)['ssl_enabled' => true,]]);
-
-        $this->request->expects($this->at(1))
-            ->method('request')
-            ->with(
-                'sites/abc/environments/dev/settings',
-                [
-                    'method' => 'put',
-                    'form_params' => [
-                        'ssl_enabled' => false,
-                        'dedicated_ip' => false,
-                    ],
-                ]
-            )
-            ->willReturn(['data' => 'Ok',]);
-
-        $this->model->disableHttpsCertificate();
-    }
-
-    public function testDisableHttpsCertificateFailed()
-    {
-        $this->request->expects($this->at(0))
-            ->method('request')
-            ->with(
-                'sites/abc/environments/dev/settings',
-                ['method' => 'get',]
+                ['method' => 'get']
             )
             ->willReturn(['data' => (object)['ssl_enabled' => true,],]);
 
-        $this->request->expects($this->at(1))
-            ->method('request')
-            ->with(
-                'sites/abc/environments/dev/settings',
-                [
-                    'method' => 'put',
-                    'form_params' => [
-                        'ssl_enabled' => false,
-                        'dedicated_ip' => false,
-                    ],
-                ]
-            )
-            ->will($this->throwException(new \Exception()));
+        $this->workflows->expects($this->any())
+            ->method('create')
+            ->with('disable_ssl')
+            ->willReturn($this->workflow);
 
-        $this->setExpectedException(
-            TerminusException::class,
-            'There was an problem disabling https for this environment.'
-        );
-        $this->model->disableHttpsCertificate();
+        $workflow = $this->model->disableHttpsCertificate();
+        $this->assertEquals($workflow, $this->workflow);
     }
 
     public function testDisableHttpsCertificateNotEnabled()

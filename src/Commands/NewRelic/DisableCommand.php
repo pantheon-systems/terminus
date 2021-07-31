@@ -30,9 +30,7 @@ class DisableCommand extends TerminusCommand implements SiteAwareInterface
     public function disable($site_id)
     {
         $site = $this->getSite($site_id);
-        $site->getNewRelic()->disable();
-        $this->log()->notice('New Relic disabled. Converging bindings.');
-        $workflow = $site->converge();
+        $workflow = $site->getNewRelic()->disable();
         $this->processWorkflow($workflow);
         $this->log()->notice($workflow->getMessage());
     }

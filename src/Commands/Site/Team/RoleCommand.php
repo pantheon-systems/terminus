@@ -18,7 +18,7 @@ class RoleCommand extends TerminusCommand implements SiteAwareInterface
     use WorkflowProcessingTrait;
 
     /**
-     * Updates a user's role on a site's team.
+     * Updates a user role on a site team.
      *
      * @authorize
      *

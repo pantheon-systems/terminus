@@ -20,7 +20,7 @@ Feature: Payment method command
 
   @vcr payment-method-list.yml
   Scenario: Listing a user's payment methods
-    When I run "terminus payment-method:list"
+    When I run "[[executable]] payment-method:list"
     Then I should get: "------------- --------------------------------------"
     And I should get: "Label         ID"
     And I should get: "------------- --------------------------------------"
@@ -39,7 +39,7 @@ Feature: Payment method command
 
   @vcr payment-method-site-list-empty.yml
   Scenario: Listing a user's payment methods when they don't have any
-    When I run "terminus payment-method:list"
+    When I run "[[executable]] payment-method:list"
     Then I should get the warning: "There are no payment methods attached to this account."
     And I should get: "------- ----"
     And I should get: "Label   ID"
@@ -48,11 +48,11 @@ Feature: Payment method command
   @vcr payment-method-add.yml
   Scenario: Adding payment methods
     Given a site named "[[test_site_name]]"
-    When I run "terminus payment-method:add [[test_site_name]] '[[payment_method_label]]'"
+    When I run "[[executable]] payment-method:add [[test_site_name]] '[[payment_method_label]]'"
     Then I should get: "[[payment_method_label]] has been applied to the [[test_site_name]] site."
 
   @vcr payment-method-remove.yml
   Scenario: Removing payment methods
     Given a site named "[[test_site_name]]"
-    When I run "terminus payment-method:remove [[test_site_name]]"
+    When I run "[[executable]] payment-method:remove [[test_site_name]]"
     Then I should get: "The payment method for the [[test_site_name]] site has been removed."

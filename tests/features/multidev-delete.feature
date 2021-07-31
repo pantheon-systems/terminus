@@ -9,7 +9,7 @@ Feature: Deleting a site's multidev environments
 
   @vcr multidev-delete.yml
   Scenario: Deleting a multidev environment
-    When I run "terminus multidev:delete [[test_site_name]].multidev --yes"
+    When I run "[[executable]] multidev:delete [[test_site_name]].multidev --yes"
     Then I should get:
     """
     Deleted the multidev environment multidev.
@@ -17,7 +17,7 @@ Feature: Deleting a site's multidev environments
 
   @vcr multidev-delete.yml
   Scenario: Failing to delete a multidev environment when the specified environment does not exist
-    When I run "terminus multidev:delete [[test_site_name]].invalid --yes"
+    When I run "[[executable]] multidev:delete [[test_site_name]].invalid --yes"
     Then I should get:
     """
     Could not find an environment identified by invalid.

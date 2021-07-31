@@ -1,24 +1,74 @@
 # Change Log
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org)
 
-## MASTER
-### Added
-- New option `--no-db` added to `multidev:create` which will skip the duplication of the database from the source environment. (#2050)
-- New option `--no-files` added to `multidev:create` which will skip the duplication of files from the source environment. (#2050)
-- New option `no-db` added to `Environments::create` which will skip the duplication of the database from the source environment. (#2050)
-- New option `no-files` added to `Environments::create` which will skip the duplication of files from the source environment. (#2050)
+##
+
 - New command `self:plugin:install` to install Terminus plugins. (#2054)
 - New command `self:plugin:list` to list installed Terminus plugins. (#2054)
 - New command `self:plugin:search` to locate Terminus plugins to install. (#2054)
 - New command `self:plugin:uninstall` to uninstall Terminus plugins. (#2054)
 - New command `self:plugin:update` to update already-installed Terminus plugins. (#2054)
 
+## 3.0.0 - {}
+
+### Added
+- D9ify command (see docs)
+- Symfony Library updates (5.x)
+-
+
+## 2.6.0 - 2021-06-04
+
+### Added
+- `daily-ttl` and `weekly-ttl` options have been added to `Backups::setBackupSchedule()`. (#2133)
+- `keep-for` option has been added to `backup:automatic:schedule`. (#2133)
+- `expiry` information added to the output of `backup:automatic:info`. (#2133)
+
+## 2.5.0 - 2021-01-20
+### Added
+- `getUsername` added to `Binding` model to retrieve the username for a connection. (#2107)
+
+### Changed
+- `upstream:updates:apply` now applies Composer changes in addition to upstream changes. (#2089)
+- Connection usernames are no longer "pantheon" but derived from API data. (#2107)
+
+### Fixed
+- Fixed issue where `plan:info` receives a 404 error. (#2098)
+
+## 2.4.1 - 2020-09-08
+### Changed
+- The `DrushRCEditor` class has been renamed to `DrushRcClass`. (#2083)
+- Upstreams can be ID'd by `label`s, `product_id`s and `machine_name`s in addition to `id`s. (#2086)
+
+### Fixed
+- The `DrushRCEditor` class no longer emits deprecation warnings. (#2083)
+- `tag:add` now rejects empty tags. (#2085)
+
+## 2.4.0 - 2020-06-19
+### Added
+- New option `--no-db` added to `multidev:create` which will skip the duplication of the database from the source environment. (#2050)
+- New option `--no-files` added to `multidev:create` which will skip the duplication of files from the source environment. (#2050)
+- New option `no-db` added to `Environments::create` which will skip the duplication of the database from the source environment. (#2050)
+- New option `no-files` added to `Environments::create` which will skip the duplication of files from the source environment. (#2050)
+- New method `Upstream::hasCode()` returns a bool indicating whether the environment has code or not. (#2056)
+
 ### Changed
 - `Request::download($url, $target)` now accepts directories in addition to files as its `$target` parameter. (#2053)
 - The `backup:get` command's `--to` option now accepts directories in addition to files. (#2053)
+- Return type of `Redis::disable()` has changed to a `Workflow` model. (#2055)
+- Return type of `Redis::enable()` has changed to a `Workflow` model. (#2055)
+- Return type of `Solr::disable()` has changed to a `Workflow` model. (#2055)
+- Return type of `Solr::enable()` has changed to a `Workflow` model. (#2055)
+- Return type of `Environment::disableHttpsCertificate()` has changed to a `Workflow` model. (#2055)
 
 ### Removed
 - Removed now-redundant `Backup::serializeWithURL()` function. Use `Backup::serialize()` instead. (#2042)
+- Removed obsolete `Environment::convergeBindings()` method. (#2055)
+- Removed obsolete `Site::converge()` method. (#2055)
+
+### Fixed
+- Drush script is no longer included when generating Drush aliases. (#2076)
+- PHP notice is not emitted when using `upstream:updates:status` on an environment without code. (#2056)
+- PHP notice is not emitted when using `UpstreamStatus::hasUpdates()` on an environment without code. (#2056)
 
 ## 2.3.0 - 2020-01-10
 ### Added

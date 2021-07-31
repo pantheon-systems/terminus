@@ -9,7 +9,7 @@ Feature: Site Deployment
 
   @vcr env-deploy.yml
   Scenario: Deploying dev to test while syncing content from the live environment
-    When I run "terminus env:deploy [[test_site_name]].test --note='Deploy test' --sync-content"
+    When I run "[[executable]] env:deploy [[test_site_name]].test --note='Deploy test' --sync-content"
     Then I should get:
     """
     Deploying code to "test", and cloning files from "live", and cloning database from "live"
@@ -17,7 +17,7 @@ Feature: Site Deployment
 
   @vcr env-deploy-uninitialized-source.yml
   Scenario: Attempting to deploy dev to test while syncing content from an uninitialized live environment
-    When I run "terminus env:deploy [[test_site_name]].test --note='Deploy test' --sync-content"
+    When I run "[[executable]] env:deploy [[test_site_name]].test --note='Deploy test' --sync-content"
     Then I should get:
     """
     [[test_site_name]]'s live environment cannot be cloned because it has not been initialized.
@@ -25,12 +25,12 @@ Feature: Site Deployment
 
   @vcr env-deploy-no-changes.yml
   Scenario: Failing to deploy dev to test because there are no changes to deploy
-    When I run "terminus env:deploy [[test_site_name]].test --note='Deploy test' --sync-content"
+    When I run "[[executable]] env:deploy [[test_site_name]].test --note='Deploy test' --sync-content"
     Then I should get: "There is nothing to deploy."
 
   @vcr env-deploy-init-with-message.yml
   Scenario: Initializing test when it has not been previously initialized
-    When I run "terminus env:deploy [[test_site_name]].test --note='Shes the one named Sailor Moon!' --sync-content"
+    When I run "[[executable]] env:deploy [[test_site_name]].test --note='Shes the one named Sailor Moon!' --sync-content"
     Then I should get:
     """
     Deploying code to "test", and cloning files from "live", and cloning database from "live"
@@ -38,7 +38,7 @@ Feature: Site Deployment
 
   @vcr env-deploy-init.yml
   Scenario: Initializing test when it has not been previously initialized and no note is provided
-    When I run "terminus env:deploy [[test_site_name]].test"
+    When I run "[[executable]] env:deploy [[test_site_name]].test"
     Then I should get:
     """
     Deploying code to "test", and cloning files from "live", and cloning database from "live"

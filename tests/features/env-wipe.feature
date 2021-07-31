@@ -9,7 +9,7 @@ Feature: Wipe the content in a site's environment
 
   @vcr env-wipe.yml
   Scenario: Wipe Environment
-    When I run "terminus env:wipe [[test_site_name]].dev  --yes"
+    When I run "[[executable]] env:wipe [[test_site_name]].dev  --yes"
     Then I should get:
     """
     Wiping the "dev" environment of "[[test_site_name]]"

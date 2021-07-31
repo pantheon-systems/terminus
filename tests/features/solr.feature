@@ -9,24 +9,10 @@ Feature: Using Solr
 
   @vcr solr-enable.yml
   Scenario: Enabling Solr
-    When I run "terminus solr:enable [[test_site_name]]"
-    Then I should get:
-    """
-    Solr enabled. Converging bindings.
-    """
-    And I should get:
-    """
-    Brought environments to desired configuration state
-    """
+    When I run "[[executable]] solr:enable [[test_site_name]]"
+    Then I should get: "Enabling indexserver for site"
 
   @vcr solr-disable.yml
   Scenario: Disabling Solr
-    When I run "terminus solr:disable [[test_site_name]]"
-    Then I should get:
-    """
-    Solr disabled. Converging bindings.
-    """
-    And I should get:
-    """
-    Brought environments to desired configuration state
-    """
+    When I run "[[executable]] solr:disable [[test_site_name]]"
+    Then I should get: "Disabling indexserver for site"

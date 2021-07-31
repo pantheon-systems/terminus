@@ -9,7 +9,7 @@ namespace Pantheon\Terminus\Commands\Upstream\Updates;
 class StatusCommand extends UpdatesCommand
 {
     /**
-     * Displays a whether there are updates available from the upstream for a site's environment.
+     * Displays a whether there are updates available from the upstream for a site environment.
      *
      * @authorize
      *

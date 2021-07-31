@@ -15,10 +15,14 @@ trait WorkflowProcessingTrait
      * @param Workflow $model A workflow to run
      * @return Workflow That same workflow
      */
-    public function processWorkflow(Workflow $workflow)
+    public function processWorkflow(Workflow $workflow): ?Workflow
     {
         if ($this->input()->isInteractive()) {
-            return $this->getContainer()->get(WorkflowProgressBar::class, [$this->output, $workflow,])->cycle();
+            $nickname = \uniqid(__METHOD__ . "-");
+            $this->getContainer()->add($nickname, WorkflowProgressBar::class)
+                ->addArguments([$this->output(), $workflow]);
+            $progressBar = $this->getContainer()->get($nickname);
+            return $progressBar->cycle();
         }
         $retry_interval = $this->getConfig()->get('http_retry_delay_ms', 100);
         do {

@@ -9,31 +9,25 @@ Feature: Set HTTPS Certificate
 
   @vcr https-add.yml
   Scenario: Set an HTTPS Certificate
-    When I run "terminus https:set [[test_site_name]].live fake fake"
+    When I run "[[executable]] https:set [[test_site_name]].live fake fake"
     Then I should get:
     """
     Converged loadbalancer
     """
 
-  @vcr https-delete.yml
+  @vcr https-remove.yml
   Scenario: Delete an HTTPS Certificate
-    When I run "terminus https:remove [[test_site_name]].dev"
-    Then I should get:
-    """
-    Converged containers on "dev"
-    """
+    When I run "[[executable]] https:remove [[test_site_name]].dev"
+    Then I should get: "Disabled ssl for dev"
 
-  @vcr https-delete-nocert.yml
-  Scenario: Delete a non-existant HTTPS Certificate
-    When I run "terminus https:remove [[test_site_name]].dev"
-    Then I should get:
-    """
-    The dev environment does not have https enabled
-    """
+  @vcr https-remove-nocert.yml
+  Scenario: Delete a non-existent HTTPS Certificate
+    When I run "[[executable]] https:remove [[test_site_name]].dev"
+    Then I should get: "The dev environment does not have https enabled"
 
   @vcr https-info.yml
   Scenario: Retrieve information on an environment's HTTPS setup
-    When I run "terminus https:info [[test_site_name]].live"
+    When I run "[[executable]] https:info [[test_site_name]].live"
     Then I should get: "---------------------------------- ----------------- -------- ---------------- --------------"
     And I should get: "Domain/ID                          Type              Status   Status Message   Is Deletable"
     And I should get: "---------------------------------- ----------------- -------- ---------------- --------------"

@@ -17,7 +17,7 @@ class ClearCacheCommand extends TerminusCommand implements SiteAwareInterface
     use WorkflowProcessingTrait;
 
     /**
-     * Clears caches for the site's codeserver.
+     * Clears caches for the site codeserver.
      *
      * @authorize
      *

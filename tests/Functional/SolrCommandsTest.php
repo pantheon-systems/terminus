@@ -1,0 +1,42 @@
+<?php
+
+namespace Pantheon\Terminus\Tests\Functional;
+
+use Pantheon\Terminus\Tests\Traits\LoginHelperTrait;
+use Pantheon\Terminus\Tests\Traits\TerminusTestTrait;
+use PHPUnit\Framework\TestCase;
+
+/**
+ * Class SolrCommandsTest
+ *
+ * @package Pantheon\Terminus\Tests\Functional
+ */
+class SolrCommandsTest extends TestCase
+{
+    use TerminusTestTrait;
+    use LoginHelperTrait;
+
+    /**
+     * @test
+     * @covers \Pantheon\Terminus\Commands\Solr\EnableCommand
+     *
+     * @group solr
+     * @group short
+     */
+    public function testSolrEnable()
+    {
+        $this->terminus("solr:enable {$this->getSiteName()}");
+    }
+
+    /**
+     * @test
+     * @covers \Pantheon\Terminus\Commands\Solr\DisableCommand
+     *
+     * @group solr
+     * @group short
+     */
+    public function testSolrDisable()
+    {
+        $this->terminus("solr:disable {$this->getSiteName()}");
+    }
+}

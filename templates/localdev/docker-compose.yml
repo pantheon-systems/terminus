@@ -1,0 +1,99 @@
+# Use this docker-compose file to host the site locally
+version: "3.7"
+services:
+  nginx:
+    container_name: ${PROJECT_NAME}
+    image: ${NGINX_CONTAINER}
+    expose:
+      - 80
+      - 9222
+    depends_on:
+      - php
+      - mysql
+    links:
+      - php
+      - mysql
+    volumes:
+      - ".:/var/www"
+    ports:
+      - "8080:80"
+      - "9222:9222"
+    env_file:
+      - .envrc
+    environment:
+      - PROJECT_NAME=${PROJECT_NAME}
+
+  php:
+    container_name: ${PROJECT_NAME}-php
+    image: ${PHP_CONTAINER}
+    expose:
+      - "9000"
+    ports:
+      - "9000:9000"
+    volumes:
+      - ".:/var/www"
+      - "$HOME/.terminus/cache:/root/.terminus/cache:cached"
+      - type: bind
+        source: $HOME/.ssh
+        target: /root/.ssh
+        read_only: true
+    links:
+      - redis
+      - mysql
+      - solr8
+    env_file:
+      - .envrc
+    environment:
+      - BACKUP_FILE_NAME=${PROJECT_NAME}.sql.gz
+      - DATABASE_NAME=drupal8
+      - PROJECT_NAME=${PROJECT_NAME}
+
+  mysql:
+    container_name: ${PROJECT_NAME}-mysql
+    image: ${MYSQL_CONTAINER}
+    environment:
+      - PROJECT_NAME=${PROJECT_NAME}
+    volumes:
+     - './db:/var/lib/mysql'
+    expose:
+      - "3306"
+    ports:
+      - "33067:3306"
+    env_file:
+      - .envrc
+    healthcheck:
+      test: [
+          "CMD",
+          "mysqladmin",
+          "ping",
+          "--user=${MYSQL_USER}",
+          "--password=${MYSQL_PASSWORD}",
+          "--host=localhost"
+      ]
+      retries: 10
+      interval: 15s
+      timeout: 5s
+
+  redis:
+    # Generic redis instance
+    container_name: ${PROJECT_NAME}-redis
+    image: redis
+    expose:
+      - "6379"
+
+  solr8:
+    container_name: ${PROJECT_NAME}-solr8
+    image: ${SOLR_CONTAINER}
+    env_file:
+      - .envrc
+    environment:
+      - PROJECT_NAME=${PROJECT_NAME}
+    expose:
+      - "8983"
+    ports:
+      - "8983:8983"
+
+
+volumes:
+  web: { }
+  initmysql: { }

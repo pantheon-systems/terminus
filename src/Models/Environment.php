@@ -92,7 +92,8 @@ class Environment extends TerminusModel implements ContainerAwareInterface, Site
             $password = $cache_binding->get('password');
             $domain = $cache_binding->get('host');
             $port = $cache_binding->get('port');
-            $url = "redis://pantheon:$password@$domain:$port";
+            $username = $cache_binding->getUsername();
+            $url = "redis://$username:$password@$domain:$port";
             $command = "redis-cli -h $domain -p $port -a $password";
             return [
                 'password' => $password,
@@ -183,6 +184,7 @@ class Environment extends TerminusModel implements ContainerAwareInterface, Site
      */
     public function commitChanges($commit = null)
     {
+        $nickname = \uniqid(__FUNCTION__ . "-");
         $local = $this->getContainer()->get(LocalMachineHelper::class);
 
         $git_email_result = $local->exec('git config user.email');
@@ -246,16 +248,6 @@ class Environment extends TerminusModel implements ContainerAwareInterface, Site
     }
 
     /**
-     * Converges all bindings on a site
-     *
-     * @return array
-     */
-    public function convergeBindings()
-    {
-        return $this->getWorkflows()->create('converge_environment');
-    }
-
-    /**
      * Counts the number of deployable commits
      *
      * @return int
@@ -263,14 +255,16 @@ class Environment extends TerminusModel implements ContainerAwareInterface, Site
     public function countDeployableCommits()
     {
         $parent_environment = $this->getParentEnvironment();
-        $parent_commits = $parent_environment->getCommits()->all();
         $number_of_commits = 0;
-        foreach ($parent_commits as $commit) {
-            $labels = $commit->get('labels');
-            $number_of_commits += (integer)(
-                !in_array($this->id, $labels)
-                && in_array($parent_environment->id, $labels)
-            );
+        if ($parent_environment instanceof Environment) {
+            $parent_commits = $parent_environment->getCommits()->all();
+            foreach ($parent_commits as $commit) {
+                $labels = $commit->get('labels');
+                $number_of_commits += (integer)(
+                    !in_array($this->id, $labels)
+                    && in_array($parent_environment->id, $labels)
+                );
+            }
         }
         return $number_of_commits;
     }
@@ -298,10 +292,10 @@ class Environment extends TerminusModel implements ContainerAwareInterface, Site
                 $db_binding = array_shift($dbserver_binding);
             } while ($db_binding->get('environment') != $this->id);
 
-            $username = 'pantheon';
             $password = $db_binding->get('password');
             $domain = "dbserver.{$this->id}.{$this->getSite()->id}.drush.in";
             $port = $db_binding->get('port');
+            $username = $db_binding->getUsername();
             $database = 'pantheon';
             $url = "mysql://$username:$password@$domain:$port/$database";
             $command = "mysql -u $username -p$password -h $domain -P $port $database";
@@ -370,7 +364,7 @@ class Environment extends TerminusModel implements ContainerAwareInterface, Site
     /**
      * Remove a HTTPS certificate from the environment
      *
-     * @return array $workflow
+     * @return Workflow
      *
      * @throws TerminusException
      */
@@ -379,20 +373,8 @@ class Environment extends TerminusModel implements ContainerAwareInterface, Site
         if (!$this->settings('ssl_enabled')) {
             throw new TerminusException('The {env} environment does not have https enabled.', ['env' => $this->id,]);
         }
-        try {
-            $this->request()->request(
-                "sites/{$this->getSite()->id}/environments/{$this->id}/settings",
-                [
-                    'method' => 'put',
-                    'form_params' => [
-                        'ssl_enabled' => false,
-                        'dedicated_ip' => false,
-                    ],
-                ]
-            );
-        } catch (\Exception $e) {
-            throw new TerminusException('There was an problem disabling https for this environment.');
-        }
+
+        return $this->getWorkflows()->create('disable_ssl');
     }
 
     /**
@@ -409,10 +391,14 @@ class Environment extends TerminusModel implements ContainerAwareInterface, Site
     /**
      * @return Backups
      */
-    public function getBackups()
+    public function getBackups() : Backups
     {
         if (empty($this->backups)) {
-            $this->backups = $this->getContainer()->get(Backups::class, [['environment' => $this,],]);
+            $nickname = \uniqid(__FUNCTION__ . "-");
+
+            $this->getContainer()->add($nickname, Backups::class)
+                ->addArguments([['environment' => $this]]);
+            $this->backups = $this->getContainer()->get($nickname);
         }
         return $this->backups;
     }
@@ -423,7 +409,11 @@ class Environment extends TerminusModel implements ContainerAwareInterface, Site
     public function getBindings()
     {
         if (empty($this->bindings)) {
-            $this->bindings = $this->getContainer()->get(Bindings::class, [['environment' => $this,],]);
+            $nickname = \uniqid(__FUNCTION__ . "-");
+
+            $this->getContainer()->add($nickname, Bindings::class)
+                ->addArguments([['environment' => $this]]);
+            $this->bindings = $this->getContainer()->get($nickname);
         }
         return $this->bindings;
     }
@@ -442,7 +432,11 @@ class Environment extends TerminusModel implements ContainerAwareInterface, Site
     public function getCommits()
     {
         if (empty($this->commits)) {
-            $this->commits = $this->getContainer()->get(Commits::class, [['environment' => $this,],]);
+            $nickname = \uniqid(__FUNCTION__ . "-");
+
+            $this->getContainer()->add($nickname, Commits::class)
+                ->addArguments([['environment' => $this]]);
+            $this->commits = $this->getContainer()->get($nickname);
         }
         return $this->commits;
     }
@@ -453,9 +447,12 @@ class Environment extends TerminusModel implements ContainerAwareInterface, Site
     public function getEnvironmentMetrics()
     {
         if (empty($this->environment_metrics)) {
+            $nickname = \uniqid(__FUNCTION__ . "-");
+
+            $this->getContainer()->add($nickname, EnvironmentMetrics::class)
+                ->addArguments([['environment' => $this,],]);
             $this->environment_metrics = $this->getContainer()->get(
-                EnvironmentMetrics::class,
-                [['environment' => $this,],]
+                $nickname
             );
         }
         return $this->environment_metrics;
@@ -467,7 +464,11 @@ class Environment extends TerminusModel implements ContainerAwareInterface, Site
     public function getDomains()
     {
         if (empty($this->domains)) {
-            $this->domains = $this->getContainer()->get(Domains::class, [['environment' => $this,],]);
+            $nickname = \uniqid(__FUNCTION__ . "-");
+
+            $this->getContainer()->add($nickname, Domains::class)
+                ->addArguments([['environment' => $this]]);
+            $this->domains = $this->getContainer()->get($nickname);
         }
         return $this->domains;
     }
@@ -477,7 +478,11 @@ class Environment extends TerminusModel implements ContainerAwareInterface, Site
      */
     public function getPrimaryDomainModel()
     {
-        return $this->getContainer()->get(PrimaryDomain::class, [$this]);
+        $nickname = \uniqid(__FUNCTION__ . "-");
+
+        $this->getContainer()->add($nickname, PrimaryDomain::class)
+            ->addArguments([$this]);
+        return $this->getContainer()->get($nickname);
     }
 
     /**
@@ -498,7 +503,10 @@ class Environment extends TerminusModel implements ContainerAwareInterface, Site
     public function getLock()
     {
         if (empty($this->lock)) {
-            $this->lock = $this->getContainer()->get(Lock::class, [$this->get('lock'), ['environment' => $this],]);
+            $nickname = \uniqid(__FUNCTION__ . "-");
+            $this->getContainer()->add($nickname, Lock::class)
+                ->addArguments([$this->get('lock'), ['environment' => $this]]);
+            $this->lock = $this->getContainer()->get($nickname);
         }
         return $this->lock;
     }
@@ -552,10 +560,10 @@ class Environment extends TerminusModel implements ContainerAwareInterface, Site
     public function getUpstreamStatus()
     {
         if (empty($this->upstream_status)) {
-            $this->upstream_status = $this->getContainer()->get(
-                UpstreamStatus::class,
-                [[], ['environment' => $this,],]
-            );
+            $nickname = \uniqid(__FUNCTION__ . "-");
+            $this->getContainer()->add($nickname, UpstreamStatus::class)
+                ->addArguments([[], ['environment' => $this,],]);
+            $this->upstream_status = $this->getContainer()->get($nickname);
         }
         return $this->upstream_status;
     }
@@ -566,7 +574,10 @@ class Environment extends TerminusModel implements ContainerAwareInterface, Site
     public function getWorkflows()
     {
         if (empty($this->workflows)) {
-            $this->workflows = $this->getContainer()->get(Workflows::class, [['environment' => $this,],]);
+            $nickname = \uniqid(__FUNCTION__ . "-");
+            $this->getContainer()->add($nickname, Workflows::class)
+                ->addArguments([['environment' => $this]]);
+            $this->workflows = $this->getContainer()->get($nickname);
         }
         return $this->workflows;
     }
@@ -810,9 +821,11 @@ class Environment extends TerminusModel implements ContainerAwareInterface, Site
             "sites/{$this->getSite()->id}/environments/{$this->id}/add-ssl-cert",
             ['method' => 'POST', 'form_params' => array_filter($certificate),]
         );
-
+        $nickname = \uniqid(__FUNCTION__ . "-");
         // The response is actually a workflow
-        return $this->getContainer()->get(Workflow::class, [$response['data'], ['environment' => $this,],]);
+        $this->getContainer()->add($nickname, Workflow::class)
+            ->addArguments([$response['data'], ['environment' => $this]]);
+        return $this->getContainer()->get($nickname);
     }
 
     /**
@@ -910,5 +923,36 @@ class Environment extends TerminusModel implements ContainerAwareInterface, Site
         $path = "sites/{$this->getSite()->id}/environments/{$this->id}/settings";
         $response = (array)$this->request()->request($path, ['method' => 'get',]);
         return $response['data']->$setting;
+    }
+
+    /**
+     * Checks if the environment has the build step enabled by looking
+     * at the environment variables defined in pantheon.yml.
+     *
+     * @return bool
+     */
+    public function isBuildStepEnabled()
+    {
+        $path = sprintf(
+            'sites/%s/environments/%s/variables',
+            $this->getSite()->id,
+            $this->id
+        );
+        $options = ['method' => 'get',];
+        $response = $this->request()->request($path, $options);
+        if (empty($response['data']) || !isset($response['data']->BUILD_STEP)) {
+            return false;
+        }
+        return $response['data']->BUILD_STEP;
+    }
+
+
+    public function __toString()
+    {
+        return sprintf('%s => %s', $this->getSite()->getName(), $this->get('id'));
+    }
+
+    public function isFrozen()
+    {
     }
 }

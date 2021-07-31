@@ -8,7 +8,7 @@ Feature: Listing sites
 
   @vcr site-list-empty.yml
   Scenario: Listing a user's sites when they haven't any
-    When I run "terminus site:list --fields=name,id,plan_name,framework,owner,created,memberships,frozen"
+    When I run "[[executable]] site:list --fields=name,id,plan_name,framework,owner,created,memberships,frozen"
     Then I should get the warning: "You have no sites."
     Then I should see a table with rows like:
     """
@@ -26,7 +26,7 @@ Feature: Listing sites
   @vcr site-list.yml
   Scenario: Listing a user's sites
     Given a site named "[[test_site_name]]"
-    When I run "terminus site:list --owner=me --fields=name,id,plan_name,framework,owner,created,memberships,frozen"
+    When I run "[[executable]] site:list --owner=me --fields=name,id,plan_name,framework,owner,created,memberships,frozen"
     Then I should see a table with rows like:
     """
         Name
@@ -43,7 +43,7 @@ Feature: Listing sites
   @vcr site-list.yml
   Scenario: Filter sites list by name
     Given a site named "[[test_site_name]]"
-    When I run "terminus site:list --name=[[test_site_name]] --fields=name,id,plan_name,framework,owner,created,memberships,frozen"
+    When I run "[[executable]] site:list --name=[[test_site_name]] --fields=name,id,plan_name,framework,owner,created,memberships,frozen"
     Then I should see a table with rows like:
     """
         Name
@@ -60,7 +60,7 @@ Feature: Listing sites
   @vcr site-list.yml
   Scenario: Filter sites list by name
     Given a site named "[[test_site_name]]"
-    When I run "terminus site:list --name=[[test_site_name]]"
+    When I run "[[executable]] site:list --name=[[test_site_name]]"
     Then I should see a table with rows like:
     """
         Name
@@ -78,7 +78,7 @@ Feature: Listing sites
   @vcr site-list.yml
   Scenario: Filter sites list by name
     Given a site named "[[test_site_name]]"
-    When I run "terminus site:list --upstream=e8fe8550-1ab9-4964-8838-2b9abdccf4bf"
+    When I run "[[executable]] site:list --upstream=e8fe8550-1ab9-4964-8838-2b9abdccf4bf"
     Then I should see a table with rows like:
     """
         Name
@@ -96,7 +96,7 @@ Feature: Listing sites
   @vcr site-list.yml
   Scenario: Filter sites list by name, excluding the test site
     Given a site named "[[test_site_name]]"
-    When I run "terminus site:list --name=missing --fields=name,id,plan_name,framework,owner,created,memberships,frozen"
+    When I run "[[executable]] site:list --name=missing --fields=name,id,plan_name,framework,owner,created,memberships,frozen"
     Then I should get the warning: "You have no sites."
     Then I should see a table with rows like:
     """
@@ -114,7 +114,7 @@ Feature: Listing sites
   @vcr site-list.yml
   Scenario: Filter sites list by plan name and it's empty
     Given a site named "[[test_site_name]]"
-    When I run "terminus site:list --plan=basic --fields=name,id,plan_name,framework,owner,created,memberships,frozen"
+    When I run "[[executable]] site:list --plan=basic --fields=name,id,plan_name,framework,owner,created,memberships,frozen"
     Then I should get the warning: "You have no sites."
     Then I should see a table with rows like:
     """
@@ -132,7 +132,7 @@ Feature: Listing sites
   @vcr site-list.yml
   Scenario: Filter sites list by plan name with results
     Given a site named "[[test_site_name]]"
-    When I run "terminus site:list --plan=sandbox --fields=name,id,plan_name,framework,owner,created,memberships,frozen"
+    When I run "[[executable]] site:list --plan=sandbox --fields=name,id,plan_name,framework,owner,created,memberships,frozen"
     Then I should see a table with rows like:
     """
         Name

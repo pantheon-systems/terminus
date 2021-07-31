@@ -6,7 +6,7 @@ Feature: Waking a site
 
   @vcr env-wake.yml
   Scenario: Waking a site
-    When I run "terminus env:wake [[test_site_name]].dev"
+    When I run "[[executable]] env:wake [[test_site_name]].dev"
     Then I should get:
     """
     OK >> dev-[[test_site_name]].[[php_site_domain]] responded

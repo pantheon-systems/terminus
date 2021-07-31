@@ -31,7 +31,7 @@ class GetCommand extends SingleBackupCommand implements RequestAwareInterface
      * @usage <site>.<env> --file=<file_name> Displays the URL for the backup with the file name <file_name> in <site>'s <env> environment.
      * @usage <site>.<env> --element=<element> Displays the URL for the most recent <element> backup in <site>'s <env> environment.
      * @usage <site>.<env> --to=<path> Saves the most recent backup of any type in <site>'s <env> environment to <path>.
-     * @usage <site>.<env> --to=<path> Saves the most recent <element> backup in <site>'s <env> environment to <path>.
+     * @usage <site>.<env> --element=<element> --to=<path> Saves the most recent <element> backup in <site>'s <env> environment to <path>.
      */
     public function get($site_env, array $options = ['file' => null, 'element' => 'files', 'to' => null,])
     {

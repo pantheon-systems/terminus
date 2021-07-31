@@ -69,11 +69,11 @@ abstract class TerminusModel implements ConfigAwareInterface, RequestAwareInterf
      */
     public function fetch(array $args = [])
     {
-        $options = array_merge(['options' => ['method' => 'get',],], $args);
+        $options = array_merge(['options' => ['method' => 'get']], $args);
         $results = $this->request->request($this->getUrl(), $options);
         $this->attributes = (object)array_merge(
             (array)$this->attributes,
-            (array)$this->parseAttributes($results['data'])
+            (array)$this->parseAttributes($results->getData())
         );
         return $this;
     }

@@ -2,8 +2,10 @@
 
 namespace Pantheon\Terminus\Collections;
 
+use Pantheon\Terminus\Exceptions\TerminusException;
 use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
 use Pantheon\Terminus\Models\Domain;
+use Pantheon\Terminus\Request\RequestOperationResult;
 
 /**
  * Class Domains
@@ -27,10 +29,22 @@ class Domains extends EnvironmentOwnedCollection
      * @param string $domain Domain to add to environment
      * @return array
      */
-    public function create($domain)
+    public function create($domain): RequestOperationResult
     {
         $url = $this->getUrl() . '/' . rawurlencode($domain);
-        $this->request->request($url, ['method' => 'put',]);
+        $result = $this->request->request($url, ['method' => 'put']);
+        if ($result->isError()) {
+            throw new TerminusException(
+                'Error trying to add {domain} to {env}: {error}',
+                [
+                    'domain' => $domain,
+                    'site' => $this->getEnvironment()->getSite(),
+                    'env' => $this->getEnvironment(),
+                    'error' => $result->getStatusCodeReason(),
+                ]
+            );
+        }
+        return $result;
     }
 
     /**

@@ -8,17 +8,17 @@ Feature: Gathering sites' aliases
 
   @vcr aliases.yml
   Scenario: Generating aliases with printout
-    When I run "terminus aliases"
+    When I run "[[executable]] aliases"
     Then I should get: "/.drush/pantheon.aliases.drushrc.php"
 
   @vcr aliases.yml
   Scenario: Generating aliases with printout
-    When I run "terminus aliases --location=[[cache_dir]]/aliases.php"
+    When I run "[[executable]] aliases --location=[[cache_dir]]/aliases.php"
     Then I should get: "/aliases.php"
 
   @vcr aliases.yml
   Scenario: Generating aliases with printout
-    When I run "terminus aliases --print"
+    When I run "[[executable]] aliases --print"
     Then I should get:
     """
      [notice] Fetching site information to build Drush aliases...
@@ -34,7 +34,6 @@ Feature: Gathering sites' aliases
        'ssh-options' => '-p 2222 -o "AddressFamily inet"',
        'path-aliases' => array(
          '%files' => 'files',
-         '%drush-script' => 'drush',
         ),
      );
     """

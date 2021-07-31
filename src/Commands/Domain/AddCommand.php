@@ -3,6 +3,8 @@
 namespace Pantheon\Terminus\Commands\Domain;
 
 use Pantheon\Terminus\Commands\TerminusCommand;
+use Pantheon\Terminus\Exceptions\TerminusException;
+use Pantheon\Terminus\Models\Environment;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 
@@ -28,11 +30,25 @@ class AddCommand extends TerminusCommand implements SiteAwareInterface
      */
     public function add($site_env, $domain)
     {
-        list($site, $env) = $this->getSiteEnv($site_env);
-        $env->getDomains()->create($domain);
+        [$site, $env] = explode('.', $site_env);
+        if (empty($site) || empty($env) || empty($domain)) {
+            throw new TerminusNotFoundException(
+                'The Site and environment must take the form of {site}.{env} followed by the domain name you are adding'
+            );
+        }
+
+        $env = $this->sites()->get($site)->getEnvironments()->get($env) ?? null;
+        if (!$env instanceof Environment) {
+            throw new TerminusNotFoundException(
+                'Site/env not found {site}.{env}',
+                ['site' => $site, 'env' => $env]
+            );
+        }
+        $result = $env->getDomains()->create($domain);
+
         $this->log()->notice(
             'Added {domain} to {site}.{env}',
-            ['domain' => $domain, 'site' => $site->get('name'), 'env' => $env->id,]
+            ['domain' => $domain, 'site' => $site, 'env' => $env]
         );
     }
 }

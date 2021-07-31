@@ -18,7 +18,8 @@ class CreateCommand extends TerminusCommand implements SiteAwareInterface
 
     /**
      * Creates a multidev environment.
-     * If there is an existing Git branch with the multidev's name, then it will be used when the new environment is created.
+     * If there is an existing Git branch with the multidev name,
+     * then it will be used when the new environment is created.
      *
      * @authorize
      *
@@ -35,14 +36,23 @@ class CreateCommand extends TerminusCommand implements SiteAwareInterface
      * @usage <site>.<env> <multidev> --no-files Creates the <multidev> environment without files from the <env> environment.
      */
     public function create(
-        $site_env,
-        $multidev,
+        string $site_env,
+        string $multidev,
         array $options = [
             'no-db' => false,
             'no-files' => false,
         ]
     ) {
-        list($site, $env) = $this->getUnfrozenSiteEnv($site_env, 'dev');
+        [$site, $env] = $this->getUnfrozenSiteEnv($site_env, 'dev');
+
+        if (strlen($multidev) > 11) {
+            $multidev = substr($multidev, 0, 11);
+            $this->output()->write(
+                "Pantheon puts an 11 character limit on env names. Your name has been truncated to :" .
+                $multidev
+            );
+        }
+
         $workflow = $site->getEnvironments()->create($multidev, $env, $options);
         $this->processWorkflow($workflow);
         $this->log()->notice($workflow->getMessage());

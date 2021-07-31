@@ -15,6 +15,18 @@ class UpstreamStatus extends TerminusModel implements EnvironmentInterface
 
     const PRETTY_NAME = 'upstream status';
 
+    /**
+     * @var object|null
+     */
+    protected $updates = null;
+
+     /**
+      * Stores composer dependency updates.
+      *
+      * @var object|null
+      */
+    protected $composerUpdates = null;
+
     public function __construct($attributes, array $options = [])
     {
         parent::__construct($attributes, $options);
@@ -40,27 +52,58 @@ class UpstreamStatus extends TerminusModel implements EnvironmentInterface
      */
     public function getUpdates()
     {
-        $env = $this->getEnvironment();
-        $base_branch = 'refs/heads/' . $env->getBranchName();
-        return $this->request()->request(
-            "sites/{$env->getSite()->id}/code-upstream-updates?base_branch=$base_branch"
-        )['data'];
+        if ($this->updates === null) {
+            $env = $this->getEnvironment();
+            $base_branch = 'refs/heads/' . $env->getBranchName();
+            $this->updates = $this->request()->request(
+                "sites/{$env->getSite()->id}/code-upstream-updates?base_branch=$base_branch"
+            )['data'];
+        }
+        return $this->updates;
+    }
+
+    /**
+     * Retrives composer dependecy updates
+     *
+     * @return object
+     */
+    public function getComposerUpdates()
+    {
+        if ($this->composerUpdates === null) {
+            $env = $this->getEnvironment();
+            $this->composerUpdates = $this->request()->request(
+                "sites/{$env->getSite()->id}/environments/{$env->id}/build/updates"
+            )['data'];
+        }
+        return $this->composerUpdates;
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasCode()
+    {
+        return $this->getUpdates()->has_code;
     }
 
     /**
      * Determines whether there are any updates to be applied.
      *
-     * @return boolean
+     * @return bool
      */
     public function hasUpdates()
     {
+        if (!$this->hasCode()) {
+            return false;
+        }
+
         $updates = $this->getUpdates();
         $env = $this->getEnvironment();
         if ($env->isDevelopment()) {
             return ($updates->behind > 0);
         }
-        $parent_env_id = ($env->id === 'test') ? 'dev' : 'test';
+
         return !($updates->{$env->id}->is_up_to_date_with_upstream
-            && $updates->$parent_env_id->is_up_to_date_with_upstream);
+            && $updates->{$env->getParentEnvironment()->id}->is_up_to_date_with_upstream);
     }
 }

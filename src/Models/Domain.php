@@ -5,17 +5,25 @@ namespace Pantheon\Terminus\Models;
 use League\Container\ContainerAwareInterface;
 use League\Container\ContainerAwareTrait;
 use Pantheon\Terminus\Collections\DNSRecords;
+use Pantheon\Terminus\Exceptions\TerminusProcessException;
 use Pantheon\Terminus\Friends\EnvironmentInterface;
 use Pantheon\Terminus\Friends\EnvironmentTrait;
+use Pantheon\Terminus\Request\RequestOperationResult;
+use Pantheon\Terminus\Site\SiteAwareInterface;
+use Pantheon\Terminus\Site\SiteAwareTrait;
 
 /**
  * Class Domain
  * @package Pantheon\Terminus\Models
  */
-class Domain extends TerminusModel implements ContainerAwareInterface, EnvironmentInterface
+class Domain extends TerminusModel implements
+    ContainerAwareInterface,
+    EnvironmentInterface,
+    SiteAwareInterface
 {
     use ContainerAwareTrait;
     use EnvironmentTrait;
+    use SiteAwareTrait;
 
     /**
      * @var DNSRecords
@@ -33,9 +41,22 @@ class Domain extends TerminusModel implements ContainerAwareInterface, Environme
      *
      * @return array
      */
-    public function delete()
+    public function delete(): RequestOperationResult
     {
-        return $this->request->request($this->getUrl(), ['method' => 'delete',])['data'];
+        $action = $this->request->request($this->getUrl(), ['method' => 'delete']);
+        if ($action->isError()) {
+            \Kint::dump($action);
+            throw new TerminusProcessException(
+                "Domain remove failed. {site}.{env} => {domain}: {error}",
+                [
+                    "site" => $this->getSite()->getName(),
+                    "env" => $this->environment->id,
+                    "domain" => $this->id,
+                    "error" => $action->getStatusCodeReason(),
+                ]
+            );
+        }
+        return $action;
     }
 
     /**
@@ -44,10 +65,13 @@ class Domain extends TerminusModel implements ContainerAwareInterface, Environme
     public function getDNSRecords()
     {
         if (empty($this->dns_records)) {
-            $this->dns_records = $this->getContainer()->get(
-                DNSRecords::class,
-                [['data' => $this->get('dns_status_details')->dns_records, 'domain' => $this,],]
-            );
+            $nickname = \uniqid(__FUNCTION__ . "-");
+            $this->getContainer()->add($nickname, DNSRecords::class)
+                ->addArgument([
+                    'data' => $this->get('dns_status_details')->dns_records,
+                    'domain' => $this
+                ]);
+            $this->dns_records = $this->getContainer()->get($nickname);
         }
         return $this->dns_records;
     }

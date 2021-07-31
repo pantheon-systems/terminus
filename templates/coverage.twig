@@ -1,0 +1,17 @@
+
+
+| {{ "%-25s" | format("Command") }} | {{ "%-60s" | format("Description") }} | {{ "%2s" | format("⚖️") }} |
+| {{ "%'-25s" | format("") }} | {{ "%'-60s" | format("") }} | {{ "%'-2s" | format("") }} |
+{% for command in commands %}
+{% set desc = command.description %}{% set cmd = command.command %}{% set testResult = command.status %}
+{% for row in desc %}
+| {{ "%-25s" | format(cmd) }} | {{ "%-60s" | format(row | raw) }} | {{ "%2s" | format(testResult) }} |
+{% set cmd = "" %}
+{% set testResult = "" %}
+{% endfor %}
+{% endfor %}
+| {{ "%'-25s" | format("") }} | {{ "%'-60s" | format("") }} | {{ "%'-2s" | format("") }} |
+
+Testing Legend: ✅ Pass     💩 Bad test     🤮 Exception     ❌ Fail️️     ⚠️ Warning     ❓ Missing/Not Written
+
+Tests Passing:  {{ passing_tests }} / {{ total_tests }} ( {{ missing_tests }} not written / missing )

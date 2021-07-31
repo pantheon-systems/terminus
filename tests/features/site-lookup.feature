@@ -9,10 +9,10 @@ Feature: Looking up a site
 
   @vcr site-lookup.yml
   Scenario: Site look-up
-    When I run "terminus site:lookup [[test_site_name]]"
+    When I run "[[executable]] site:lookup [[test_site_name]]"
     Then I should get: "11111111-1111-1111-1111-111111111111"
 
   @vcr site-lookup-dne.yml
   Scenario: Site look-up fails because site DNE
-    When I run "terminus site:lookup invalid"
+    When I run "[[executable]] site:lookup invalid"
     Then I should get: "Could not locate a site your user may access identified by invalid."

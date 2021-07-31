@@ -59,7 +59,12 @@ class NewRelicTest extends ModelTestCase
             ->method('create')
             ->with(
                 $this->equalTo('disable_new_relic_for_site'),
-                $this->equalTo(['site' => $this->site->id,])
+                $this->equalTo([
+                    'site' => $this->site->id,
+                    'params' => [
+                        'converge' => true,
+                    ],
+                ])
             )
             ->willReturn($this->workflow);
 
@@ -75,12 +80,17 @@ class NewRelicTest extends ModelTestCase
         $this->site->id = 'site_id';
 
         $this->workflows->expects($this->once())
-          ->method('create')
-          ->with(
-              $this->equalTo('enable_new_relic_for_site'),
-              $this->equalTo(['site' => $this->site->id,])
-          )
-          ->willReturn($this->workflow);
+            ->method('create')
+            ->with(
+                $this->equalTo('enable_new_relic_for_site'),
+                $this->equalTo([
+                    'site' => $this->site->id,
+                    'params' => [
+                        'converge' => true,
+                    ],
+                ])
+            )
+            ->willReturn($this->workflow);
 
         $workflow = $this->model->enable();
         $this->assertEquals($workflow, $this->workflow);

@@ -10,7 +10,7 @@ Feature: Update a site with all its upstream's updates
 
   @vcr upstream-updates.yml
   Scenario: Check for upstream updates and there aren't any
-    When I run "terminus upstream:updates:list [[test_site_name]].dev"
+    When I run "[[executable]] upstream:updates:list [[test_site_name]].dev"
     Then I should get: "There are no available updates for this site."
     And I should get: "----------- ----------- --------- --------"
     And I should get: "Commit ID   Timestamp   Message   Author"
@@ -18,7 +18,7 @@ Feature: Update a site with all its upstream's updates
 
   @vcr upstream-update-list.yml
   Scenario: Check for upstream updates and there are some
-    When I run "terminus upstream:updates:list [[test_site_name]].dev"
+    When I run "[[executable]] upstream:updates:list [[test_site_name]].dev"
     Then I should get: "------------------------------------------ --------------------- -------------------------------------------------------------------------------------------------------------------------------------------- ---------------------"
     And I should get: "Commit ID                                  Timestamp             Message                                                                                                                                      Author"
     And I should get: "------------------------------------------ --------------------- -------------------------------------------------------------------------------------------------------------------------------------------- ---------------------"

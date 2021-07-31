@@ -1,11 +1,11 @@
 <?php
+declare(strict_types=1);
 
 namespace Pantheon\Terminus;
 
 use Composer\Autoload\ClassLoader;
 use Composer\Semver\Semver;
-use GuzzleHttp\Client;
-use GuzzleHttp\Psr7\Request as HttpRequest;
+use League\Container\Container;
 use League\Container\ContainerAwareInterface;
 use League\Container\ContainerAwareTrait;
 use Pantheon\Terminus\Collections\SavedTokens;
@@ -13,6 +13,7 @@ use Pantheon\Terminus\Collections\Sites;
 use Pantheon\Terminus\Config\ConfigAwareTrait;
 use Pantheon\Terminus\DataStore\FileStore;
 use Pantheon\Terminus\Helpers\LocalMachineHelper;
+use Pantheon\Terminus\Helpers\Traits\CommandExecutorTrait;
 use Pantheon\Terminus\Plugins\PluginAutoloadDependencies;
 use Pantheon\Terminus\Plugins\PluginDiscovery;
 use Pantheon\Terminus\Plugins\PluginInfo;
@@ -23,30 +24,42 @@ use Pantheon\Terminus\Request\RequestAwareInterface;
 use Pantheon\Terminus\Session\Session;
 use Pantheon\Terminus\Session\SessionAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareInterface;
-use Pantheon\Terminus\Update\LatestRelease;
-use Pantheon\Terminus\Update\UpdateChecker;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
+use Robo\Common\IO;
 use Robo\Config\Config;
 use Robo\Contract\ConfigAwareInterface;
+use Robo\Contract\IOAwareInterface;
 use Robo\Robo;
 use Robo\Runner as RoboRunner;
-use SelfUpdate\SelfUpdateCommand;
-use Symfony\Component\Console\Application;
+use Robo\Application;
+use Symfony\Component\Console\Input\ArgvInput;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\Console\Output\OutputInterface;
 use VCR\VCR;
+use Pantheon\Terminus\Config\DefaultsConfig;
+use Pantheon\Terminus\Config\DotEnvConfig;
+use Pantheon\Terminus\Config\EnvConfig;
+use Pantheon\Terminus\Config\YamlConfig;
 
 /**
  * Class Terminus
+ *
  * @package Pantheon\Terminus
  */
-class Terminus implements ConfigAwareInterface, ContainerAwareInterface, LoggerAwareInterface
+class Terminus implements
+    ConfigAwareInterface,
+    ContainerAwareInterface,
+    LoggerAwareInterface,
+    IOAwareInterface
 {
     use ConfigAwareTrait;
     use ContainerAwareTrait;
     use LoggerAwareTrait;
+    use CommandExecutorTrait;
+    use IO;
 
     /**
      * @var \Robo\Runner
@@ -57,6 +70,8 @@ class Terminus implements ConfigAwareInterface, ContainerAwareInterface, LoggerA
      */
     private $commands = [];
 
+    private Application $application;
+
     /**
      * Object constructor
      *
@@ -64,28 +79,29 @@ class Terminus implements ConfigAwareInterface, ContainerAwareInterface, LoggerA
      * @param \Symfony\Component\Console\Input\InputInterface $input
      * @param \Symfony\Component\Console\Output\OutputInterface $output
      */
-    public function __construct(Config $config, InputInterface $input = null, OutputInterface $output = null)
+    public function __construct(Config $config, InputInterface $input, OutputInterface $output)
     {
         $this->setConfig($config);
-
+        $this->setInput($input);
+        $this->setOutput($output);
         $application = new Application('Terminus', $config->get('version'));
-        $container = Robo::createDefaultContainer($input, $output, $application, $config);
+        $container = new Container();
+        Robo::configureContainer(
+            $container,
+            $application,
+            $config,
+            $input,
+            $output
+        );
         $this->setContainer($container);
-
         $this->addDefaultArgumentsAndOptions($application);
-
         $this->configureContainer();
-
+        Robo::finalizeContainer($this->getContainer());
         $this->setLogger($container->get('logger'));
-
         $this->addBuiltInCommandsAndHooks();
         $this->addPluginsCommandsAndHooks();
 
-        if (\Phar::running(true)) {
-            $cmd = new SelfUpdateCommand('Terminus', $config->get('version'), 'pantheon-systems/terminus');
-            $application->add($cmd);
-        }
-
+        $this->setApplication($application);
         $this->runner = new RoboRunner();
         $this->runner->setContainer($container);
 
@@ -94,25 +110,150 @@ class Terminus implements ConfigAwareInterface, ContainerAwareInterface, LoggerA
     }
 
     /**
-     * Runs the instantiated Terminus application
+     * Add any global arguments or options that apply to all commands.
      *
-     * @param InputInterface $input An input object to run the application with
-     * @param OutputInterface $output An output object to run the application with
-     * @return integer $status_code The exiting status code of the application
+     * @param \Symfony\Component\Console\Application $app
      */
-    public function run(InputInterface $input, OutputInterface $output)
+    private function addDefaultArgumentsAndOptions(Application $app)
     {
-        $config = $this->getConfig();
-        if (!empty($cassette = $config->get('vcr_cassette')) && !empty($mode = $config->get('vcr_mode'))) {
-            $this->startVCR(array_merge(compact('cassette'), compact('mode')));
+        $app->getDefinition()->addOption(
+            new InputOption('--yes', '-y', InputOption::VALUE_NONE, 'Answer all confirmations with "yes"')
+        );
+    }
+
+    /**
+     * Register the necessary classes for Terminus
+     */
+    private function configureContainer()
+    {
+        $container = $this->getContainer();
+
+        // Add the services
+        // Request
+
+        $container->share('request', Request::class);
+        $container->inflector(RequestAwareInterface::class)
+            ->invokeMethod('setRequest', ['request']);
+
+        // Session
+        $session_store = new FileStore(
+            $this->getConfig()->get('cache_dir')
+        );
+        $session = new Session($session_store);
+        $container->share('session', $session);
+        $container->inflector(SessionAwareInterface::class)
+            ->invokeMethod('setSession', ['session']);
+
+        // Saved tokens
+        $token_store = new FileStore($this->getConfig()->get('tokens_dir'));
+        $container->inflector(SavedTokens::class)
+            ->invokeMethod('setDataStore', [$token_store]);
+
+        $this->configureModulesAndCollections($container);
+
+        // Helpers
+        $container->add(LocalMachineHelper::class);
+
+        // Progress Bars
+        $container->add(ProcessProgressBar::class);
+        $container->add(WorkflowProgressBar::class);
+
+        // Plugin handlers
+        $container->share('pluginAutoloadDependencies', PluginAutoloadDependencies::class)
+            ->addArgument(__DIR__);
+        $container->add(PluginDiscovery::class)
+            ->addArgument($this->getConfig()->get('plugins_dir'));
+
+        $container->share('sites', Sites::class);
+        $container->inflector(SiteAwareInterface::class)
+            ->invokeMethod('setSites', ['sites']);
+
+        // Install our command cache into the command factory
+        $commandCacheDir = $this->getConfig()->get('command_cache_dir');
+        if (!is_dir($commandCacheDir)) {
+            mkdir($commandCacheDir);
         }
-        $status_code = $this->runner->run($input, $output, null, $this->commands);
-        if (!empty($cassette) && !empty($mode)) {
-            $this->stopVCR();
-        } elseif ($input->isInteractive()) {
-            $this->runUpdateChecker();
-        }
-        return $status_code;
+        $commandCacheDataStore = new FileStore($commandCacheDir);
+
+        $factory = $container->get('commandFactory');
+        $factory->setIncludeAllPublicMethods(false);
+        $factory->setDataStore($commandCacheDataStore);
+
+        // Call our autoload loader at the beginning of any command dispatch.
+        $pluginAutoloadDependencies = $container->get('pluginAutoloadDependencies');
+        $factory->hookManager()->addInitializeHook($pluginAutoloadDependencies);
+    }
+
+    private function configureModulesAndCollections($container)
+    {
+        // List of all Models and Collections. Update via 'composer update-class-lists'
+
+        // Models
+        $container->add(\Pantheon\Terminus\Models\Backup::class);
+        $container->add(\Pantheon\Terminus\Models\Binding::class);
+        $container->add(\Pantheon\Terminus\Models\Branch::class);
+        $container->add(\Pantheon\Terminus\Models\Commit::class);
+        $container->add(\Pantheon\Terminus\Models\DNSRecord::class);
+        $container->add(\Pantheon\Terminus\Models\Domain::class);
+        $container->add(\Pantheon\Terminus\Models\Environment::class);
+        $container->add(\Pantheon\Terminus\Models\Lock::class);
+        $container->add(\Pantheon\Terminus\Models\MachineToken::class);
+        $container->add(\Pantheon\Terminus\Models\Metric::class);
+        $container->add(\Pantheon\Terminus\Models\NewRelic::class);
+        $container->add(\Pantheon\Terminus\Models\Organization::class);
+        $container->add(\Pantheon\Terminus\Models\OrganizationSiteMembership::class);
+        $container->add(\Pantheon\Terminus\Models\OrganizationUpstream::class);
+        $container->add(\Pantheon\Terminus\Models\OrganizationUserMembership::class);
+        $container->add(\Pantheon\Terminus\Models\PaymentMethod::class);
+        $container->add(\Pantheon\Terminus\Models\Plan::class);
+        $container->add(\Pantheon\Terminus\Models\PrimaryDomain::class);
+        $container->add(\Pantheon\Terminus\Models\Profile::class);
+        $container->add(\Pantheon\Terminus\Models\Redis::class);
+        $container->add(\Pantheon\Terminus\Models\SSHKey::class);
+        $container->add(\Pantheon\Terminus\Models\SavedToken::class);
+        $container->add(\Pantheon\Terminus\Models\Site::class);
+        $container->add(\Pantheon\Terminus\Models\SiteAuthorization::class);
+        $container->add(\Pantheon\Terminus\Models\SiteOrganizationMembership::class);
+        $container->add(\Pantheon\Terminus\Models\SiteUpstream::class);
+        $container->add(\Pantheon\Terminus\Models\SiteUserMembership::class);
+        $container->add(\Pantheon\Terminus\Models\Solr::class);
+        $container->add(\Pantheon\Terminus\Models\Tag::class);
+        $container->add(\Pantheon\Terminus\Models\Upstream::class);
+        $container->add(\Pantheon\Terminus\Models\UpstreamStatus::class);
+        $container->add(\Pantheon\Terminus\Models\User::class);
+        $container->add(\Pantheon\Terminus\Models\UserOrganizationMembership::class);
+        $container->add(\Pantheon\Terminus\Models\UserSiteMembership::class);
+        $container->add(\Pantheon\Terminus\Models\Workflow::class);
+        $container->add(\Pantheon\Terminus\Models\WorkflowOperation::class);
+
+        // Collections
+        $container->add(\Pantheon\Terminus\Collections\Backups::class);
+        $container->add(\Pantheon\Terminus\Collections\Bindings::class);
+        $container->add(\Pantheon\Terminus\Collections\Branches::class);
+        $container->add(\Pantheon\Terminus\Collections\Commits::class);
+        $container->add(\Pantheon\Terminus\Collections\DNSRecords::class);
+        $container->add(\Pantheon\Terminus\Collections\Domains::class);
+        $container->add(\Pantheon\Terminus\Collections\EnvironmentMetrics::class);
+        $container->add(\Pantheon\Terminus\Collections\Environments::class);
+        $container->add(\Pantheon\Terminus\Collections\MachineTokens::class);
+        $container->add(\Pantheon\Terminus\Collections\OrganizationSiteMemberships::class);
+        $container->add(\Pantheon\Terminus\Collections\OrganizationUpstreams::class);
+        $container->add(\Pantheon\Terminus\Collections\OrganizationUserMemberships::class);
+        $container->add(\Pantheon\Terminus\Collections\PaymentMethods::class);
+        $container->add(\Pantheon\Terminus\Collections\Plans::class);
+        $container->add(\Pantheon\Terminus\Collections\SSHKeys::class);
+        $container->add(\Pantheon\Terminus\Collections\SavedTokens::class);
+        $container->add(\Pantheon\Terminus\Collections\SiteAuthorizations::class);
+        $container->add(\Pantheon\Terminus\Collections\SiteMetrics::class);
+        $container->add(\Pantheon\Terminus\Collections\SiteOrganizationMemberships::class);
+        $container->add(\Pantheon\Terminus\Collections\SiteUserMemberships::class);
+        $container->add(\Pantheon\Terminus\Collections\Sites::class);
+        $container->add(\Pantheon\Terminus\Collections\Tags::class);
+        $container->add(\Pantheon\Terminus\Collections\Upstreams::class);
+        $container->add(\Pantheon\Terminus\Collections\UserOrganizationMemberships::class);
+        $container->add(\Pantheon\Terminus\Collections\UserSiteMemberships::class);
+        $container->add(\Pantheon\Terminus\Collections\WorkflowOperations::class);
+        $container->add(\Pantheon\Terminus\Collections\Workflows::class);
     }
 
     /**
@@ -122,7 +263,6 @@ class Terminus implements ConfigAwareInterface, ContainerAwareInterface, LoggerA
     {
         // List of all hooks and commands. Update via 'composer update-class-lists'
         $this->commands = [
-            'Consolidation\\Filter\\Hooks\\FilterHooks',
             'Pantheon\\Terminus\\Hooks\\Authorizer',
             'Pantheon\\Terminus\\Hooks\\RoleValidator',
             'Pantheon\\Terminus\\Hooks\\SiteEnvLookup',
@@ -144,6 +284,7 @@ class Terminus implements ConfigAwareInterface, ContainerAwareInterface, LoggerA
             'Pantheon\\Terminus\\Commands\\Branch\\ListCommand',
             'Pantheon\\Terminus\\Commands\\Connection\\InfoCommand',
             'Pantheon\\Terminus\\Commands\\Connection\\SetCommand',
+            'Pantheon\\Terminus\\Commands\\D9ify\\ProcessCommand',
             'Pantheon\\Terminus\\Commands\\Dashboard\\ViewCommand',
             'Pantheon\\Terminus\\Commands\\Domain\\AddCommand',
             'Pantheon\\Terminus\\Commands\\Domain\\DNSCommand',
@@ -171,6 +312,10 @@ class Terminus implements ConfigAwareInterface, ContainerAwareInterface, LoggerA
             'Pantheon\\Terminus\\Commands\\Import\\DatabaseCommand',
             'Pantheon\\Terminus\\Commands\\Import\\FilesCommand',
             'Pantheon\\Terminus\\Commands\\Import\\SiteCommand',
+            'Pantheon\\Terminus\\Commands\\Local\\CloneCommand',
+            'Pantheon\\Terminus\\Commands\\Local\\CommitAndPushCommand',
+            'Pantheon\\Terminus\\Commands\\Local\\GetLiveDBCommand',
+            'Pantheon\\Terminus\\Commands\\Local\\GetLiveFilesCommand',
             'Pantheon\\Terminus\\Commands\\Lock\\DisableCommand',
             'Pantheon\\Terminus\\Commands\\Lock\\EnableCommand',
             'Pantheon\\Terminus\\Commands\\Lock\\InfoCommand',
@@ -256,18 +401,6 @@ class Terminus implements ConfigAwareInterface, ContainerAwareInterface, LoggerA
     }
 
     /**
-     * Add any global arguments or options that apply to all commands.
-     *
-     * @param \Symfony\Component\Console\Application $app
-     */
-    private function addDefaultArgumentsAndOptions(Application $app)
-    {
-        $app->getDefinition()->addOption(
-            new InputOption('--yes', '-y', InputOption::VALUE_NONE, 'Answer all confirmations with "yes"')
-        );
-    }
-
-    /**
      * Discovers command classes using CommandFileDiscovery
      */
     private function addPluginsCommandsAndHooks()
@@ -292,148 +425,30 @@ class Terminus implements ConfigAwareInterface, ContainerAwareInterface, LoggerA
     }
 
     /**
-     * Register the necessary classes for Terminus
+     * Runs the instantiated Terminus application
+     *
+     * @param InputInterface $input An input object to run the application with
+     * @param OutputInterface $output An output object to run the application with
+     *
+     * @return integer $status_code The exiting status code of the application
      */
-    private function configureContainer()
+    public function run(InputInterface $input = null, OutputInterface $output = null)
     {
-        $container = $this->getContainer();
-
-        // Add the services
-        // Request
-        $container->add(Client::class);
-        $container->add(HttpRequest::class);
-        $container->share('request', Request::class);
-        $container->inflector(RequestAwareInterface::class)
-            ->invokeMethod('setRequest', ['request']);
-
-        // Session
-        $session_store = new FileStore($this->getConfig()->get('cache_dir'));
-        $session = new Session($session_store);
-        $container->share('session', $session);
-        $container->inflector(SessionAwareInterface::class)
-            ->invokeMethod('setSession', ['session']);
-
-        // Saved tokens
-        $token_store = new FileStore($this->getConfig()->get('tokens_dir'));
-        $container->inflector(SavedTokens::class)
-            ->invokeMethod('setDataStore', [$token_store]);
-
-        $this->configureModulesAndCollections($container);
-
-        // Helpers
-        $container->add(LocalMachineHelper::class);
-
-        // Progress Bars
-        $container->add(ProcessProgressBar::class);
-        $container->add(WorkflowProgressBar::class);
-
-        // Plugin handlers
-        $container->share('pluginAutoloadDependencies', PluginAutoloadDependencies::class)
-            ->withArgument(__DIR__);
-        $container->add(PluginDiscovery::class)
-            ->withArgument($this->getConfig()->get('plugins_dir'));
-        $container->add(PluginInfo::class);
-
-        // Update checker
-        $container->add(LatestRelease::class);
-        $container->add(UpdateChecker::class);
-
-        $container->share('sites', Sites::class);
-        $container->inflector(SiteAwareInterface::class)
-            ->invokeMethod('setSites', ['sites']);
-
-        // Install our command cache into the command factory
-        $commandCacheDir = $this->getConfig()->get('command_cache_dir');
-        $commandCacheDataStore = new FileStore($commandCacheDir);
-
-        $factory = $container->get('commandFactory');
-        $factory->setIncludeAllPublicMethods(false);
-        $factory->setDataStore($commandCacheDataStore);
-
-        // Call our autoload loader at the beginning of any command dispatch.
-        $pluginAutoloadDependencies = $container->get('pluginAutoloadDependencies');
-        $factory->hookManager()->addInitializeHook($pluginAutoloadDependencies);
-    }
-
-    private function configureModulesAndCollections($container)
-    {
-        // List of all Models and Collections. Update via 'composer update-class-lists'
-
-        // Models
-        $container->add(\Pantheon\Terminus\Models\Backup::class);
-        $container->add(\Pantheon\Terminus\Models\Binding::class);
-        $container->add(\Pantheon\Terminus\Models\Branch::class);
-        $container->add(\Pantheon\Terminus\Models\Commit::class);
-        $container->add(\Pantheon\Terminus\Models\DNSRecord::class);
-        $container->add(\Pantheon\Terminus\Models\Domain::class);
-        $container->add(\Pantheon\Terminus\Models\Environment::class);
-        $container->add(\Pantheon\Terminus\Models\Lock::class);
-        $container->add(\Pantheon\Terminus\Models\MachineToken::class);
-        $container->add(\Pantheon\Terminus\Models\Metric::class);
-        $container->add(\Pantheon\Terminus\Models\NewRelic::class);
-        $container->add(\Pantheon\Terminus\Models\Organization::class);
-        $container->add(\Pantheon\Terminus\Models\OrganizationSiteMembership::class);
-        $container->add(\Pantheon\Terminus\Models\OrganizationUpstream::class);
-        $container->add(\Pantheon\Terminus\Models\OrganizationUserMembership::class);
-        $container->add(\Pantheon\Terminus\Models\PaymentMethod::class);
-        $container->add(\Pantheon\Terminus\Models\Plan::class);
-        $container->add(\Pantheon\Terminus\Models\PrimaryDomain::class);
-        $container->add(\Pantheon\Terminus\Models\Profile::class);
-        $container->add(\Pantheon\Terminus\Models\Redis::class);
-        $container->add(\Pantheon\Terminus\Models\SSHKey::class);
-        $container->add(\Pantheon\Terminus\Models\SavedToken::class);
-        $container->add(\Pantheon\Terminus\Models\Site::class);
-        $container->add(\Pantheon\Terminus\Models\SiteAuthorization::class);
-        $container->add(\Pantheon\Terminus\Models\SiteOrganizationMembership::class);
-        $container->add(\Pantheon\Terminus\Models\SiteUpstream::class);
-        $container->add(\Pantheon\Terminus\Models\SiteUserMembership::class);
-        $container->add(\Pantheon\Terminus\Models\Solr::class);
-        $container->add(\Pantheon\Terminus\Models\Tag::class);
-        $container->add(\Pantheon\Terminus\Models\Upstream::class);
-        $container->add(\Pantheon\Terminus\Models\UpstreamStatus::class);
-        $container->add(\Pantheon\Terminus\Models\User::class);
-        $container->add(\Pantheon\Terminus\Models\UserOrganizationMembership::class);
-        $container->add(\Pantheon\Terminus\Models\UserSiteMembership::class);
-        $container->add(\Pantheon\Terminus\Models\Workflow::class);
-        $container->add(\Pantheon\Terminus\Models\WorkflowOperation::class);
-
-        // Collections
-        $container->add(\Pantheon\Terminus\Collections\Backups::class);
-        $container->add(\Pantheon\Terminus\Collections\Bindings::class);
-        $container->add(\Pantheon\Terminus\Collections\Branches::class);
-        $container->add(\Pantheon\Terminus\Collections\Commits::class);
-        $container->add(\Pantheon\Terminus\Collections\DNSRecords::class);
-        $container->add(\Pantheon\Terminus\Collections\Domains::class);
-        $container->add(\Pantheon\Terminus\Collections\EnvironmentMetrics::class);
-        $container->add(\Pantheon\Terminus\Collections\Environments::class);
-        $container->add(\Pantheon\Terminus\Collections\MachineTokens::class);
-        $container->add(\Pantheon\Terminus\Collections\OrganizationSiteMemberships::class);
-        $container->add(\Pantheon\Terminus\Collections\OrganizationUpstreams::class);
-        $container->add(\Pantheon\Terminus\Collections\OrganizationUserMemberships::class);
-        $container->add(\Pantheon\Terminus\Collections\PaymentMethods::class);
-        $container->add(\Pantheon\Terminus\Collections\Plans::class);
-        $container->add(\Pantheon\Terminus\Collections\SSHKeys::class);
-        $container->add(\Pantheon\Terminus\Collections\SavedTokens::class);
-        $container->add(\Pantheon\Terminus\Collections\SiteAuthorizations::class);
-        $container->add(\Pantheon\Terminus\Collections\SiteMetrics::class);
-        $container->add(\Pantheon\Terminus\Collections\SiteOrganizationMemberships::class);
-        $container->add(\Pantheon\Terminus\Collections\SiteUserMemberships::class);
-        $container->add(\Pantheon\Terminus\Collections\Sites::class);
-        $container->add(\Pantheon\Terminus\Collections\Tags::class);
-        $container->add(\Pantheon\Terminus\Collections\Upstreams::class);
-        $container->add(\Pantheon\Terminus\Collections\UserOrganizationMemberships::class);
-        $container->add(\Pantheon\Terminus\Collections\UserSiteMemberships::class);
-        $container->add(\Pantheon\Terminus\Collections\WorkflowOperations::class);
-        $container->add(\Pantheon\Terminus\Collections\Workflows::class);
-    }
-
-    /**
-     * Runs the UpdateChecker to check for new Terminus versions
-     */
-    private function runUpdateChecker()
-    {
-        $file_store = new FileStore($this->getConfig()->get('cache_dir'));
-        $this->runner->getContainer()->get(UpdateChecker::class, [$file_store,])->run();
+        if ($input === null) {
+            $input = $this->input();
+        }
+        if ($output === null) {
+            $output = $this->output();
+        }
+        $config = $this->getConfig();
+        if (!empty($cassette = $config->get('vcr_cassette')) && !empty($mode = $config->get('vcr_mode'))) {
+            $this->startVCR(array_merge(compact('cassette'), compact('mode')));
+        }
+        $status_code = $this->runner->run($input, $output, $this->getApplication(), $this->commands);
+        if (!empty($cassette) && !empty($mode)) {
+            $this->stopVCR();
+        }
+        return $status_code;
     }
 
     /**
@@ -458,5 +473,51 @@ class Terminus implements ConfigAwareInterface, ContainerAwareInterface, LoggerA
     {
         VCR::eject();
         VCR::turnOff();
+    }
+
+    /**
+     * @return Application
+     */
+    public function getApplication(): Application
+    {
+        return $this->application;
+    }
+
+    /**
+     * @param Application $application
+     */
+    public function setApplication(Application $application): void
+    {
+        $this->application = $application;
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getCommands(): array
+    {
+        return $this->commands;
+    }
+
+    /**
+     * @param string[] $commands
+     */
+    public function setCommands(array $commands): void
+    {
+        $this->commands = $commands;
+    }
+
+
+
+    public static function factory(): Terminus
+    {
+        $input = new ArgvInput($_SERVER['argv']);
+        $output = new ConsoleOutput();
+        $config = new DefaultsConfig();
+        $config->extend(new YamlConfig($config->get('root') . '/config/constants.yml'));
+        $config->extend(new YamlConfig($config->get('user_home') . '/.terminus/config.yml'));
+        $config->extend(new DotEnvConfig(getcwd()));
+        $config->extend(new EnvConfig());
+        return new static($config, $input, $output);
     }
 }

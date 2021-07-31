@@ -31,11 +31,11 @@ class RemoveCommand extends TerminusCommand implements SiteAwareInterface
     public function remove($site_env)
     {
         list(, $env) = $this->getSiteEnv($site_env);
-        // Push the settings change
-        $env->disableHttpsCertificate();
-        // Converge the environment bindings to get the settings to take effect.
-        $workflow = $env->convergeBindings();
-        $this->log()->notice("HTTPS has been disabled and the environment's bindings will now be converged.");
+
+        // Launch a workflow to remove the cert, bindings will be converged as part of this
+        $workflow = $env->disableHttpsCertificate();
+
+        // Wait for the workflow to complete.
         $this->processWorkflow($workflow);
         $this->log()->notice($workflow->getMessage());
     }

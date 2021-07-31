@@ -8,7 +8,7 @@ Feature: Listing upstreams
 
   @vcr upstream-list.yml
   Scenario: List my custom and core upstreams
-    When I run "terminus upstream:list"
+    When I run "[[executable]] upstream:list"
     Then I should get: "-------------------------------------- --------------------------------------------- ------------------------ -------- ----------- -----------------"
     And I should get: "ID                                     Name                                          Machine Name             Type     Framework   Organization"
     And I should get: "-------------------------------------- --------------------------------------------- ------------------------ -------- ----------- -----------------"
@@ -45,7 +45,7 @@ Feature: Listing upstreams
 
   @vcr upstream-list.yml
   Scenario: List all of my upstreams
-    When I run "terminus upstream:list --all"
+    When I run "[[executable]] upstream:list --all"
     Then I should get: "-------------------------------------- --------------------------------------------- ------------------------ --------- ----------- -----------------"
     And I should get: "ID                                     Name                                          Machine Name             Type      Framework   Organization"
     And I should get: "-------------------------------------- --------------------------------------------- ------------------------ --------- ----------- -----------------"
@@ -100,7 +100,7 @@ Feature: Listing upstreams
 
   @vcr upstream-list.yml
   Scenario: List my custom and core upstreams, filtered by framework
-    When I run "terminus upstream:list --framework=drupal8"
+    When I run "[[executable]] upstream:list --framework=drupal8"
     Then I should get: "-------------------------------------- ------------------------------- ---------------------- -------- ----------- -----------------"
     And I should get: "ID                                     Name                            Machine Name           Type     Framework   Organization"
     And I should get: "-------------------------------------- ------------------------------- ---------------------- -------- ----------- -----------------"
@@ -120,7 +120,7 @@ Feature: Listing upstreams
 
   @vcr upstream-list.yml
   Scenario: List my custom and core upstreams, filtered by name
-    When I run "terminus upstream:list --name=Drops"
+    When I run "[[executable]] upstream:list --name=Drops"
     Then I should get: "-------------------------------------- ------------------ -------------------- -------- ----------- -----------------"
     And I should get: "ID                                     Name               Machine Name         Type     Framework   Organization"
     And I should get: "-------------------------------------- ------------------ -------------------- -------- ----------- -----------------"
@@ -131,7 +131,7 @@ Feature: Listing upstreams
 
   @vcr upstream-list.yml
   Scenario: Get info on an upstream
-    When I run "terminus upstream:info WordPress"
+    When I run "[[executable]] upstream:info WordPress"
     Then I should get: "-------------- ------------------------------------------------------------------------------------------"
     And I should get: "ID             e8fe8550-1ab9-4964-8838-2b9abdccf4bf"
     And I should get: "Name           WordPress"
@@ -144,13 +144,13 @@ Feature: Listing upstreams
 
   @vcr upstream-list-empty.yml
   Scenario: List upstreams when there aren't any available
-    When I run "terminus upstream:list"
+    When I run "[[executable]] upstream:list"
     Then I should get the warning: "You have no upstreams."
     And I should have "0" records
 
   @vcr org-upstream-list.yml
   Scenario: List my organization's core and custom upstreams
-    When I run "terminus upstream:list --org=the-upstreamers"
+    When I run "[[executable]] upstream:list --org=the-upstreamers"
     Then I should get: "-------------------------------------- ------------------------ ------------------------ -------- ----------- -----------------"
     And I should get: "ID                                     Name                     Machine Name             Type     Framework   Organization"
     And I should get: "-------------------------------------- ------------------------ ------------------------ -------- ----------- -----------------"

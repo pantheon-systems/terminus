@@ -17,7 +17,7 @@ class AddCommand extends TerminusCommand implements SiteAwareInterface
     use WorkflowProcessingTrait;
 
     /**
-     * Adds a user to a site's team.
+     * Adds a user to a site team.
      * Note: An invite will be sent if the email is not associated with a Pantheon account.
      *
      * @authorize

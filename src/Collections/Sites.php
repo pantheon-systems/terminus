@@ -2,7 +2,9 @@
 
 namespace Pantheon\Terminus\Collections;
 
+use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
 use Pantheon\Terminus\Models\Site;
+use Pantheon\Terminus\Models\TerminusModel;
 use Pantheon\Terminus\Session\SessionAwareInterface;
 use Pantheon\Terminus\Session\SessionAwareTrait;
 use Pantheon\Terminus\Exceptions\TerminusException;
@@ -29,9 +31,9 @@ class Sites extends APICollection implements SessionAwareInterface
      *   string label The site's human-friendly name
      *   string site_name The site's name
      *   string organization_id Organization to which this site belongs' UUID
-     * @return Workflow
+     * @return \Pantheon\Terminus\Models\Workflow
      */
-    public function create($params = [])
+    public function create($params = []): \Pantheon\Terminus\Models\Workflow
     {
         return $this->getUser()->getWorkflows()->create('create_site', compact('params'));
     }
@@ -44,9 +46,9 @@ class Sites extends APICollection implements SessionAwareInterface
      *   string site_name The site's name
      *   string organization_id Organization to which this site belongs' UUID
      *   string type Workflow type for imports
-     * @return Workflow
+     * @return \Pantheon\Terminus\Models\Workflow
      */
-    public function createForMigration($params = [])
+    public function createForMigration($params = []): \Pantheon\Terminus\Models\Workflow
     {
         return $this->getUser()->getWorkflows()->create('create_site_for_migration', compact('params'));
     }
@@ -179,34 +181,34 @@ class Sites extends APICollection implements SessionAwareInterface
      * @return Site
      * @throws TerminusException
      */
-    public function get($id)
+    public function get($id): ?TerminusModel
     {
-        $site = null;
-
-        if ($this->models === null) {
-            // If the full model set hasn't been fetched then request the item individually from the API
-            // This can be a lot faster when there are a lot of items.
-            try {
-                $uuid = $this->findUUIDByNameOrUUID($id);
-                $site = $this->getContainer()->get(
-                    $this->collected_class,
-                    [
-                        (object)['id' => $uuid,],
-                        ['id' => $uuid, 'collection' => $this,]
-                    ]
-                );
+        try {
+            $uuid = $this->findUUIDByNameOrUUID($id);
+            $site = $this->models[$uuid] ?? null;
+            if (!$site instanceof Site) {
+                $nickname = 'site-' . $uuid;
+                $this->getContainer()->add($nickname, $this->collected_class)
+                    ->addArguments(
+                        [
+                            (object)['id' => $uuid],
+                            ['id' => $uuid, 'collection' => $this]
+                        ]
+                    );
+                $site = $this->getContainer()->get($nickname);
                 $site->fetch();
-            } catch (\Exception $e) {
-                throw new TerminusException(
-                    'Could not locate a site your user may access identified by {id}.',
-                    compact('id'),
-                    1
-                );
+                if (!$site->valid()) {
+                    throw new TerminusException("Site is not valid!");
+                }
+                $this->models[$uuid] = $site;
             }
-        } else {
-            $site = parent::get($id);
+        } catch (\Exception $e) {
+            throw new TerminusException(
+                'Could not locate a site your user may access identified by {id}.',
+                compact('id'),
+                1
+            );
         }
-
         return $site;
     }
 
@@ -216,16 +218,9 @@ class Sites extends APICollection implements SessionAwareInterface
      * @param string $name Name of the site to look up
      * @return boolean
      */
-    public function nameIsTaken($name)
+    public function nameIsTaken($name) : bool
     {
-        try {
-            $this->findUUIDByName($name);
-            //If this has not been caught, the name is taken.
-            $name_is_taken = true;
-        } catch (\Exception $e) {
-            $name_is_taken = strpos($e->getMessage(), '404 Not Found') === false;
-        }
-        return $name_is_taken;
+        return (bool) $this->findUUIDByName($name) ?? false;
     }
 
     /**
@@ -234,13 +229,19 @@ class Sites extends APICollection implements SessionAwareInterface
      * @param string $name Name of the site to look up
      * @return string
      */
-    protected function findUUIDByName($name)
+    protected function findUUIDByName($name): ?string
     {
+
         $response = $this->request()->request(
-            "site-names/$name",
+            'site-names/' . $name,
             ['method' => 'get',]
         );
-        return $response['data']->id;
+
+        if ($response->isError()) {
+            throw new TerminusNotFoundException($response->getData());
+        }
+
+        return $response->getData()->id ?? null;
     }
 
     /**
@@ -249,7 +250,7 @@ class Sites extends APICollection implements SessionAwareInterface
      * @param string $id Name of the site to look up
      * @return string
      */
-    protected function findUUIDByNameOrUUID($id)
+    protected function findUUIDByNameOrUUID($id): ?string
     {
         // If it LOOKS like a uuid, then we assume it is. Since a user is unlikely to name a site with this exact
         // pattern this is a reasonably good test.
@@ -267,9 +268,9 @@ class Sites extends APICollection implements SessionAwareInterface
      * where x is any hexidecimal character. This is close enough for our purposes.
      *
      * @param $id
-     * @return int
+     * @return bool
      */
-    protected function isUUID($id)
+    protected function isUUID($id): bool
     {
         return preg_match('/[a-f0-9]{8}-([a-f0-9]{4}-){3}[a-f0-9]{12}/', strtolower($id));
     }

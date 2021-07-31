@@ -108,8 +108,8 @@ class CloneContentCommand extends TerminusCommand implements SiteAwareInterface
         if (!$env->isInitialized()) {
             throw new TerminusException(
                 "{site}'s {env} environment cannot be cloned {direction} because it has not been initialized. "
-                . 'Please run `env:deploy {site}.{env}` to initialize it.',
-                ['direction' => $direction, 'env' => $env->getName(), 'site' => $env->getSite()->getName(),]
+                . 'Please run `env:deploy {env}` to initialize it.',
+                ['direction' => $direction, 'env' => $env]
             );
         }
     }

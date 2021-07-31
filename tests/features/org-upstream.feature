@@ -8,7 +8,7 @@ Feature: Listing upstreams
 
   @vcr org-upstream-list.yml
   Scenario: List my organization's core and custom upstreams
-    When I run "terminus org:upstream:list the-upstreamers"
+    When I run "[[executable]] org:upstream:list the-upstreamers"
     Then I should get: "-------------------------------------- ------------------------ ------------------------ -------- -----------"
     And I should get: "ID                                     Name                     Machine Name             Type     Framework"
     And I should get: "-------------------------------------- ------------------------ ------------------------ -------- -----------"

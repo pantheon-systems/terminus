@@ -9,7 +9,7 @@ Feature: Getting an environment's URL
 
   @vcr env-view.yml
   Scenario: Getting the URL for an environment
-    When I run "terminus env:view [[test_site_name]].dev --print"
+    When I run "[[executable]] env:view [[test_site_name]].dev --print"
     Then I should get:
     """
     https://dev-[[test_site_name]].onebox.pantheonsite.io/
