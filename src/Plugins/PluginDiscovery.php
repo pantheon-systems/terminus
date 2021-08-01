@@ -7,6 +7,7 @@ use League\Container\ContainerAwareTrait;
 use Pantheon\Terminus\Exceptions\TerminusException;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
+use Pantheon\Terminus\Plugins\PluginInfo;
 
 /**
  * Class PluginDiscovery
@@ -56,7 +57,8 @@ class PluginDiscovery implements ContainerAwareInterface, LoggerAwareInterface
         foreach ($di as $dir) {
             if ($dir->isDir() && !$dir->isDot() && $dir->isReadable()) {
                 try {
-                    $plugin = $this->getContainer()->get(PluginInfo::class, [$dir->getPathname(),]);
+                    $plugin = $this->getContainer()->get(PluginInfo::class);
+                    $plugin->setPluginDir($dir->getPathName());
                     if (!in_array($plugin->getName(), self::BLACKLIST)) {
                         $out[] = $plugin;
                     }

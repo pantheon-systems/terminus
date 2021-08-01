@@ -163,6 +163,7 @@ class Terminus implements
             ->addArgument(__DIR__);
         $container->add(PluginDiscovery::class)
             ->addArgument($this->getConfig()->get('plugins_dir'));
+        $container->add(PluginInfo::class);
 
         $container->share('sites', Sites::class);
         $container->inflector(SiteAwareInterface::class)
