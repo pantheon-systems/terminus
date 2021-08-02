@@ -34,7 +34,7 @@ class EnableCommand extends TerminusCommand implements SiteAwareInterface
     {
         list(, $env) = $this->getSiteEnv($site_env);
 
-        // ygg expects 'weekly-ttl', not 'keep-for'
+        // Schedule Backup workflow expects 'weekly-ttl' as input option.
         if(isset($options['keep-for']) && !is_null($options['keep-for'])) {
             $options['weekly-ttl'] = $options['keep-for'];
         }
