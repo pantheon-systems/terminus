@@ -50,24 +50,20 @@ class OrgCommandsTest extends TestCase
         $people = $this->terminusJsonResponse("org:people:list " . $this->org);
         $this->assertIsArray(
             $people,
-            "Response from org list should be an array of orgs"
+            'Response from org:people:list should be an array'
         );
-        $person = array_shift($people);
 
-        $this->assertIsArray(
-            $person,
-            "row from org list array of orgs should be an org item"
-        );
-        $this->assertArrayHasKey(
-            'id',
-            $person,
-            "Person from Org People List should have an ID property"
-        );
-        $this->assertArrayHasKey(
-            'email',
-            $person,
-            "Person from Org people List should have email address"
-        );
+        foreach ($people as $user) {
+            $this->assertIsArray(
+                $user,
+                'A user record should be an array'
+            );
+
+            $this->assertArrayHasKey('id', $user, 'User should contain an ID');
+            $this->assertNotEmpty($user['id'], 'User ID should not be empty');
+            $this->assertArrayHasKey('email', $user, 'User should contain an email');
+            $this->assertNotEmpty($user['email'], 'User email should not be empty');
+        }
     }
 
     /**
