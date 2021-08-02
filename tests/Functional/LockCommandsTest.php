@@ -3,9 +3,7 @@
 namespace Pantheon\Terminus\Tests\Functional;
 
 use Pantheon\Terminus\Tests\Traits\LoginHelperTrait;
-use Pantheon\Terminus\Tests\Traits\SiteBaseSetupTrait;
 use Pantheon\Terminus\Tests\Traits\TerminusTestTrait;
-use Pantheon\Terminus\Tests\Traits\UrlStatusCodeHelperTrait;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -24,11 +22,49 @@ class LockCommandsTest extends TestCase
      * @covers \Pantheon\Terminus\Commands\Lock\EnableCommand
      * @covers \Pantheon\Terminus\Commands\Lock\InfoCommand
      *
-     * @group branch
-     * @group long
+     * @group lock
+     * @group short
+     *
+     * @throws \Exception
      */
-    public function testBranchList()
+    public function testLockCommands()
     {
-        $this->fail("To Be Written");
+        // Disable the lock if set.
+        $disableLockCommand = sprintf('lock:disable %s.%s', $this->getSiteName(), 'dev');
+        $this->terminus($disableLockCommand);
+
+        // Verify the lock is disabled.
+        $getLockInfoCommand = sprintf('lock:info %s.%s ', $this->getSiteName(), 'dev');
+        $lockInfo = $this->terminusJsonResponse($getLockInfoCommand);
+        $expectedLockInfo = [
+            'locked' => false,
+            'username' => null,
+            'password' => null,
+        ];
+        $this->assertEquals($expectedLockInfo, $lockInfo);
+
+        // Enable the lock.
+        $lockUserName = 'test_user';
+        $lockPassword = 'test_password';
+        $enableLockInfoCommand = sprintf(
+            'lock:enable %s.%s %s %s',
+            $this->getSiteName(),
+            'dev',
+            $lockUserName,
+            $lockPassword
+        );
+        $this->terminus($enableLockInfoCommand);
+
+        // Verify the lock is enabled.
+        $lockInfo = $this->terminusJsonResponse($getLockInfoCommand);
+        $expectedLockInfo = [
+            'locked' => true,
+            'username' => $lockUserName,
+            'password' => $lockPassword,
+        ];
+        $this->assertEquals($expectedLockInfo, $lockInfo);
+
+        // Disable the lock.
+        $this->terminus($disableLockCommand);
     }
 }
