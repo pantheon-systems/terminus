@@ -56,7 +56,8 @@ jobs:
         php-versions: ['7.2', '7.3', '7.4']
     env:
       TERMINUS_TOKEN: ${{ secrets.TERMINUS_TOKEN }}
-      TERMINUS_SITE: ${{ secrets.TERMINUS_SITE }}
+      TERMINUS_WP_SITE: ${{ secrets.TERMINUS_WP_SITE }}
+      TERMINUS_D9_SITE: ${{ secrets.TERMINUS_D9_SITE }}
     needs: [build_phar]
     steps:
       - name: Download repo content from artifact
