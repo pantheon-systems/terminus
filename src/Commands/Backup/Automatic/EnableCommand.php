@@ -33,6 +33,12 @@ class EnableCommand extends TerminusCommand implements SiteAwareInterface
     public function enableSchedule($site_env, $options = ['day' => null, 'keep-for' => null,])
     {
         list(, $env) = $this->getSiteEnv($site_env);
+
+        // ygg expects 'weekly-ttl', not 'keep-for'
+        if(isset($options['keep-for']) && !is_null($options['keep-for'])) {
+            $options['weekly-ttl'] = $options['keep-for'];
+        }
+
         $env->getBackups()->setBackupSchedule($options);
         $this->log()->notice('Backup schedule successfully set.');
     }
