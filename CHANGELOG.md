@@ -3,12 +3,6 @@ All notable changes to this project will be documented in this file. This projec
 
 ## MASTER
 
-## 2.6.1 - 2021-08-02
-
-### Added
-- Move CI release process to Github actions
-- Separate Wordpress and Drupal functional tests
-
 ## 2.6.0 - 2021-06-04
 
 ### Added
