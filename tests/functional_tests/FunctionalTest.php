@@ -21,10 +21,12 @@ class FunctionalTest extends TestCase
      */
     public function testSiteInfo()
     {
-        $site = getenv('TERMINUS_SITE') ?: 'ci-wordpress-core';
+        $site = getenv('TERMINUS_WP_SITE') ?: 'ci-terminus-wp-site';
         $output = $this->terminus("site:info $site --format=yaml");
-
         $this->assertContains('framework: wordpress', $output);
+        $site = getenv('TERMINUS_D9_SITE') ?: 'ci-terminus-d9-site';
+        $output = $this->terminus("site:info $site --format=yaml");
+        $this->assertContains('framework: drupal8', $output);
     }
 
     /**
