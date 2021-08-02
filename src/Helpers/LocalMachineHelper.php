@@ -205,7 +205,7 @@ class LocalMachineHelper implements ConfigAwareInterface, ContainerAwareInterfac
     protected function getProcess($cmd)
     {
         if (is_string($cmd)) {
-            $cmd = [ $cmd ];
+            $cmd = explode(' ', $cmd);
         }
         $process = new Process($cmd);
         $config = $this->getConfig();
