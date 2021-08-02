@@ -32,7 +32,7 @@ trait UserJoinTrait
             $nickname = \uniqid(__FUNCTION__ . '-');
             $this->getContainer()
                 ->add($nickname, User::class)
-                ->addArgument([$this->get('user')]);
+                ->addArgument($this->get('user'));
             $user = $this->getContainer()->get($nickname);
             $user->memberships = [$this];
             $this->setUser($user);
