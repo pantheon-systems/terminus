@@ -204,12 +204,17 @@ class LocalMachineHelper implements ConfigAwareInterface, ContainerAwareInterfac
      */
     protected function getProcess($cmd)
     {
+        $process = NULL;
         if (is_string($cmd)) {
-            $cmd = explode(' ', $cmd);
+            $process = Process::fromShellCommandline($cmd);
         }
-        $process = new Process($cmd);
-        $config = $this->getConfig();
-        $process->setTimeout($config->get('timeout'));
+        elseif (is_array($cmd)) {
+            $process = new Process($cmd);
+        }
+        if ($process) {
+            $config = $this->getConfig();
+            $process->setTimeout($config->get('timeout'));
+        }
         return $process;
     }
 }
