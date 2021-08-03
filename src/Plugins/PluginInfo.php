@@ -450,6 +450,10 @@ class PluginInfo implements ConfigAwareInterface, ContainerAwareInterface, Logge
             }
         }
 
+        $info['version'] = $this->getInstalledVersion();
+        $info['latest_version'] = $this->getLatestVersion();
+        $info['method'] = $this->getInstallationMethod();
+
         return (array)$info;
     }
 

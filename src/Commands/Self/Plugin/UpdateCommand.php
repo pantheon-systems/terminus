@@ -5,6 +5,7 @@ namespace Pantheon\Terminus\Commands\Self\Plugin;
 use Composer\Semver\Comparator;
 use Consolidation\AnnotatedCommand\CommandData;
 use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
+use Pantheon\Terminus\Plugins\PluginInfo;
 
 /**
  * Updates installed Terminus plugins.
@@ -18,7 +19,7 @@ class UpdateCommand extends PluginBaseCommand
     const INVALID_PROJECT_MESSAGE = 'Unable to update. {project} is not a valid Packagist project.';
     const NO_PLUGINS_MESSAGE = 'You have no plugins installed.';
     const SEMVER_CANNOT_UPDATE_MESSAGE = 'Unable to update. Semver compliance issue with tagged release.';
-    const UPDATING_MESSAGE = 'Updating {project}...';
+    const UPDATING_MESSAGE = 'Updating {name}...';
 
     /**
      * Update one or more Terminus plugins.
@@ -26,11 +27,11 @@ class UpdateCommand extends PluginBaseCommand
      * @command self:plugin:update
      * @aliases self:plugin:upgrade self:plugin:up
      *
-     * @param array $plugins A list of one or more installed plugins to update
+     * @param array $projects A list of one or more installed plugins to update
      *
      * @usage <project|all> [project] ...
      */
-    public function update(array $projects = ['all',])
+    public function update(array $projects)
     {
         $plugins = $this->getPluginProjects();
         $logger = $this->log();
@@ -44,7 +45,7 @@ class UpdateCommand extends PluginBaseCommand
             $plugins = array_map(
                 function($project) use ($logger) {
                     try {
-                        return $this->getPluginProject($project);
+                        return $this->getPlugin($project);
                     } catch (TerminusNotFoundException $e) {
                         $logger->error($e->getMessage());
                     }
@@ -53,8 +54,10 @@ class UpdateCommand extends PluginBaseCommand
             );
         }
 
-        foreach ($plugins as $plugin_info) {
-            $this->doUpdate($plugin_info);
+        foreach ($plugins as $plugin) {
+            if ($plugin) {
+                $this->doUpdate($plugin);
+            }
         }
     }
 
@@ -73,8 +76,11 @@ class UpdateCommand extends PluginBaseCommand
      *
      * @param array $plugin_info Information about the installed plugin
      */
-    protected function doUpdate($plugin_info)
+    protected function doUpdate($plugin)
     {
+        $plugins_dir = $this->getPluginsDir();
+        $plugin_info = $plugin->getInfo();
+        $plugin_dir = $plugin->getPath();
         $messages = [];
         $this->log()->notice(self::UPDATING_MESSAGE, $plugin_info);
         switch ($plugin_info['method']) {
@@ -82,7 +88,7 @@ class UpdateCommand extends PluginBaseCommand
                 // Compare installed version to the latest release.
                 $installed_version = $plugin_info['version'];
                 $latest_version = $plugin_info['latest_version'];
-                if (($installed_version !== self::UNKNOWN_VERSION) && ($latest_version !== self::UNKNOWN_VERSION)) {
+                if (($installed_version !== PluginInfo::UNKNOWN_VERSION) && ($latest_version !== PluginInfo::UNKNOWN_VERSION)) {
                     if (Comparator::greaterThan($latest_version, $installed_version)) {
                         exec(
                             sprintf(self::GIT_UPDATE_COMMAND, $plugin_dir, $latest_version),
@@ -98,8 +104,8 @@ class UpdateCommand extends PluginBaseCommand
 
             case 'composer':
                 // Determine the project name.
-                $project = $plugin_info['project'];
-                if ($this->isValidPackagistProject($project)) {
+                $project = $plugin_info['name'];
+                if ($plugin->isValidPackagistProject()) {
                     // Get the Terminus major version.
                     $terminus_major_version = $this->getTerminusMajorVersion();
                     // Backup the plugin directory, just in case.

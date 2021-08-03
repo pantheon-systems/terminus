@@ -122,4 +122,25 @@ abstract class PluginBaseCommand extends TerminusCommand
         $result = fgets($file, 255);
         return $windows ? !preg_match('#Could not find files#', $result) : !empty($result);
     }
+
+    /**
+     * Returns terminus major version.
+     *
+     * @return int
+     */
+    protected function getTerminusMajorVersion() {
+        $config = $this->getContainer()->get('config');
+        return substr($config->get('version'), 0, 1);
+    }
+
+    /**
+     * Returns terminus plugin directory.
+     *
+     * @return int
+     */
+    protected function getPluginsDir() {
+        $config = $this->getContainer()->get('config');
+        return $config->get('plugins_dir');
+    }
+
 }
