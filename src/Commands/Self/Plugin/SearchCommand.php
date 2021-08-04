@@ -7,7 +7,8 @@ use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
 /**
  * Search for Terminus plugins to install.
  * @package Pantheon\Terminus\Commands\Self\Plugin
- * @TODO Limit the search to include only Packagist projects with versions compatible with the currently installed Terminus version.
+ * @todo Kevin Limit the search to include only Packagist projects with versions compatible with the currently installed Terminus version.
+ * Maybe filter list by compatible-version: https://repo.packagist.org/p2/pantheon-systems/terminus-mass-update.json
  * @TODO Bonus: Add the ability to search and prompt to install new plugins.
  * @TODO Keep an internal registry of approved third-party plugins.
  * @TODO Do lookup if given a plugin name and not a project name, prompt OK for match, install

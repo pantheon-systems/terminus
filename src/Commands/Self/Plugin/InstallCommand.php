@@ -33,7 +33,7 @@ class InstallCommand extends PluginBaseCommand
     {
         foreach ($projects as $project_name) {
             if ($this->validateProject($project_name)) {
-                // @todo: Repurpose stability option.
+                // @todo Kevin: Repurpose stability option.
                 $results = $this->doInstallation($project_name, $options['stability']);
                 // TODO Improve messaging
                 $this->log()->notice($results['output']);
@@ -70,7 +70,7 @@ class InstallCommand extends PluginBaseCommand
         $this->ensureComposerJsonExists($dependencies_dir, 'pantheon-systems/terminus-dependencies');
         $install_dir = $plugins_dir . DIRECTORY_SEPARATOR . $plugin_name;
         $this->ensureDirectoryExists($install_dir);
-        // @todo: Add path repo to terminus-dependencies dir, require plugin with *.
+        // @todo Kevin: Add path repo to terminus-dependencies dir, require plugin with *.
 
 
         $command = str_replace(

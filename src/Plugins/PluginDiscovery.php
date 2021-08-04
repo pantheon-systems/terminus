@@ -54,7 +54,7 @@ class PluginDiscovery implements ContainerAwareInterface, LoggerAwareInterface
             // Plugin directory probably didn't exist or wasn't writable. Do nothing.
         }
 
-        // @todo: Read composer.lock and iterate through packages.
+        // @todo Kevin: Read composer.lock and iterate through packages.
         foreach ($di as $dir) {
             if ($dir->isDir() && !$dir->isDot() && $dir->isReadable()) {
                 try {
