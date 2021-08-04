@@ -3,6 +3,8 @@ All notable changes to this project will be documented in this file. This projec
 
 ## MASTER
 
+- Fix `backup:automatic:enable --keep-for` parameter not being respected (#2166)
+
 ## 2.6.0 - 2021-06-04
 
 ### Added
