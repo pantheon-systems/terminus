@@ -204,11 +204,10 @@ class LocalMachineHelper implements ConfigAwareInterface, ContainerAwareInterfac
      */
     protected function getProcess($cmd)
     {
-        $process = NULL;
+        $process = null;
         if (is_string($cmd)) {
             $process = Process::fromShellCommandline($cmd);
-        }
-        elseif (is_array($cmd)) {
+        } elseif (is_array($cmd)) {
             $process = new Process($cmd);
         }
         if ($process) {
