@@ -14,7 +14,7 @@ class InstallCommand extends PluginBaseCommand
 {
     const ALREADY_INSTALLED_MESSAGE = '{project} is already installed.';
     const INSTALL_COMMAND =
-        'composer create-project --stability={stability} --prefer-source --keep-vcs -n -d {dir} {project}';
+        'composer require -d {dir} {project}';
     const INVALID_PROJECT_MESSAGE = '{project} is not a valid Packagist project.';
     const USAGE_MESSAGE = 'terminus self:plugin:<install|add> <Packagist project 1> [Packagist project 2] ...';
 
@@ -33,6 +33,7 @@ class InstallCommand extends PluginBaseCommand
     {
         foreach ($projects as $project_name) {
             if ($this->validateProject($project_name)) {
+                // @todo: Repurpose stability option.
                 $results = $this->doInstallation($project_name, $options['stability']);
                 // TODO Improve messaging
                 $this->log()->notice($results['output']);
@@ -64,17 +65,33 @@ class InstallCommand extends PluginBaseCommand
         $plugin_name = PluginInfo::getPluginNameFromProjectName($project_name);
         $config = $this->getConfig();
         $plugins_dir = $config->get('plugins_dir');
+        $dependencies_dir = $config->get('dependencies_dir');
+        $this->ensureComposerJsonExists($plugins_dir, 'pantheon-systems/terminus-plugins');
+        $this->ensureComposerJsonExists($dependencies_dir, 'pantheon-systems/terminus-dependencies');
         $install_dir = $plugins_dir . DIRECTORY_SEPARATOR . $plugin_name;
         $this->ensureDirectoryExists($install_dir);
+        // @todo: Add path repo to terminus-dependencies dir, require plugin with *.
+
 
         $command = str_replace(
-            ['{stability}', '{dir}', '{project}',],
-            [$stability, $plugins_dir, $project_name,],
+            ['{dir}', '{project}',],
+            [$plugins_dir, $project_name,],
             self::INSTALL_COMMAND
         );
         $results = $this->runCommand($command);
         $this->log()->notice('Installed {project_name}.', compact('project_name'));
         return $results;
+    }
+
+    /**
+     * @param string $path
+     */
+    private function ensureComposerJsonExists($path, $package_name)
+    {
+        $this->ensureDirectoryExists($path);
+        if (!$this->getLocalMachine()->getFileSystem()->exists($path . '/composer.json')) {
+            $this->runCommand("composer --working-dir=${path} init --name=${package_name} -n");
+        }
     }
 
     /**
