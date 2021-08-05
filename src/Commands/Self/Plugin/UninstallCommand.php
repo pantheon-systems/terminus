@@ -16,6 +16,8 @@ class UninstallCommand extends PluginBaseCommand
     const NOT_INSTALLED_MESSAGE = '{project} is not installed.';
     const SUCCESS_MESSAGE = '{project} was removed successfully.';
     const USAGE_MESSAGE = 'terminus self:plugin:<uninstall|remove> <project> [project 2] ...';
+    const UNINSTALL_COMMAND =
+    'composer remove -d {dir} {project}';
 
     /**
      * Remove one or more Terminus plugins.
@@ -59,6 +61,18 @@ class UninstallCommand extends PluginBaseCommand
      */
     private function doUninstallation(PluginInfo $project)
     {
-        $this->getLocalMachine()->getFilesystem()->remove($project->getPath());
+        // @todo Kevin is TerminusNotFoundException really thrown here?
+        $config = $this->getConfig();
+        $plugins_dir = $config->get('plugins_dir');
+        $project_name = $project->getName();
+        $command = str_replace(
+            ['{dir}', '{project}',],
+            [$plugins_dir, $project_name,],
+            self::UNINSTALL_COMMAND
+        );
+        $results = $this->runCommand($command);
+        $this->log()->notice('Uninstalled {project_name}.', compact('project_name'));
+        return $results;
+
     }
 }

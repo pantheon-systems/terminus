@@ -77,6 +77,15 @@ class PluginInfo implements ConfigAwareInterface, ContainerAwareInterface, Logge
     }
 
     /**
+     * Set packageinfo.
+     */
+    public function setInfoArray($info) {
+        $this->info = $info;
+        $plugins_dir = $this->getConfig()->get('plugins_dir');
+        $this->plugin_dir = $plugins_dir . '/vendor/' . $info['name'];
+    }
+
+    /**
      * Register an autoloader for the class files from the plugin itself
      * at plugin discovery time.  Note that the classes from libraries that
      * the plugin dependes on (from the `require` section of its composer.json)
@@ -112,12 +121,13 @@ class PluginInfo implements ConfigAwareInterface, ContainerAwareInterface, Logge
         // If this plugin uses autoloading, then its autoloader will
         // have already been configured via autoloadPlugin(), below.
         // Otherwise, we will include all of its source files here.
-        if (!$this->usesAutoload()) {
+        // @todo Kevin delete?
+        /*if (!$this->usesAutoload()) {
             $file_names = array_keys($command_files);
             foreach ($file_names as $file) {
                 include $file;
             }
-        }
+        }*/
 
         return $command_files;
     }
@@ -149,6 +159,9 @@ class PluginInfo implements ConfigAwareInterface, ContainerAwareInterface, Logge
      */
     public function getInstalledVersion()
     {
+        if (!empty($this->info['version'])) {
+            return $this->info['version'];
+        }
         try {
             return $this->getTagInstalledVersion();
         } catch (TerminusNotFoundException $e) {
@@ -167,7 +180,9 @@ class PluginInfo implements ConfigAwareInterface, ContainerAwareInterface, Logge
      */
     public function getInstallationMethod()
     {
-        $git_dir = $this->getPath() . DIRECTORY_SEPARATOR . '.git';
+        return self::COMPOSER_METHOD;
+        // @todo Kevin Delete?
+        /*$git_dir = $this->getPath() . DIRECTORY_SEPARATOR . '.git';
         if (is_dir($git_dir)) {
             return self::GIT_METHOD;
         }
@@ -175,7 +190,7 @@ class PluginInfo implements ConfigAwareInterface, ContainerAwareInterface, Logge
         if (file_exists($composer_json)) {
             return self::COMPOSER_METHOD;
         }
-        return self::UNKNOWN_METHOD;
+        return self::UNKNOWN_METHOD;*/
     }
 
     /**
@@ -304,6 +319,8 @@ class PluginInfo implements ConfigAwareInterface, ContainerAwareInterface, Logge
      */
     public static function checkWhetherPackagistProject($project_name, LocalMachineHelper $local_machine_helper)
     {
+        $project_name_parts = explode(':', $project_name);
+        $project_name = reset($project_name_parts);
         // Search for the Packagist project.
         $command = str_replace(
             '{project}',
@@ -415,10 +432,15 @@ class PluginInfo implements ConfigAwareInterface, ContainerAwareInterface, Logge
             throw new TerminusException('The file "{file}" is not readable', ['file' => $composer_json]);
         }
 
-        $info = json_decode(file_get_contents($composer_json), true);
+        if (!$this->info) {
+          $info = json_decode(file_get_contents($composer_json), true);
+        }
+        else {
+            $info = $this->info;
+        }
 
         if (!$info) {
-            throw new TerminusException('The file "{file}" does not contain valid JSON', ['file' => $composer_json]);
+            throw new TerminusException('No correct info retrieved for package at {dir}', ['dir' => $this->plugin_dir]);
         }
 
         if (!isset($info['type']) || $info['type'] !== 'terminus-plugin') {

@@ -412,9 +412,9 @@ class Terminus implements
         $version = $this->config->get('version');
         $classLoader = new ClassLoader();
         $classLoader->register();
+        $discovery->autoloadPlugins();
         foreach ($plugins as $plugin) {
             if (Semver::satisfies($version, $plugin->getCompatibleTerminusVersion())) {
-                $plugin->autoloadPlugin($classLoader);
                 $this->commands += $plugin->getCommandsAndHooks();
             } else {
                 $this->logger->warning(

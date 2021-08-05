@@ -14,7 +14,7 @@ class InstallCommand extends PluginBaseCommand
 {
     const ALREADY_INSTALLED_MESSAGE = '{project} is already installed.';
     const INSTALL_COMMAND =
-        'composer require -d {dir} {project}';
+        'composer require -d {dir} {project} --prefer-source';
     const INVALID_PROJECT_MESSAGE = '{project} is not a valid Packagist project.';
     const USAGE_MESSAGE = 'terminus self:plugin:<install|add> <Packagist project 1> [Packagist project 2] ...';
 
@@ -68,9 +68,7 @@ class InstallCommand extends PluginBaseCommand
         $dependencies_dir = $config->get('dependencies_dir');
         $this->ensureComposerJsonExists($plugins_dir, 'pantheon-systems/terminus-plugins');
         $this->ensureComposerJsonExists($dependencies_dir, 'pantheon-systems/terminus-dependencies');
-        $install_dir = $plugins_dir . DIRECTORY_SEPARATOR . $plugin_name;
-        $this->ensureDirectoryExists($install_dir);
-        // @todo Kevin: Add path repo to terminus-dependencies dir, require plugin with *.
+        // @todo Kevin: Add path repo to terminus-dependencies dir, require plugin with *. Do I need this?
 
 
         $command = str_replace(
