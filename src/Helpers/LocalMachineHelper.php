@@ -199,22 +199,22 @@ class LocalMachineHelper implements ConfigAwareInterface, ContainerAwareInterfac
     /**
      * Returns a set-up process object.
      *
-     * @param string $cmd The command to execute
+     * @param string|array $cmd The command to execute
      * @return Process
      */
     protected function getProcess($cmd)
     {
-        $process = NULL;
+        $process = null;
         if (is_string($cmd)) {
             $process = Process::fromShellCommandline($cmd);
-        }
-        elseif (is_array($cmd)) {
+        } elseif (is_array($cmd)) {
             $process = new Process($cmd);
         }
-        if ($process) {
-            $config = $this->getConfig();
-            $process->setTimeout($config->get('timeout'));
+        if (!$process) {
+            throw new \InvalidArgumentException('$cmd should be a string or an array.');
         }
+        $config = $this->getConfig();
+        $process->setTimeout($config->get('timeout'));
         return $process;
     }
 }
