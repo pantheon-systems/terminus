@@ -319,6 +319,7 @@ class PluginInfo implements ConfigAwareInterface, ContainerAwareInterface, Logge
      */
     public static function checkWhetherPackagistProject($project_name, LocalMachineHelper $local_machine_helper)
     {
+        // Separate version if exists.
         $project_name_parts = explode(':', $project_name);
         $project_name = reset($project_name_parts);
         // Search for the Packagist project.
