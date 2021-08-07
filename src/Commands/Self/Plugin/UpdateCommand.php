@@ -22,6 +22,9 @@ class UpdateCommand extends PluginBaseCommand
     const UPDATING_MESSAGE = 'Updating {name}...';
     const UPDATE_COMMAND =
         'composer update -d {dir} {project} --with-all-dependencies';
+    const BACKUP_COMMAND =
+        "mkdir -p {backup_dir} && tar czvf {backup_dir}"
+        . DIRECTORY_SEPARATOR . "backup.tar.gz \"{plugins_dir}\"";
 
     /**
      * Update one or more Terminus plugins.
@@ -86,7 +89,6 @@ class UpdateCommand extends PluginBaseCommand
         $plugin_dir = $plugin->getPath();
         $messages = [];
         $this->log()->notice(self::UPDATING_MESSAGE, $plugin_info);
-        // @todo Kevin Improve $messages handling.
         if ($plugin->getInstallationMethod() === 'composer') {
             // Determine the project name.
             if ($plugin->isValidPackagistProject()) {
@@ -99,10 +101,18 @@ class UpdateCommand extends PluginBaseCommand
                     DIRECTORY_SEPARATOR,
                     "$plugins_dir/../backup/plugins/$datetime"
                 );
-                // @todo Kevin Use constant!
-                $command = "mkdir -p {$backup_directory} && tar czvf {$backup_directory}"
-                    . DIRECTORY_SEPARATOR . "backup.tar.gz \"{$plugins_dir}\"";
+                $command = str_replace(
+                    ['{backup_dir}', '{plugins_dir}',],
+                    [$backup_directory, $plugins_dir,],
+                    self::BACKUP_COMMAND
+                );
                 $backup_messages = $this->runCommand($command);
+                if ($backup_messages['output']) {
+                    $messages[] = $backup_messages['output'];
+                }
+                if ($backup_messages['stderr']) {
+                    $messages[] = $backup_messages['stderr'];
+                }
 
                 $command = str_replace(
                     ['{dir}', '{project}',],
@@ -110,9 +120,14 @@ class UpdateCommand extends PluginBaseCommand
                     self::UPDATE_COMMAND
                 );
                 $results = $this->runCommand($command);
-                $messages = array_merge($backup_messages, $results);
+                if ($results['output']) {
+                    $messages[] = $results['output'];
+                }
+                if ($results['stderr']) {
+                    $messages[] = $results['stderr'];
+                }
                 $messages[] =
-                    "Backed up the project to {$backup_directory}" . DIRECTORY_SEPARATOR . "backup.tar.gz.";
+                    "Backed up the project to {$backup_directory}" . DIRECTORY_SEPARATOR . "backup.tar.gz";
             } else {
                 $messages[] = str_replace(['{project}'], [$project], self::INVALID_PROJECT_MESSAGE);
             }
@@ -120,7 +135,6 @@ class UpdateCommand extends PluginBaseCommand
         else {
             $messages[] = str_replace(['{project}'], [$project], self::INVALID_PROJECT_MESSAGE);
         }
-        var_dump($messages);
         foreach ($messages as $message) {
             $this->log()->notice($message, $plugin_info);
         }
