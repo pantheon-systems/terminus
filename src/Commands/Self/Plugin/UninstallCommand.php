@@ -70,6 +70,7 @@ class UninstallCommand extends PluginBaseCommand
             [$plugins_dir, $project_name,],
             self::UNINSTALL_COMMAND
         );
+        // @todo kevin: How to handle terminus-dependencies
         $results = $this->runCommand($command);
         $this->log()->notice('Uninstalled {project_name}.', compact('project_name'));
         return $results;
