@@ -170,16 +170,6 @@ class PluginInfo implements ConfigAwareInterface, ContainerAwareInterface, Logge
     public function getInstallationMethod()
     {
         return self::COMPOSER_METHOD;
-        // @todo Kevin Delete?
-        /*$git_dir = $this->getPath() . DIRECTORY_SEPARATOR . '.git';
-        if (is_dir($git_dir)) {
-            return self::GIT_METHOD;
-        }
-        $composer_json = $this->getPath() . DIRECTORY_SEPARATOR . 'composer.json';
-        if (file_exists($composer_json)) {
-            return self::COMPOSER_METHOD;
-        }
-        return self::UNKNOWN_METHOD;*/
     }
 
     /**

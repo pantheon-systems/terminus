@@ -16,10 +16,12 @@ class UpdateCommand extends PluginBaseCommand
 {
     const ALREADY_UP_TO_DATE_MESSAGE = 'Already up-to-date.';
     const GIT_UPDATE_COMMAND = 'cd %s && git checkout %s';
-    const INVALID_PROJECT_MESSAGE = 'Unable to update. {project} is not a valid Packagist project.';
+    const INVALID_PROJECT_MESSAGE = 'Unable to update: {project} is not a valid Packagist project.';
     const NO_PLUGINS_MESSAGE = 'You have no plugins installed.';
     const SEMVER_CANNOT_UPDATE_MESSAGE = 'Unable to update. Semver compliance issue with tagged release.';
     const UPDATING_MESSAGE = 'Updating {name}...';
+    const UPDATE_COMMAND =
+        'composer update -d {dir} {project} --with-all-dependencies';
 
     /**
      * Update one or more Terminus plugins.
@@ -80,61 +82,45 @@ class UpdateCommand extends PluginBaseCommand
     {
         $plugins_dir = $this->getPluginsDir();
         $plugin_info = $plugin->getInfo();
+        $project = $plugin_info['name'];
         $plugin_dir = $plugin->getPath();
         $messages = [];
         $this->log()->notice(self::UPDATING_MESSAGE, $plugin_info);
-        switch ($plugin_info['method']) {
-            case 'git':
-                // Compare installed version to the latest release.
-                $installed_version = $plugin_info['version'];
-                $latest_version = $plugin_info['latest_version'];
-                if (($installed_version !== PluginInfo::UNKNOWN_VERSION) && ($latest_version !== PluginInfo::UNKNOWN_VERSION)) {
-                    if (Comparator::greaterThan($latest_version, $installed_version)) {
-                        exec(
-                            sprintf(self::GIT_UPDATE_COMMAND, $plugin_dir, $latest_version),
-                            $messages
-                        );
-                    } else {
-                        $messages[] = self::ALREADY_UP_TO_DATE_MESSAGE;
-                    }
-                } else {
-                    $messages[] = self::SEMVER_CANNOT_UPDATE_MESSAGE;
-                }
-                break;
+        // @todo Kevin Improve $messages handling.
+        if ($plugin->getInstallationMethod() === 'composer') {
+            // Determine the project name.
+            if ($plugin->isValidPackagistProject()) {
+                // Get the Terminus major version.
+                $terminus_major_version = $this->getTerminusMajorVersion();
+                // Backup the plugins directory, just in case.
+                $datetime = date('YmdHi', time());
+                $backup_directory = str_replace(
+                    '/',
+                    DIRECTORY_SEPARATOR,
+                    "$plugins_dir/../backup/plugins/$datetime"
+                );
+                // @todo Kevin Use constant!
+                $command = "mkdir -p {$backup_directory} && tar czvf {$backup_directory}"
+                    . DIRECTORY_SEPARATOR . "backup.tar.gz \"{$plugins_dir}\"";
+                $backup_messages = $this->runCommand($command);
 
-            case 'composer':
-                // Determine the project name.
-                $project = $plugin_info['name'];
-                if ($plugin->isValidPackagistProject()) {
-                    // Get the Terminus major version.
-                    $terminus_major_version = $this->getTerminusMajorVersion();
-                    // Backup the plugin directory, just in case.
-                    $datetime = date('YmdHi', time());
-                    $backup_directory = str_replace(
-                        '/',
-                        DIRECTORY_SEPARATOR,
-                        "$plugins_dir/../backup/plugins/$project/$datetime"
-                    );
-                    exec(
-                        "mkdir -p {$backup_directory} && tar czvf {$backup_directory}"
-                        . DIRECTORY_SEPARATOR . "backup.tar.gz \"{$plugin_dir}\"",
-                        $backup_messages
-                    );
-                    // Create a new project via Composer.
-                    $composer_command = "composer create-project --prefer-source --keep-vcs -n -d "
-                        . "{$plugins_dir} {$project}:~{$terminus_major_version}";
-                    exec("rm -rf \"{$plugin_dir}\" && {$composer_command}", $install_messages);
-                    $messages = array_merge($backup_messages, $install_messages);
-                    $messages[] =
-                        "Backed up the project to {$backup_directory}" . DIRECTORY_SEPARATOR . "backup.tar.gz.";
-                } else {
-                    $messages[] = self::INVALID_PROJECT_MESSAGE;
-                }
-                break;
-
-            default:
-                $messages[] = self::INVALID_PROJECT_MESSAGE;
+                $command = str_replace(
+                    ['{dir}', '{project}',],
+                    [$plugins_dir, $project,],
+                    self::UPDATE_COMMAND
+                );
+                $results = $this->runCommand($command);
+                $messages = array_merge($backup_messages, $results);
+                $messages[] =
+                    "Backed up the project to {$backup_directory}" . DIRECTORY_SEPARATOR . "backup.tar.gz.";
+            } else {
+                $messages[] = str_replace(['{project}'], [$project], self::INVALID_PROJECT_MESSAGE);
+            }
         }
+        else {
+            $messages[] = str_replace(['{project}'], [$project], self::INVALID_PROJECT_MESSAGE);
+        }
+        var_dump($messages);
         foreach ($messages as $message) {
             $this->log()->notice($message, $plugin_info);
         }
