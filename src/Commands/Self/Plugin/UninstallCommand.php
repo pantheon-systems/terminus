@@ -5,6 +5,7 @@ namespace Pantheon\Terminus\Commands\Self\Plugin;
 use Consolidation\AnnotatedCommand\CommandData;
 use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
 use Pantheon\Terminus\Plugins\PluginInfo;
+use Symfony\Component\Process\Exception\RuntimeException;
 
 /**
  * Removes Terminus plugins.
@@ -35,7 +36,7 @@ class UninstallCommand extends PluginBaseCommand
             try {
                 $this->doUninstallation($this->getPlugin($project));
                 $this->log()->notice(self::SUCCESS_MESSAGE, compact('project'));
-            } catch (TerminusNotFoundException $e) {
+            } catch (RuntimeException $e) {
                 $this->log()->error(self::NOT_INSTALLED_MESSAGE, compact('project'));
             }
         }
@@ -61,7 +62,6 @@ class UninstallCommand extends PluginBaseCommand
      */
     private function doUninstallation(PluginInfo $project)
     {
-        // @todo Kevin is TerminusNotFoundException really thrown here?
         $config = $this->getConfig();
         $plugins_dir = $config->get('plugins_dir');
         $project_name = $project->getName();
