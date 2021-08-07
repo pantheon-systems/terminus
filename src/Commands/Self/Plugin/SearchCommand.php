@@ -3,12 +3,11 @@
 namespace Pantheon\Terminus\Commands\Self\Plugin;
 
 use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
+use Composer\Semver\Semver;
 
 /**
  * Search for Terminus plugins to install.
  * @package Pantheon\Terminus\Commands\Self\Plugin
- * @todo Kevin Limit the search to include only Packagist projects with versions compatible with the currently installed Terminus version.
- * Maybe filter list by compatible-version: https://repo.packagist.org/p2/pantheon-systems/terminus-mass-update.json
  * @TODO Bonus: Add the ability to search and prompt to install new plugins.
  * @TODO Keep an internal registry of approved third-party plugins.
  * @TODO Do lookup if given a plugin name and not a project name, prompt OK for match, install
@@ -16,9 +15,11 @@ use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
 class SearchCommand extends PluginBaseCommand
 {
     const APPROVED_PROJECTS = 'terminus-plugin-project/terminus-pancakes-plugin';
-    const NO_PLUGINS_MESSAGE = 'No plugins have met your criterion.';
+    const NO_PLUGINS_MESSAGE = 'No compatible plugins have met your criterion.';
     const OFFICIAL_PLUGIN_AUTHOR = 'pantheon-systems';
     const SEARCH_COMMAND = 'composer search -t terminus-plugin {keyword}';
+    const PROJECT_URL = 'https://repo.packagist.org/p2/{project}.json';
+    const PROJECT_DEV_URL = 'https://repo.packagist.org/p2/{project}~dev.json';
 
     /**
      * Search for available Terminus plugins.
@@ -56,8 +57,20 @@ class SearchCommand extends PluginBaseCommand
             array_filter(
                 $results,
                 function ($message) {
-                    list($project) = explode(' ', $message, 1);
-                    return preg_match('#^[^/]*/[^/]*$#', $project);
+                    list($project) = explode(' ', $message, 2);
+                    if (preg_match('#^[^/]*/[^/]*$#', $project)) {
+                        $terminus_major = $this->getTerminusMajorVersion();
+                        $url = str_replace('{project}', $project, self::PROJECT_URL);
+                        $json = json_decode(file_get_contents($url), true, 10);
+                        if ($this->validatePackageVersions($json['packages'][$project], $terminus_major)) {
+                            return true;
+                        }
+                        $url = str_replace('{project}', $project, self::PROJECT_DEV_URL);
+                        $json = json_decode(file_get_contents($url), true, 10);
+                        if ($this->validatePackageVersions($json['packages'][$project], $terminus_major)) {
+                            return true;
+                        }
+                    }
                 }
             )
         );
@@ -69,6 +82,22 @@ class SearchCommand extends PluginBaseCommand
         // Output the plugin list in table format.
         asort($projects);
         return new RowsOfFields($projects);
+    }
+
+    /**
+     * Validate package versions against terminus major version.
+     */
+    protected function validatePackageVersions($versions_array, $terminus_major) {
+        foreach ($versions_array as $version) {
+            $plugin_compatible = $version['extra']['terminus']['compatible-version'] ?? '';
+            if (!$plugin_compatible) {
+                continue;
+            }
+            if (Semver::satisfies($terminus_major, $plugin_compatible)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
