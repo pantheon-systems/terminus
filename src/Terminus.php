@@ -14,7 +14,6 @@ use Pantheon\Terminus\Config\ConfigAwareTrait;
 use Pantheon\Terminus\DataStore\FileStore;
 use Pantheon\Terminus\Helpers\LocalMachineHelper;
 use Pantheon\Terminus\Helpers\Traits\CommandExecutorTrait;
-use Pantheon\Terminus\Plugins\PluginAutoloadDependencies;
 use Pantheon\Terminus\Plugins\PluginDiscovery;
 use Pantheon\Terminus\Plugins\PluginInfo;
 use Pantheon\Terminus\ProgressBars\ProcessProgressBar;
@@ -159,8 +158,6 @@ class Terminus implements
         $container->add(WorkflowProgressBar::class);
 
         // Plugin handlers
-        $container->share('pluginAutoloadDependencies', PluginAutoloadDependencies::class)
-            ->addArgument(__DIR__);
         $container->add(PluginDiscovery::class)
             ->addArgument($this->getConfig()->get('plugins_dir'));
         $container->add(PluginInfo::class);
@@ -179,10 +176,6 @@ class Terminus implements
         $factory = $container->get('commandFactory');
         $factory->setIncludeAllPublicMethods(false);
         $factory->setDataStore($commandCacheDataStore);
-
-        // Call our autoload loader at the beginning of any command dispatch.
-        $pluginAutoloadDependencies = $container->get('pluginAutoloadDependencies');
-        $factory->hookManager()->addInitializeHook($pluginAutoloadDependencies);
     }
 
     private function configureModulesAndCollections($container)
