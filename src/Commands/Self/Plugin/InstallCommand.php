@@ -24,17 +24,15 @@ class InstallCommand extends PluginBaseCommand
      * @command self:plugin:install
      * @aliases self:plugin:add
      *
-     * @param array $projects A list of one or more plugin projects to install
-     * @option string $stability Version stability such as stable, beta, alpha, etc.
+     * @param array $projects A list of one or more plugin projects to install. Projects may include version constraints.
      *
      * @usage <project 1> [project 2] ...
      */
-    public function install(array $projects, $options = ['stability' => 'stable',])
+    public function install(array $projects)
     {
         foreach ($projects as $project_name) {
             if ($this->validateProject($project_name)) {
-                // @todo Kevin: Repurpose stability option.
-                $results = $this->doInstallation($project_name, $options['stability']);
+                $results = $this->doInstallation($project_name);
                 // TODO Improve messaging
                 $this->log()->notice($results['output']);
             }
@@ -57,10 +55,9 @@ class InstallCommand extends PluginBaseCommand
 
     /**
      * @param string $project_name Name of project to be installed
-     * @param string $stability stable, beta, alpha, etc
      * @return array Results from the install command
      */
-    private function doInstallation($project_name, $stability)
+    private function doInstallation($project_name)
     {
         $plugin_name = PluginInfo::getPluginNameFromProjectName($project_name);
         $config = $this->getConfig();
