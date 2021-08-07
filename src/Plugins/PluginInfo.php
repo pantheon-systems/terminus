@@ -118,17 +118,6 @@ class PluginInfo implements ConfigAwareInterface, ContainerAwareInterface, Logge
             ->setSearchDepth(self::MAX_COMMAND_DEPTH);
         $command_files = $discovery->discover($path, $namespace);
 
-        // If this plugin uses autoloading, then its autoloader will
-        // have already been configured via autoloadPlugin(), below.
-        // Otherwise, we will include all of its source files here.
-        // @todo Kevin delete?
-        /*if (!$this->usesAutoload()) {
-            $file_names = array_keys($command_files);
-            foreach ($file_names as $file) {
-                include $file;
-            }
-        }*/
-
         return $command_files;
     }
 
