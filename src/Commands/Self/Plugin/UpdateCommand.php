@@ -112,11 +112,17 @@ class UpdateCommand extends PluginBaseCommand
                     if ($results['stderr']) {
                         $messages[] = $results['stderr'];
                     }
-                    $messages[] =
-                        "Backed up the project to {$backup_directory}" . DIRECTORY_SEPARATOR . "backup.tar.gz";
+                    if ($results['exit_code'] !== 0) {
+                        throw new TerminusException(
+                            'Error updating package in terminus-plugins.',
+                            []
+                        );
+                    }
+                    // @todo kevin: How to handle terminus-dependencies?
                 } catch (TerminusException $e) {
                     $this->log()->error($e->getMessage());
-                    // @todo Kevin restore backup?.
+                    $this->restoreBackup($backup_directory, 'plugins');
+                    $this->restoreBackup($backup_dependencies_directory, 'dependencies');
                 }
             } else {
                 $messages[] = str_replace(['{project}'], [$project], self::INVALID_PROJECT_MESSAGE);

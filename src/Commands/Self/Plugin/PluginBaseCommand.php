@@ -268,4 +268,12 @@ abstract class PluginBaseCommand extends TerminusCommand
         return $backup_directory . '/backup.tar.gz';
     }
 
+    /**
+     * Restore backup for given dir.
+     */
+    protected function restoreBackup($backup_dir, $backup_type = 'plugins') {
+        // @todo Kevin Implement
+        throw new \Exception('Not implemented yet!');
+    }
+
 }

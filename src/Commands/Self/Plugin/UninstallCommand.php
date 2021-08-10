@@ -76,12 +76,19 @@ class UninstallCommand extends PluginBaseCommand
                 [$plugins_dir, $project_name,],
                 self::UNINSTALL_COMMAND
             );
-            // @todo kevin: How to handle terminus-dependencies
+            // @todo kevin: How to handle terminus-dependencies?
             $results = $this->runCommand($command);
+            if ($results['exit_code'] !== 0) {
+                throw new TerminusException(
+                    'Error removing package in terminus-plugins.',
+                    []
+                );
+            }
             $this->log()->notice('Uninstalled {project_name}.', compact('project_name'));
         } catch (TerminusException $e) {
             $this->log()->error($e->getMessage());
-            // @todo Kevin restore backup?.
+            $this->restoreBackup($backup_directory, 'plugins');
+            $this->restoreBackup($backup_dependencies_directory, 'dependencies');
         }
         return $results;
 

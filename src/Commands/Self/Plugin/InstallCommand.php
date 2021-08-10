@@ -89,7 +89,8 @@ class InstallCommand extends PluginBaseCommand
             $this->addPackageToTerminusDependencies($dependencies_dir, $plugins_dir, $project_name);
         } catch (TerminusException $e) {
             $this->log()->error($e->getMessage());
-            // @todo Kevin restore backup?.
+            $this->restoreBackup($backup_directory, 'plugins');
+            $this->restoreBackup($backup_dependencies_directory, 'dependencies');
         }
 
         return $results;
