@@ -44,8 +44,9 @@ class PluginDiscovery implements ContainerAwareInterface, LoggerAwareInterface
      * Autoload plugins.
      */
     public function autoloadPlugins() {
-        // @todo Kevin Change to terminus-dependencies path when ready.
-        $autoload_path = $this->directory_path . '/vendor/autoload.php';
+        $config = $this->getContainer()->get('config');
+        $dependencies_dir = $config->get('dependencies_dir');
+        $autoload_path = $dependencies_dir . '/vendor/autoload.php';
         $local_machine = $this->getContainer()->get(LocalMachineHelper::class);
         if ($local_machine->getFilesystem()->exists($autoload_path)) {
             include $autoload_path;
