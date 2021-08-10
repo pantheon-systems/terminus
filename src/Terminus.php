@@ -43,6 +43,10 @@ use Pantheon\Terminus\Config\DotEnvConfig;
 use Pantheon\Terminus\Config\EnvConfig;
 use Pantheon\Terminus\Config\YamlConfig;
 
+// @todo Kevin Review and delete all unused/dead code.
+// @todo Kevin Add/update tests.
+// @todo Kevin Add docblocks.
+
 /**
  * Class Terminus
  *

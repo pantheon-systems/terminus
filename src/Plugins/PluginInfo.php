@@ -86,24 +86,6 @@ class PluginInfo implements ConfigAwareInterface, ContainerAwareInterface, Logge
     }
 
     /**
-     * Register an autoloader for the class files from the plugin itself
-     * at plugin discovery time.  Note that the classes from libraries that
-     * the plugin dependes on (from the `require` section of its composer.json)
-     * are not available until one of its commands is called.
-     *
-     * @param Composer\Autoload\ClassLoader $loader
-     */
-    public function autoloadPlugin($loader)
-    {
-        if ($this->usesAutoload()) {
-            $info = $this->getInfo();
-            foreach ($info['autoload']['psr-4'] as $prefix => $path) {
-                $loader->addPsr4($prefix, $this->getPath() . DIRECTORY_SEPARATOR . $path);
-            }
-        }
-    }
-
-    /**
      * Get all of the commands and hooks in the plugin.
      *
      * @return array
@@ -309,6 +291,7 @@ class PluginInfo implements ConfigAwareInterface, ContainerAwareInterface, Logge
         );
         $results = $local_machine_helper->exec($command);
         $result = (trim($results['output']));
+
         if (empty($result)) {
             return false;
         }
@@ -457,15 +440,6 @@ class PluginInfo implements ConfigAwareInterface, ContainerAwareInterface, Logge
         $info['method'] = $this->getInstallationMethod();
 
         return (array)$info;
-    }
-
-    /**
-     * Check to see if this plugin uses autloading
-     * @return boolean
-     */
-    protected function usesAutoload()
-    {
-        return $this->hasAutoload($this->getInfo());
     }
 
     /**
