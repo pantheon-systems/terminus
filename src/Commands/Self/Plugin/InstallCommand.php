@@ -17,8 +17,6 @@ class InstallCommand extends PluginBaseCommand
         'composer require -d {dir} {project} --prefer-source';
     const INVALID_PROJECT_MESSAGE = '{project} is not a valid Packagist project.';
     const USAGE_MESSAGE = 'terminus self:plugin:<install|add> <Packagist project 1> [Packagist project 2] ...';
-    const DEPENDENCIES_REQUIRE_COMMAND = 'composer require -d {dir} {packages}';
-    const COMPOSER_ADD_REPOSITORY = 'composer config -d {dir} repositories.{repo_name} path {path}';
 
     /**
      * Install one or more Terminus plugins.
@@ -66,6 +64,7 @@ class InstallCommand extends PluginBaseCommand
         $plugins_dir = $config->get('plugins_dir');
         $dependencies_dir = $config->get('dependencies_dir');
         $this->ensureComposerJsonExists($plugins_dir, 'pantheon-systems/terminus-plugins');
+        // @todo Kevin Backup and restore?
         // @todo Kevin: When to initialize and copy the resolved stuff? What if I git pull/composer install on terminus folder?
         $this->ensureComposerJsonExists($dependencies_dir, 'pantheon-systems/terminus-dependencies');
         $this->updateTerminusDependencies($dependencies_dir, $plugins_dir);
@@ -82,84 +81,6 @@ class InstallCommand extends PluginBaseCommand
         $this->addPackageToTerminusDependencies($dependencies_dir, $plugins_dir, $project_name);
 
         return $results;
-    }
-
-    /**
-     * Get packages string from composer.lock file contents.
-     */
-    protected function getPackagesWithVersionString($composer_lock_contents) {
-        $packages = [];
-        foreach ($composer_lock_contents['packages'] as $package) {
-            $packages[] = $package['name'] . ':' . $package['version'];
-        }
-        return implode(' ', $packages);
-    }
-
-    /**
-     * Get packages string from composer.json file contents.
-     */
-    protected function getRequiredPackages($composer_json_contents) {
-        $packages = [];
-        foreach ($composer_json_contents['require'] as $package_name => $version) {
-            $packages[] = $package_name;
-        }
-        return $packages;
-    }
-
-    /**
-     * Add plugin package to terminus dependencies.
-     */
-    protected function addPackageToTerminusDependencies($dependencies_dir, $plugins_dir, $package) {
-        $repo_path = $plugins_dir . '/vendor/' . $package;
-        $command = str_replace(
-            ['{dir}', '{repo_name}', '{path}',],
-            [$dependencies_dir, basename($repo_path), $repo_path,],
-            self::COMPOSER_ADD_REPOSITORY
-        );
-        $results = $this->runCommand($command);
-        // @todo Kevin what if error?
-        if ($results['exit_code'] === 0) {
-            $command = str_replace(
-                ['{dir}', '{packages}',],
-                [$dependencies_dir, $package . ':*',],
-                self::DEPENDENCIES_REQUIRE_COMMAND
-            );
-            // @todo Kevin capture the exit code?
-            $this->runCommand($command);
-        }
-    }
-
-    /**
-     * Require terminus resolved packages into terminus-dependencies folder.
-     */
-    protected function updateTerminusDependencies($dependencies_dir, $plugins_dir) {
-        // @todo Kevin Move to parent and invoke from other commands.
-        if (file_exists($this->getConfig()->get('root') . '/composer.lock')) {
-            $terminus_composer_lock = json_decode(
-                file_get_contents($this->getConfig()->get('root') . '/composer.lock'),
-                true,
-                10
-            );
-            $packages = $this->getPackagesWithVersionString($terminus_composer_lock);
-            $command = str_replace(
-                ['{dir}', '{packages}',],
-                [$dependencies_dir, $packages,],
-                self::DEPENDENCIES_REQUIRE_COMMAND
-            );
-            $results = $this->runCommand($command);
-            // @todo Kevin what if error?
-            if ($results['exit_code'] === 0) {
-                $plugins_composer_json = json_decode(
-                    file_get_contents($plugins_dir . '/composer.json'),
-                    true,
-                    5
-                );
-                $packages = $this->getRequiredPackages($plugins_composer_json);
-                foreach ($packages as $package) {
-                    $this->addPackageToTerminusDependencies($dependencies_dir, $plugins_dir, $package);
-                }
-            }
-        }
     }
 
     /**

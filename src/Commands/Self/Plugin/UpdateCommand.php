@@ -83,10 +83,13 @@ class UpdateCommand extends PluginBaseCommand
      */
     protected function doUpdate($plugin)
     {
+        $config = $this->getConfig();
         $plugins_dir = $this->getPluginsDir();
+        $dependencies_dir = $config->get('dependencies_dir');
         $plugin_info = $plugin->getInfo();
         $project = $plugin_info['name'];
         $plugin_dir = $plugin->getPath();
+        $this->updateTerminusDependencies($dependencies_dir, $plugins_dir);
         $messages = [];
         $this->log()->notice(self::UPDATING_MESSAGE, $plugin_info);
         if ($plugin->getInstallationMethod() === 'composer') {

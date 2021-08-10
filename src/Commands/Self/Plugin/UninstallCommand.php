@@ -64,6 +64,8 @@ class UninstallCommand extends PluginBaseCommand
     {
         $config = $this->getConfig();
         $plugins_dir = $config->get('plugins_dir');
+        $plugins_dir = $config->get('dependencies_dir');
+        $this->updateTerminusDependencies($dependencies_dir, $plugins_dir);
         $project_name = $project->getName();
         $command = str_replace(
             ['{dir}', '{project}',],
