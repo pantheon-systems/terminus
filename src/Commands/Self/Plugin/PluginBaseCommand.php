@@ -176,6 +176,9 @@ abstract class PluginBaseCommand extends TerminusCommand
      */
     protected function addPackageToTerminusDependencies($dependencies_dir, $plugins_dir, $package) {
         $repo_path = $plugins_dir . '/vendor/' . $package;
+        $parts = explode(':', $repo_path);
+        // Remove version if exists.
+        $repo_path = reset($parts);
         $command = str_replace(
             ['{dir}', '{repo_name}', '{path}',],
             [$dependencies_dir, basename($repo_path), $repo_path,],
@@ -274,6 +277,28 @@ abstract class PluginBaseCommand extends TerminusCommand
     protected function restoreBackup($backup_dir, $backup_type = 'plugins') {
         // @todo Kevin Implement
         throw new \Exception('Not implemented yet!');
+    }
+
+    /**
+     * @param string $path Path where composer.json file should exist.
+     * @param string $package_name Package name to create if composer.json doesn't exist.
+     */
+    protected function ensureComposerJsonExists($path, $package_name)
+    {
+        $this->ensureDirectoryExists($path);
+        if (!$this->getLocalMachine()->getFileSystem()->exists($path . '/composer.json')) {
+            $this->runCommand("composer --working-dir=${path} init --name=${package_name} -n");
+            $this->runCommand("composer --working-dir=${path} config minimum-stability dev");
+        }
+    }
+
+    /**
+     * @param string $path
+     * @param int $permissions
+     */
+    protected function ensureDirectoryExists($path, $permissions = 0755)
+    {
+        $this->getLocalMachine()->getFileSystem()->mkdir($path, $permissions);
     }
 
 }

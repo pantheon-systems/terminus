@@ -62,10 +62,10 @@ class InstallCommand extends PluginBaseCommand
     {
         $plugin_name = PluginInfo::getPluginNameFromProjectName($project_name);
         $config = $this->getConfig();
+        // If git pull or composer install is run in terminus folder then self:plugin:reload should be manually run in order to refresh plugins dependencies.
         $plugins_dir = $config->get('plugins_dir');
         $dependencies_dir = $config->get('dependencies_dir');
         $this->ensureComposerJsonExists($plugins_dir, 'pantheon-systems/terminus-plugins');
-        // @todo Kevin: When to initialize and copy the resolved stuff? What if I git pull/composer install on terminus folder?
         $this->ensureComposerJsonExists($dependencies_dir, 'pantheon-systems/terminus-dependencies');
         $this->updateTerminusDependencies($dependencies_dir, $plugins_dir);
 
@@ -94,28 +94,6 @@ class InstallCommand extends PluginBaseCommand
         }
 
         return $results;
-    }
-
-    /**
-     * @param string $path Path where composer.json file should exist.
-     * @param string $package_name Package name to create if composer.json doesn't exist.
-     */
-    private function ensureComposerJsonExists($path, $package_name)
-    {
-        $this->ensureDirectoryExists($path);
-        if (!$this->getLocalMachine()->getFileSystem()->exists($path . '/composer.json')) {
-            $this->runCommand("composer --working-dir=${path} init --name=${package_name} -n");
-            $this->runCommand("composer --working-dir=${path} config minimum-stability dev");
-        }
-    }
-
-    /**
-     * @param string $path
-     * @param int $permissions
-     */
-    private function ensureDirectoryExists($path, $permissions = 0755)
-    {
-        $this->getLocalMachine()->getFileSystem()->mkdir($path, $permissions);
     }
 
     /**
