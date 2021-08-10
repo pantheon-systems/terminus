@@ -182,15 +182,25 @@ abstract class PluginBaseCommand extends TerminusCommand
             self::COMPOSER_ADD_REPOSITORY
         );
         $results = $this->runCommand($command);
-        // @todo Kevin what if error?
         if ($results['exit_code'] === 0) {
             $command = str_replace(
                 ['{dir}', '{packages}',],
                 [$dependencies_dir, $package . ':*',],
                 self::DEPENDENCIES_REQUIRE_COMMAND
             );
-            // @todo Kevin capture the exit code?
-            $this->runCommand($command);
+            $results = $this->runCommand($command);
+            if ($results['exit_code'] !== 0) {
+                throw new TerminusException(
+                    'Error requiring dependencies in terminus-dependencies.',
+                    []
+                );
+            }
+        }
+        else {
+            throw new TerminusException(
+                'Error adding composer repository in terminus-dependencies.',
+                []
+            );
         }
     }
 
@@ -211,7 +221,6 @@ abstract class PluginBaseCommand extends TerminusCommand
                 self::DEPENDENCIES_REQUIRE_COMMAND
             );
             $results = $this->runCommand($command);
-            // @todo Kevin what if error?
             if ($results['exit_code'] === 0) {
                 $plugins_composer_json = json_decode(
                     file_get_contents($plugins_dir . '/composer.json'),
@@ -222,6 +231,12 @@ abstract class PluginBaseCommand extends TerminusCommand
                 foreach ($packages as $package) {
                     $this->addPackageToTerminusDependencies($dependencies_dir, $plugins_dir, $package);
                 }
+            }
+            else {
+                throw new TerminusException(
+                    'Error requiring dependencies in terminus-dependencies.',
+                    []
+                );
             }
         }
     }

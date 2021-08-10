@@ -65,7 +65,6 @@ class InstallCommand extends PluginBaseCommand
         $plugins_dir = $config->get('plugins_dir');
         $dependencies_dir = $config->get('dependencies_dir');
         $this->ensureComposerJsonExists($plugins_dir, 'pantheon-systems/terminus-plugins');
-        // @todo Kevin Backup and restore?
         // @todo Kevin: When to initialize and copy the resolved stuff? What if I git pull/composer install on terminus folder?
         $this->ensureComposerJsonExists($dependencies_dir, 'pantheon-systems/terminus-dependencies');
         $this->updateTerminusDependencies($dependencies_dir, $plugins_dir);
@@ -79,9 +78,14 @@ class InstallCommand extends PluginBaseCommand
                 self::INSTALL_COMMAND
             );
             $results = $this->runCommand($command);
+            if ($results['exit_code'] !== 0) {
+                throw new TerminusException(
+                    'Error requiring package in terminus-plugins.',
+                    []
+                );
+            }
             $this->log()->notice('Installed {project_name}.', compact('project_name'));
 
-            // @todo Kevin: should I return the output of this?
             $this->addPackageToTerminusDependencies($dependencies_dir, $plugins_dir, $project_name);
         } catch (TerminusException $e) {
             $this->log()->error($e->getMessage());
