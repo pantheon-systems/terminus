@@ -67,6 +67,7 @@ class UninstallCommand extends PluginBaseCommand
         $plugins_dir = $config->get('plugins_dir');
         $dependencies_dir = $config->get('dependencies_dir');
         $this->updateTerminusDependencies($dependencies_dir, $plugins_dir);
+        // @todo Kevin What if backup fails? Should this command fail?
         $backup_plugins_directory = $this->backupDir($plugin_dir, 'plugins');
         $backup_dependencies_directory = $this->backupDir($dependencies_dir, 'dependencies');
         try {

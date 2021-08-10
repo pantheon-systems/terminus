@@ -19,6 +19,7 @@ if ($pharPath) {
     || file_exists($path = __DIR__ . '/../../autoload.php')
     || file_exists($path = __DIR__ . '/../../../autoload.php')
 ) {
+    // @todo kevin should I modify this?
     include_once($path);
 } else {
     throw new \Exception('Could not locate autoload.php');

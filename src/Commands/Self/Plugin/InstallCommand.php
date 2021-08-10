@@ -68,7 +68,7 @@ class InstallCommand extends PluginBaseCommand
         $this->ensureComposerJsonExists($plugins_dir, 'pantheon-systems/terminus-plugins');
         $this->ensureComposerJsonExists($dependencies_dir, 'pantheon-systems/terminus-dependencies');
         $this->updateTerminusDependencies($dependencies_dir, $plugins_dir);
-
+        // @todo Kevin What if backup fails? Should this command fail?
         $backup_directory = $this->backupDir($plugin_dir, 'plugins');
         $backup_dependencies_directory = $this->backupDir($dependencies_dir, 'dependencies');
         try {
