@@ -4,6 +4,7 @@ namespace Pantheon\Terminus\Commands\Self\Plugin;
 
 use Consolidation\AnnotatedCommand\CommandData;
 use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
+use Pantheon\Terminus\Exceptions\TerminusException;
 use Pantheon\Terminus\Plugins\PluginInfo;
 
 /**
@@ -69,16 +70,23 @@ class InstallCommand extends PluginBaseCommand
         $this->ensureComposerJsonExists($dependencies_dir, 'pantheon-systems/terminus-dependencies');
         $this->updateTerminusDependencies($dependencies_dir, $plugins_dir);
 
-        $command = str_replace(
-            ['{dir}', '{project}',],
-            [$plugins_dir, $project_name,],
-            self::INSTALL_COMMAND
-        );
-        $results = $this->runCommand($command);
-        $this->log()->notice('Installed {project_name}.', compact('project_name'));
+        $backup_directory = $this->backupDir($plugin_dir, 'plugins');
+        $backup_dependencies_directory = $this->backupDir($dependencies_dir, 'dependencies');
+        try {
+            $command = str_replace(
+                ['{dir}', '{project}',],
+                [$plugins_dir, $project_name,],
+                self::INSTALL_COMMAND
+            );
+            $results = $this->runCommand($command);
+            $this->log()->notice('Installed {project_name}.', compact('project_name'));
 
-        // @todo Kevin: should I return the output of this?
-        $this->addPackageToTerminusDependencies($dependencies_dir, $plugins_dir, $project_name);
+            // @todo Kevin: should I return the output of this?
+            $this->addPackageToTerminusDependencies($dependencies_dir, $plugins_dir, $project_name);
+        } catch (TerminusException $e) {
+            $this->log()->error($e->getMessage());
+            // @todo Kevin restore backup?.
+        }
 
         return $results;
     }

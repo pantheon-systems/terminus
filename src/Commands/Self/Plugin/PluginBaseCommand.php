@@ -6,6 +6,7 @@ use Pantheon\Terminus\Commands\TerminusCommand;
 use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
 use Pantheon\Terminus\Helpers\LocalMachineHelper;
 use Pantheon\Terminus\Plugins\PluginDiscovery;
+use Pantheon\Terminus\Exceptions\TerminusException;
 
 /**
  * Class PluginBaseCommand
@@ -21,6 +22,9 @@ abstract class PluginBaseCommand extends TerminusCommand
     const PROJECT_NOT_FOUND_MESSAGE = 'No project or plugin named {project} found.';
     const DEPENDENCIES_REQUIRE_COMMAND = 'composer require -d {dir} {packages}';
     const COMPOSER_ADD_REPOSITORY = 'composer config -d {dir} repositories.{repo_name} path {path}';
+    const BACKUP_COMMAND =
+        "mkdir -p {backup_dir} && tar czvf {backup_dir}"
+        . DIRECTORY_SEPARATOR . "backup.tar.gz \"{dir}\"";
 
     /**
      * @var array|null
@@ -220,6 +224,33 @@ abstract class PluginBaseCommand extends TerminusCommand
                 }
             }
         }
+    }
+
+    /**
+     * Backup given dir.
+     */
+    protected function backupDir($dir, $backup_type = 'plugins') {
+        $datetime = date('YmdHi', time());
+        $backup_directory = str_replace(
+            '/',
+            DIRECTORY_SEPARATOR,
+            "$plugins_dir/../backup/$backup_type/$datetime"
+        );
+        $command = str_replace(
+            ['{backup_dir}', '{dir}',],
+            [$backup_directory, $dir,],
+            self::BACKUP_COMMAND
+        );
+        $result = $this->runCommand($command);
+        if ($results['exit_code'] !== 0) {
+            // Throw exception.
+            throw new TerminusException(
+                'Error backing up {backup_type} directory: {dir}',
+                ['backup_type' => $backup_type, 'dir' => $site_name,],
+                1
+            );
+        }
+        return $backup_directory . '/backup.tar.gz';
     }
 
 }

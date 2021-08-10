@@ -6,6 +6,7 @@ use Composer\Semver\Comparator;
 use Consolidation\AnnotatedCommand\CommandData;
 use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
 use Pantheon\Terminus\Plugins\PluginInfo;
+use Pantheon\Terminus\Exceptions\TerminusException;
 
 /**
  * Updates installed Terminus plugins.
@@ -22,9 +23,6 @@ class UpdateCommand extends PluginBaseCommand
     const UPDATING_MESSAGE = 'Updating {name}...';
     const UPDATE_COMMAND =
         'composer update -d {dir} {project} --with-all-dependencies';
-    const BACKUP_COMMAND =
-        "mkdir -p {backup_dir} && tar czvf {backup_dir}"
-        . DIRECTORY_SEPARATOR . "backup.tar.gz \"{plugins_dir}\"";
 
     /**
      * Update one or more Terminus plugins.
@@ -98,39 +96,28 @@ class UpdateCommand extends PluginBaseCommand
                 // Get the Terminus major version.
                 $terminus_major_version = $this->getTerminusMajorVersion();
                 // Backup the plugins directory, just in case.
-                $datetime = date('YmdHi', time());
-                $backup_directory = str_replace(
-                    '/',
-                    DIRECTORY_SEPARATOR,
-                    "$plugins_dir/../backup/plugins/$datetime"
-                );
-                $command = str_replace(
-                    ['{backup_dir}', '{plugins_dir}',],
-                    [$backup_directory, $plugins_dir,],
-                    self::BACKUP_COMMAND
-                );
-                $backup_messages = $this->runCommand($command);
-                if ($backup_messages['output']) {
-                    $messages[] = $backup_messages['output'];
+                // @todo Kevin What if backup fails? Should this command fail?
+                $backup_directory = $this->backupDir($plugin_dir, 'plugins');
+                $backup_dependencies_directory = $this->backupDir($dependencies_dir, 'dependencies');
+                try {
+                    $command = str_replace(
+                        ['{dir}', '{project}',],
+                        [$plugins_dir, $project,],
+                        self::UPDATE_COMMAND
+                    );
+                    $results = $this->runCommand($command);
+                    if ($results['output']) {
+                        $messages[] = $results['output'];
+                    }
+                    if ($results['stderr']) {
+                        $messages[] = $results['stderr'];
+                    }
+                    $messages[] =
+                        "Backed up the project to {$backup_directory}" . DIRECTORY_SEPARATOR . "backup.tar.gz";
+                } catch (TerminusException $e) {
+                    $this->log()->error($e->getMessage());
+                    // @todo Kevin restore backup?.
                 }
-                if ($backup_messages['stderr']) {
-                    $messages[] = $backup_messages['stderr'];
-                }
-
-                $command = str_replace(
-                    ['{dir}', '{project}',],
-                    [$plugins_dir, $project,],
-                    self::UPDATE_COMMAND
-                );
-                $results = $this->runCommand($command);
-                if ($results['output']) {
-                    $messages[] = $results['output'];
-                }
-                if ($results['stderr']) {
-                    $messages[] = $results['stderr'];
-                }
-                $messages[] =
-                    "Backed up the project to {$backup_directory}" . DIRECTORY_SEPARATOR . "backup.tar.gz";
             } else {
                 $messages[] = str_replace(['{project}'], [$project], self::INVALID_PROJECT_MESSAGE);
             }
