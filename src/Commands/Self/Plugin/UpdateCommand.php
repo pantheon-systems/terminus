@@ -23,6 +23,8 @@ class UpdateCommand extends PluginBaseCommand
     const UPDATING_MESSAGE = 'Updating {name}...';
     const UPDATE_COMMAND =
         'composer update -d {dir} {project} --with-all-dependencies';
+    const DEPENDENCIES_UPDATE_COMMAND =
+        'composer update -d {dir}';
 
     /**
      * Update one or more Terminus plugins.
@@ -118,7 +120,20 @@ class UpdateCommand extends PluginBaseCommand
                             []
                         );
                     }
-                    // @todo kevin: How to handle terminus-dependencies?
+
+                    // Update all terminus-dependencies.
+                    $command = str_replace(
+                        ['{dir}',],
+                        [$dependencies_dir,],
+                        self::DEPENDENCIES_UPDATE_COMMAND
+                    );
+                    $results = $this->runCommand($command);
+                    if ($results['exit_code'] !== 0) {
+                        throw new TerminusException(
+                            'Error updating terminus-dependencies.',
+                            []
+                        );
+                    }
                 } catch (TerminusException $e) {
                     $this->log()->error($e->getMessage());
                     $this->restoreBackup($backup_directory, 'plugins');

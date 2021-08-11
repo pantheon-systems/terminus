@@ -68,16 +68,34 @@ class UninstallCommand extends PluginBaseCommand
         $dependencies_dir = $config->get('dependencies_dir');
         $this->updateTerminusDependencies($dependencies_dir, $plugins_dir);
         // @todo Kevin What if backup fails? Should this command fail?
-        $backup_plugins_directory = $this->backupDir($plugin_dir, 'plugins');
+        $backup_plugins_directory = $this->backupDir($plugins_dir, 'plugins');
         $backup_dependencies_directory = $this->backupDir($dependencies_dir, 'dependencies');
         try {
             $project_name = $project->getName();
+
+            // First remove from terminus-dependencies.
+            $command = str_replace(
+                ['{dir}', '{project}',],
+                [$dependencies_dir, $project_name,],
+                self::UNINSTALL_COMMAND
+            );
+            $results = $this->runCommand($command);
+            if ($results['exit_code'] !== 0) {
+                throw new TerminusException(
+                    'Error removing package in terminus-dependencies.',
+                    []
+                );
+            }
+
+            // Then, remove repository from terminus-dependencies.
+            $this->removeComposerRepository($dependencies_dir, $project_name);
+
+            // Finally remove from plugins folder.
             $command = str_replace(
                 ['{dir}', '{project}',],
                 [$plugins_dir, $project_name,],
                 self::UNINSTALL_COMMAND
             );
-            // @todo kevin: How to handle terminus-dependencies?
             $results = $this->runCommand($command);
             if ($results['exit_code'] !== 0) {
                 throw new TerminusException(
@@ -85,10 +103,11 @@ class UninstallCommand extends PluginBaseCommand
                     []
                 );
             }
+
             $this->log()->notice('Uninstalled {project_name}.', compact('project_name'));
         } catch (TerminusException $e) {
             $this->log()->error($e->getMessage());
-            $this->restoreBackup($backup_directory, 'plugins');
+            $this->restoreBackup($backup_plugins_directory, 'plugins');
             $this->restoreBackup($backup_dependencies_directory, 'dependencies');
         }
         return $results;

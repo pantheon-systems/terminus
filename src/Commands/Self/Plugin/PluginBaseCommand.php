@@ -25,6 +25,8 @@ abstract class PluginBaseCommand extends TerminusCommand
     const BACKUP_COMMAND =
         "mkdir -p {backup_dir} && tar czvf {backup_dir}"
         . DIRECTORY_SEPARATOR . "backup.tar.gz \"{dir}\"";
+    const COMPOSER_REMOVE_REPOSITORY = 'composer config -d {dir} --unset repositories.{repo_name}';
+
 
     /**
      * @var array|null
@@ -172,13 +174,35 @@ abstract class PluginBaseCommand extends TerminusCommand
     }
 
     /**
+     * Remove composer repository from terminus dependencies.
+     */
+    protected function removeComposerRepository($dependencies_dir, $package) {
+        $command = str_replace(
+            ['{dir}', '{repo_name}',],
+            [$dependencies_dir, basename($package),],
+            self::COMPOSER_REMOVE_REPOSITORY
+        );
+        $results = $this->runCommand($command);
+        if ($results['exit_code'] !== 0) {
+            // Throw exception.
+            throw new TerminusException(
+                'Error removing repository: {repository}',
+                ['repository' => $package],
+                1
+            );
+        }
+    }
+
+    /**
      * Add plugin package to terminus dependencies.
+     *
+     * This function will always strip the version from package if present.
      */
     protected function addPackageToTerminusDependencies($dependencies_dir, $plugins_dir, $package) {
-        $repo_path = $plugins_dir . '/vendor/' . $package;
-        $parts = explode(':', $repo_path);
         // Remove version if exists.
-        $repo_path = reset($parts);
+        $parts = explode(':', $package);
+        $package = reset($parts);
+        $repo_path = $plugins_dir . '/vendor/' . $package;
         $command = str_replace(
             ['{dir}', '{repo_name}', '{path}',],
             [$dependencies_dir, basename($repo_path), $repo_path,],
@@ -252,19 +276,19 @@ abstract class PluginBaseCommand extends TerminusCommand
         $backup_directory = str_replace(
             '/',
             DIRECTORY_SEPARATOR,
-            "$plugins_dir/../backup/$backup_type/$datetime"
+            "$dir/../backup/$backup_type/$datetime"
         );
         $command = str_replace(
             ['{backup_dir}', '{dir}',],
             [$backup_directory, $dir,],
             self::BACKUP_COMMAND
         );
-        $result = $this->runCommand($command);
+        $results = $this->runCommand($command);
         if ($results['exit_code'] !== 0) {
             // Throw exception.
             throw new TerminusException(
                 'Error backing up {backup_type} directory: {dir}',
-                ['backup_type' => $backup_type, 'dir' => $site_name,],
+                ['backup_type' => $backup_type, 'dir' => $dir,],
                 1
             );
         }
