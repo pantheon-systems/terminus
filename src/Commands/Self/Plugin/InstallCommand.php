@@ -93,8 +93,6 @@ class InstallCommand extends PluginBaseCommand
 
         } catch (TerminusException $e) {
             $this->log()->error($e->getMessage());
-            $this->restoreBackup($backup_directory, 'plugins');
-            $this->restoreBackup($backup_dependencies_directory, 'dependencies');
         }
 
         return $results;

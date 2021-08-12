@@ -42,8 +42,7 @@ class ReloadCommand extends PluginBaseCommand
     {
         $config = $this->getConfig();
         $plugins_dir = $config->get('plugins_dir');
-        $dependencies_dir = $config->get('dependencies_dir');
-        $backup_dependencies_directory = $this->backupDir($dependencies_dir, 'dependencies');
+        $dependencies_dir = $config->get('terminus_dependencies_dir');
         try {
             $this->ensureComposerJsonExists($plugins_dir, 'pantheon-systems/terminus-plugins');
             $this->ensureComposerJsonExists($dependencies_dir, 'pantheon-systems/terminus-dependencies');
@@ -51,7 +50,6 @@ class ReloadCommand extends PluginBaseCommand
             $this->log()->notice('Plugins reload done.');
         } catch (TerminusException $e) {
             $this->log()->error($e->getMessage());
-            $this->restoreBackup($backup_dependencies_directory, 'dependencies');
         }
     }
 

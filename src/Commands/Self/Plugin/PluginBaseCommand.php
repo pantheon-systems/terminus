@@ -271,41 +271,6 @@ abstract class PluginBaseCommand extends TerminusCommand
     }
 
     /**
-     * Backup given dir.
-     */
-    protected function backupDir($dir, $backup_type = 'plugins') {
-        $datetime = date('YmdHi', time());
-        $backup_directory = str_replace(
-            '/',
-            DIRECTORY_SEPARATOR,
-            "$dir/../backup/$backup_type/$datetime"
-        );
-        $command = str_replace(
-            ['{backup_dir}', '{dir}',],
-            [$backup_directory, $dir,],
-            self::BACKUP_COMMAND
-        );
-        $results = $this->runCommand($command);
-        if ($results['exit_code'] !== 0) {
-            // Throw exception.
-            throw new TerminusException(
-                'Error backing up {backup_type} directory: {dir}',
-                ['backup_type' => $backup_type, 'dir' => $dir,],
-                1
-            );
-        }
-        return $backup_directory . '/backup.tar.gz';
-    }
-
-    /**
-     * Restore backup for given dir.
-     */
-    protected function restoreBackup($backup_dir, $backup_type = 'plugins') {
-        // @todo Kevin Implement
-        throw new \Exception('Not implemented yet!');
-    }
-
-    /**
      * @param string $path Path where composer.json file should exist.
      * @param string $package_name Package name to create if composer.json doesn't exist.
      */

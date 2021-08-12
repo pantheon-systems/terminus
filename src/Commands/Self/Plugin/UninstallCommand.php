@@ -67,9 +67,6 @@ class UninstallCommand extends PluginBaseCommand
         $plugins_dir = $config->get('plugins_dir');
         $dependencies_dir = $config->get('dependencies_dir');
         $this->updateTerminusDependencies($dependencies_dir, $plugins_dir);
-        // @todo Kevin What if backup fails? Should this command fail?
-        $backup_plugins_directory = $this->backupDir($plugins_dir, 'plugins');
-        $backup_dependencies_directory = $this->backupDir($dependencies_dir, 'dependencies');
         try {
             $project_name = $project->getName();
 
@@ -107,8 +104,6 @@ class UninstallCommand extends PluginBaseCommand
             $this->log()->notice('Uninstalled {project_name}.', compact('project_name'));
         } catch (TerminusException $e) {
             $this->log()->error($e->getMessage());
-            $this->restoreBackup($backup_plugins_directory, 'plugins');
-            $this->restoreBackup($backup_dependencies_directory, 'dependencies');
         }
         return $results;
 
