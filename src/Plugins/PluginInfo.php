@@ -145,16 +145,6 @@ class PluginInfo implements ConfigAwareInterface, ContainerAwareInterface, Logge
     }
 
     /**
-     * Get the plugin installation method.
-     *
-     * @return string Plugin installation method
-     */
-    public function getInstallationMethod()
-    {
-        return self::COMPOSER_METHOD;
-    }
-
-    /**
      * Get the latest available plugin version.
      *
      * @return string Latest plugin version
@@ -437,7 +427,6 @@ class PluginInfo implements ConfigAwareInterface, ContainerAwareInterface, Logge
 
         $info['version'] = $this->getInstalledVersion();
         $info['latest_version'] = $this->getLatestVersion();
-        $info['method'] = $this->getInstallationMethod();
 
         return (array)$info;
     }

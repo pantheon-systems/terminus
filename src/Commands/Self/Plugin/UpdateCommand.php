@@ -83,65 +83,36 @@ class UpdateCommand extends PluginBaseCommand
     {
         $config = $this->getConfig();
         $plugins_dir = $this->getPluginsDir();
-        $dependencies_dir = $config->get('dependencies_dir');
+        $dependencies_dir = $config->get('terminus_dependencies_dir');
         $plugin_info = $plugin->getInfo();
         $project = $plugin_info['name'];
         $plugin_dir = $plugin->getPath();
         $this->updateTerminusDependencies($dependencies_dir, $plugins_dir);
         $messages = [];
         $this->log()->notice(self::UPDATING_MESSAGE, $plugin_info);
-        if ($plugin->getInstallationMethod() === 'composer') {
-            // Determine the project name.
-            if ($plugin->isValidPackagistProject()) {
-                // Get the Terminus major version.
-                $terminus_major_version = $this->getTerminusMajorVersion();
-                // Backup the plugins directory, just in case.
-                // @todo Kevin What if backup fails? Should this command fail?
-                $backup_directory = $this->backupDir($plugin_dir, 'plugins');
-                $backup_dependencies_directory = $this->backupDir($dependencies_dir, 'dependencies');
-                try {
-                    $command = str_replace(
-                        ['{dir}', '{project}',],
-                        [$plugins_dir, $project,],
-                        self::UPDATE_COMMAND
-                    );
-                    $results = $this->runCommand($command);
-                    if ($results['output']) {
-                        $messages[] = $results['output'];
-                    }
-                    if ($results['stderr']) {
-                        $messages[] = $results['stderr'];
-                    }
-                    if ($results['exit_code'] !== 0) {
-                        throw new TerminusException(
-                            'Error updating package in terminus-plugins.',
-                            []
-                        );
-                    }
-
-                    // Update all terminus-dependencies.
-                    $command = str_replace(
-                        ['{dir}',],
-                        [$dependencies_dir,],
-                        self::DEPENDENCIES_UPDATE_COMMAND
-                    );
-                    $results = $this->runCommand($command);
-                    if ($results['exit_code'] !== 0) {
-                        throw new TerminusException(
-                            'Error updating terminus-dependencies.',
-                            []
-                        );
-                    }
-                } catch (TerminusException $e) {
-                    $this->log()->error($e->getMessage());
-                    $this->restoreBackup($backup_directory, 'plugins');
-                    $this->restoreBackup($backup_dependencies_directory, 'dependencies');
+        // Determine the project name.
+        if ($plugin->isValidPackagistProject()) {
+            // Get the Terminus major version.
+            $terminus_major_version = $this->getTerminusMajorVersion();
+            try {
+                // @todo Kevin how to update only given project(s)?
+                $results = $this->runComposerUpdate($dependencies_dir);
+                if ($results['output']) {
+                    $messages[] = $results['output'];
                 }
-            } else {
-                $messages[] = str_replace(['{project}'], [$project], self::INVALID_PROJECT_MESSAGE);
+                if ($results['stderr']) {
+                    $messages[] = $results['stderr'];
+                }
+                if ($results['exit_code'] !== 0) {
+                    throw new TerminusException(
+                        'Error updating packages in terminus-depedencies.',
+                        []
+                    );
+                }
+            } catch (TerminusException $e) {
+                $this->log()->error($e->getMessage());
             }
-        }
-        else {
+        } else {
             $messages[] = str_replace(['{project}'], [$project], self::INVALID_PROJECT_MESSAGE);
         }
         foreach ($messages as $message) {
