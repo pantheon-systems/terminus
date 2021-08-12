@@ -26,6 +26,7 @@ abstract class PluginBaseCommand extends TerminusCommand
         "mkdir -p {backup_dir} && tar czvf {backup_dir}"
         . DIRECTORY_SEPARATOR . "backup.tar.gz \"{dir}\"";
     const COMPOSER_REMOVE_REPOSITORY = 'composer config -d {dir} --unset repositories.{repo_name}';
+    const DEPENDENCIES_UPDATE_COMMAND = 'composer update -d {dir}';
 
 
     /**
@@ -194,45 +195,23 @@ abstract class PluginBaseCommand extends TerminusCommand
     }
 
     /**
-     * Add plugin package to terminus dependencies.
+     * Run composer update in the given folder.
      *
-     * This function will always strip the version from package if present.
+     * @return array Array returned by runCommand.
      */
-    protected function addPackageToTerminusDependencies($dependencies_dir, $plugins_dir, $package) {
-        // Remove version if exists.
-        $parts = explode(':', $package);
-        $package = reset($parts);
-        $repo_path = $plugins_dir . '/vendor/' . $package;
+    protected function runComposerUpdate($folder) {
         $command = str_replace(
-            ['{dir}', '{repo_name}', '{path}',],
-            [$dependencies_dir, basename($repo_path), $repo_path,],
-            self::COMPOSER_ADD_REPOSITORY
+            ['{dir}',],
+            [$folder,],
+            self::DEPENDENCIES_UPDATE_COMMAND
         );
-        $results = $this->runCommand($command);
-        if ($results['exit_code'] === 0) {
-            $command = str_replace(
-                ['{dir}', '{packages}',],
-                [$dependencies_dir, $package . ':*',],
-                self::DEPENDENCIES_REQUIRE_COMMAND
-            );
-            $results = $this->runCommand($command);
-            if ($results['exit_code'] !== 0) {
-                throw new TerminusException(
-                    'Error requiring dependencies in terminus-dependencies.',
-                    []
-                );
-            }
-        }
-        else {
-            throw new TerminusException(
-                'Error adding composer repository in terminus-dependencies.',
-                []
-            );
-        }
+        return $this->runCommand($command);
     }
 
     /**
      * Require terminus resolved packages into terminus-dependencies folder.
+     *
+     * @return bool true if it worked.
      */
     protected function updateTerminusDependencies($dependencies_dir, $plugins_dir) {
         if (file_exists($this->getConfig()->get('root') . '/composer.lock')) {
@@ -242,6 +221,8 @@ abstract class PluginBaseCommand extends TerminusCommand
                 10
             );
             $packages = $this->getPackagesWithVersionString($terminus_composer_lock);
+            // @todo Kevin Create temporary folder and then copy back.
+            // First: Require dependencies from terminus.
             $command = str_replace(
                 ['{dir}', '{packages}',],
                 [$dependencies_dir, $packages,],
@@ -249,22 +230,43 @@ abstract class PluginBaseCommand extends TerminusCommand
             );
             $results = $this->runCommand($command);
             if ($results['exit_code'] === 0) {
-                $plugins_composer_json = json_decode(
-                    file_get_contents($plugins_dir . '/composer.json'),
-                    true,
-                    5
+                // Second: Add path repositories.
+                $command = str_replace(
+                    ['{dir}', '{repo_name}', '{path}',],
+                    [$dependencies_dir, 'pantheon-systems/terminus-plugins', $plugins_dir,],
+                    self::COMPOSER_ADD_REPOSITORY
                 );
-                $packages = $this->getRequiredPackages($plugins_composer_json);
-                foreach ($packages as $package) {
-                    $this->addPackageToTerminusDependencies($dependencies_dir, $plugins_dir, $package);
+                $results = $this->runCommand($command);
+                if ($results['exit_code'] === 0) {
+                    $command = str_replace(
+                        ['{dir}', '{repo_name}', '{path}',],
+                        [$dependencies_dir, 'pantheon-systems/terminus', $this->getConfig()->get('root'),],
+                        self::COMPOSER_ADD_REPOSITORY
+                    );
+                    $results = $this->runCommand($command);
+                    if ($results['exit_code'] === 0) {
+                        // Third: Require packages.
+                        $command = str_replace(
+                            ['{dir}', '{packages}',],
+                            [$dependencies_dir, 'pantheon-systems/terminus-plugins:* pantheon-systems/terminus:*',],
+                            self::DEPENDENCIES_REQUIRE_COMMAND
+                        );
+                        $results = $this->runCommand($command);
+                        if ($results['exit_code'] === 0) {
+                            // Finally: Update packages.
+                            $results = $this->runComposerUpdate($dependencies_dir);
+                            if ($results['exit_code'] === 0) {
+                                // @todo Kevin return temp folders?
+                                return true;
+                            }
+                        }
+                    }
                 }
             }
-            else {
-                throw new TerminusException(
-                    'Error requiring dependencies in terminus-dependencies.',
-                    []
-                );
-            }
+            throw new TerminusException(
+                'Error updating dependencies in terminus-dependencies.',
+                []
+            );
         }
     }
 

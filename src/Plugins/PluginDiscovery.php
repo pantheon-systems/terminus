@@ -34,7 +34,6 @@ class PluginDiscovery implements ContainerAwareInterface, LoggerAwareInterface
     {
         $config = $this->getContainer()->get('config');
         $dependencies_dir = $config->get('terminus_dependencies_dir');
-        var_dump($dependencies_dir);
         $dependencies_composer_lock = [];
         $out = [];
         $composer_lock = [];

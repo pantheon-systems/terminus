@@ -15,7 +15,7 @@ class InstallCommand extends PluginBaseCommand
 {
     const ALREADY_INSTALLED_MESSAGE = '{project} is already installed.';
     const INSTALL_COMMAND =
-        'composer require -d {dir} {project} --prefer-source';
+        'composer require -d {dir} {project} --no-update';
     const INVALID_PROJECT_MESSAGE = '{project} is not a valid Packagist project.';
     const USAGE_MESSAGE = 'terminus self:plugin:<install|add> <Packagist project 1> [Packagist project 2] ...';
 
@@ -62,15 +62,12 @@ class InstallCommand extends PluginBaseCommand
     {
         $plugin_name = PluginInfo::getPluginNameFromProjectName($project_name);
         $config = $this->getConfig();
-        // If git pull or composer install is run in terminus folder then self:plugin:reload should be manually run in order to refresh plugins dependencies.
         $plugins_dir = $config->get('plugins_dir');
-        $dependencies_dir = $config->get('dependencies_dir');
+        $dependencies_dir = $config->get('terminus_dependencies_dir');
         $this->ensureComposerJsonExists($plugins_dir, 'pantheon-systems/terminus-plugins');
         $this->ensureComposerJsonExists($dependencies_dir, 'pantheon-systems/terminus-dependencies');
+        // @todo Kevin should return folders to use later.
         $this->updateTerminusDependencies($dependencies_dir, $plugins_dir);
-        // @todo Kevin What if backup fails? Should this command fail?
-        $backup_directory = $this->backupDir($plugins_dir, 'plugins');
-        $backup_dependencies_directory = $this->backupDir($dependencies_dir, 'dependencies');
         try {
             $command = str_replace(
                 ['{dir}', '{project}',],
@@ -84,9 +81,16 @@ class InstallCommand extends PluginBaseCommand
                     []
                 );
             }
+            $results = $this->runComposerUpdate($dependencies_dir);
+            if ($results['exit_code'] !== 0) {
+                throw new TerminusException(
+                    'Error running composer update in terminus-dependencies.',
+                    []
+                );
+            }
+            // @todo Kevin Finally move everything to the right folders.
             $this->log()->notice('Installed {project_name}.', compact('project_name'));
 
-            $this->addPackageToTerminusDependencies($dependencies_dir, $plugins_dir, $project_name);
         } catch (TerminusException $e) {
             $this->log()->error($e->getMessage());
             $this->restoreBackup($backup_directory, 'plugins');

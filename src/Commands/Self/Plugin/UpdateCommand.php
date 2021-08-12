@@ -23,8 +23,6 @@ class UpdateCommand extends PluginBaseCommand
     const UPDATING_MESSAGE = 'Updating {name}...';
     const UPDATE_COMMAND =
         'composer update -d {dir} {project} --with-all-dependencies';
-    const DEPENDENCIES_UPDATE_COMMAND =
-        'composer update -d {dir}';
 
     /**
      * Update one or more Terminus plugins.
