@@ -26,61 +26,38 @@ class PluginDiscovery implements ContainerAwareInterface, LoggerAwareInterface
     ];
 
     /**
-     * @var string The path to the directory to search for plugins.
-     */
-    protected $directory_path;
-
-    /**
-     * PluginDiscovery constructor.
-     *
-     * @param $path
-     */
-    public function __construct($path)
-    {
-        $this->directory_path = $path;
-    }
-
-    /**
-     * Autoload plugins.
-     */
-    public function autoloadPlugins() {
-        $config = $this->getContainer()->get('config');
-        $dependencies_dir = $config->get('dependencies_dir');
-        $autoload_path = $dependencies_dir . '/vendor/autoload.php';
-        $local_machine = $this->getContainer()->get(LocalMachineHelper::class);
-        if ($local_machine->getFilesystem()->exists($autoload_path)) {
-            include $autoload_path;
-        }
-    }
-
-    /**
      * Return a list of plugin
      *
      * @return PluginInfo[]
      */
     public function discover()
     {
+        $config = $this->getContainer()->get('config');
+        $dependencies_dir = $config->get('terminus_dependencies_dir');
+        var_dump($dependencies_dir);
+        $dependencies_composer_lock = [];
         $out = [];
         $composer_lock = [];
         try {
             $local_machine = $this->getContainer()->get(LocalMachineHelper::class);
-            if ($local_machine->getFilesystem()->exists($this->directory_path . '/composer.lock')) {
-                $composer_lock = \json_decode(
-                    file_get_contents($this->directory_path . '/composer.lock'),
+            if ($local_machine->getFilesystem()->exists($dependencies_dir . '/composer.lock')) {
+                $dependencies_composer_lock = \json_decode(
+                    file_get_contents($dependencies_dir . '/composer.lock'),
                     true,
                     10,
                     JSON_THROW_ON_ERROR
                 );
             }
-            if (empty($composer_lock['packages'])) {
+            if (empty($dependencies_composer_lock['packages'])) {
+                // Something is empty, nothing to do.
                 return $out;
             }
         } catch (\Exception $e) {
-            return $out;
             // Plugin directory probably didn't exist or wasn't writable. Do nothing.
+            return $out;
         }
 
-        foreach ($composer_lock['packages'] as $package) {
+        foreach ($dependencies_composer_lock['packages'] as $package) {
             try {
                 if (empty($package['type']) || $package['type'] !== 'terminus-plugin') {
                     continue;

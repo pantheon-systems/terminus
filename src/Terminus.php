@@ -163,8 +163,7 @@ class Terminus implements
         $container->add(WorkflowProgressBar::class);
 
         // Plugin handlers
-        $container->add(PluginDiscovery::class)
-            ->addArgument($this->getConfig()->get('plugins_dir'));
+        $container->add(PluginDiscovery::class);
         $container->add(PluginInfo::class);
 
         $container->share('sites', Sites::class);
@@ -411,7 +410,6 @@ class Terminus implements
         $version = $this->config->get('version');
         $classLoader = new ClassLoader();
         $classLoader->register();
-        $discovery->autoloadPlugins();
         foreach ($plugins as $plugin) {
             if (Semver::satisfies($version, $plugin->getCompatibleTerminusVersion())) {
                 $this->commands += $plugin->getCommandsAndHooks();
