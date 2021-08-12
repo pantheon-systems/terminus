@@ -9,25 +9,7 @@
  *   - Exits with a status code
  */
 
-$pharPath = \Phar::running(true);
-if (version_compare(PHP_VERSION, '7.4.0', '<=') === true) {
-    throw new \PharIo\Version\InvalidVersionException("Sorry, but you need to upgrade PHP to version 7.4 or greater.");
-}
-if ($pharPath) {
-    include_once("$pharPath/vendor/autoload.php");
-} elseif (file_exists($path = __DIR__ . '/../vendor/autoload.php')
-    || file_exists($path = __DIR__ . '/../../autoload.php')
-    || file_exists($path = __DIR__ . '/../../../autoload.php')
-) {
-    // @todo kevin should I modify this?
-    include_once($path);
-} else {
-    throw new \Exception('Could not locate autoload.php');
-}
-
-use Pantheon\Terminus\Terminus;
-
-$home_tokens_folder = '.terminus' . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR . 'tokens';
+$terminusPluginsDependenciesVersion = '1';
 
 // Cannot use $_SERVER superglobal since that's empty during phpunit testing
 // getenv('HOME') isn't set on Windows and generates a Notice.
@@ -46,6 +28,32 @@ if (empty($home) && !empty($_SERVER['HOMEDRIVE']) && !empty($_SERVER['HOMEPATH']
     @putenv("HOME={$home}");
 }
 
+$terminusPluginsDependenciesDirectory = $home . DIRECTORY_SEPARATOR . '.terminus/terminus-dependencies-' . $terminusPluginsDependenciesVersion;
+
+$pharPath = \Phar::running(true);
+if (version_compare(PHP_VERSION, '7.4.0', '<=') === true) {
+    throw new \PharIo\Version\InvalidVersionException("Sorry, but you need to upgrade PHP to version 7.4 or greater.");
+}
+
+if (file_exists($terminusPluginsDependenciesDirectory . '/vendor/autoload.php')) {
+    include_once $terminusPluginsDependenciesDirectory . '/vendor/autoload.php';
+    // @todo Kevin include_once.
+}
+elseif ($pharPath) {
+    include_once("$pharPath/vendor/autoload.php");
+} elseif (file_exists($path = __DIR__ . '/../vendor/autoload.php')
+    || file_exists($path = __DIR__ . '/../../autoload.php')
+    || file_exists($path = __DIR__ . '/../../../autoload.php')
+) {
+    include_once($path);
+} else {
+    throw new \Exception('Could not locate autoload.php');
+}
+
+use Pantheon\Terminus\Terminus;
+
+$home_tokens_folder = '.terminus' . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR . 'tokens';
+
 $tokens_dir = $home . DIRECTORY_SEPARATOR . $home_tokens_folder;
 if (!is_dir($tokens_dir)) {
     mkdir(
@@ -56,5 +64,6 @@ if (!is_dir($tokens_dir)) {
 }
 
 $terminus = Terminus::factory();
+$terminus->getConfig()->set('terminus_dependencies_dir', $terminusPluginsDependenciesDirectory);
 $status_code = $terminus->run();
 exit($status_code);
