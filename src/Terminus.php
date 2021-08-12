@@ -507,7 +507,7 @@ class Terminus implements
 
 
 
-    public static function factory(): Terminus
+    public static function factory($terminusDependenciesDir): Terminus
     {
         $input = new ArgvInput($_SERVER['argv']);
         $output = new ConsoleOutput();
@@ -516,6 +516,7 @@ class Terminus implements
         $config->extend(new YamlConfig($config->get('user_home') . '/.terminus/config.yml'));
         $config->extend(new DotEnvConfig(getcwd()));
         $config->extend(new EnvConfig());
+        $config->set('terminus_dependencies_dir', $terminusDependenciesDir);
         return new static($config, $input, $output);
     }
 }

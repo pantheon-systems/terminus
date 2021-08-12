@@ -46,7 +46,9 @@ class ReloadCommand extends PluginBaseCommand
         try {
             $this->ensureComposerJsonExists($plugins_dir, 'pantheon-systems/terminus-plugins');
             $this->ensureComposerJsonExists($dependencies_dir, 'pantheon-systems/terminus-dependencies');
+            // @todo Kevin should return folders to use later.
             $this->updateTerminusDependencies($dependencies_dir, $plugins_dir);
+            // @todo Kevin copy folders.
             $this->log()->notice('Plugins reload done.');
         } catch (TerminusException $e) {
             $this->log()->error($e->getMessage());

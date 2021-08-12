@@ -175,26 +175,6 @@ abstract class PluginBaseCommand extends TerminusCommand
     }
 
     /**
-     * Remove composer repository from terminus dependencies.
-     */
-    protected function removeComposerRepository($dependencies_dir, $package) {
-        $command = str_replace(
-            ['{dir}', '{repo_name}',],
-            [$dependencies_dir, basename($package),],
-            self::COMPOSER_REMOVE_REPOSITORY
-        );
-        $results = $this->runCommand($command);
-        if ($results['exit_code'] !== 0) {
-            // Throw exception.
-            throw new TerminusException(
-                'Error removing repository: {repository}',
-                ['repository' => $package],
-                1
-            );
-        }
-    }
-
-    /**
      * Run composer update in the given folder.
      *
      * @return array Array returned by runCommand.

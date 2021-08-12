@@ -19,7 +19,7 @@ class UninstallCommand extends PluginBaseCommand
     const SUCCESS_MESSAGE = '{project} was removed successfully.';
     const USAGE_MESSAGE = 'terminus self:plugin:<uninstall|remove> <project> [project 2] ...';
     const UNINSTALL_COMMAND =
-    'composer remove -d {dir} {project}';
+    'composer remove -d {dir} {project} --no-update';
 
     /**
      * Remove one or more Terminus plugins.
@@ -65,7 +65,8 @@ class UninstallCommand extends PluginBaseCommand
     {
         $config = $this->getConfig();
         $plugins_dir = $config->get('plugins_dir');
-        $dependencies_dir = $config->get('dependencies_dir');
+        $dependencies_dir = $config->get('terminus_dependencies_dir');
+        // @todo Kevin should return folders to use later.
         $this->updateTerminusDependencies($dependencies_dir, $plugins_dir);
         try {
             $project_name = $project->getName();
@@ -84,22 +85,16 @@ class UninstallCommand extends PluginBaseCommand
                 );
             }
 
-            // Then, remove repository from terminus-dependencies.
-            $this->removeComposerRepository($dependencies_dir, $project_name);
-
-            // Finally remove from plugins folder.
-            $command = str_replace(
-                ['{dir}', '{project}',],
-                [$plugins_dir, $project_name,],
-                self::UNINSTALL_COMMAND
-            );
-            $results = $this->runCommand($command);
+            // Update terminus-dependencies composer.
+            $results = $this->runComposerUpdate($dependencies_dir);
             if ($results['exit_code'] !== 0) {
                 throw new TerminusException(
-                    'Error removing package in terminus-plugins.',
+                    'Error running composer update in terminus-dependencies.',
                     []
                 );
             }
+
+            // @todo Kevin copy folders.
 
             $this->log()->notice('Uninstalled {project_name}.', compact('project_name'));
         } catch (TerminusException $e) {

@@ -87,6 +87,7 @@ class UpdateCommand extends PluginBaseCommand
         $plugin_info = $plugin->getInfo();
         $project = $plugin_info['name'];
         $plugin_dir = $plugin->getPath();
+        // @todo Kevin should return folders to use later.
         $this->updateTerminusDependencies($dependencies_dir, $plugins_dir);
         $messages = [];
         $this->log()->notice(self::UPDATING_MESSAGE, $plugin_info);
@@ -109,6 +110,7 @@ class UpdateCommand extends PluginBaseCommand
                         []
                     );
                 }
+                // @todo Kevin copy folders.
             } catch (TerminusException $e) {
                 $this->log()->error($e->getMessage());
             }

@@ -62,7 +62,6 @@ if (!is_dir($tokens_dir)) {
     );
 }
 
-$terminus = Terminus::factory();
-$terminus->getConfig()->set('terminus_dependencies_dir', $terminusPluginsDependenciesDirectory);
+$terminus = Terminus::factory($terminusPluginsDependenciesDirectory);
 $status_code = $terminus->run();
 exit($status_code);

@@ -36,7 +36,6 @@ class PluginDiscovery implements ContainerAwareInterface, LoggerAwareInterface
         $dependencies_dir = $config->get('terminus_dependencies_dir');
         $dependencies_composer_lock = [];
         $out = [];
-        $composer_lock = [];
         try {
             $local_machine = $this->getContainer()->get(LocalMachineHelper::class);
             if ($local_machine->getFilesystem()->exists($dependencies_dir . '/composer.lock')) {
@@ -55,7 +54,6 @@ class PluginDiscovery implements ContainerAwareInterface, LoggerAwareInterface
             // Plugin directory probably didn't exist or wasn't writable. Do nothing.
             return $out;
         }
-
         foreach ($dependencies_composer_lock['packages'] as $package) {
             try {
                 if (empty($package['type']) || $package['type'] !== 'terminus-plugin') {

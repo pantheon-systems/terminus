@@ -81,8 +81,8 @@ class PluginInfo implements ConfigAwareInterface, ContainerAwareInterface, Logge
      */
     public function setInfoArray($info) {
         $this->info = $info;
-        $plugins_dir = $this->getConfig()->get('plugins_dir');
-        $this->plugin_dir = $plugins_dir . '/vendor/' . $info['name'];
+        $dependencies_dir = $this->getConfig()->get('terminus_dependencies_dir');
+        $this->plugin_dir = $dependencies_dir . '/vendor/' . $info['name'];
     }
 
     /**
