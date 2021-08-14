@@ -38,7 +38,7 @@ if (version_compare(PHP_VERSION, '7.4.0', '<=') === true) {
 if (file_exists($terminusPluginsDependenciesDirectory . '/vendor/autoload.php')) {
     include_once("$terminusPluginsDependenciesDirectory/vendor/autoload.php");
 }
-elseif ($pharPath) {
+if ($pharPath) {
     include_once("$pharPath/vendor/autoload.php");
 } elseif (file_exists($path = __DIR__ . '/../vendor/autoload.php')
     || file_exists($path = __DIR__ . '/../../autoload.php')

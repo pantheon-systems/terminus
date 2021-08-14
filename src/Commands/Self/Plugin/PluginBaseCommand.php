@@ -218,27 +218,19 @@ abstract class PluginBaseCommand extends TerminusCommand
                 );
                 $results = $this->runCommand($command);
                 if ($results['exit_code'] === 0) {
+                    // Third: Require packages.
                     $command = str_replace(
-                        ['{dir}', '{repo_name}', '{path}',],
-                        [$dependencies_dir, 'pantheon-systems/terminus', $this->getConfig()->get('root'),],
-                        self::COMPOSER_ADD_REPOSITORY
+                        ['{dir}', '{packages}',],
+                        [$dependencies_dir, 'pantheon-systems/terminus-plugins:*',],
+                        self::DEPENDENCIES_REQUIRE_COMMAND
                     );
                     $results = $this->runCommand($command);
                     if ($results['exit_code'] === 0) {
-                        // Third: Require packages.
-                        $command = str_replace(
-                            ['{dir}', '{packages}',],
-                            [$dependencies_dir, 'pantheon-systems/terminus-plugins:* pantheon-systems/terminus:*',],
-                            self::DEPENDENCIES_REQUIRE_COMMAND
-                        );
-                        $results = $this->runCommand($command);
+                        // Finally: Update packages.
+                        $results = $this->runComposerUpdate($dependencies_dir);
                         if ($results['exit_code'] === 0) {
-                            // Finally: Update packages.
-                            $results = $this->runComposerUpdate($dependencies_dir);
-                            if ($results['exit_code'] === 0) {
-                                // @todo Kevin return temp folders?
-                                return true;
-                            }
+                            // @todo Kevin return temp folders?
+                            return true;
                         }
                     }
                 }
