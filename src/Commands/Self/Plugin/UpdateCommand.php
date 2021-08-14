@@ -82,13 +82,12 @@ class UpdateCommand extends PluginBaseCommand
     protected function doUpdate($plugin)
     {
         $config = $this->getConfig();
-        $plugins_dir = $this->getPluginsDir();
-        $dependencies_dir = $config->get('terminus_dependencies_dir');
         $plugin_info = $plugin->getInfo();
         $project = $plugin_info['name'];
         $plugin_dir = $plugin->getPath();
-        // @todo Kevin should return folders to use later.
-        $this->updateTerminusDependencies($dependencies_dir, $plugins_dir);
+        $folders = $this->updateTerminusDependencies();
+        $plugins_dir = $folders['plugins_dir'];
+        $dependencies_dir = $folders['dependencies_dir'];
         $messages = [];
         $this->log()->notice(self::UPDATING_MESSAGE, $plugin_info);
         // Determine the project name.
@@ -110,7 +109,11 @@ class UpdateCommand extends PluginBaseCommand
                         []
                     );
                 }
-                // @todo Kevin copy folders.
+
+                $original_plugins_dir = $config->get('plugins_dir');
+                $original_dependencies_dir = $config->get('terminus_dependencies_dir');
+                $this->replaceFolder($plugins_dir, $original_plugins_dir);
+                $this->replaceFolder($dependencies_dir, $original_dependencies_dir);
             } catch (TerminusException $e) {
                 $this->log()->error($e->getMessage());
             }

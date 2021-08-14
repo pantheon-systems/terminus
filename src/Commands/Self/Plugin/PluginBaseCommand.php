@@ -28,7 +28,6 @@ abstract class PluginBaseCommand extends TerminusCommand
     const COMPOSER_REMOVE_REPOSITORY = 'composer config -d {dir} --unset repositories.{repo_name}';
     const DEPENDENCIES_UPDATE_COMMAND = 'composer update -d {dir}';
 
-
     /**
      * @var array|null
      */
@@ -143,16 +142,6 @@ abstract class PluginBaseCommand extends TerminusCommand
     }
 
     /**
-     * Returns terminus plugin directory.
-     *
-     * @return int
-     */
-    protected function getPluginsDir() {
-        $config = $this->getContainer()->get('config');
-        return $config->get('plugins_dir');
-    }
-
-    /**
      * Get packages string from composer.lock file contents.
      */
     protected function getPackagesWithVersionString($composer_lock_contents) {
@@ -193,7 +182,11 @@ abstract class PluginBaseCommand extends TerminusCommand
      *
      * @return bool true if it worked.
      */
-    protected function updateTerminusDependencies($dependencies_dir, $plugins_dir) {
+    protected function updateTerminusDependencies() {
+        $plugins_dir = $this->createTempDir('plugins-dir');
+        $dependencies_dir = $this->createTempDir('dependencies-dir');
+        $this->ensureComposerJsonExists($plugins_dir, 'pantheon-systems/terminus-plugins');
+        $this->ensureComposerJsonExists($dependencies_dir, 'pantheon-systems/terminus-dependencies');
         if (file_exists($this->getConfig()->get('root') . '/composer.lock')) {
             $terminus_composer_lock = json_decode(
                 file_get_contents($this->getConfig()->get('root') . '/composer.lock'),
@@ -201,7 +194,6 @@ abstract class PluginBaseCommand extends TerminusCommand
                 10
             );
             $packages = $this->getPackagesWithVersionString($terminus_composer_lock);
-            // @todo Kevin Create temporary folder and then copy back.
             // First: Require dependencies from terminus.
             $command = str_replace(
                 ['{dir}', '{packages}',],
@@ -229,8 +221,10 @@ abstract class PluginBaseCommand extends TerminusCommand
                         // Finally: Update packages.
                         $results = $this->runComposerUpdate($dependencies_dir);
                         if ($results['exit_code'] === 0) {
-                            // @todo Kevin return temp folders?
-                            return true;
+                            return [
+                                'plugins_dir' => $plugins_dir,
+                                'dependencies_dir' => $dependencies_dir,
+                            ];
                         }
                     }
                 }
@@ -253,6 +247,47 @@ abstract class PluginBaseCommand extends TerminusCommand
             $this->runCommand("composer --working-dir=${path} init --name=${package_name} -n");
             $this->runCommand("composer --working-dir=${path} config minimum-stability dev");
         }
+    }
+
+    /**
+     * Create temporary dir
+     */
+    protected function createTempDir($prefix = 'terminus', $dir = false)
+    {
+        $fs = $this->getLocalMachine()->getFileSystem();
+        $tempfile = $fs->tempnam($dir ? $dir : sys_get_temp_dir(), $prefix ? $prefix : '');
+        if ($fs->exists($tempfile)) {
+            $fs->remove($tempfile);
+        }
+        $fs->mkdir($tempfile, 0700);
+        if (is_dir($tempfile)) {
+            $this->registerCleanupFunction($tempfile);
+            return $tempfile;
+        }
+    }
+
+    /**
+     * Register our shutdown function if it hasn't already been registered.
+     */
+    protected function registerCleanupFunction($path)
+    {
+        // Insure that $workdir will be deleted on exit.
+        register_shutdown_function(function($path) {
+            $fs = $this->getLocalMachine()->getFileSystem();
+            $fs->remove($path);
+        }, $path);
+        $registered = true;
+    }
+
+    /**
+     * Replace source folder into destination.
+     */
+    protected function replaceFolder($source, $destination) {
+        $fs = $this->getLocalMachine()->getFileSystem();
+        if ($fs->exists($destination)) {
+            $fs->remove($destination);
+        }
+        $fs->mirror($source, $destination);
     }
 
     /**

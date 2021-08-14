@@ -62,12 +62,9 @@ class InstallCommand extends PluginBaseCommand
     {
         $plugin_name = PluginInfo::getPluginNameFromProjectName($project_name);
         $config = $this->getConfig();
-        $plugins_dir = $config->get('plugins_dir');
-        $dependencies_dir = $config->get('terminus_dependencies_dir');
-        $this->ensureComposerJsonExists($plugins_dir, 'pantheon-systems/terminus-plugins');
-        $this->ensureComposerJsonExists($dependencies_dir, 'pantheon-systems/terminus-dependencies');
-        // @todo Kevin should return folders to use later.
-        $this->updateTerminusDependencies($dependencies_dir, $plugins_dir);
+        $folders = $this->updateTerminusDependencies();
+        $plugins_dir = $folders['plugins_dir'];
+        $dependencies_dir = $folders['dependencies_dir'];
         try {
             $command = str_replace(
                 ['{dir}', '{project}',],
@@ -88,7 +85,10 @@ class InstallCommand extends PluginBaseCommand
                     []
                 );
             }
-            // @todo Kevin Finally move everything to the right folders.
+            $original_plugins_dir = $config->get('plugins_dir');
+            $original_dependencies_dir = $config->get('terminus_dependencies_dir');
+            $this->replaceFolder($plugins_dir, $original_plugins_dir);
+            $this->replaceFolder($dependencies_dir, $original_dependencies_dir);
             $this->log()->notice('Installed {project_name}.', compact('project_name'));
 
         } catch (TerminusException $e) {
