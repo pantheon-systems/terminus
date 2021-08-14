@@ -57,18 +57,6 @@ class PluginInfo implements ConfigAwareInterface, ContainerAwareInterface, Logge
     protected $stable_latest_version;
 
     /**
-     * PluginInfo constructor.
-     * @param $plugin_dir
-     */
-    public function __construct($plugin_dir = '')
-    {
-        if ($plugin_dir) {
-            $this->plugin_dir = $plugin_dir;
-            $this->info = $this->parsePluginInfo();
-        }
-    }
-
-    /**
      * Set Plugin dir.
      */
     public function setPluginDir($plugin_dir)
@@ -153,6 +141,7 @@ class PluginInfo implements ConfigAwareInterface, ContainerAwareInterface, Logge
      */
     public function getLatestVersion()
     {
+        // @todo Kevin Make this function work.
         try {
             return $this->getNonstableLatestVersion();
         } catch (TerminusNotFoundException $e) {
@@ -183,6 +172,7 @@ class PluginInfo implements ConfigAwareInterface, ContainerAwareInterface, Logge
      */
     public function getNonstableLatestVersion()
     {
+        // @todo Kevin Make this function work.
         if (empty($this->nonstable_latest_version)) {
             $command = str_replace(
                 ['{dir}', '{version}',],
@@ -204,14 +194,6 @@ class PluginInfo implements ConfigAwareInterface, ContainerAwareInterface, Logge
         }
 
         return $this->nonstable_latest_version;
-    }
-
-    /**
-     * @return string
-     */
-    public function getPackagistURL()
-    {
-        return 'https://packagist.org/packages/'. $this->getName();
     }
 
     /**
@@ -237,6 +219,7 @@ class PluginInfo implements ConfigAwareInterface, ContainerAwareInterface, Logge
     public function getStableLatestVersion()
     {
         if (empty($this->stable_latest_version)) {
+            // @todo Kevin does it make sense to do this in this folder?
             $command = str_replace(
                 ['{dir}', '{version}',],
                 [$this->getPath(), self::getMajorVersionFromVersion($this->getConfig()->get('version'))],
@@ -469,6 +452,7 @@ class PluginInfo implements ConfigAwareInterface, ContainerAwareInterface, Logge
      */
     private function getTagInstalledVersion()
     {
+        // @todo Kevin does it make sense to run this in this folder?
         $command = str_replace(
             '{dir}',
             $this->getPath(),

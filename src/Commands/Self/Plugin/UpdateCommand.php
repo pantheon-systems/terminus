@@ -128,22 +128,4 @@ class UpdateCommand extends PluginBaseCommand
             $this->log()->notice($message, $plugin_info);
         }
     }
-
-    /**
-     * Check whether a URL is valid.
-     *
-     * @param string $url The URL to check
-     * @return bool True if the URL returns a 200 status, false otherwise
-     */
-    protected function isValidPackagi($url = '')
-    {
-        if (!$url) {
-            return false;
-        }
-        $headers = @get_headers($url);
-        if (!isset($headers[0])) {
-            return false;
-        }
-        return (strpos($headers[0], '200') !== false);
-    }
 }

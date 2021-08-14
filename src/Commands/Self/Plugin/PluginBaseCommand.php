@@ -155,18 +155,6 @@ abstract class PluginBaseCommand extends TerminusCommand
     }
 
     /**
-     * Get packages string from composer.json file contents.
-     */
-    protected function getRequiredPackages($composer_json_contents)
-    {
-        $packages = [];
-        foreach ($composer_json_contents['require'] as $package_name => $version) {
-            $packages[] = $package_name;
-        }
-        return $packages;
-    }
-
-    /**
      * Run composer update in the given folder.
      *
      * @return array Array returned by runCommand.
