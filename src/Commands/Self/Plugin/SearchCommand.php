@@ -46,7 +46,7 @@ class SearchCommand extends PluginBaseCommand
         );
 
         $projects = array_map(
-            function($message) {
+            function ($message) {
                 list($project, $description) = explode(' ', $message, 2);
                 return [
                     'name' => $project,
@@ -87,7 +87,8 @@ class SearchCommand extends PluginBaseCommand
     /**
      * Validate package versions against terminus major version.
      */
-    protected function validatePackageVersions($versions_array, $terminus_major) {
+    protected function validatePackageVersions($versions_array, $terminus_major)
+    {
         foreach ($versions_array as $version) {
             $plugin_compatible = $version['extra']['terminus']['compatible-version'] ?? '';
             if (!$plugin_compatible) {

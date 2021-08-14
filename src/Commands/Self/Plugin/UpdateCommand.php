@@ -46,7 +46,7 @@ class UpdateCommand extends PluginBaseCommand
 
         if ($projects[0] !== 'all') {
             $plugins = array_map(
-                function($project) use ($logger) {
+                function ($project) use ($logger) {
                     try {
                         return $this->getPlugin($project);
                     } catch (TerminusNotFoundException $e) {

@@ -90,7 +90,6 @@ class InstallCommand extends PluginBaseCommand
             $this->replaceFolder($plugins_dir, $original_plugins_dir);
             $this->replaceFolder($dependencies_dir, $original_dependencies_dir);
             $this->log()->notice('Installed {project_name}.', compact('project_name'));
-
         } catch (TerminusException $e) {
             $this->log()->error($e->getMessage());
         }

@@ -71,7 +71,8 @@ class PluginInfo implements ConfigAwareInterface, ContainerAwareInterface, Logge
     /**
      * Set Plugin dir.
      */
-    public function setPluginDir($plugin_dir) {
+    public function setPluginDir($plugin_dir)
+    {
         $this->plugin_dir = $plugin_dir;
         $this->info = $this->parsePluginInfo();
     }
@@ -79,7 +80,8 @@ class PluginInfo implements ConfigAwareInterface, ContainerAwareInterface, Logge
     /**
      * Set packageinfo.
      */
-    public function setInfoArray($info) {
+    public function setInfoArray($info)
+    {
         $this->info = $info;
         $dependencies_dir = $this->getConfig()->get('terminus_dependencies_dir');
         $this->plugin_dir = $dependencies_dir . '/vendor/' . $info['name'];
@@ -386,9 +388,8 @@ class PluginInfo implements ConfigAwareInterface, ContainerAwareInterface, Logge
         }
 
         if (!$this->info) {
-          $info = json_decode(file_get_contents($composer_json), true);
-        }
-        else {
+            $info = json_decode(file_get_contents($composer_json), true);
+        } else {
             $info = $this->info;
         }
 

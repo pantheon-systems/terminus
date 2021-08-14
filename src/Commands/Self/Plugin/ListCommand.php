@@ -30,7 +30,7 @@ class ListCommand extends PluginBaseCommand
     public function listPlugins()
     {
         $plugins = array_map(
-            function($plugin) {
+            function ($plugin) {
                 return [
                     'name' => $plugin->getPluginName(),
                     'description' => $plugin->getInfo()['description'],

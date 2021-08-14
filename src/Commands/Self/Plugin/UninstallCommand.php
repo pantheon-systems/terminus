@@ -103,6 +103,5 @@ class UninstallCommand extends PluginBaseCommand
             $this->log()->error($e->getMessage());
         }
         return $results;
-
     }
 }

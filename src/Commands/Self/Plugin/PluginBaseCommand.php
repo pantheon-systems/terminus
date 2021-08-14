@@ -66,7 +66,7 @@ abstract class PluginBaseCommand extends TerminusCommand
     {
         $matches = array_filter(
             $this->getPluginProjects(),
-            function($plugin) use ($project) {
+            function ($plugin) use ($project) {
                 return in_array($project, [$plugin->getName(), $plugin->getPluginName(),]);
             }
         );
@@ -136,7 +136,8 @@ abstract class PluginBaseCommand extends TerminusCommand
      *
      * @return int
      */
-    protected function getTerminusMajorVersion() {
+    protected function getTerminusMajorVersion()
+    {
         $config = $this->getContainer()->get('config');
         return substr($config->get('version'), 0, 1);
     }
@@ -144,7 +145,8 @@ abstract class PluginBaseCommand extends TerminusCommand
     /**
      * Get packages string from composer.lock file contents.
      */
-    protected function getPackagesWithVersionString($composer_lock_contents) {
+    protected function getPackagesWithVersionString($composer_lock_contents)
+    {
         $packages = [];
         foreach ($composer_lock_contents['packages'] as $package) {
             $packages[] = $package['name'] . ':' . $package['version'];
@@ -155,7 +157,8 @@ abstract class PluginBaseCommand extends TerminusCommand
     /**
      * Get packages string from composer.json file contents.
      */
-    protected function getRequiredPackages($composer_json_contents) {
+    protected function getRequiredPackages($composer_json_contents)
+    {
         $packages = [];
         foreach ($composer_json_contents['require'] as $package_name => $version) {
             $packages[] = $package_name;
@@ -168,7 +171,8 @@ abstract class PluginBaseCommand extends TerminusCommand
      *
      * @return array Array returned by runCommand.
      */
-    protected function runComposerUpdate($folder) {
+    protected function runComposerUpdate($folder)
+    {
         $command = str_replace(
             ['{dir}',],
             [$folder,],
@@ -182,7 +186,8 @@ abstract class PluginBaseCommand extends TerminusCommand
      *
      * @return bool true if it worked.
      */
-    protected function updateTerminusDependencies($source_plugins_dir = '', $source_dependencies_dir = '') {
+    protected function updateTerminusDependencies($source_plugins_dir = '', $source_dependencies_dir = '')
+    {
         $base_dir = $this->createTempDir();
         $plugins_dir_basename = $this->getConfig()->get('plugins_dir_basename');
         $plugins_dir = $base_dir . '/' . $plugins_dir_basename;
@@ -282,7 +287,7 @@ abstract class PluginBaseCommand extends TerminusCommand
     protected function registerCleanupFunction($path)
     {
         // Insure that $workdir will be deleted on exit.
-        register_shutdown_function(function($path) {
+        register_shutdown_function(function ($path) {
             $fs = $this->getLocalMachine()->getFileSystem();
             $fs->remove($path);
         }, $path);
@@ -292,7 +297,8 @@ abstract class PluginBaseCommand extends TerminusCommand
     /**
      * Replace source folder into destination.
      */
-    protected function replaceFolder($source, $destination) {
+    protected function replaceFolder($source, $destination)
+    {
         $fs = $this->getLocalMachine()->getFileSystem();
         if ($fs->exists($destination)) {
             $fs->remove($destination);
@@ -308,5 +314,4 @@ abstract class PluginBaseCommand extends TerminusCommand
     {
         $this->getLocalMachine()->getFileSystem()->mkdir($path, $permissions);
     }
-
 }

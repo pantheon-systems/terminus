@@ -56,5 +56,4 @@ class ReloadCommand extends PluginBaseCommand
             $this->log()->error($e->getMessage());
         }
     }
-
 }
