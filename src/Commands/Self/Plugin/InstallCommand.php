@@ -62,7 +62,9 @@ class InstallCommand extends PluginBaseCommand
     {
         $plugin_name = PluginInfo::getPluginNameFromProjectName($project_name);
         $config = $this->getConfig();
-        $folders = $this->updateTerminusDependencies();
+        $original_plugins_dir = $config->get('plugins_dir');
+        $original_dependencies_dir = $config->get('terminus_dependencies_dir');
+        $folders = $this->updateTerminusDependencies($original_plugins_dir, $original_dependencies_dir);
         $plugins_dir = $folders['plugins_dir'];
         $dependencies_dir = $folders['dependencies_dir'];
         try {
@@ -85,8 +87,6 @@ class InstallCommand extends PluginBaseCommand
                     []
                 );
             }
-            $original_plugins_dir = $config->get('plugins_dir');
-            $original_dependencies_dir = $config->get('terminus_dependencies_dir');
             $this->replaceFolder($plugins_dir, $original_plugins_dir);
             $this->replaceFolder($dependencies_dir, $original_dependencies_dir);
             $this->log()->notice('Installed {project_name}.', compact('project_name'));

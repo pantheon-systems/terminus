@@ -85,7 +85,9 @@ class UpdateCommand extends PluginBaseCommand
         $plugin_info = $plugin->getInfo();
         $project = $plugin_info['name'];
         $plugin_dir = $plugin->getPath();
-        $folders = $this->updateTerminusDependencies();
+        $original_plugins_dir = $config->get('plugins_dir');
+        $original_dependencies_dir = $config->get('terminus_dependencies_dir');
+        $folders = $this->updateTerminusDependencies($original_plugins_dir, $original_dependencies_dir);
         $plugins_dir = $folders['plugins_dir'];
         $dependencies_dir = $folders['dependencies_dir'];
         $messages = [];
@@ -110,8 +112,6 @@ class UpdateCommand extends PluginBaseCommand
                     );
                 }
 
-                $original_plugins_dir = $config->get('plugins_dir');
-                $original_dependencies_dir = $config->get('terminus_dependencies_dir');
                 $this->replaceFolder($plugins_dir, $original_plugins_dir);
                 $this->replaceFolder($dependencies_dir, $original_dependencies_dir);
             } catch (TerminusException $e) {

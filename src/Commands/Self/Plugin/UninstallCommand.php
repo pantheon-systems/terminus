@@ -64,7 +64,9 @@ class UninstallCommand extends PluginBaseCommand
     private function doUninstallation(PluginInfo $project)
     {
         $config = $this->getConfig();
-        $folders = $this->updateTerminusDependencies();
+        $original_plugins_dir = $config->get('plugins_dir');
+        $original_dependencies_dir = $config->get('terminus_dependencies_dir');
+        $folders = $this->updateTerminusDependencies($original_plugins_dir, $original_dependencies_dir);
         $plugins_dir = $folders['plugins_dir'];
         $dependencies_dir = $folders['dependencies_dir'];
         try {
@@ -73,7 +75,7 @@ class UninstallCommand extends PluginBaseCommand
             // First remove from terminus-dependencies.
             $command = str_replace(
                 ['{dir}', '{project}',],
-                [$dependencies_dir, $project_name,],
+                [$plugins_dir, $project_name,],
                 self::UNINSTALL_COMMAND
             );
             $results = $this->runCommand($command);
@@ -93,8 +95,6 @@ class UninstallCommand extends PluginBaseCommand
                 );
             }
 
-            $original_plugins_dir = $config->get('plugins_dir');
-            $original_dependencies_dir = $config->get('terminus_dependencies_dir');
             $this->replaceFolder($plugins_dir, $original_plugins_dir);
             $this->replaceFolder($dependencies_dir, $original_dependencies_dir);
 

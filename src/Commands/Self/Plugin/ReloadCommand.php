@@ -44,11 +44,11 @@ class ReloadCommand extends PluginBaseCommand
         $plugins_dir = $config->get('plugins_dir');
         $dependencies_dir = $config->get('terminus_dependencies_dir');
         try {
-            $folders = $this->updateTerminusDependencies();
-            $plugins_dir = $folders['plugins_dir'];
-            $dependencies_dir = $folders['dependencies_dir'];
             $original_plugins_dir = $config->get('plugins_dir');
             $original_dependencies_dir = $config->get('terminus_dependencies_dir');
+            $folders = $this->updateTerminusDependencies($original_plugins_dir, $original_dependencies_dir);
+            $plugins_dir = $folders['plugins_dir'];
+            $dependencies_dir = $folders['dependencies_dir'];
             $this->replaceFolder($plugins_dir, $original_plugins_dir);
             $this->replaceFolder($dependencies_dir, $original_dependencies_dir);
             $this->log()->notice('Plugins reload done.');

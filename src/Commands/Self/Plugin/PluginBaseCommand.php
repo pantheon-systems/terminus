@@ -182,9 +182,18 @@ abstract class PluginBaseCommand extends TerminusCommand
      *
      * @return bool true if it worked.
      */
-    protected function updateTerminusDependencies() {
-        $plugins_dir = $this->createTempDir('plugins-dir');
-        $dependencies_dir = $this->createTempDir('dependencies-dir');
+    protected function updateTerminusDependencies($source_plugins_dir = '', $source_dependencies_dir = '') {
+        $base_dir = $this->createTempDir();
+        $plugins_dir_basename = $this->getConfig()->get('plugins_dir_basename');
+        $plugins_dir = $base_dir . '/' . $plugins_dir_basename;
+        $dependencies_dir = $base_dir . '/terminus-dependencies';
+        $fs = $this->getLocalMachine()->getFileSystem();
+        if ($source_plugins_dir && is_dir($source_plugins_dir)) {
+            $fs->mirror($source_plugins_dir, $plugins_dir);
+        }
+        if ($source_dependencies_dir && is_dir($source_dependencies_dir)) {
+            $fs->mirror($source_dependencies_dir, $dependencies_dir);
+        }
         $this->ensureComposerJsonExists($plugins_dir, 'pantheon-systems/terminus-plugins');
         $this->ensureComposerJsonExists($dependencies_dir, 'pantheon-systems/terminus-dependencies');
         if (file_exists($this->getConfig()->get('root') . '/composer.lock')) {
@@ -203,9 +212,10 @@ abstract class PluginBaseCommand extends TerminusCommand
             $results = $this->runCommand($command);
             if ($results['exit_code'] === 0) {
                 // Second: Add path repositories.
+                $plugins_dir_basename = $this->getConfig()->get('plugins_dir_basename');
                 $command = str_replace(
                     ['{dir}', '{repo_name}', '{path}',],
-                    [$dependencies_dir, 'pantheon-systems/terminus-plugins', $plugins_dir,],
+                    [$dependencies_dir, 'pantheon-systems/terminus-plugins', '../' . $plugins_dir_basename,],
                     self::COMPOSER_ADD_REPOSITORY
                 );
                 $results = $this->runCommand($command);
