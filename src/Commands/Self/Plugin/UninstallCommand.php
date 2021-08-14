@@ -72,7 +72,7 @@ class UninstallCommand extends PluginBaseCommand
         try {
             $project_name = $project->getName();
 
-            // First remove from terminus-dependencies.
+            // First remove from terminus-plugins.
             $command = str_replace(
                 ['{dir}', '{project}',],
                 [$plugins_dir, $project_name,],
@@ -86,7 +86,7 @@ class UninstallCommand extends PluginBaseCommand
                 );
             }
 
-            // Update terminus-dependencies composer.
+            // Then, Update terminus-dependencies composer.
             $results = $this->runComposerUpdate($dependencies_dir);
             if ($results['exit_code'] !== 0) {
                 throw new TerminusException(

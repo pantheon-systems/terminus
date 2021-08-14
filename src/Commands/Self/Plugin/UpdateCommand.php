@@ -22,7 +22,7 @@ class UpdateCommand extends PluginBaseCommand
     const SEMVER_CANNOT_UPDATE_MESSAGE = 'Unable to update. Semver compliance issue with tagged release.';
     const UPDATING_MESSAGE = 'Updating {name}...';
     const UPDATE_COMMAND =
-        'composer update -d {dir} {project} --with-all-dependencies';
+        'composer update -d {dir} {project} --with-dependencies';
 
     /**
      * Update one or more Terminus plugins.
@@ -97,8 +97,12 @@ class UpdateCommand extends PluginBaseCommand
             // Get the Terminus major version.
             $terminus_major_version = $this->getTerminusMajorVersion();
             try {
-                // @todo Kevin how to update only given project(s)?
-                $results = $this->runComposerUpdate($dependencies_dir);
+                $command = str_replace(
+                    ['{dir}', '{project}',],
+                    [$dependencies_dir, $project,],
+                    self::UPDATE_COMMAND
+                );
+                $results = $this->runCommand($command);
                 if ($results['output']) {
                     $messages[] = $results['output'];
                 }
