@@ -23,7 +23,7 @@ class D9ifyCommandsTest extends TestCase
      * @covers \Pantheon\Terminus\Commands\D9ify\ProcessCommand
      *
      * @group d9ify
-     * @group long
+     * @group todo
      */
     public function testBranchList()
     {

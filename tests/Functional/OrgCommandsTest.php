@@ -17,6 +17,7 @@ class OrgCommandsTest extends TestCase
     /**
      * @test
      * @covers \Pantheon\Terminus\Commands\Org\ListCommand
+     *
      * @group org
      * @group short
      */
@@ -40,6 +41,7 @@ class OrgCommandsTest extends TestCase
     /**
      * @test
      * @covers \Pantheon\Terminus\Commands\Org\People\ListCommand
+     *
      * @group org
      * @group short
      */
@@ -71,6 +73,7 @@ class OrgCommandsTest extends TestCase
     /**
      * @test
      * @covers \Pantheon\Terminus\Commands\Org\Site\ListCommand
+     *
      * @group org
      * @group short
      */
@@ -94,6 +97,7 @@ class OrgCommandsTest extends TestCase
     /**
      * @test
      * @covers \Pantheon\Terminus\Commands\Org\Upstream\ListCommand
+     *
      * @group org
      * @group short
      */

@@ -34,8 +34,10 @@ class AuthCommandsTest extends TestCase
     /**
      * @test
      * @covers \Pantheon\Terminus\Commands\Auth\WhoamiCommand
+     *
      * @group auth
-     * @group auth
+     * @group short
+     *
      * @throws \JsonException
      */
     public function testAuthWhoAmI()
