@@ -21,12 +21,12 @@ class WorkflowCommandsTest extends TestCase
      * @test
      * @covers \Pantheon\Terminus\Commands\Workflow\WatchCommand
      * @covers \Pantheon\Terminus\Commands\Workflow\ListCommand
-     * @group long
-     * @group workflow
      *
+     * @group workflow
+     * @group todo
      */
     public function testWorkflowCRUD()
     {
-            $this->fail("Figure out how to test.");
+        $this->fail("Figure out how to test.");
     }
 }

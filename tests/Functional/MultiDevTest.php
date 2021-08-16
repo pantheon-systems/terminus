@@ -18,6 +18,7 @@ class MultiDevTest extends TestCase
      * @covers Pantheon\Terminus\Commands\Multidev\CreateCommand
      * @covers Pantheon\Terminus\Commands\Multidev\ListCommand
      * @covers Pantheon\Terminus\Commands\Multidev\DeleteCommand
+     *
      * @group multidev
      * @group long
      */

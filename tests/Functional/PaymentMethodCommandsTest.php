@@ -24,8 +24,7 @@ class PaymentMethodCommandsTest extends TestCase
      * @covers \Pantheon\Terminus\Commands\PaymentMethod\ListCommand
      * @covers \Pantheon\Terminus\Commands\PaymentMethod\RemoveCommand
      *
-     * @group branch
-     * @group long
+     * @group todo
      */
     public function testConnection()
     {

@@ -23,8 +23,10 @@ class ConnectionCommandsTest extends TestCase
      * @covers \Pantheon\Terminus\Commands\Connection\InfoCommand
      * @covers \Pantheon\Terminus\Commands\Connection\SetCommand
      * @covers \Pantheon\Terminus\Commands\Env\InfoCommand
+     *
      * @group connection
      * @group long
+     *
      * @throws \JsonException
      */
     public function testConnection()

@@ -24,8 +24,8 @@ class HTTPSCommandsTest extends TestCase
      * @covers \Pantheon\Terminus\Commands\HTTPS\RemoveCommand
      * @covers \Pantheon\Terminus\Commands\HTTPS\SetCommand
      *
-     * @group branch
-     * @group long
+     * @group https
+     * @group todo
      */
     public function testHTTPS()
     {
