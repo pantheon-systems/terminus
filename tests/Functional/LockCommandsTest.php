@@ -23,7 +23,7 @@ class LockCommandsTest extends TestCase
      * @covers \Pantheon\Terminus\Commands\Lock\InfoCommand
      *
      * @group lock
-     * @group short
+     * @group todo
      *
      * @throws \Exception
      */
