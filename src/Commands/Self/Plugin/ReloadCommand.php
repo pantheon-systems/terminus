@@ -41,8 +41,6 @@ class ReloadCommand extends PluginBaseCommand
     private function doReload()
     {
         $config = $this->getConfig();
-        $plugins_dir = $config->get('plugins_dir');
-        $dependencies_dir = $config->get('terminus_dependencies_dir');
         try {
             $original_plugins_dir = $config->get('plugins_dir');
             $original_dependencies_dir = $config->get('terminus_dependencies_dir');
