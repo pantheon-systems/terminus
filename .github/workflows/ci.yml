@@ -47,6 +47,7 @@ jobs:
       matrix:
         operating-system: [ 'macos-latest' ]
         php-versions: [ '7.4', '8.0' ]
+      max-parallel: 1
     env:
       TZ: "/usr/share/zoneinfo/America/Los_Angeles"
       TERM: dumb
