@@ -1,6 +1,5 @@
 name: Terminus
 on:
-  push:
   pull_request:
   repository_dispatch:
   schedule:
