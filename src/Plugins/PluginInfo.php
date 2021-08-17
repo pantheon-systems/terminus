@@ -55,6 +55,10 @@ class PluginInfo implements ConfigAwareInterface, ContainerAwareInterface, Logge
      * @var string
      */
     protected $stable_latest_version;
+    /**
+     * @var string
+     */
+    protected $nonstable_latest_version = self::UNKNOWN_VERSION;
 
     /**
      * Set Plugin dir.
