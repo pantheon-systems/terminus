@@ -28,16 +28,11 @@ if (empty($home) && !empty($_SERVER['HOMEDRIVE']) && !empty($_SERVER['HOMEPATH']
     @putenv("HOME={$home}");
 }
 
-$terminusPluginsDependenciesDirectory = $home . DIRECTORY_SEPARATOR . '.terminus/terminus-dependencies-' . $terminusPluginsDependenciesVersion;
-
 $pharPath = \Phar::running(true);
 if (version_compare(PHP_VERSION, '7.4.0', '<=') === true) {
     throw new \PharIo\Version\InvalidVersionException("Sorry, but you need to upgrade PHP to version 7.4 or greater.");
 }
 
-if (file_exists($terminusPluginsDependenciesDirectory . '/vendor/autoload.php')) {
-    include_once("$terminusPluginsDependenciesDirectory/vendor/autoload.php");
-}
 if ($pharPath) {
     include_once("$pharPath/vendor/autoload.php");
 } elseif (file_exists($path = __DIR__ . '/../vendor/autoload.php')
@@ -62,6 +57,6 @@ if (!is_dir($tokens_dir)) {
     );
 }
 
-$terminus = Terminus::factory($terminusPluginsDependenciesDirectory);
+$terminus = Terminus::factory($terminusPluginsDependenciesVersion);
 $status_code = $terminus->run();
 exit($status_code);
