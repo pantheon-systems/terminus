@@ -4,6 +4,7 @@
 /tools
 /tests/logs
 /tests/fixtures/functional/plugins/managed-ignored
+tests/fixtures/functional/dependencies/
 
 .DS_Store
 *.sw*

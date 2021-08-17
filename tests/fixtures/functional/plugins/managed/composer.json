@@ -1,0 +1,7 @@
+{
+    "name": "pantheon-systems/terminus-plugins",
+    "minimum-stability": "dev",
+    "require": {
+        "pantheon-systems/terminus-build-tools-plugin": "dev-add-github-actions-sodium-compat"
+    }
+}
