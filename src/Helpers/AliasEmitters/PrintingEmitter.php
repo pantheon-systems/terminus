@@ -17,8 +17,9 @@ class PrintingEmitter extends AliasesDrushRcBase
      */
     public function __construct($output, $config)
     {
+        parent::__construct($config);
+
         $this->output = $output;
-        $this->setConfig($config);
     }
 
     /**

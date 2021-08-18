@@ -3,6 +3,7 @@
 namespace Pantheon\Terminus\Helpers\AliasEmitters;
 
 use Consolidation\Config\ConfigAwareInterface;
+use Consolidation\Config\ConfigInterface;
 use Pantheon\Terminus\Config\ConfigAwareTrait;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
@@ -17,6 +18,16 @@ abstract class AliasesDrushRcBase implements
 
     use ConfigAwareTrait;
     use LoggerAwareTrait;
+
+    /**
+     * AliasesDrushRcBase constructor.
+     *
+     * @param ConfigInterface
+     */
+    public function __construct($config)
+    {
+        $this->setConfig($config);
+    }
 
     /**
      * Generate the contents for an aliases.drushrc.php file.

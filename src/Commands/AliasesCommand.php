@@ -101,7 +101,7 @@ class AliasesCommand extends TerminusCommand implements SiteAwareInterface
         if ($this->emitterTypeMatches($emitterType, 'php')) {
             $php_nickname = \uniqid(__METHOD__);
             $this->getContainer()->add($php_nickname, AliasesDrushRcEmitter::class)
-                ->addArguments([$location, $base_dir]);
+                ->addArguments([$location, $base_dir, $this->getConfig()]);
             $emitters[] = $this->getContainer()->get($php_nickname);
         }
         if ($this->emitterTypeMatches($emitterType, 'yml')) {

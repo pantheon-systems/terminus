@@ -2,7 +2,6 @@
 
 namespace Pantheon\Terminus\Helpers\AliasEmitters;
 
-use Pantheon\Terminus\Config\ConfigAwareTrait;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 use Robo\Contract\ConfigAwareInterface;
@@ -12,19 +11,20 @@ class AliasesDrushRcEmitter extends AliasesDrushRcBase implements
     ConfigAwareInterface,
     LoggerAwareInterface
 {
-    use ConfigAwareTrait;
     use LoggerAwareTrait;
 
     protected $location;
 
     /**
-     * AliasesDrushRcEmitter consturctor
+     * AliasesDrushRcEmitter constructor.
      *
      * @param string $location
      * @param string $base_dir
      */
-    public function __construct($location, $base_dir)
+    public function __construct($location, $base_dir, $config)
     {
+        parent::__construct($config);
+
         $this->location = $location;
         $this->base_dir = $base_dir;
     }
@@ -64,7 +64,7 @@ class AliasesDrushRcEmitter extends AliasesDrushRcBase implements
             $fs->mkdir($policyToPath);
         }
         $policyTemplate = new Template();
-        $copied = $policyTemplate->copy($policyFromPath, $policyToPath);
+        $policyTemplate->copy($policyFromPath, $policyToPath);
     }
 
     /**
