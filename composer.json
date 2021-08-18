@@ -114,11 +114,11 @@
       "SHELL_INTERACTIVE=true TERMINUS_TEST_MODE=1 behat --colors --config tests/config/behat.yml --stop-on-failure --suite=default"
     ],
     "test:short": [
-      "XDEBUG_MODE=coverage phpunit --colors=always -c ./phpunit.xml --debug --group=short --do-not-cache-result",
+      "XDEBUG_MODE=coverage vendor/bin/phpunit --colors=always -c ./phpunit.xml --debug --group=short --do-not-cache-result",
       "@coverage"
     ],
     "test:functional": [
-      "XDEBUG_MODE=coverage phpunit --colors=always -c ./phpunit.xml --debug --do-not-cache-result",
+      "XDEBUG_MODE=coverage vendor/bin/phpunit --colors=always -c ./phpunit.xml --debug --do-not-cache-result",
       "@coverage"
     ],
     "test:all": [

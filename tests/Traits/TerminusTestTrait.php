@@ -111,12 +111,43 @@ trait TerminusTestTrait
      */
     protected function getSiteFramework(): string
     {
-        $site_info = $this->terminusJsonResponse(sprintf('site:info %s', $this->getSiteName()));
+        $site_info = $this->getSiteInfo();
 
         if (!isset($site_info['framework'])) {
-            throw new \Exception('Unknown test site framework');
+            throw new \Exception(sprintf('Failed to get framework for test site %s', $this->getSiteName()));
         }
 
         return $site_info['framework'];
+    }
+
+    /**
+     * Returns the test site id.
+     *
+     * @return string
+     *
+     * @throws \Exception
+     */
+    protected function getSiteId(): string
+    {
+        $site_info = $this->getSiteInfo();
+
+        if (!isset($site_info['id'])) {
+            throw new \Exception(sprintf('Failed to get id for test site %s', $this->getSiteName()));
+        }
+
+        return $site_info['id'];
+    }
+
+    /**
+     * @return array
+     */
+    private function getSiteInfo(): array
+    {
+        static $site_info;
+        if (is_null($site_info)) {
+            $site_info = $this->terminusJsonResponse(sprintf('site:info %s', $this->getSiteName()));
+        }
+
+        return $site_info;
     }
 }

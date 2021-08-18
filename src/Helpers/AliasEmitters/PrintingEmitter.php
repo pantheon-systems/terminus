@@ -2,7 +2,8 @@
 
 namespace Pantheon\Terminus\Helpers\AliasEmitters;
 
-use Symfony\Component\Filesystem\Filesystem;
+use Consolidation\Config\ConfigInterface;
+use Symfony\Component\Console\Output\OutputInterface;
 
 class PrintingEmitter extends AliasesDrushRcBase
 {
@@ -12,10 +13,12 @@ class PrintingEmitter extends AliasesDrushRcBase
      * PrintingEmitter constructor
      *
      * @param OutputInterface $output
+     * @param ConfigInterface $config
      */
-    public function __construct($output)
+    public function __construct($output, $config)
     {
         $this->output = $output;
+        $this->setConfig($config);
     }
 
     /**
@@ -28,6 +31,10 @@ class PrintingEmitter extends AliasesDrushRcBase
 
     /**
      * {@inheritdoc}
+     *
+     * @throws \Twig\Error\LoaderError
+     * @throws \Twig\Error\RuntimeError
+     * @throws \Twig\Error\SyntaxError
      */
     public function write(array $alias_replacements)
     {

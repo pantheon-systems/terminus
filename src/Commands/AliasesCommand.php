@@ -2,14 +2,9 @@
 
 namespace Pantheon\Terminus\Commands;
 
-use Pantheon\Terminus\Commands\TerminusCommand;
-
-use Pantheon\Terminus\Collections\Sites;
+use Pantheon\Terminus\Config\ConfigAwareTrait;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
-
-use Pantheon\Terminus\Helpers\AliasEmitters\AliasCollection;
-use Pantheon\Terminus\Helpers\AliasEmitters\AliasData;
 use Pantheon\Terminus\Helpers\AliasEmitters\AliasesDrushRcEmitter;
 use Pantheon\Terminus\Helpers\AliasEmitters\PrintingEmitter;
 use Pantheon\Terminus\Helpers\AliasEmitters\DrushSitesYmlEmitter;
@@ -20,6 +15,7 @@ use Pantheon\Terminus\Helpers\AliasEmitters\DrushSitesYmlEmitter;
 class AliasesCommand extends TerminusCommand implements SiteAwareInterface
 {
     use SiteAwareTrait;
+    use ConfigAwareTrait;
 
     /**
      * Generates Pantheon Drush aliases for sites on which the currently logged-in user is on the team.
@@ -99,7 +95,7 @@ class AliasesCommand extends TerminusCommand implements SiteAwareInterface
         if ($this->emitterTypeMatches($emitterType, 'print', false)) {
             $print_nickname = \uniqid(__METHOD__);
             $this->getContainer()->add($print_nickname, PrintingEmitter::class)
-                ->addArgument($this->output());
+                ->addArguments([$this->output(), $this->getConfig()]);
             $emitters[] = $this->getContainer()->get($print_nickname);
         }
         if ($this->emitterTypeMatches($emitterType, 'php')) {
@@ -139,10 +135,10 @@ class AliasesCommand extends TerminusCommand implements SiteAwareInterface
 
         return array_map(function ($siteInfo) {
             return [
-                '{{site_name}}' => $siteInfo['name'],
-                '{{env_name}}' => '*',
-                '{{env_label}}' => '${env-name}',
-                '{{site_id}}' => $siteInfo['id'],
+                'site_name' => $siteInfo['name'],
+                'env_name' => '*',
+                'env_label' => '${env-name}',
+                'site_id' => $siteInfo['id'],
             ];
         }, $site_data);
     }
