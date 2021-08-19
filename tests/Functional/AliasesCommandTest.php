@@ -86,6 +86,6 @@ class AliasesCommandTest extends TestCase
         $config = new DefaultsConfig();
         $aliases_dir = $config->get('user_home') . '/.drush/';
         $file = file_get_contents($aliases_dir . 'pantheon.aliases.drushrc.php');
-            $this->assertEquals($aliases, $file);
+        $this->assertEquals($aliases, $file);
     }
 }

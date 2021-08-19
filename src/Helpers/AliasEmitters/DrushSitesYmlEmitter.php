@@ -2,17 +2,23 @@
 
 namespace Pantheon\Terminus\Helpers\AliasEmitters;
 
+use Pantheon\Terminus\Config\ConfigAwareTrait;
 use Symfony\Component\Filesystem\Filesystem;
+use Twig\Environment;
+use Twig\Loader\FilesystemLoader;
 
 class DrushSitesYmlEmitter implements AliasEmitterInterface
 {
+    use ConfigAwareTrait;
+
     protected $base_dir;
     protected $home;
 
-    public function __construct($base_dir, $home, $target_name = 'pantheon')
+    public function __construct($base_dir, $home, $config, $target_name = 'pantheon')
     {
         $this->base_dir = $base_dir;
         $this->home = $home;
+        $this->setConfig($config);
         $this->target_name = $target_name;
     }
 
@@ -91,7 +97,11 @@ class DrushSitesYmlEmitter implements AliasEmitterInterface
      */
     protected function getAliasFragment(array $replacements)
     {
-        return Template::process('fragment.site.yml.tmpl', $replacements);
+        $path = implode(DIRECTORY_SEPARATOR, [$this->getConfig()->get('root'), 'templates', 'aliases']);
+        $loader = new FilesystemLoader($path);
+        $twig = new Environment($loader);
+
+        return $twig->render('fragment.site.yml.twig', $replacements);
     }
 
     /**

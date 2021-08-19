@@ -107,7 +107,7 @@ class AliasesCommand extends TerminusCommand implements SiteAwareInterface
         if ($this->emitterTypeMatches($emitterType, 'yml')) {
             $yml_nickname = \uniqid(__METHOD__);
             $this->getContainer()->add($yml_nickname, DrushSitesYmlEmitter::class)
-                ->addArguments([$base_dir, $home, $target_name]);
+                ->addArguments([$base_dir, $home, $this->getConfig(), $target_name]);
             $emitters[] = $this->getContainer()->get($yml_nickname);
         }
 

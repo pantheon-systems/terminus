@@ -45,7 +45,7 @@ abstract class AliasesDrushRcBase implements
         $path = implode(DIRECTORY_SEPARATOR, [$this->getConfig()->get('root'), 'templates', 'aliases']);
         $loader = new FilesystemLoader($path);
         $twig = new Environment($loader);
-        $output = $twig->render('header.aliases.drushrc.php.twig', []);
+        $output = $twig->render('header.aliases.drushrc.php.twig');
 
         foreach ($alias_replacements as $replacements) {
             $this->logger->debug('Creating alias: ' . print_r($replacements, true));
