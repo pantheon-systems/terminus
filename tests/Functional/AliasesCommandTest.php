@@ -2,6 +2,7 @@
 
 namespace Pantheon\Terminus\Tests\Functional;
 
+use Pantheon\Terminus\Config\DefaultsConfig;
 use Pantheon\Terminus\Tests\Traits\TerminusTestTrait;
 use PHPUnit\Framework\TestCase;
 
@@ -77,6 +78,14 @@ class AliasesCommandTest extends TestCase
             '"path-aliases" value should be present and match "[][\'%files\' => \'files\']"'
         );
 
+        // Print out all aliases to variable.
+        $aliases = $this->terminus('drush:aliases --print');
+
+        // Export aliases, load them and compare with the printed ones.
         $this->terminus('drush:aliases');
+        $config = new DefaultsConfig();
+        $aliases_dir = $config->get('user_home') . '/.drush/';
+        $file = file_get_contents($aliases_dir . 'pantheon.aliases.drushrc.php');
+            $this->assertEquals($aliases, $file);
     }
 }
