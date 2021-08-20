@@ -40,46 +40,42 @@ class AliasesCommandTest extends TestCase
      */
     public function testGetAliases()
     {
+        // Test printed Drush 8 alias of the test site.
         $command = sprintf('drush:aliases --only=%s  --print', $this->getSiteName());
-        $aliases = $this->terminus($command);
-        $this->assertIsString($aliases);
-
+        $alias_printed = $this->terminus($command);
+        $this->assertIsString($alias_printed);
         $aliases_site_name_needle = sprintf('$aliases[\'%s.*\']', $this->getSiteName());
         $this->assertTrue(
-            false !== strpos($aliases, $aliases_site_name_needle),
+            false !== strpos($alias_printed, $aliases_site_name_needle),
             sprintf('List of Drush aliases should contain alias for %s site', $this->getSiteName())
         );
-
         $aliases_uri_needle = sprintf('${env-name}-%s.pantheonsite.io', $this->getSiteName());
         $this->assertTrue(
-            false !== strpos($aliases, $aliases_uri_needle),
+            false !== strpos($alias_printed, $aliases_uri_needle),
             sprintf('"uri" value should match "${env-name}-%s.pantheonsite.io"', $this->getSiteName())
         );
-
         $aliases_remote_host_needle = sprintf('appserver.${env-name}.%s.drush.in', $this->getSiteId());
         $this->assertTrue(
-            false !== strpos($aliases, $aliases_remote_host_needle),
+            false !== strpos($alias_printed, $aliases_remote_host_needle),
             sprintf('"remote-host" value should match "appserver.${env-name}.%s.drush.in"', $this->getSiteId())
         );
-
         $aliases_remote_user_needle = sprintf('${env-name}.%s', $this->getSiteId());
         $this->assertTrue(
-            false !== strpos($aliases, $aliases_remote_user_needle),
+            false !== strpos($alias_printed, $aliases_remote_user_needle),
             sprintf('"remote-user" value should match "${env-name}.%s"', $this->getSiteId())
         );
-
         $this->assertTrue(
-            false !== strpos($aliases, '-p 2222 -o "AddressFamily inet"'),
+            false !== strpos($alias_printed, '-p 2222 -o "AddressFamily inet"'),
             '"ssh-options" value should match "-p 2222 -o "AddressFamily inet"'
         );
-
         $this->assertTrue(
-            false !== strpos($aliases, '\'path-aliases\'') && false !== strpos($aliases, '\'%files\' => \'files\''),
+            false !== strpos($alias_printed, '\'path-aliases\'')
+            && false !== strpos($alias_printed, '\'%files\' => \'files\''),
             '"path-aliases" value should be present and match "[][\'%files\' => \'files\']"'
         );
 
-        // Save all Drush 8 aliases to variable.
-        $aliases = $this->terminus('drush:aliases --print');
+        // Save all printed Drush 8 aliases to A variable.
+        $aliases_printed = $this->terminus('drush:aliases --print');
 
         // Export Drush 8 and Drush 9 aliases.
         $this->terminus('drush:aliases');
@@ -88,18 +84,26 @@ class AliasesCommandTest extends TestCase
 
         // Test Drush 8 aliases.
         $drush_8_aliases_in_file = file_get_contents($aliases_dir . 'pantheon.aliases.drushrc.php');
-        $this->assertEquals($aliases, $drush_8_aliases_in_file);
+        $this->assertEquals($aliases_printed, $drush_8_aliases_in_file);
 
-        // Test Drush 9 aliases.
-        $drush_9_site_alias_file_path = $aliases_dir . 'sites/pantheon/' . $this->getSiteName() . '.site.yml';
-        $drush_9_site_alias_in_file = file_get_contents($drush_9_site_alias_file_path);
+        // Get the first item from the list of available aliases.
+        /** @var array $aliases */
+        include $aliases_dir . 'pantheon.aliases.drushrc.php';
+        $this->assertIsArray($aliases);
+        $this->assertNotEmpty($aliases);
+        $site_name = str_replace('.*', '', array_key_first($aliases));
+        $site_alias = array_shift($aliases);
+
+        // Test Drush 9 site alias.
+        $drush_9_site_alias_file_path = $aliases_dir . 'sites/pantheon/' . $site_name . '.site.yml';
+        $drush_9_site_alias_in_file = trim(file_get_contents($drush_9_site_alias_file_path));
         $expected_drush_9_site_alias = <<<EOF
 '*':
-  host: appserver.\${env-name}.{$this->getSiteId()}.drush.in
+  host: {$site_alias['remote-host']}
   paths:
     files: files
-  uri: \${env-name}-{$this->getSiteName()}.pantheonsite.io
-  user: \${env-name}.{$this->getSiteId()}
+  uri: {$site_alias['uri']}
+  user: {$site_alias['remote-user']}
   ssh:
     options: '-p 2222 -o "AddressFamily inet"'
     tty: false

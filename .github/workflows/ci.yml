@@ -74,7 +74,7 @@ jobs:
       - name: Install Composer Dependencies
         run: composer install --no-interaction --prefer-dist
       - name: Functional Tests
-        run: vendor/bin/phpunit --colors=always -c ./phpunit.xml --debug --group=aliases --do-not-cache-result
+        run: composer test:short
         env:
           COMPOSER_ALLOW_SUPERUSER: 1
           TERMINUS_TOKEN: ${{ secrets.TERMINUS_TOKEN }}
