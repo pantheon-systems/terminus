@@ -19,3 +19,4 @@ reports/*
 /package
 /Formula
 *.deb
+Brewfile.lock.json
