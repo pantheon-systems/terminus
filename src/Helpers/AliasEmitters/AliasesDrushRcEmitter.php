@@ -4,16 +4,15 @@ namespace Pantheon\Terminus\Helpers\AliasEmitters;
 
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
-use Robo\Contract\ConfigAwareInterface;
 use Symfony\Component\Filesystem\Filesystem;
 
 class AliasesDrushRcEmitter extends AliasesDrushRcBase implements
-    ConfigAwareInterface,
     LoggerAwareInterface
 {
     use LoggerAwareTrait;
 
     protected $location;
+    protected $base_dir;
 
     /**
      * AliasesDrushRcEmitter constructor.
@@ -21,10 +20,8 @@ class AliasesDrushRcEmitter extends AliasesDrushRcBase implements
      * @param string $location
      * @param string $base_dir
      */
-    public function __construct($location, $base_dir, $config)
+    public function __construct($location, $base_dir)
     {
-        parent::__construct($config);
-
         $this->location = $location;
         $this->base_dir = $base_dir;
     }

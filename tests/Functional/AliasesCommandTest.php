@@ -78,14 +78,32 @@ class AliasesCommandTest extends TestCase
             '"path-aliases" value should be present and match "[][\'%files\' => \'files\']"'
         );
 
-        // Print out all aliases to variable.
+        // Save all Drush 8 aliases to variable.
         $aliases = $this->terminus('drush:aliases --print');
 
-        // Export aliases, load them and compare with the printed ones.
+        // Export Drush 8 and Drush 9 aliases.
         $this->terminus('drush:aliases');
         $config = new DefaultsConfig();
         $aliases_dir = $config->get('user_home') . '/.drush/';
-        $file = file_get_contents($aliases_dir . 'pantheon.aliases.drushrc.php');
-        $this->assertEquals($aliases, $file);
+
+        // Test Drush 8 aliases.
+        $drush_8_aliases_in_file = file_get_contents($aliases_dir . 'pantheon.aliases.drushrc.php');
+        $this->assertEquals($aliases, $drush_8_aliases_in_file);
+
+        // Test Drush 9 aliases.
+        $drush_9_site_alias_file_path = $aliases_dir . 'sites/pantheon/' . $this->getSiteName() . '.site.yml';
+        $drush_9_site_alias_in_file = file_get_contents($drush_9_site_alias_file_path);
+        $expected_drush_9_site_alias = <<<EOF
+'*':
+  host: appserver.\${env-name}.{$this->getSiteId()}.drush.in
+  paths:
+    files: files
+  uri: \${env-name}-{$this->getSiteName()}.pantheonsite.io
+  user: \${env-name}.{$this->getSiteId()}
+  ssh:
+    options: '-p 2222 -o "AddressFamily inet"'
+    tty: false
+EOF;
+        $this->assertEquals($expected_drush_9_site_alias, $drush_9_site_alias_in_file);
     }
 }

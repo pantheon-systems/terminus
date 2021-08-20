@@ -139,6 +139,8 @@ trait TerminusTestTrait
     }
 
     /**
+     * Returns the site info.
+     *
      * @return array
      */
     private function getSiteInfo(): array

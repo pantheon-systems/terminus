@@ -95,19 +95,19 @@ class AliasesCommand extends TerminusCommand implements SiteAwareInterface
         if ($this->emitterTypeMatches($emitterType, 'print', false)) {
             $print_nickname = \uniqid(__METHOD__);
             $this->getContainer()->add($print_nickname, PrintingEmitter::class)
-                ->addArguments([$this->output(), $this->getConfig()]);
+                ->addArguments([$this->output()]);
             $emitters[] = $this->getContainer()->get($print_nickname);
         }
         if ($this->emitterTypeMatches($emitterType, 'php')) {
             $php_nickname = \uniqid(__METHOD__);
             $this->getContainer()->add($php_nickname, AliasesDrushRcEmitter::class)
-                ->addArguments([$location, $base_dir, $this->getConfig()]);
+                ->addArguments([$location, $base_dir]);
             $emitters[] = $this->getContainer()->get($php_nickname);
         }
         if ($this->emitterTypeMatches($emitterType, 'yml')) {
             $yml_nickname = \uniqid(__METHOD__);
             $this->getContainer()->add($yml_nickname, DrushSitesYmlEmitter::class)
-                ->addArguments([$base_dir, $home, $this->getConfig(), $target_name]);
+                ->addArguments([$base_dir, $home, $target_name]);
             $emitters[] = $this->getContainer()->get($yml_nickname);
         }
 
