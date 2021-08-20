@@ -55,7 +55,6 @@ class FeatureContext implements Context
         $this->cache_token_dir = $this->cache_dir . "/tokens";
         $this->ensureDirectoryExists($this->cache_token_dir);
         $this->plugin_dir = $this->fixtures_dir . '/plugins';
-        $this->dependencies_dir = $this->fixtures_dir . '/dependencies';
         $this->ensureDirectoryExists($this->plugin_dir);
         $this->plugin_dir_name = self::DEFAULT_PLUGIN_DIR_NAME;
     }
@@ -130,30 +129,6 @@ class FeatureContext implements Context
     {
         $this->plugin_dir_name = $dir_name;
         $this->iRun('[[executable]]  self:clear-cache');
-    }
-
-    /**
-     * Empty out the plugin directory for the rest of the statements in the
-     * current scenario.
-     * @When /^I empty the "([^"]*)" plugins/
-     * @param string $dir_name
-     */
-    public function emptyPluginDir($dir_name)
-    {
-        $plugins = $this->plugin_dir . DIRECTORY_SEPARATOR . $dir_name;
-        $this->iRun("rm -rf $plugins");
-    }
-
-    /**
-     * Downgrades the given plugin for the rest of the statements in the current
-     * scenario.
-     * @When /^I downgrade the "([^"]*)" plugin to "([^"]*)"/
-     * @param string $plugin
-     */
-    public function downgradePlugin($plugin, $version)
-    {
-        $dir = $this->plugin_dir . DIRECTORY_SEPARATOR . $this->plugin_dir_name . DIRECTORY_SEPARATOR . $plugin;
-        $this->iRun("cd $dir && git checkout $version");
     }
 
     /**
@@ -653,8 +628,8 @@ class FeatureContext implements Context
      */
     public function iRun($command)
     {
-        $regex        = '/(?<!\.)terminus /';
-        $command = preg_replace($regex, sprintf('bin/t3 ', $this->cliroot), $command);
+        $regex        = '/(?<!\.)terminus/';
+        $command = preg_replace($regex, sprintf('bin/terminus ', $this->cliroot), $command);
         $command = $this->replacePlaceholders($command);
 
         if (isset($this->connection_info['host'])) {
@@ -673,9 +648,8 @@ class FeatureContext implements Context
 
         // Determine which plugin dir we should use
         $plugins = $this->plugin_dir . DIRECTORY_SEPARATOR . $this->plugin_dir_name;
-        $dependencies = $this->dependencies_dir . DIRECTORY_SEPARATOR . $this->plugin_dir_name;
         // Pass the cache directory to the command so that tests don't poison the user's cache.
-        $command = "TERMINUS_TEST_MODE=1 TERMINUS_CACHE_DIR=$this->cache_dir TERMINUS_TOKENS_DIR=$this->cache_token_dir TERMINUS_PLUGINS_DIR=$plugins TERMINUS_DEPENDENCIES_BASE_DIR=$dependencies $command";
+        $command = "TERMINUS_TEST_MODE=1 TERMINUS_CACHE_DIR=$this->cache_dir TERMINUS_TOKENS_DIR=$this->cache_token_dir TERMINUS_PLUGINS_DIR=$plugins $command";
 
         // Insert any envrionment variables defined for this scenario
         foreach ($this->environment_variables as $var => $value) {
