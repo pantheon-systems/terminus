@@ -502,7 +502,7 @@ class Terminus implements
 
 
 
-    public static function factory($terminusDependenciesVersion): Terminus
+    public static function factory($terminusDependenciesVersion = '1'): Terminus
     {
         $input = new ArgvInput($_SERVER['argv']);
         $output = new ConsoleOutput();
