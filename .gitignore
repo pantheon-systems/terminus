@@ -9,6 +9,7 @@ tests/fixtures/functional/dependencies/
 .DS_Store
 *.sw*
 .env
+.envrc
 .idea
 .vagrant
 Vagrantfile
