@@ -43,8 +43,6 @@ use Pantheon\Terminus\Config\DotEnvConfig;
 use Pantheon\Terminus\Config\EnvConfig;
 use Pantheon\Terminus\Config\YamlConfig;
 
-// @todo Kevin Add/update tests.
-
 /**
  * Class Terminus
  *

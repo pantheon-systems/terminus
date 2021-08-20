@@ -629,7 +629,7 @@ class FeatureContext implements Context
     public function iRun($command)
     {
         $regex        = '/(?<!\.)terminus/';
-        $command = preg_replace($regex, sprintf('bin/terminus ', $this->cliroot), $command);
+        $command = preg_replace($regex, sprintf('bin/terminus', $this->cliroot), $command);
         $command = $this->replacePlaceholders($command);
 
         if (isset($this->connection_info['host'])) {
