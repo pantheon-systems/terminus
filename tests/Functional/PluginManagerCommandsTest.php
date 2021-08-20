@@ -41,9 +41,20 @@ class PluginManagerCommandsTest extends TestCase
         // LIST PLUGINS
         $results = $this->terminus("self:plugin:list 2>&1");
         $this->assertStringContainsString("You have no plugins installed", $results, "Terminus plugins should be empty at this point.");
-        
-        // ADD PLUGIN
-        $plugin = $this->getTerminusPluginToInstall();
+
+        // SEARCH PLUGIN
+        $plugin = $this->getTerminusPluginSearchString();
+        $results = $this->terminusJsonResponse("self:plugin:search $plugin");
+        $this->assertIsArray($results, "Returned values from self:plugin:search should be array");
+        $this->assertGreaterThan(
+            0,
+            count($results),
+            "Count of plugins should be greater than 0"
+        );
+        $this->assertStringContainsString($this->getTerminusPluginName(), $results[0]['name'], "Terminus plugin search didn't return the expected plugin.");
+
+        // INSTALL PLUGIN
+        $plugin = $this->getTerminusPluginNameAndVersion();
         $results = $this->terminus("self:plugin:install $plugin 2>&1");
         $this->assertStringContainsString("Installed $plugin", $results, "Terminus plugin installation failed.");
 
@@ -61,7 +72,7 @@ class PluginManagerCommandsTest extends TestCase
         $this->terminus("list | grep $command");
 
         // TRY UPDATING PLUGIN
-        $plugin = $this->getTerminusPluginToUpdate();
+        $plugin = $this->getTerminusPluginName();
         $results = $this->terminus("self:plugin:update $plugin 2>&1");
         $this->assertStringContainsString("Nothing to install, update or remove", $results, "Terminus plugin update failed.");
 
@@ -96,7 +107,7 @@ class PluginManagerCommandsTest extends TestCase
         $this->terminus("list | grep $command");
 
         // TRY UNINSTALLING PLUGIN
-        $plugin = $this->getTerminusPluginToUninstall();
+        $plugin = $this->getTerminusPluginName();
         $results = $this->terminus("self:plugin:uninstall $plugin 2>&1");
         $this->assertStringContainsString("Uninstalled $plugin", $results, "Terminus plugin uninstall failed.");
 
@@ -106,8 +117,6 @@ class PluginManagerCommandsTest extends TestCase
 
         // LIST COMMANDS AGAIN TO CHECK THAT PLUGIN COMMANDS ARE NOT AVAILABLE
         $this->terminus("list | grep $command", 1);
-
-        // @todo Kevin search.
     }
 
     /**
@@ -115,9 +124,9 @@ class PluginManagerCommandsTest extends TestCase
      *
      * @return string
      */
-    protected function getTerminusPluginToInstall(): string
+    protected function getTerminusPluginNameAndVersion(): string
     {
-        return getenv('TERMINUS_PLUGIN_TO_INSTALL');
+        return getenv('TERMINUS_PLUGIN_NAME_AND_VERSION');
     }
 
     /**
@@ -145,18 +154,18 @@ class PluginManagerCommandsTest extends TestCase
      *
      * @return string
      */
-    protected function getTerminusPluginToUpdate(): string
+    protected function getTerminusPluginName(): string
     {
-        return getenv('TERMINUS_PLUGIN_TO_UPDATE_UNINSTALL');
+        return getenv('TERMINUS_PLUGIN_NAME');
     }
 
     /**
-     * Returns the terminus plugin to uninstall.
+     * Returns the terminus plugin search string.
      *
      * @return string
      */
-    protected function getTerminusPluginToUninstall(): string
+    protected function getTerminusPluginSearchString(): string
     {
-        return getenv('TERMINUS_PLUGIN_TO_UPDATE_UNINSTALL');
+        return getenv('TERMINUS_PLUGIN_SEARCH_STRING');
     }
 }
