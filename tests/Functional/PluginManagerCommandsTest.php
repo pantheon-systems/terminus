@@ -40,7 +40,11 @@ class PluginManagerCommandsTest extends TestCase
 
         // LIST PLUGINS
         $results = $this->terminus("self:plugin:list 2>&1");
-        $this->assertStringContainsString("You have no plugins installed", $results, "Terminus plugins should be empty at this point.");
+        $this->assertStringContainsString(
+            "You have no plugins installed",
+            $results,
+            "Terminus plugins should be empty at this point."
+        );
 
         // SEARCH PLUGIN
         $plugin = $this->getTerminusPluginSearchString();
@@ -51,7 +55,11 @@ class PluginManagerCommandsTest extends TestCase
             count($results),
             "Count of plugins should be greater than 0"
         );
-        $this->assertStringContainsString($this->getTerminusPluginName(), $results[0]['name'], "Terminus plugin search didn't return the expected plugin.");
+        $this->assertStringContainsString(
+            $this->getTerminusPluginName(),
+            $results[0]['name'],
+            "Terminus plugin search didn't return the expected plugin."
+        );
 
         // INSTALL PLUGIN
         $plugin = $this->getTerminusPluginNameAndVersion();
@@ -66,7 +74,11 @@ class PluginManagerCommandsTest extends TestCase
             count($results),
             "Count of plugins should be greater than 0"
         );
-        $this->assertStringContainsString($this->getTerminusPluginInstalled(), $results[0]['name'], "Terminus plugin recently installed is not listed.");
+        $this->assertStringContainsString(
+            $this->getTerminusPluginInstalled(),
+            $results[0]['name'],
+            "Terminus plugin recently installed is not listed."
+        );
         
         // LIST COMMANDS AGAIN
         $this->terminus("list | grep $command");
@@ -74,7 +86,11 @@ class PluginManagerCommandsTest extends TestCase
         // TRY UPDATING PLUGIN
         $plugin = $this->getTerminusPluginName();
         $results = $this->terminus("self:plugin:update $plugin 2>&1");
-        $this->assertStringContainsString("Nothing to install, update or remove", $results, "Terminus plugin update failed.");
+        $this->assertStringContainsString(
+            "Nothing to install, update or remove",
+            $results,
+            "Terminus plugin update failed."
+        );
 
         // LIST PLUGINS AGAIN
         $results = $this->terminusJsonResponse("self:plugin:list");
@@ -84,7 +100,11 @@ class PluginManagerCommandsTest extends TestCase
             count($results),
             "Count of plugins should be greater than 0"
         );
-        $this->assertStringContainsString($this->getTerminusPluginInstalled(), $results[0]['name'], "Terminus plugin recently installed is not listed.");
+        $this->assertStringContainsString(
+            $this->getTerminusPluginInstalled(),
+            $results[0]['name'],
+            "Terminus plugin recently installed is not listed."
+        );
 
         // LIST COMMANDS AGAIN
         $this->terminus("list | grep $command");
@@ -101,7 +121,11 @@ class PluginManagerCommandsTest extends TestCase
             count($results),
             "Count of plugins should be greater than 0"
         );
-        $this->assertStringContainsString($this->getTerminusPluginInstalled(), $results[0]['name'], "Terminus plugin recently installed is not listed.");
+        $this->assertStringContainsString(
+            $this->getTerminusPluginInstalled(),
+            $results[0]['name'],
+            "Terminus plugin recently installed is not listed."
+        );
 
         // LIST COMMANDS AGAIN
         $this->terminus("list | grep $command");
@@ -113,7 +137,11 @@ class PluginManagerCommandsTest extends TestCase
 
         // LIST PLUGINS
         $results = $this->terminus("self:plugin:list 2>&1");
-        $this->assertStringContainsString("You have no plugins installed", $results, "Terminus plugins should be empty at this point.");
+        $this->assertStringContainsString(
+            "You have no plugins installed",
+            $results,
+            "Terminus plugins should be empty at this point."
+        );
 
         // LIST COMMANDS AGAIN TO CHECK THAT PLUGIN COMMANDS ARE NOT AVAILABLE
         $this->terminus("list | grep $command", 1);
