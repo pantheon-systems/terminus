@@ -146,5 +146,4 @@ class PluginManagerCommandsTest extends TestCase
         // LIST COMMANDS AGAIN TO CHECK THAT PLUGIN COMMANDS ARE NOT AVAILABLE
         $this->terminus("list | grep $command", 1);
     }
-
 }
