@@ -35,7 +35,7 @@ class PluginManagerCommandsTest extends TestCase
         $this->removeDir($dependenciesBaseDir);
 
         // LIST COMMANDS TO CHECK THAT PLUGIN COMMANDS ARE NOT AVAILABLE
-        $command = $this->getTerminusPluginTestCommand();
+        $command = 'build:project:create';
         $this->terminus("list | grep $command", 1);
 
         // LIST PLUGINS
@@ -47,7 +47,7 @@ class PluginManagerCommandsTest extends TestCase
         );
 
         // SEARCH PLUGIN
-        $plugin = $this->getTerminusPluginSearchString();
+        $plugin = 'build-tools';
         $results = $this->terminusJsonResponse("self:plugin:search $plugin");
         $this->assertIsArray($results, "Returned values from self:plugin:search should be array");
         $this->assertGreaterThan(
@@ -56,13 +56,13 @@ class PluginManagerCommandsTest extends TestCase
             "Count of plugins should be greater than 0"
         );
         $this->assertStringContainsString(
-            $this->getTerminusPluginName(),
+            'pantheon-systems/terminus-build-tools-plugin',
             $results[0]['name'],
             "Terminus plugin search didn't return the expected plugin."
         );
 
         // INSTALL PLUGIN
-        $plugin = $this->getTerminusPluginNameAndVersion();
+        $plugin = 'pantheon-systems/terminus-build-tools-plugin:dev-add-github-actions-sodium-compat';
         $results = $this->terminus("self:plugin:install $plugin 2>&1");
         $this->assertStringContainsString("Installed $plugin", $results, "Terminus plugin installation failed.");
 
@@ -75,7 +75,7 @@ class PluginManagerCommandsTest extends TestCase
             "Count of plugins should be greater than 0"
         );
         $this->assertStringContainsString(
-            $this->getTerminusPluginInstalled(),
+            'terminus-build-tools-plugin',
             $results[0]['name'],
             "Terminus plugin recently installed is not listed."
         );
@@ -84,7 +84,7 @@ class PluginManagerCommandsTest extends TestCase
         $this->terminus("list | grep $command");
 
         // TRY UPDATING PLUGIN
-        $plugin = $this->getTerminusPluginName();
+        $plugin = 'pantheon-systems/terminus-build-tools-plugin';
         $results = $this->terminus("self:plugin:update $plugin 2>&1");
         $this->assertStringContainsString(
             "Nothing to install, update or remove",
@@ -101,7 +101,7 @@ class PluginManagerCommandsTest extends TestCase
             "Count of plugins should be greater than 0"
         );
         $this->assertStringContainsString(
-            $this->getTerminusPluginInstalled(),
+            'terminus-build-tools-plugin',
             $results[0]['name'],
             "Terminus plugin recently installed is not listed."
         );
@@ -122,7 +122,7 @@ class PluginManagerCommandsTest extends TestCase
             "Count of plugins should be greater than 0"
         );
         $this->assertStringContainsString(
-            $this->getTerminusPluginInstalled(),
+            'terminus-build-tools-plugin',
             $results[0]['name'],
             "Terminus plugin recently installed is not listed."
         );
@@ -131,7 +131,7 @@ class PluginManagerCommandsTest extends TestCase
         $this->terminus("list | grep $command");
 
         // TRY UNINSTALLING PLUGIN
-        $plugin = $this->getTerminusPluginName();
+        $plugin = 'pantheon-systems/terminus-build-tools-plugin';
         $results = $this->terminus("self:plugin:uninstall $plugin 2>&1");
         $this->assertStringContainsString("Uninstalled $plugin", $results, "Terminus plugin uninstall failed.");
 
@@ -147,53 +147,4 @@ class PluginManagerCommandsTest extends TestCase
         $this->terminus("list | grep $command", 1);
     }
 
-    /**
-     * Returns the terminus plugin to install.
-     *
-     * @return string
-     */
-    protected function getTerminusPluginNameAndVersion(): string
-    {
-        return getenv('TERMINUS_PLUGIN_NAME_AND_VERSION');
-    }
-
-    /**
-     * Returns the terminus plugin that should have been installed.
-     *
-     * @return string
-     */
-    protected function getTerminusPluginInstalled(): string
-    {
-        return getenv('TERMINUS_PLUGIN_INSTALLED');
-    }
-
-    /**
-     * Returns terminus command that should now be available.
-     *
-     * @return string
-     */
-    protected function getTerminusPluginTestCommand(): string
-    {
-        return getenv('TERMINUS_PLUGIN_TEST_COMMAND');
-    }
-
-    /**
-     * Returns the terminus plugin to update.
-     *
-     * @return string
-     */
-    protected function getTerminusPluginName(): string
-    {
-        return getenv('TERMINUS_PLUGIN_NAME');
-    }
-
-    /**
-     * Returns the terminus plugin search string.
-     *
-     * @return string
-     */
-    protected function getTerminusPluginSearchString(): string
-    {
-        return getenv('TERMINUS_PLUGIN_SEARCH_STRING');
-    }
 }
