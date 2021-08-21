@@ -26,19 +26,8 @@ class PluginInfo implements ConfigAwareInterface, ContainerAwareInterface, Logge
     const MAX_COMMAND_DEPTH = 4;
 
     // Commands
-    const CHANGE_DIRECTORY_AND = '[ -d {dir} ] && cd {dir} && ';
-    const GET_BRANCH_INSTALLED_VERSION_COMMAND = 'git rev-parse --abbrev-ref HEAD';
-    const GET_NONSTABLE_LATEST_VERSION_COMMAND =
-        'git tag -l --sort=version:refname | grep {version} | sort -r | xargs';
-    const GET_STABLE_LATEST_VERSION_COMMAND =
-        'git fetch --all && git tag -l --sort=version:refname | grep ^[v{version}] | sort -r | head -1';
-    const GET_TAGS_INSTALLED_VERSION_COMMAND = 'git describe --tags 2> /dev/null';
+    const GET_LATEST_AVAILABLE_VERSION = 'composer show {package} --latest --all --format=json';
     const VALIDATION_COMMAND = 'composer search -N -t terminus-plugin {project}';
-
-    // Installation Methods
-    const COMPOSER_METHOD = 'composer';
-    const GIT_METHOD = 'git';
-    const UNKNOWN_METHOD = 'unknown';
 
     // Version Numbers
     const UNKNOWN_VERSION = 'unknown';
@@ -55,10 +44,6 @@ class PluginInfo implements ConfigAwareInterface, ContainerAwareInterface, Logge
      * @var string
      */
     protected $stable_latest_version;
-    /**
-     * @var string
-     */
-    protected $nonstable_latest_version = self::UNKNOWN_VERSION;
 
     /**
      * Set Plugin dir.
@@ -127,15 +112,18 @@ class PluginInfo implements ConfigAwareInterface, ContainerAwareInterface, Logge
         if (!empty($this->info['version'])) {
             return $this->info['version'];
         }
-        try {
-            return $this->getTagInstalledVersion();
-        } catch (TerminusNotFoundException $e) {
-            try {
-                return $this->getBranchInstalledVersion();
-            } catch (TerminusNotFoundException $e) {
-                return self::UNKNOWN_VERSION;
+        $dependencies_dir = $this->getConfig()->get('terminus_dependencies_dir');
+        $composer_lock = json_decode(
+            file_get_contents($dependencies_dir . '/composer.lock'),
+            true,
+            10
+        );
+        foreach ($composer_lock['packages'] as $package) {
+            if ($package['name'] === $this->getName()) {
+                return $package['version'];
             }
         }
+        return self::UNKNOWN_VERSION;
     }
 
     /**
@@ -145,16 +133,21 @@ class PluginInfo implements ConfigAwareInterface, ContainerAwareInterface, Logge
      */
     public function getLatestVersion()
     {
-        // @todo Kevin Make this function work.
-        try {
-            return $this->getNonstableLatestVersion();
-        } catch (TerminusNotFoundException $e) {
-            try {
-                return $this->getBranchInstalledVersion();
-            } catch (TerminusNotFoundException $e) {
-                return self::UNKNOWN_VERSION;
-            }
+        $command = str_replace(
+            '{package}',
+            $this->getName(),
+            self::GET_LATEST_AVAILABLE_VERSION
+        );
+        $results = $this->runCommand($command);
+        $package_info = json_decode($results['output'], true, 10);
+        if (empty($package_info)) {
+            throw new TerminusNotFoundException('Package info not found.');
         }
+        if (!empty($package_info['latest'])) {
+            return $package_info['latest'];
+        }
+        $versions = $package_info['versions'];
+        return reset($versions);
     }
 
     /**
@@ -167,37 +160,6 @@ class PluginInfo implements ConfigAwareInterface, ContainerAwareInterface, Logge
             return $info['name'];
         }
         return basename($this->getPath());
-    }
-
-    /**
-     * Checks for non-stable semantic version (ie. -beta1 or -rc2).
-     * @return string The version number
-     * @throws TerminusNotFoundException If the lookup of stable version fails
-     */
-    public function getNonstableLatestVersion()
-    {
-        // @todo Kevin Make this function work.
-        if (empty($this->nonstable_latest_version)) {
-            $command = str_replace(
-                ['{dir}', '{version}',],
-                [$this->getPath(), self::getMajorVersionFromVersion($this->getConfig()->get('version'))],
-                self::CHANGE_DIRECTORY_AND . self::GET_NONSTABLE_LATEST_VERSION_COMMAND
-            );
-            $results = $this->runCommand($command);
-            $releases = self::filterForVersionNumbers($results);
-            $stable_version = $this->getStableLatestVersion();
-
-            if (count($releases) > 0) {
-                foreach ($releases as $release) {
-                    // Update to stable release, if available.
-                    if ($release === $stable_version) {
-                        return $release;
-                    }
-                }
-            }
-        }
-
-        return $this->nonstable_latest_version;
     }
 
     /**
@@ -214,29 +176,6 @@ class PluginInfo implements ConfigAwareInterface, ContainerAwareInterface, Logge
     public function getPluginName()
     {
         return self::getPluginNameFromProjectName($this->getName());
-    }
-
-    /**
-     * @return string The version number
-     * @throws TerminusNotFoundException If the lookup fails
-     */
-    public function getStableLatestVersion()
-    {
-        if (empty($this->stable_latest_version)) {
-            // @todo Kevin does it make sense to do this in this folder?
-            $command = str_replace(
-                ['{dir}', '{version}',],
-                [$this->getPath(), self::getMajorVersionFromVersion($this->getConfig()->get('version'))],
-                self::CHANGE_DIRECTORY_AND . self::GET_STABLE_LATEST_VERSION_COMMAND
-            );
-            $results = $this->runCommand($command);
-            $version = self::filterForVersionNumbers($results['output']);
-            if (empty($version)) {
-                throw new TerminusNotFoundException('Stable latest version not found.');
-            }
-            $this->stable_latest_version = array_shift($version);
-        }
-        return $this->stable_latest_version;
     }
 
     /**
@@ -420,26 +359,6 @@ class PluginInfo implements ConfigAwareInterface, ContainerAwareInterface, Logge
     }
 
     /**
-     * @return string The version number
-     * @throws TerminusNotFoundException If the lookup fails
-     */
-    private function getBranchInstalledVersion()
-    {
-        $command = str_replace(
-            '{dir}',
-            $this->getPath(),
-            self::CHANGE_DIRECTORY_AND . self::GET_BRANCH_INSTALLED_VERSION_COMMAND
-        );
-        $results = $this->runCommand($command);
-
-        $version = $results['output'];
-        if (empty($version)) {
-            throw new TerminusNotFoundException('Installed branch version not found.');
-        }
-        return $version;
-    }
-
-    /**
      * Return the directory where this plugin stores it's command files.
      *
      * @return string
@@ -448,26 +367,6 @@ class PluginInfo implements ConfigAwareInterface, ContainerAwareInterface, Logge
     {
         $autoload = $this->getAutoloadInfo();
         return $this->getPath() . '/' . $autoload['dir'];
-    }
-
-    /**
-     * @return string The version number
-     * @throws TerminusNotFoundException If the lookup fails
-     */
-    private function getTagInstalledVersion()
-    {
-        // @todo Kevin does it make sense to run this in this folder?
-        $command = str_replace(
-            '{dir}',
-            $this->getPath(),
-            self::CHANGE_DIRECTORY_AND . self::GET_TAGS_INSTALLED_VERSION_COMMAND
-        );
-        $results = $this->runCommand($command);
-        $version = $results['output'];
-        if (empty($version)) {
-            throw new TerminusNotFoundException('Installed tag version not found.');
-        }
-        return $version;
     }
 
     /**
