@@ -15,7 +15,6 @@ use PHPUnit\Framework\TestCase;
  */
 class EnvCommandsTest extends TestCase
 {
-
     use TerminusTestTrait;
     use SiteBaseSetupTrait;
     use UrlStatusCodeHelperTrait;
@@ -27,13 +26,11 @@ class EnvCommandsTest extends TestCase
      *
      * @group env
      * @group short
-     *
-     * @throws \JsonException
      */
     public function testClearCacheCommand()
     {
         $sitename = $this->getSiteName();
-        $this->terminus("env:clear-cache {$sitename}.dev");
+        $this->terminus("env:clear-cache $sitename.dev");
     }
 
     /**
@@ -42,13 +39,11 @@ class EnvCommandsTest extends TestCase
      *
      * @group env
      * @group short
-     *
-     * @throws \JsonException
      */
     public function testDeployCommand()
     {
         $sitename = $this->getSiteName();
-        $this->terminus("env:deploy {$sitename}.live");
+        $this->terminus("env:deploy $sitename.live");
     }
 
     /**
@@ -57,13 +52,11 @@ class EnvCommandsTest extends TestCase
      *
      * @group env
      * @group long
-     *
-     * @throws \JsonException
      */
     public function testCloneContentCommand()
     {
         $sitename = $this->getSiteName();
-        $this->terminus("env:clone {$sitename}.live test");
+        $this->terminus("env:clone $sitename.live test");
     }
 
     /**
@@ -72,16 +65,14 @@ class EnvCommandsTest extends TestCase
      *
      * @group env
      * @group short
-     *
-     * @throws \JsonException
      */
     public function testCodelogCommand()
     {
         $sitename = $this->getSiteName();
-        $codeLogs = $this->terminusJsonResponse("env:code-log {$sitename}");
+        $codeLogs = $this->terminusJsonResponse("env:code-log $sitename");
         $this->assertIsArray($codeLogs, "Returned data from codelogs should be json.");
         $codeLog = array_shift($codeLogs);
-        $this->assertIsArray($codeLog, "Asssert returned data from codelogs are made of codelog entries.");
+        $this->assertIsArray($codeLog, "Assert returned data from codelogs are made of codelog entries.");
         $this->assertArrayHasKey(
             'datetime',
             $codeLog,
@@ -111,8 +102,6 @@ class EnvCommandsTest extends TestCase
      *
      * @group env
      * @group todo
-     *
-     * @throws \JsonException
      */
     public function testCommitCommand()
     {
@@ -126,13 +115,11 @@ class EnvCommandsTest extends TestCase
      *
      * @group env
      * @group short
-     *
-     * @throws \JsonException
      */
     public function testInfoCommand()
     {
         $sitename = $this->getSiteName();
-        $info = $this->terminusJsonResponse("env:info {$sitename}.dev");
+        $info = $this->terminusJsonResponse("env:info $sitename.dev");
         $this->assertIsArray($info, "Assert returned data from environment is array.");
         $this->assertArrayHasKey(
             'id',
@@ -162,14 +149,12 @@ class EnvCommandsTest extends TestCase
      *
      * @group env
      * @group short
-     *
-     * @throws \JsonException
      */
     public function testMetricsCommand()
     {
         // Randomly chosen customer site
         $sitename = $this->getSiteName();
-        $metrics = $this->terminusJsonResponse("env:metrics {$sitename}.live");
+        $metrics = $this->terminusJsonResponse("env:metrics $sitename.live");
         $this->assertIsArray($metrics, "Assert returned data from metrics are made of metrics entries.");
         $this->assertArrayHasKey('timeseries', $metrics, "Returned metrics should have a timeseries property.");
         $metric = array_shift($metrics['timeseries']);
@@ -197,13 +182,11 @@ class EnvCommandsTest extends TestCase
      *
      * @group env
      * @group short
-     *
-     * @throws \JsonException
      */
     public function testListCommand()
     {
         $sitename = $this->getSiteName();
-        $envs = $this->terminusJsonResponse("env:list {$sitename}");
+        $envs = $this->terminusJsonResponse("env:list $sitename");
         $this->assertIsArray($envs, "Assert returned data from list are made of env entries.");
         $env = array_shift($envs);
 
@@ -230,12 +213,10 @@ class EnvCommandsTest extends TestCase
      *
      * @group env
      * @group long
-     *
-     * @throws \JsonException
      */
     public function testViewCommand()
     {
         $sitename = $this->getSiteName();
-        $this->terminus("env:view {$sitename}.dev");
+        $this->terminus("env:view $sitename.dev");
     }
 }
