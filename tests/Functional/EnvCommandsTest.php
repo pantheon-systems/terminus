@@ -101,13 +101,86 @@ class EnvCommandsTest extends TestCase
      * @covers \Pantheon\Terminus\Commands\Env\CommitCommand
      *
      * @group env
-     * @group todo
+     * @group short
      */
-    public function testCommitCommand()
+    public function testCommitAndDiffStatCommands()
     {
-        $this->fail("To Be Written");
-    }
+        $sitename = $this->getSiteName();
+        $multidev = 'commit-cmd';
 
+        // Prepare multidev environment.
+        $envs = $this->terminusJsonResponse(sprintf('env:list %s', $sitename));
+        $this->assertIsArray($envs);
+        if (!isset($envs[$multidev])) {
+            // Create multidev environment.
+            $this->terminus(sprintf('multidev:create %s.dev %s', $sitename, $multidev));
+        } else {
+            // Enable Git mode to reset all uncommitted changes if present.
+            $this->terminus(sprintf('connection:set %s.%s git -y', $sitename, $multidev));
+        }
+
+        // Enable SFTP mode.
+        $this->terminus(sprintf('connection:set %s.%s sftp', $sitename, $multidev));
+
+        // Check the diff - no diff is expected.
+        $diff = $this->terminusJsonResponse(sprintf('env:diffstat %s.%s', $sitename, $multidev));
+        $this->assertEquals([], $diff);
+
+        // Get SFTP connection information.
+        $connectionInfo = $this->terminusJsonResponse(
+            sprintf('connection:info %s.%s --fields=sftp_username,sftp_host', $sitename, $multidev)
+        );
+        $this->assertNotEmpty($connectionInfo);
+        $this->assertTrue(
+            isset($connectionInfo['sftp_username'], $connectionInfo['sftp_host']),
+            'SFTP connection info should contain "sftp_username" and "sftp_host" values.'
+        );
+
+        // Upload a test file to the server.
+        $session = ssh2_connect(
+            $connectionInfo['sftp_host'],
+            2222
+        );
+        ssh2_auth_agent($session, $connectionInfo['sftp_username']);
+        $sftp = ssh2_sftp($session);
+        $this->assertNotFalse($sftp);
+        $fileUniqueId = md5(mt_rand());
+        $stream = fopen(
+            sprintf('ssh2.sftp://%d/code/env-commit-test-file-%s.txt', intval($sftp), $fileUniqueId),
+            'w'
+        );
+        fwrite($stream, 'This is a test file to use in functional testing for env:commit command.');
+        fclose($stream);
+        sleep(30);
+
+        // Check the diff.
+        $expectedDiff = [
+            [
+                'file' => sprintf('env-commit-test-file-%s.txt', $fileUniqueId),
+                'status' => 'A',
+                'deletions' => '0',
+                'additions' => '1',
+            ],
+        ];
+        $this->assertTerminusCommandResultEqualsInAttempts(function () use ($sitename, $multidev) {
+            return $this->terminusJsonResponse(sprintf('env:diffstat %s.%s', $sitename, $multidev));
+        }, $expectedDiff);
+
+        // Commit the changes.
+        $this->terminus(
+            sprintf(
+                'env:commit %s.%s --message="%s"',
+                $sitename,
+                $multidev,
+                sprintf('Add test file %s', $fileUniqueId)
+            )
+        );
+
+        // Check the diff - no diff is expected.
+        $this->assertTerminusCommandResultEqualsInAttempts(function () use ($sitename, $multidev) {
+            return $this->terminusJsonResponse(sprintf('env:diffstat %s.%s', $sitename, $multidev));
+        }, []);
+    }
 
     /**
      * @test

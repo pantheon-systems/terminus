@@ -19,7 +19,7 @@ trait TerminusTestTrait
      */
     protected static function callTerminus(string $command): array
     {
-        $project_dir = dirname(dirname(__DIR__));
+        $project_dir = dirname(__DIR__, 2);
         exec(
             sprintf("%s/%s %s", $project_dir, TERMINUE_BIN_FILE, $command),
             $output,
@@ -44,9 +44,7 @@ trait TerminusTestTrait
         if ($expected_status !== null) {
             $this->assertEquals($expected_status, $status, $output);
         }
-        if (is_array($output)) {
-            join("", $output);
-        }
+
         return $output;
     }
 
@@ -72,6 +70,37 @@ trait TerminusTestTrait
         } catch (\JsonException $jsonException) {
             return $response;
         }
+    }
+
+    /**
+     * Asserts terminus command execution result is equal to the expected in multiple attempts.
+     *
+     * @param callable $callable
+     *   The callable which provides the actual terminus command execution result.
+     * @param mixed $expected
+     *   The expected result.
+     * @param int $attempts
+     *   The maximum number of attempts.
+     * @param int $intervalSeconds
+     *   The interval between attempts in seconds.
+     */
+    public function assertTerminusCommandResultEqualsInAttempts(
+        callable $callable,
+        $expected,
+        int $attempts = 12,
+        int $intervalSeconds = 10
+    ): void {
+        do {
+            $actual = $callable();
+            if ($actual === $expected) {
+                break;
+            }
+
+            sleep($intervalSeconds);
+            $attempts--;
+        } while ($attempts > 0);
+
+        $this->assertEquals($expected, $actual);
     }
 
     /**
