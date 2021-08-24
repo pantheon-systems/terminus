@@ -22,8 +22,7 @@ class AliasesCommandTest extends TestCase
      * @test
      * @covers \Pantheon\Terminus\Commands\AliasesCommand
      *
-     * @group auth
-     * @group long
+     * @group todo
      */
     public function testGetAliases()
     {

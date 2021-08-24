@@ -23,6 +23,7 @@ class UpstreamCommandsTest extends TestCase
      *
      * @test
      * @covers \Pantheon\Terminus\Commands\Upstream\ListCommand
+     *
      * @group upstream
      * @group short
      */
@@ -44,8 +45,10 @@ class UpstreamCommandsTest extends TestCase
     /**
      * @test
      * @covers \Pantheon\Terminus\Commands\Upstream\InfoCommand
+     *
      * @group upstream
      * @group short
+     *
      * @throws \JsonException
      */
     public function testUpstreamInfoCommand()
@@ -67,8 +70,10 @@ class UpstreamCommandsTest extends TestCase
      * @test
      * @covers \Pantheon\Terminus\Commands\Upstream\Updates\ListCommand
      * @covers \Pantheon\Terminus\Commands\Upstream\Updates\StatusCommand
+     *
      * @group upstream
      * @group short
+     *
      * @throws \JsonException
      */
     public function testUpstreamUpdatesListStatus()

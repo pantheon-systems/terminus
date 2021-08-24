@@ -61,6 +61,7 @@ class ImportCommandsTest extends TestCase
      * @covers \Pantheon\Terminus\Commands\Import\SiteCommand
      *
      * @group import
+     * @group todo
      */
     public function testImportSite()
     {
