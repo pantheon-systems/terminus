@@ -8,6 +8,7 @@ class DrushSitesYmlEmitter implements AliasEmitterInterface
 {
     protected $base_dir;
     protected $home;
+    protected $target_name;
 
     public function __construct($base_dir, $home, $target_name = 'pantheon')
     {
@@ -28,6 +29,8 @@ class DrushSitesYmlEmitter implements AliasEmitterInterface
 
     /**
      * {@inheritdoc}
+     *
+     * @throws \Pantheon\Terminus\Exceptions\TerminusException
      */
     public function write(array $alias_replacements)
     {
@@ -66,7 +69,7 @@ class DrushSitesYmlEmitter implements AliasEmitterInterface
             $fs->mkdir($policyToPath);
         }
         $policyTemplate = new Template();
-        $copied = $policyTemplate->copy($policyFromPath, $policyToPath);
+        $policyTemplate->copy($policyFromPath, $policyToPath);
     }
 
     /**
@@ -87,11 +90,14 @@ class DrushSitesYmlEmitter implements AliasEmitterInterface
      * Return the data for one alias record, and run the replacements on it.
      *
      * @param array $replacements
+     *
      * @return string
+     *
+     * @throws \Pantheon\Terminus\Exceptions\TerminusException
      */
     protected function getAliasFragment(array $replacements)
     {
-        return Template::process('fragment.site.yml.tmpl', $replacements);
+        return Template::process('fragment.site.yml.twig', $replacements);
     }
 
     /**

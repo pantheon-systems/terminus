@@ -2,7 +2,7 @@
 
 namespace Pantheon\Terminus\Helpers\AliasEmitters;
 
-use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\Console\Output\OutputInterface;
 
 class PrintingEmitter extends AliasesDrushRcBase
 {
@@ -28,6 +28,8 @@ class PrintingEmitter extends AliasesDrushRcBase
 
     /**
      * {@inheritdoc}
+     *
+     * @throws \Pantheon\Terminus\Exceptions\TerminusException
      */
     public function write(array $alias_replacements)
     {

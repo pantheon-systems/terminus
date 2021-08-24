@@ -2,8 +2,10 @@
 
 namespace Pantheon\Terminus\Helpers\AliasEmitters;
 
-use Consolidation\Comments\Comments;
-use Symfony\Component\Yaml\Yaml;
+use Pantheon\Terminus\Exceptions\TerminusException;
+use Twig\Environment;
+use Twig\Error\Error;
+use Twig\Loader\FilesystemLoader;
 
 class Template
 {
@@ -18,12 +20,12 @@ class Template
     public static function copy($copyfrom, $target_dir)
     {
         $path = static::path($copyfrom);
-        $copied = copy($path, $target_dir . '/' . basename($copyfrom));
-        return $copied;
+
+        return copy($path, $target_dir . '/' . basename($copyfrom));
     }
 
     /**
-     * Load the template
+     * Load the template.
      *
      * @param string $filename
      *   Relative path to template to load
@@ -34,41 +36,13 @@ class Template
     public static function load($filename)
     {
         $path = static::path($filename);
-        $contents = file_get_contents($path);
 
-        return $contents;
+        return file_get_contents($path);
     }
 
-    /**
-     * Return the path to the template
-     *
-     * @return string
-     */
-    public static function path($filename)
-    {
-        return dirname(dirname(dirname(__DIR__))) . "/templates/aliases/$filename";
-    }
 
     /**
-     * Template::process loads a template, makes all of the provided
-     * replacements, and then removes the unwanted parts that are left
-     * over per the rules below.
-     *
-     * @param string $filename
-     *   Relative path to template
-     * @param array $replacements
-     *   Associative array of replacements => values
-     */
-    public static function process($filename, $replacements)
-    {
-        $contents = static::replace($filename, $replacements);
-        $contents = static::removeUnwantedParts($contents);
-
-        return $contents;
-    }
-
-    /**
-     * Load and makes replacements in the template
+     * Returns the processed YML template.
      *
      * @param string $filename
      *   Relative path to template
@@ -76,35 +50,50 @@ class Template
      *   Associative array of replacements => values
      *
      * @return string
+     *
+     * @throws TerminusException
      */
-    public static function replace($filename, $replacements)
+    public static function process($filename, array $replacements = [])
     {
-        $contents = static::load($filename);
-        $contents = str_replace(array_keys($replacements), array_values($replacements), $contents);
+        static $loader, $twig;
 
-        return $contents;
-    }
+        try {
+            if (!isset($loader, $twig)) {
+                $loader = new FilesystemLoader(self::getTemplatesDir());
+                $twig = new Environment($loader);
+            }
 
-    /**
-     * Tamplate::removeUnwantedParts removes leftover markers from the template.
-     *
-     * Rule: If there are any unreplaced variables (e.g. '{{foo}}')
-     * on a line that begins with '##', then remove all lines that
-     * begin with '##'.  Otherwise, replace '##' at the beginning of
-     * lines with '  '.
-     *
-     * @param string $contents
-     *   Data to process.
-     *
-     * @return string
-     *   Processed data.
-     */
-    protected static function removeUnwantedParts($contents)
-    {
-        if (preg_match('%^##[^\r\n]+{{%m', $contents)) {
-            return preg_replace('%^##.*[\r\n]+%m', '', $contents);
+            return $twig->render($filename, $replacements);
+        } catch (Error $e) {
+            throw new TerminusException(
+                'Failed rendering template {template}: {message}',
+                [
+                    'template' => $filename,
+                    'message' => $e->getMessage(),
+                ]
+            );
         }
+    }
 
-        return preg_replace('%^##%m', '  ', $contents);
+    /**
+     * Return the absolute path to the template by template file name.
+     *
+     * @return string
+     *   The template file name.
+     */
+    private static function path($filename)
+    {
+        return self::getTemplatesDir() . '/' . $filename;
+    }
+
+    /**
+     * Returns the absolute path to the template directory.
+     *
+     * @return string
+     *   Templates directory.
+     */
+    private static function getTemplatesDir()
+    {
+        return dirname(__DIR__, 3) . '/templates/aliases';
     }
 }

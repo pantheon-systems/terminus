@@ -83,4 +83,73 @@ trait TerminusTestTrait
     {
         return getenv('TERMINUS_SITE');
     }
+
+    /**
+     * Returns TRUE if the test site is based on Drupal framework.
+     *
+     * @return bool
+     *
+     * @throws \Exception
+     */
+    protected function isSiteFrameworkDrupal(): bool
+    {
+        switch ($this->getSiteFramework()) {
+            case 'drupal':
+            case 'drupal8':
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    /**
+     * Returns the test site framework.
+     *
+     * @return string
+     *
+     * @throws \Exception
+     */
+    protected function getSiteFramework(): string
+    {
+        $site_info = $this->getSiteInfo();
+
+        if (!isset($site_info['framework'])) {
+            throw new \Exception(sprintf('Failed to get framework for test site %s', $this->getSiteName()));
+        }
+
+        return $site_info['framework'];
+    }
+
+    /**
+     * Returns the test site id.
+     *
+     * @return string
+     *
+     * @throws \Exception
+     */
+    protected function getSiteId(): string
+    {
+        $site_info = $this->getSiteInfo();
+
+        if (!isset($site_info['id'])) {
+            throw new \Exception(sprintf('Failed to get id for test site %s', $this->getSiteName()));
+        }
+
+        return $site_info['id'];
+    }
+
+    /**
+     * Returns the site info.
+     *
+     * @return array
+     */
+    private function getSiteInfo(): array
+    {
+        static $site_info;
+        if (is_null($site_info)) {
+            $site_info = $this->terminusJsonResponse(sprintf('site:info %s', $this->getSiteName()));
+        }
+
+        return $site_info;
+    }
 }
