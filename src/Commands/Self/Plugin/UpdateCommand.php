@@ -21,8 +21,6 @@ class UpdateCommand extends PluginBaseCommand
     const NO_PLUGINS_MESSAGE = 'You have no plugins installed.';
     const SEMVER_CANNOT_UPDATE_MESSAGE = 'Unable to update. Semver compliance issue with tagged release.';
     const UPDATING_MESSAGE = 'Updating {name}...';
-    const UPDATE_COMMAND =
-        'composer update -d {dir} {project} --with-dependencies';
 
     /**
      * Update one or more Terminus plugins.
@@ -94,12 +92,7 @@ class UpdateCommand extends PluginBaseCommand
         $this->log()->notice(self::UPDATING_MESSAGE, $plugin_info);
         if ($plugin->isValidPackagistProject()) {
             try {
-                $command = str_replace(
-                    ['{dir}', '{project}',],
-                    [$dependencies_dir, $project,],
-                    self::UPDATE_COMMAND
-                );
-                $results = $this->runCommand($command);
+                $results = $this->runComposerUpdate($dependencies_dir, $project);
                 if ($results['output']) {
                     $messages[] = $results['output'];
                 }
