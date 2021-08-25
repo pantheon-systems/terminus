@@ -105,30 +105,6 @@ trait TerminusTestTrait
     }
 
     /**
-     * Remove given dir.
-     *
-     * @param string $dir The dir to remove
-     *
-     * @return array
-     *   The execution's output and status.
-     */
-    protected static function removeDir(string $dir): array
-    {
-        if (is_dir($dir)) {
-            $project_dir = dirname(dirname(__DIR__));
-            exec(
-                sprintf("rm -r %s", $dir),
-                $output,
-                $status
-            );
-            $output = implode("\n", $output);
-
-            return [$output, $status];
-        }
-        return ['', 0];
-    }
-
-    /**
      * Returns TRUE if the test site is based on Drupal framework.
      *
      * @return bool

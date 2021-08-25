@@ -5,6 +5,7 @@ namespace Pantheon\Terminus\Tests\Functional;
 use Pantheon\Terminus\Tests\Traits\TerminusTestTrait;
 use Pantheon\Terminus\Tests\Traits\UrlStatusCodeHelperTrait;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\Filesystem\Filesystem;
 
 /**
  * Class DomainCommandsTest
@@ -29,10 +30,11 @@ class PluginManagerCommandsTest extends TestCase
      */
     public function testPluginsOperations()
     {
+
+        $filesystem = new Filesystem();
         $pluginsDir = $this->getPluginsDir();
         $dependenciesBaseDir = $this->getDependenciesBaseDir();
-        $this->removeDir($pluginsDir);
-        $this->removeDir($dependenciesBaseDir);
+        $filesystem->remove([$pluginsDir, $dependenciesBaseDir]);
 
         // LIST COMMANDS TO CHECK THAT PLUGIN COMMANDS ARE NOT AVAILABLE
         $command = 'build:project:create';
