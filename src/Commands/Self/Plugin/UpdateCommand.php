@@ -92,10 +92,7 @@ class UpdateCommand extends PluginBaseCommand
         $dependencies_dir = $folders['dependencies_dir'];
         $messages = [];
         $this->log()->notice(self::UPDATING_MESSAGE, $plugin_info);
-        // Determine the project name.
         if ($plugin->isValidPackagistProject()) {
-            // Get the Terminus major version.
-            $terminus_major_version = $this->getTerminusMajorVersion();
             try {
                 $command = str_replace(
                     ['{dir}', '{project}',],
