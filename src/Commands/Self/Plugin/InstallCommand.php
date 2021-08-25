@@ -61,6 +61,8 @@ class InstallCommand extends PluginBaseCommand
     private function doInstallation($project_name)
     {
         $plugin_name = PluginInfo::getPluginNameFromProjectName($project_name);
+        $project_name_parts = explode(':', $project_name);
+        $project_name_without_version = reset($project_name_parts);
         $config = $this->getConfig();
         $original_plugins_dir = $config->get('plugins_dir');
         $original_dependencies_dir = $config->get('terminus_dependencies_dir');
@@ -80,7 +82,7 @@ class InstallCommand extends PluginBaseCommand
                     []
                 );
             }
-            $results = $this->runComposerUpdate($dependencies_dir);
+            $results = $this->runComposerUpdate($dependencies_dir, $project_name_without_version);
             if ($results['exit_code'] !== 0) {
                 throw new TerminusException(
                     'Error running composer update in terminus-dependencies.',

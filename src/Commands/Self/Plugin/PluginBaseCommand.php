@@ -26,7 +26,7 @@ abstract class PluginBaseCommand extends TerminusCommand
         "mkdir -p {backup_dir} && tar czvf {backup_dir}"
         . DIRECTORY_SEPARATOR . "backup.tar.gz \"{dir}\"";
     const COMPOSER_REMOVE_REPOSITORY = 'composer config -d {dir} --unset repositories.{repo_name}';
-    const DEPENDENCIES_UPDATE_COMMAND = 'composer update -d {dir}';
+    const DEPENDENCIES_UPDATE_COMMAND = 'composer update -d {dir} {packages} --with-dependencies';
 
     /**
      * @var array|null
@@ -159,11 +159,11 @@ abstract class PluginBaseCommand extends TerminusCommand
      *
      * @return array Array returned by runCommand.
      */
-    protected function runComposerUpdate($folder)
+    protected function runComposerUpdate($folder, $packages = '')
     {
         $command = str_replace(
-            ['{dir}',],
-            [$folder,],
+            ['{dir}', '{packages}',],
+            [$folder, $packages],
             self::DEPENDENCIES_UPDATE_COMMAND
         );
         return $this->runCommand($command);
