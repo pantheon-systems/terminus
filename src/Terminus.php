@@ -502,7 +502,7 @@ class Terminus implements
 
 
 
-    public static function factory($terminusDependenciesVersion = '1'): Terminus
+    public static function factory(): Terminus
     {
         $input = new ArgvInput($_SERVER['argv']);
         $output = new ConsoleOutput();
@@ -512,7 +512,7 @@ class Terminus implements
         $config->extend(new DotEnvConfig(getcwd()));
         $config->extend(new EnvConfig());
         $dependenciesBaseDir = $config->get('dependencies_base_dir');
-        $terminusDependenciesDir = $dependenciesBaseDir . '/' . $terminusDependenciesVersion;
+        $terminusDependenciesDir = $dependenciesBaseDir . '/' . TERMINUS_PLUGINS_DEPENDENCIES_VERSION;
         $config->set('terminus_dependencies_dir', $terminusDependenciesDir);
         if (file_exists($terminusDependenciesDir . '/vendor/autoload.php')) {
             include_once("$terminusDependenciesDir/vendor/autoload.php");
