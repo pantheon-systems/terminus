@@ -124,7 +124,7 @@ abstract class PluginBaseCommand extends TerminusCommand
      */
     private static function commandExists($command)
     {
-        $windows = (php_uname('s') == 'Windows NT');
+        $windows = (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN');
         $test_command = $windows ? 'where' : 'command -v';
         $file = popen("$test_command $command", 'r');
         $result = fgets($file, 255);
