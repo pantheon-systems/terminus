@@ -511,7 +511,7 @@ class Terminus implements
         $config->extend(new DotEnvConfig(getcwd()));
         $config->extend(new EnvConfig());
         $dependenciesBaseDir = $config->get('dependencies_base_dir');
-        $terminusDependenciesDir = $dependenciesBaseDir . '/' . TERMINUS_PLUGINS_DEPENDENCIES_VERSION;
+        $terminusDependenciesDir = $dependenciesBaseDir . '/' . \TERMINUS_PLUGINS_DEPENDENCIES_VERSION;
         $config->set('terminus_dependencies_dir', $terminusDependenciesDir);
         if (file_exists($terminusDependenciesDir . '/vendor/autoload.php')) {
             include_once("$terminusDependenciesDir/vendor/autoload.php");
