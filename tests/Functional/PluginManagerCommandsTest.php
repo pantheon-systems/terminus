@@ -37,7 +37,7 @@ class PluginManagerCommandsTest extends TestCase
         $filesystem->remove([$pluginsDir, $dependenciesBaseDir]);
 
         // LIST COMMANDS TO CHECK THAT PLUGIN COMMANDS ARE NOT AVAILABLE
-        $command = 'build:project:create';
+        $command = 'hello';
         $output = $this->terminus("list");
         $this->assertStringNotContainsString($command, $output);
 
@@ -50,7 +50,7 @@ class PluginManagerCommandsTest extends TestCase
         );
 
         // SEARCH PLUGIN
-        $plugin = 'build-tools';
+        $plugin = 'plugin-example';
         $results = $this->terminusJsonResponse("self:plugin:search $plugin");
         $this->assertIsArray($results, "Returned values from self:plugin:search should be array");
         $this->assertGreaterThan(
@@ -59,13 +59,13 @@ class PluginManagerCommandsTest extends TestCase
             "Count of plugins should be greater than 0"
         );
         $this->assertStringContainsString(
-            'pantheon-systems/terminus-build-tools-plugin',
+            'pantheon-systems/terminus-plugin-example',
             $results[0]['name'],
             "Terminus plugin search didn't return the expected plugin."
         );
 
         // INSTALL PLUGIN
-        $plugin = 'pantheon-systems/terminus-build-tools-plugin:dev-add-github-actions-sodium-compat';
+        $plugin = 'pantheon-systems/terminus-plugin-example';
         $results = $this->terminusWithStderrRedirected("self:plugin:install $plugin");
         $this->assertStringContainsString("Installed $plugin", $results, "Terminus plugin installation failed.");
 
@@ -78,7 +78,7 @@ class PluginManagerCommandsTest extends TestCase
             "Count of plugins should be greater than 0"
         );
         $this->assertStringContainsString(
-            'terminus-build-tools-plugin',
+            'terminus-plugin-example',
             $results[0]['name'],
             "Terminus plugin recently installed is not listed."
         );
@@ -88,7 +88,7 @@ class PluginManagerCommandsTest extends TestCase
         $this->assertStringContainsString($command, $output);
 
         // TRY UPDATING PLUGIN
-        $plugin = 'pantheon-systems/terminus-build-tools-plugin';
+        $plugin = 'pantheon-systems/terminus-plugin-example';
         $results = $this->terminusWithStderrRedirected("self:plugin:update $plugin");
         $this->assertStringContainsString(
             "Nothing to install, update or remove",
@@ -105,7 +105,7 @@ class PluginManagerCommandsTest extends TestCase
             "Count of plugins should be greater than 0"
         );
         $this->assertStringContainsString(
-            'terminus-build-tools-plugin',
+            'terminus-plugin-example',
             $results[0]['name'],
             "Terminus plugin recently installed is not listed."
         );
@@ -127,7 +127,7 @@ class PluginManagerCommandsTest extends TestCase
             "Count of plugins should be greater than 0"
         );
         $this->assertStringContainsString(
-            'terminus-build-tools-plugin',
+            'terminus-plugin-example',
             $results[0]['name'],
             "Terminus plugin recently installed is not listed."
         );
@@ -137,7 +137,7 @@ class PluginManagerCommandsTest extends TestCase
         $this->assertStringContainsString($command, $output);
 
         // TRY UNINSTALLING PLUGIN
-        $plugin = 'pantheon-systems/terminus-build-tools-plugin';
+        $plugin = 'pantheon-systems/terminus-plugin-example';
         $results = $this->terminusWithStderrRedirected("self:plugin:uninstall $plugin");
         $this->assertStringContainsString("Uninstalled $plugin", $results, "Terminus plugin uninstall failed.");
 
