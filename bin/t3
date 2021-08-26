@@ -58,6 +58,6 @@ if (!is_dir($tokens_dir)) {
     );
 }
 
-$terminus = Terminus::factory();
+$terminus = Terminus::factory(TERMINUS_PLUGINS_DEPENDENCIES_VERSION);
 $status_code = $terminus->run();
 exit($status_code);
