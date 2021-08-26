@@ -50,13 +50,15 @@ class PluginInfo implements ConfigAwareInterface, ContainerAwareInterface, Logge
     /**
      * Determines whether current terminus version satisfies given terminus-compatible value.
      */
-    public function isVersionCompatible($plugin_compatible = null) {
+    public function isVersionCompatible($plugin_compatible = null)
+    {
         if (!$plugin_compatible) {
             $plugin_compatible = $this->getCompatibleTerminusVersion();
         }
         $current_version = $this->getConfig()->get('version');
         $fallback_version = $this->getConfig()->get('plugins_fallback_compatibility');
-        return (Semver::satisfies($current_version, $plugin_compatible) || Semver::satisfies($fallback_version, $plugin_compatible));
+        return (Semver::satisfies($current_version, $plugin_compatible) ||
+            Semver::satisfies($fallback_version, $plugin_compatible));
     }
 
     /**
