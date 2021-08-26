@@ -238,6 +238,7 @@ abstract class PluginBaseCommand extends TerminusCommand
         if (!$this->getLocalMachine()->getFileSystem()->exists($path . '/composer.json')) {
             $this->runCommand("composer --working-dir=${path} init --name=${package_name} -n");
             $this->runCommand("composer --working-dir=${path} config minimum-stability dev");
+            $this->runCommand("composer --working-dir=${path} config prefer-stable true");
         }
     }
 
