@@ -1,20 +1,17 @@
 # Change Log
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org)
 
-##
-
-- New command `self:plugin:install` to install Terminus plugins. (#2054)
-- New command `self:plugin:list` to list installed Terminus plugins. (#2054)
-- New command `self:plugin:search` to locate Terminus plugins to install. (#2054)
-- New command `self:plugin:uninstall` to uninstall Terminus plugins. (#2054)
-- New command `self:plugin:update` to update already-installed Terminus plugins. (#2054)
-
 ## 3.0.0 - {}
 
 ### Added
 - D9ify command (see docs)
 - Symfony Library updates (5.x)
--
+- Adds plugin manager, contributed by [Ed Reel](https://github.com/uberhacker) (#2054)
+    - New command `self:plugin:install` to install Terminus plugins. (#2054)
+    - New command `self:plugin:list` to list installed Terminus plugins. (#2054)
+    - New command `self:plugin:search` to locate Terminus plugins to install. (#2054)
+    - New command `self:plugin:uninstall` to uninstall Terminus plugins. (#2054)
+    - New command `self:plugin:update` to update already-installed Terminus plugins. (#2054)
 
 ## 2.6.0 - 2021-06-04
 
