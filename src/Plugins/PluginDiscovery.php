@@ -4,19 +4,22 @@ namespace Pantheon\Terminus\Plugins;
 
 use League\Container\ContainerAwareInterface;
 use League\Container\ContainerAwareTrait;
+use Pantheon\Terminus\Config\ConfigAwareTrait;
 use Pantheon\Terminus\Exceptions\TerminusException;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 use Pantheon\Terminus\Plugins\PluginInfo;
 use Pantheon\Terminus\Helpers\LocalMachineHelper;
+use Robo\Contract\ConfigAwareInterface;
 
 /**
  * Class PluginDiscovery
  */
-class PluginDiscovery implements ContainerAwareInterface, LoggerAwareInterface
+class PluginDiscovery implements ContainerAwareInterface, LoggerAwareInterface, ConfigAwareInterface
 {
     use ContainerAwareTrait;
     use LoggerAwareTrait;
+    use ConfigAwareTrait;
 
     /**
      * List of all Terminus plugins that have been rolled into Terminus core.
@@ -32,7 +35,7 @@ class PluginDiscovery implements ContainerAwareInterface, LoggerAwareInterface
      */
     public function discover()
     {
-        $config = $this->getContainer()->get('config');
+        $config = $this->getConfig();
         $dependencies_dir = $config->get('terminus_dependencies_dir');
         $dependencies_composer_lock = [];
         $out = [];

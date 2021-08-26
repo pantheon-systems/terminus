@@ -12,6 +12,7 @@ use Pantheon\Terminus\Helpers\LocalMachineHelper;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 use Robo\Contract\ConfigAwareInterface;
+use Composer\Semver\Semver;
 
 /**
  * Class PluginInfo
@@ -44,6 +45,19 @@ class PluginInfo implements ConfigAwareInterface, ContainerAwareInterface, Logge
      * @var string
      */
     protected $stable_latest_version;
+
+
+    /**
+     * Determines whether current terminus version satisfies given terminus-compatible value.
+     */
+    public function isVersionCompatible($plugin_compatible = null) {
+        if (!$plugin_compatible) {
+            $plugin_compatible = $this->getCompatibleTerminusVersion();
+        }
+        $current_version = $this->getConfig()->get('version');
+        $fallback_version = $this->getConfig()->get('plugins_fallback_compatibility');
+        return (Semver::satisfies($current_version, $plugin_compatible) || Semver::satisfies($fallback_version, $plugin_compatible));
+    }
 
     /**
      * Set Plugin dir.

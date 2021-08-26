@@ -4,6 +4,7 @@ namespace Pantheon\Terminus\Commands\Self\Plugin;
 
 use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
 use Composer\Semver\Semver;
+use Pantheon\Terminus\Plugins\PluginInfo;
 
 /**
  * Search for Terminus plugins to install.
@@ -59,15 +60,14 @@ class SearchCommand extends PluginBaseCommand
                 function ($message) {
                     list($project) = explode(' ', $message, 2);
                     if (preg_match('#^[^/]*/[^/]*$#', $project)) {
-                        $terminus_major = $this->getTerminusMajorVersion();
                         $url = str_replace('{project}', $project, self::PROJECT_URL);
                         $json = json_decode(file_get_contents($url), true, 10);
-                        if ($this->validatePackageVersions($json['packages'][$project], $terminus_major)) {
+                        if ($this->validatePackageVersions($json['packages'][$project])) {
                             return true;
                         }
                         $url = str_replace('{project}', $project, self::PROJECT_DEV_URL);
                         $json = json_decode(file_get_contents($url), true, 10);
-                        if ($this->validatePackageVersions($json['packages'][$project], $terminus_major)) {
+                        if ($this->validatePackageVersions($json['packages'][$project])) {
                             return true;
                         }
                     }
@@ -87,14 +87,15 @@ class SearchCommand extends PluginBaseCommand
     /**
      * Validate package versions against terminus major version.
      */
-    protected function validatePackageVersions($versions_array, $terminus_major)
+    protected function validatePackageVersions($versions_array)
     {
+        $plugin_info = $this->getContainer()->get(PluginInfo::class);
         foreach ($versions_array as $version) {
             $plugin_compatible = $version['extra']['terminus']['compatible-version'] ?? '';
             if (!$plugin_compatible) {
                 continue;
             }
-            if (Semver::satisfies($terminus_major, $plugin_compatible)) {
+            if ($plugin_info->isVersionCompatible($plugin_compatible)) {
                 return true;
             }
         }

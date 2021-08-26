@@ -132,17 +132,6 @@ abstract class PluginBaseCommand extends TerminusCommand
     }
 
     /**
-     * Returns terminus major version.
-     *
-     * @return int
-     */
-    protected function getTerminusMajorVersion()
-    {
-        $config = $this->getContainer()->get('config');
-        return substr($config->get('version'), 0, 1);
-    }
-
-    /**
      * Get packages string from composer.lock file contents.
      */
     protected function getPackagesWithVersionString($composer_lock_contents)

@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace Pantheon\Terminus;
 
 use Composer\Autoload\ClassLoader;
-use Composer\Semver\Semver;
 use League\Container\Container;
 use League\Container\ContainerAwareInterface;
 use League\Container\ContainerAwareTrait;
@@ -406,7 +405,7 @@ class Terminus implements
         $classLoader = new ClassLoader();
         $classLoader->register();
         foreach ($plugins as $plugin) {
-            if (Semver::satisfies($version, $plugin->getCompatibleTerminusVersion())) {
+            if ($plugin->isVersionCompatible()) {
                 $this->commands += $plugin->getCommandsAndHooks();
             } else {
                 $this->logger->warning(
