@@ -501,7 +501,7 @@ class Terminus implements
 
 
 
-    public static function factory($dependencies_version = '1'): Terminus
+    public static function factory($dependencies_version = null): Terminus
     {
         $input = new ArgvInput($_SERVER['argv']);
         $output = new ConsoleOutput();
@@ -510,11 +510,13 @@ class Terminus implements
         $config->extend(new YamlConfig($config->get('user_home') . '/.terminus/config.yml'));
         $config->extend(new DotEnvConfig(getcwd()));
         $config->extend(new EnvConfig());
-        $dependenciesBaseDir = $config->get('dependencies_base_dir');
-        $terminusDependenciesDir = $dependenciesBaseDir . '/' . $dependencies_version;
-        $config->set('terminus_dependencies_dir', $terminusDependenciesDir);
-        if (file_exists($terminusDependenciesDir . '/vendor/autoload.php')) {
-            include_once("$terminusDependenciesDir/vendor/autoload.php");
+        if ($dependencies_version) {
+            $dependenciesBaseDir = $config->get('dependencies_base_dir');
+            $terminusDependenciesDir = $dependenciesBaseDir . '/' . $dependencies_version;
+            $config->set('terminus_dependencies_dir', $terminusDependenciesDir);
+            if (file_exists($terminusDependenciesDir . '/vendor/autoload.php')) {
+                include_once("$terminusDependenciesDir/vendor/autoload.php");
+            }
         }
         return new static($config, $input, $output);
     }
