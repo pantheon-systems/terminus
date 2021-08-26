@@ -51,6 +51,26 @@ trait TerminusTestTrait
     }
 
     /**
+     * Run a terminus command redirecting stderr to stdout.
+     *
+     * @param string $command
+     *   The command to run.
+     * @param int|null $expected_status
+     *   Status code. Null = no status check
+     */
+    protected function terminusWithStderrRedirected(string $command, ?int $expected_status = 0): ?string
+    {
+        [$output, $status] = static::callTerminus($command . ' 2>&1');
+        if ($expected_status !== null) {
+            $this->assertEquals($expected_status, $status, $output);
+        }
+        if (is_array($output)) {
+            join("", $output);
+        }
+        return $output;
+    }
+
+    /**
      * @param $command
      * @param int|null $expected_status
      *
