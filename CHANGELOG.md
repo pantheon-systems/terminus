@@ -7,11 +7,11 @@ All notable changes to this project will be documented in this file. This projec
 - D9ify command (see docs)
 - Symfony Library updates (5.x)
 - Adds plugin manager, contributed by [Ed Reel](https://github.com/uberhacker) (#2054)
-    - New command `self:plugin:install` to install Terminus plugins. (#2054)
-    - New command `self:plugin:list` to list installed Terminus plugins. (#2054)
-    - New command `self:plugin:search` to locate Terminus plugins to install. (#2054)
-    - New command `self:plugin:uninstall` to uninstall Terminus plugins. (#2054)
-    - New command `self:plugin:update` to update already-installed Terminus plugins. (#2054)
+    - New command `self:plugin:install` to install Terminus plugins.
+    - New command `self:plugin:list` to list installed Terminus plugins.
+    - New command `self:plugin:search` to locate Terminus plugins to install.
+    - New command `self:plugin:uninstall` to uninstall Terminus plugins.
+    - New command `self:plugin:update` to update already-installed Terminus plugins.
 
 ## 2.6.0 - 2021-06-04
 
