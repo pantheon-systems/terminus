@@ -100,11 +100,18 @@ class InstallCommand extends PluginBaseCommand
     }
 
     /**
+     * Validate given project is valid. If project name does not include vendor, prefix it with pantheon-systems.
+     *
      * @param string $project_name
      * @return bool
      */
-    private function validateProject($project_name)
+    private function validateProject(&$project_name)
     {
+        $parts = explode('/', $project_name);
+        if (count($parts) === 1) {
+            // No vendor name, add pantheon-systems as default.
+            $project_name = "pantheon-systems/$project_name";
+        }
         if (!PluginInfo::checkWhetherPackagistProject($project_name, $this->getLocalMachine())) {
             $this->log()->error(self::INVALID_PROJECT_MESSAGE, ['project' => $project_name,]);
             return false;
