@@ -14,7 +14,7 @@ trait TerminusTestTrait
      *
      * @param string $command The command to run
      *
-     * @reutrn array
+     * @return array
      *   The execution's output and status.
      */
     protected static function callTerminus(string $command): array
@@ -41,6 +41,26 @@ trait TerminusTestTrait
     protected function terminus(string $command, ?int $expected_status = 0): ?string
     {
         [$output, $status] = static::callTerminus($command);
+        if ($expected_status !== null) {
+            $this->assertEquals($expected_status, $status, $output);
+        }
+        if (is_array($output)) {
+            join("", $output);
+        }
+        return $output;
+    }
+
+    /**
+     * Run a terminus command redirecting stderr to stdout.
+     *
+     * @param string $command
+     *   The command to run.
+     * @param int|null $expected_status
+     *   Status code. Null = no status check
+     */
+    protected function terminusWithStderrRedirected(string $command, ?int $expected_status = 0): ?string
+    {
+        [$output, $status] = static::callTerminus($command . ' 2>&1');
         if ($expected_status !== null) {
             $this->assertEquals($expected_status, $status, $output);
         }
@@ -82,6 +102,26 @@ trait TerminusTestTrait
     protected function getSiteName(): string
     {
         return getenv('TERMINUS_SITE');
+    }
+
+    /**
+     * Returns the plugin dir.
+     *
+     * @return string
+     */
+    protected function getPluginsDir(): string
+    {
+        return getenv('TERMINUS_PLUGINS_DIR');
+    }
+
+    /**
+     * Returns the dependencies base dir.
+     *
+     * @return string
+     */
+    protected function getDependenciesBaseDir(): string
+    {
+        return getenv('TERMINUS_DEPENDENCIES_BASE_DIR');
     }
 
     /**

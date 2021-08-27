@@ -4,16 +4,22 @@ namespace Pantheon\Terminus\Plugins;
 
 use League\Container\ContainerAwareInterface;
 use League\Container\ContainerAwareTrait;
+use Pantheon\Terminus\Config\ConfigAwareTrait;
 use Pantheon\Terminus\Exceptions\TerminusException;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
+use Pantheon\Terminus\Plugins\PluginInfo;
+use Pantheon\Terminus\Helpers\LocalMachineHelper;
+use Robo\Contract\ConfigAwareInterface;
 
 /**
  * Class PluginDiscovery
  */
-class PluginDiscovery implements LoggerAwareInterface
+class PluginDiscovery implements ContainerAwareInterface, LoggerAwareInterface, ConfigAwareInterface
 {
+    use ContainerAwareTrait;
     use LoggerAwareTrait;
+    use ConfigAwareTrait;
 
     /**
      * List of all Terminus plugins that have been rolled into Terminus core.
@@ -23,48 +29,49 @@ class PluginDiscovery implements LoggerAwareInterface
     ];
 
     /**
-     * @var string The path to the directory to search for plugins.
-     */
-    protected $directory_path;
-
-    /**
-     * PluginDiscovery constructor.
-     *
-     * @param $path
-     */
-    public function __construct($path)
-    {
-        $this->directory_path = $path;
-    }
-
-    /**
      * Return a list of plugin
      *
      * @return PluginInfo[]
      */
     public function discover()
     {
+        $config = $this->getConfig();
+        $dependencies_dir = $config->get('terminus_dependencies_dir');
+        $dependencies_composer_lock = [];
         $out = [];
         try {
-            $di = new \DirectoryIterator($this->directory_path);
+            $local_machine = $this->getContainer()->get(LocalMachineHelper::class);
+            if ($local_machine->getFilesystem()->exists($dependencies_dir . '/composer.lock')) {
+                $dependencies_composer_lock = \json_decode(
+                    file_get_contents($dependencies_dir . '/composer.lock'),
+                    true,
+                    10,
+                    JSON_THROW_ON_ERROR
+                );
+            }
+            if (empty($dependencies_composer_lock['packages'])) {
+                // Something is empty, nothing to do.
+                return $out;
+            }
         } catch (\Exception $e) {
-            return $out;
             // Plugin directory probably didn't exist or wasn't writable. Do nothing.
+            return $out;
         }
-
-        foreach ($di as $dir) {
-            if ($dir->isDir() && !$dir->isDot() && $dir->isReadable()) {
-                try {
-                    $plugin = new PluginInfo($dir->getPathname());
-                    if (!in_array($plugin->getName(), self::BLACKLIST)) {
-                        $out[] = $plugin;
-                    }
-                } catch (TerminusException $e) {
-                    $this->logger->warning(
-                        'Plugin Discovery: Ignoring directory {dir} because: {msg}.',
-                        ['dir' => $dir->getPathName(), 'msg' => $e->getMessage()]
-                    );
+        foreach ($dependencies_composer_lock['packages'] as $package) {
+            try {
+                if (empty($package['type']) || $package['type'] !== 'terminus-plugin') {
+                    continue;
                 }
+                $plugin = $this->getContainer()->get(PluginInfo::class);
+                $plugin->setInfoArray($package);
+                if (!in_array($plugin->getName(), self::BLACKLIST)) {
+                    $out[] = $plugin;
+                }
+            } catch (TerminusException $e) {
+                $this->logger->warning(
+                    'Plugin Discovery: Ignoring directory {dir} because: {msg}.',
+                    ['dir' => $dir->getPathName(), 'msg' => $e->getMessage()]
+                );
             }
         }
         return $out;

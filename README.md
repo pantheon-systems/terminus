@@ -45,8 +45,10 @@ These packages will install when you install Terminus.
 
 #### Recommended Packages
 
-- [Drush](http://docs.drush.org/en/master/install/) (Useful to run incompatible-with-Terminus Drush commands)
+### Recommended
 
+- [Composer](https://getcomposer.org/doc/00-intro.md) (Needed to use the `self:plugin` commands.)
+- [Drush](http://docs.drush.org/en/master/install/) (Useful to run incompatible-with-Terminus Drush commands)
 - [WP-CLI](http://wp-cli.org/) (Useful to run incompatible-with-Terminus WP-CLI commands)
 
 

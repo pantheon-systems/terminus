@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace Pantheon\Terminus;
 
 use Composer\Autoload\ClassLoader;
-use Composer\Semver\Semver;
 use League\Container\Container;
 use League\Container\ContainerAwareInterface;
 use League\Container\ContainerAwareTrait;
@@ -14,8 +13,8 @@ use Pantheon\Terminus\Config\ConfigAwareTrait;
 use Pantheon\Terminus\DataStore\FileStore;
 use Pantheon\Terminus\Helpers\LocalMachineHelper;
 use Pantheon\Terminus\Helpers\Traits\CommandExecutorTrait;
-use Pantheon\Terminus\Plugins\PluginAutoloadDependencies;
 use Pantheon\Terminus\Plugins\PluginDiscovery;
+use Pantheon\Terminus\Plugins\PluginInfo;
 use Pantheon\Terminus\ProgressBars\ProcessProgressBar;
 use Pantheon\Terminus\ProgressBars\WorkflowProgressBar;
 use Pantheon\Terminus\Request\Request;
@@ -158,10 +157,8 @@ class Terminus implements
         $container->add(WorkflowProgressBar::class);
 
         // Plugin handlers
-        $container->share('pluginAutoloadDependencies', PluginAutoloadDependencies::class)
-            ->addArgument(__DIR__);
-        $container->add(PluginDiscovery::class)
-            ->addArgument($this->getConfig()->get('plugins_dir'));
+        $container->add(PluginDiscovery::class);
+        $container->add(PluginInfo::class);
 
         $container->share('sites', Sites::class);
         $container->inflector(SiteAwareInterface::class)
@@ -177,10 +174,6 @@ class Terminus implements
         $factory = $container->get('commandFactory');
         $factory->setIncludeAllPublicMethods(false);
         $factory->setDataStore($commandCacheDataStore);
-
-        // Call our autoload loader at the beginning of any command dispatch.
-        $pluginAutoloadDependencies = $container->get('pluginAutoloadDependencies');
-        $factory->hookManager()->addInitializeHook($pluginAutoloadDependencies);
     }
 
     private function configureModulesAndCollections($container)
@@ -356,6 +349,12 @@ class Terminus implements
             'Pantheon\\Terminus\\Commands\\Self\\ConfigDumpCommand',
             'Pantheon\\Terminus\\Commands\\Self\\ConsoleCommand',
             'Pantheon\\Terminus\\Commands\\Self\\InfoCommand',
+            'Pantheon\\Terminus\\Commands\\Self\\Plugin\\InstallCommand',
+            'Pantheon\\Terminus\\Commands\\Self\\Plugin\\ListCommand',
+            'Pantheon\\Terminus\\Commands\\Self\\Plugin\\ReloadCommand',
+            'Pantheon\\Terminus\\Commands\\Self\\Plugin\\SearchCommand',
+            'Pantheon\\Terminus\\Commands\\Self\\Plugin\\UninstallCommand',
+            'Pantheon\\Terminus\\Commands\\Self\\Plugin\\UpdateCommand',
             'Pantheon\\Terminus\\Commands\\ServiceLevel\\SetCommand',
             'Pantheon\\Terminus\\Commands\\Site\\CreateCommand',
             'Pantheon\\Terminus\\Commands\\Site\\DeleteCommand',
@@ -406,8 +405,7 @@ class Terminus implements
         $classLoader = new ClassLoader();
         $classLoader->register();
         foreach ($plugins as $plugin) {
-            if (Semver::satisfies($version, $plugin->getCompatibleTerminusVersion())) {
-                $plugin->autoloadPlugin($classLoader);
+            if ($plugin->isVersionCompatible()) {
                 $this->commands += $plugin->getCommandsAndHooks();
             } else {
                 $this->logger->warning(
@@ -503,7 +501,7 @@ class Terminus implements
 
 
 
-    public static function factory(): Terminus
+    public static function factory($dependencies_version = null): Terminus
     {
         $input = new ArgvInput($_SERVER['argv']);
         $output = new ConsoleOutput();
@@ -512,6 +510,14 @@ class Terminus implements
         $config->extend(new YamlConfig($config->get('user_home') . '/.terminus/config.yml'));
         $config->extend(new DotEnvConfig(getcwd()));
         $config->extend(new EnvConfig());
+        if ($dependencies_version) {
+            $dependenciesBaseDir = $config->get('dependencies_base_dir');
+            $terminusDependenciesDir = $dependenciesBaseDir . '/' . $dependencies_version;
+            $config->set('terminus_dependencies_dir', $terminusDependenciesDir);
+            if (file_exists($terminusDependenciesDir . '/vendor/autoload.php')) {
+                include_once("$terminusDependenciesDir/vendor/autoload.php");
+            }
+        }
         return new static($config, $input, $output);
     }
 }

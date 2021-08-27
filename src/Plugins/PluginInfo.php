@@ -3,15 +3,35 @@
 namespace Pantheon\Terminus\Plugins;
 
 use Consolidation\AnnotatedCommand\CommandFileDiscovery;
+use League\Container\ContainerAwareInterface;
+use League\Container\ContainerAwareTrait;
+use Pantheon\Terminus\Config\ConfigAwareTrait;
 use Pantheon\Terminus\Exceptions\TerminusException;
+use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
+use Pantheon\Terminus\Helpers\LocalMachineHelper;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareTrait;
+use Robo\Contract\ConfigAwareInterface;
+use Composer\Semver\Semver;
 
 /**
  * Class PluginInfo
  * @package Pantheon\Terminus\Plugins
  */
-class PluginInfo
+class PluginInfo implements ConfigAwareInterface, ContainerAwareInterface, LoggerAwareInterface
 {
+    use ConfigAwareTrait;
+    use ContainerAwareTrait;
+    use LoggerAwareTrait;
+
     const MAX_COMMAND_DEPTH = 4;
+
+    // Commands
+    const GET_LATEST_AVAILABLE_VERSION = 'composer show {package} --latest --all --format=json';
+    const VALIDATION_COMMAND = 'composer search -N -t terminus-plugin {project}';
+
+    // Version Numbers
+    const UNKNOWN_VERSION = 'unknown';
 
     /**
      * @var null|array
@@ -21,33 +41,43 @@ class PluginInfo
      * @var string
      */
     protected $plugin_dir;
+    /**
+     * @var string
+     */
+    protected $stable_latest_version;
+
 
     /**
-     * PluginInfo constructor.
-     * @param $plugin_dir
+     * Determines whether current terminus version satisfies given terminus-compatible value.
      */
-    public function __construct($plugin_dir)
+    public function isVersionCompatible($plugin_compatible = null)
+    {
+        if (!$plugin_compatible) {
+            $plugin_compatible = $this->getCompatibleTerminusVersion();
+        }
+        $current_version = $this->getConfig()->get('version');
+        $fallback_version = $this->getConfig()->get('plugins_fallback_compatibility');
+        return (Semver::satisfies($current_version, $plugin_compatible) ||
+            Semver::satisfies($fallback_version, $plugin_compatible));
+    }
+
+    /**
+     * Set Plugin dir.
+     */
+    public function setPluginDir($plugin_dir)
     {
         $this->plugin_dir = $plugin_dir;
         $this->info = $this->parsePluginInfo();
     }
 
     /**
-     * Register an autoloader for the class files from the plugin itself
-     * at plugin discovery time.  Note that the classes from libraries that
-     * the plugin dependes on (from the `require` section of its composer.json)
-     * are not available until one of its commands is called.
-     *
-     * @param Composer\Autoload\ClassLoader $loader
+     * Set packageinfo.
      */
-    public function autoloadPlugin($loader)
+    public function setInfoArray($info)
     {
-        if ($this->usesAutoload()) {
-            $info = $this->getInfo();
-            foreach ($info['autoload']['psr-4'] as $prefix => $path) {
-                $loader->addPsr4($prefix, $this->plugin_dir . DIRECTORY_SEPARATOR . $path);
-            }
-        }
+        $this->info = $info;
+        $dependencies_dir = $this->getConfig()->get('terminus_dependencies_dir');
+        $this->plugin_dir = $dependencies_dir . '/vendor/' . $info['name'];
     }
 
     /**
@@ -64,16 +94,6 @@ class PluginInfo
             ->setSearchLocations([])
             ->setSearchDepth(self::MAX_COMMAND_DEPTH);
         $command_files = $discovery->discover($path, $namespace);
-
-        // If this plugin uses autoloading, then its autoloader will
-        // have already been configured via autoloadPlugin(), below.
-        // Otherwise, we will include all of its source files here.
-        if (!$this->usesAutoload()) {
-            $file_names = array_keys($command_files);
-            foreach ($file_names as $file) {
-                include $file;
-            }
-        }
 
         return $command_files;
     }
@@ -98,13 +118,137 @@ class PluginInfo
         return $this->info;
     }
 
+    /**
+     * Get the currently installed plugin version.
+     *
+     * @return string Installed plugin version
+     */
+    public function getInstalledVersion()
+    {
+        if (!empty($this->info['version'])) {
+            return $this->info['version'];
+        }
+        $dependencies_dir = $this->getConfig()->get('terminus_dependencies_dir');
+        $composer_lock = json_decode(
+            file_get_contents($dependencies_dir . '/composer.lock'),
+            true,
+            10
+        );
+        foreach ($composer_lock['packages'] as $package) {
+            if ($package['name'] === $this->getName()) {
+                return $package['version'];
+            }
+        }
+        return self::UNKNOWN_VERSION;
+    }
+
+    /**
+     * Get the latest available plugin version.
+     *
+     * @return string Latest plugin version
+     */
+    public function getLatestVersion()
+    {
+        $command = str_replace(
+            '{package}',
+            $this->getName(),
+            self::GET_LATEST_AVAILABLE_VERSION
+        );
+        $results = $this->runCommand($command);
+        $package_info = json_decode($results['output'], true, 10);
+        if (empty($package_info)) {
+            throw new TerminusNotFoundException('Package info not found.');
+        }
+        if (!empty($package_info['latest'])) {
+            return $package_info['latest'];
+        }
+        $versions = $package_info['versions'];
+        return reset($versions);
+    }
+
+    /**
+     * @return string
+     */
     public function getName()
     {
         $info = $this->getInfo();
         if (isset($info['name'])) {
             return $info['name'];
         }
-        return basename($this->plugin_dir);
+        return basename($this->getPath());
+    }
+
+    /**
+     * @return string Location of the plugin installation
+     */
+    public function getPath()
+    {
+        return $this->plugin_dir;
+    }
+
+    /**
+     * @return string
+     */
+    public function getPluginName()
+    {
+        return self::getPluginNameFromProjectName($this->getName());
+    }
+
+    /**
+     * Check whether a Packagist project is valid.
+     *
+     * @return bool True if valid, false otherwise
+     */
+    public function isValidPackagistProject()
+    {
+        return self::checkWhetherPackagistProject($this->getName(), $this->getLocalMachine());
+    }
+
+
+    /**
+     * Check whether a Packagist project is valid.
+     *
+     * @param string $project_name Name of plugin package to install
+     * @param LocalMachineHelper $local_machine_helper
+     * @return bool True if valid, false otherwise
+     */
+    public static function checkWhetherPackagistProject($project_name, LocalMachineHelper $local_machine_helper)
+    {
+        // Separate version if exists.
+        $project_name_parts = explode(':', $project_name);
+        $project_name = reset($project_name_parts);
+        // Search for the Packagist project.
+        $command = str_replace(
+            '{project}',
+            $project_name,
+            self::VALIDATION_COMMAND
+        );
+        $results = $local_machine_helper->exec($command);
+        $result = (trim($results['output']));
+
+        if (empty($result)) {
+            return false;
+        }
+        return ($result === $project_name);
+    }
+
+    /**
+     * @param $version_number
+     * @return string
+     */
+    public static function getMajorVersionFromVersion($version_number)
+    {
+        preg_match('/(\d*).\d*.\d*/', $version_number, $version_matches);
+        return $version_matches[1];
+    }
+
+    /**
+     * @return string
+     */
+    public static function getPluginNameFromProjectName($project_name)
+    {
+        preg_match('/.*\/(.*)/', $project_name, $matches);
+        return $matches[1];
     }
 
     /**
@@ -134,6 +278,14 @@ class PluginInfo
     {
         $autoload = $this->getAutoloadInfo();
         return $autoload['prefix'];
+    }
+
+    /**
+     * @return LocalMachineHelper
+     */
+    protected function getLocalMachine()
+    {
+        return $this->getContainer()->get(LocalMachineHelper::class);
     }
 
     /**
@@ -177,10 +329,14 @@ class PluginInfo
             throw new TerminusException('The file "{file}" is not readable', ['file' => $composer_json]);
         }
 
-        $info = json_decode(file_get_contents($composer_json), true);
+        if (!$this->info) {
+            $info = json_decode(file_get_contents($composer_json), true);
+        } else {
+            $info = $this->info;
+        }
 
         if (!$info) {
-            throw new TerminusException('The file "{file}" does not contain valid JSON', ['file' => $composer_json]);
+            throw new TerminusException('No correct info retrieved for package at {dir}', ['dir' => $this->plugin_dir]);
         }
 
         if (!isset($info['type']) || $info['type'] !== 'terminus-plugin') {
@@ -212,16 +368,10 @@ class PluginInfo
             }
         }
 
-        return (array)$info;
-    }
+        $info['version'] = $this->getInstalledVersion();
+        $info['latest_version'] = $this->getLatestVersion();
 
-    /**
-     * Check to see if this plugin uses autloading
-     * @return boolean
-     */
-    protected function usesAutoload()
-    {
-        return $this->hasAutoload($this->getInfo());
+        return (array)$info;
     }
 
     /**
@@ -232,6 +382,45 @@ class PluginInfo
     private function getCommandFileDirectory()
     {
         $autoload = $this->getAutoloadInfo();
-        return $this->plugin_dir . '/' . $autoload['dir'];
+        return $this->getPath() . '/' . $autoload['dir'];
+    }
+
+    /**
+     * @param string $command
+     * @return array
+     */
+    private function runCommand($command)
+    {
+        $this->logger->debug('Running {command}...', compact('command'));
+        $results = $this->getLocalMachine()->exec($command);
+        $this->logger->debug("Returned:\n{output}", $results);
+        return $results;
+    }
+
+    /**
+     * @param string $results Version results from Composer
+     * @return array
+     */
+    private static function filterForVersionNumbers($results)
+    {
+        if (is_string($results)) {
+            $results = explode(PHP_EOL, $results);
+        }
+        if (empty($results)) {
+            return [];
+        }
+        return array_map(
+            function ($result) {
+                preg_match('/(\d*\.\d*\.\d*)/', $result, $output_array);
+                return $output_array[1];
+            },
+            array_filter(
+                $results,
+                function ($result) {
+                    preg_match('/(\d*\.\d*\.\d*)/', $result, $output_array);
+                    return isset($output_array[1]);
+                }
+            )
+        );
     }
 }
