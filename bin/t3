@@ -10,7 +10,7 @@
  */
 
 // Increase this number to force terminus dependencies to be reloaded.
-define('TERMINUS_PLUGINS_DEPENDENCIES_VERSION', 1);
+$terminusPluginsDependenciesVersion = '1';
 
 // Cannot use $_SERVER superglobal since that's empty during phpunit testing
 // getenv('HOME') isn't set on Windows and generates a Notice.
@@ -58,6 +58,6 @@ if (!is_dir($tokens_dir)) {
     );
 }
 
-$terminus = Terminus::factory(TERMINUS_PLUGINS_DEPENDENCIES_VERSION);
+$terminus = Terminus::factory($terminusPluginsDependenciesVersion);
 $status_code = $terminus->run();
 exit($status_code);
