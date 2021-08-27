@@ -35,13 +35,13 @@ class LockCommandsTest extends TestCase
 
         // Verify the lock is disabled.
         $getLockInfoCommand = sprintf('lock:info %s.%s ', $this->getSiteName(), 'dev');
-        $lockInfo = $this->terminusJsonResponse($getLockInfoCommand);
-        $expectedLockInfo = [
+        $this->assertTerminusCommandResultEqualsInAttempts(function () use ($getLockInfoCommand) {
+            return $this->terminusJsonResponse($getLockInfoCommand);
+        }, [
             'locked' => false,
             'username' => null,
             'password' => null,
-        ];
-        $this->assertEquals($expectedLockInfo, $lockInfo);
+        ]);
 
         // Enable the lock.
         $lockUserName = 'test_user';
@@ -56,13 +56,13 @@ class LockCommandsTest extends TestCase
         $this->terminus($enableLockInfoCommand);
 
         // Verify the lock is enabled.
-        $lockInfo = $this->terminusJsonResponse($getLockInfoCommand);
-        $expectedLockInfo = [
+        $this->assertTerminusCommandResultEqualsInAttempts(function () use ($getLockInfoCommand) {
+            return $this->terminusJsonResponse($getLockInfoCommand);
+        }, [
             'locked' => true,
             'username' => $lockUserName,
             'password' => $lockPassword,
-        ];
-        $this->assertEquals($expectedLockInfo, $lockInfo);
+        ]);
 
         // Disable the lock.
         $this->terminus($disableLockCommand);

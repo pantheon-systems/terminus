@@ -1,7 +1,6 @@
 name: Terminus
 on:
   push:
-  pull_request:
   repository_dispatch:
   schedule:
     - cron: '0 0 * * *'
@@ -57,11 +56,15 @@ jobs:
       TERMINUS_SITE: ${{ secrets.TERMINUS_SITE }}
     needs: [ checkout_build ]
     steps:
+      - name: Install SSH key
+        uses: webfactory/ssh-agent@v0.5.3
+        with:
+          ssh-private-key: ${{ secrets.TERMINUS_SITE_OWNER_SSH_PRIVATE_KEY }}
       - name: Setup PHP with PECL extension
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php-versions }}
-          extensions: gd, mbstring, zip
+          extensions: gd, mbstring, zip, ssh2-1.3.1
           coverage: pcov
       - name: Download repo content from artifact
         uses: actions/download-artifact@v2
