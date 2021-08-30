@@ -216,6 +216,16 @@ trait TerminusTestTrait
     }
 
     /**
+     * Returns TRUE for a CI environment.
+     *
+     * @return bool
+     */
+    protected function isCiEnv(): bool
+    {
+        return (bool) getenv('CI');
+    }
+
+    /**
      * Returns the site info.
      *
      * @return array
