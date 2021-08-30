@@ -53,6 +53,6 @@ class RemoteCommandsTest extends TestCase
         $drushStatus = $this->terminusJsonResponse($command);
         $this->assertIsArray($drushStatus);
         $this->assertTrue(isset($drushStatus['drush-version']));
-        $this->assertEquals($drushStatus['drupal-version'], $drushVersion);
+        $this->assertEquals($drushStatus['drush-version'], $drushVersion);
     }
 }
