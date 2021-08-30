@@ -389,7 +389,7 @@ class PluginInfo implements ConfigAwareInterface, ContainerAwareInterface, Logge
      * @param string $command
      * @return array
      */
-    private function runCommand($command)
+    private function runCommand(string $command)
     {
         $this->logger->debug('Running {command}...', compact('command'));
         $results = $this->getLocalMachine()->exec($command);

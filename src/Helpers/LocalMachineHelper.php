@@ -51,6 +51,8 @@ class LocalMachineHelper implements ConfigAwareInterface, ContainerAwareInterfac
      * @param callable $callback A function to run while waiting for the process to complete
      * @param bool $progressIndicatorAllowed Allow the progress bar to be used (if in tty mode only)
      * @return array The command output and exit_code
+     *
+     * @throws TerminusException
      */
     public function execute($cmd, $callback = null, $progressIndicatorAllowed = false)
     {
@@ -199,22 +201,15 @@ class LocalMachineHelper implements ConfigAwareInterface, ContainerAwareInterfac
     /**
      * Returns a set-up process object.
      *
-     * @param string|array $cmd The command to execute
+     * @param string $cmd The command to execute
      * @return Process
      */
-    protected function getProcess($cmd)
+    protected function getProcess(string $cmd)
     {
-        $process = null;
-        if (is_string($cmd)) {
-            $process = Process::fromShellCommandline($cmd);
-        } elseif (is_array($cmd)) {
-            $process = new Process($cmd);
-        }
-        if (!$process) {
-            throw new \InvalidArgumentException('$cmd should be a string or an array.');
-        }
+        $process = Process::fromShellCommandline($cmd);
         $config = $this->getConfig();
         $process->setTimeout($config->get('timeout'));
+
         return $process;
     }
 }

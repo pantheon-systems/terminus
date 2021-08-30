@@ -108,7 +108,7 @@ abstract class PluginBaseCommand extends TerminusCommand
      * @param string $command
      * @return array
      */
-    protected function runCommand($command)
+    protected function runCommand(string $command)
     {
         $this->log()->debug('Running {command}...', compact('command'));
         $results = $this->getLocalMachine()->exec($command);
