@@ -74,6 +74,11 @@ class AliasesCommandTest extends TestCase
             '"path-aliases" value should be present and match "[][\'%files\' => \'files\']"'
         );
 
+        if (!$this->isCiEnv()) {
+            // Prevent overriding drush aliases on a non-CI environment.
+            return;
+        }
+
         // Save all printed Drush 8 aliases to A variable.
         $aliases_printed = $this->terminus('drush:aliases --print');
 
