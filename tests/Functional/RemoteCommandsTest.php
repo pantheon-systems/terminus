@@ -40,8 +40,7 @@ class RemoteCommandsTest extends TestCase
      */
     public function testDrushCommands()
     {
-        // @todo: change env to 'dev'.
-        $commandPrefix = sprintf('drush %s.%s', $this->getSiteName(), 'fix-drush');
+        $commandPrefix = sprintf('drush %s.%s', $this->getSiteName(), 'dev');
 
         $command = sprintf('%s -- %s', $commandPrefix, 'version');
         $drushVersion = $this->terminusJsonResponse($command);
