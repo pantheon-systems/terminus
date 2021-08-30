@@ -3,9 +3,7 @@
 namespace Pantheon\Terminus\Tests\Functional;
 
 use Pantheon\Terminus\Tests\Traits\LoginHelperTrait;
-use Pantheon\Terminus\Tests\Traits\SiteBaseSetupTrait;
 use Pantheon\Terminus\Tests\Traits\TerminusTestTrait;
-use Pantheon\Terminus\Tests\Traits\UrlStatusCodeHelperTrait;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -29,8 +27,8 @@ class TagCommandsTest extends TestCase
      */
     public function testTagAddListRemove()
     {
-        $siteName = getenv('TERMINUS_SITE');
-        $orgId = getenv('TERMINUS_ORG');
+        $siteName = $this->getSiteName();
+        $orgId = $this->getOrg();
         $newTag = uniqid("tag-");
 
         // ADD
@@ -44,7 +42,7 @@ class TagCommandsTest extends TestCase
 
         // REMOVE
         $this->terminus("tag:remove {$siteName} {$orgId} {$newTag}", null);
-        
+
         $tagList2 = $this->terminusJsonResponse("tag:list {$siteName} {$orgId}");
         $this->assertNotContains($newTag, $tagList2, "Tag list should no longer contain new tag");
     }

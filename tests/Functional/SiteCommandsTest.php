@@ -25,9 +25,8 @@ class SiteCommandsTest extends TestCase
      */
     public function testSiteListCommand()
     {
-        $org = getenv("TERMINUS_ORG");
         $siteList = $this->terminusJsonResponse(
-            "site:list --org=" . $org
+            "site:list --org=" . $this->getOrg()
         );
         $this->assertIsArray(
             $siteList,
@@ -60,8 +59,6 @@ class SiteCommandsTest extends TestCase
      *
      * @group site
      * @group short
-     *
-     * @throws \JsonException
      */
     public function testSiteOrgListCommand()
     {
@@ -86,8 +83,6 @@ class SiteCommandsTest extends TestCase
      *
      * @group site
      * @group short
-     *
-     * @throws \JsonException
      */
     public function testSiteOrgsCommand()
     {
@@ -113,14 +108,12 @@ class SiteCommandsTest extends TestCase
      *
      * @group site
      * @group long
-     *
-     * @throws \JsonException
      */
     public function testSiteCreateInfoDeleteCommand()
     {
         $output = new ConsoleOutput();
         $sitename = \strtolower(\substr(\uniqid('site-create-'), -50));
-        $org = getenv('TERMINUS_ORG');
+        $org = $this->getOrg();
         $output->writeln("Step 1 => Sitename => Creating... {$sitename}");
         $command = vsprintf(
             'site:create %s %s drupal9 --org=%s',

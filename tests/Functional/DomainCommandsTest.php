@@ -3,9 +3,7 @@
 namespace Pantheon\Terminus\Tests\Functional;
 
 use Pantheon\Terminus\Tests\Traits\LoginHelperTrait;
-use Pantheon\Terminus\Tests\Traits\SiteBaseSetupTrait;
 use Pantheon\Terminus\Tests\Traits\TerminusTestTrait;
-use Pantheon\Terminus\Tests\Traits\UrlStatusCodeHelperTrait;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -44,7 +42,7 @@ class DomainCommandsTest extends TestCase
             count($results),
             "Count of domains should be greater than 0"
         );
-        
+
 
         // ADD
         $this->terminus("domain:add {$sitename}.live {$newDomain}", null);
@@ -52,8 +50,8 @@ class DomainCommandsTest extends TestCase
         $results2 = $this->terminusJsonResponse("domain:list {$sitename}.live");
         $domains = array_column($results2, 'id');
         $this->assertContains($newDomain, $domains, "Domain list should contain added domain");
-        
-        
+
+
         // LOOKUP - TODO: actually test this result (BWeaver 2021-07-23)
         $lookedUp = $this->terminusJsonResponse("domain:lookup {$newDomain}", null);
 
@@ -74,7 +72,7 @@ class DomainCommandsTest extends TestCase
         $primaryDomains = array_combine(array_column($results2, 'id'), array_column($results2, 'primary'));
         $this->assertArrayHasKey($newDomain, $primaryDomains, "Domain list should contain new domain");
         $this->assertNotEquals("1", $primaryDomains[$newDomain], "New domain should not be primary anymore");
-        
+
 
         // REMOVE
         $this->terminus("domain:remove {$sitename}.live {$newDomain}");

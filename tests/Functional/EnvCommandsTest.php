@@ -151,7 +151,6 @@ class EnvCommandsTest extends TestCase
         );
         fwrite($stream, 'This is a test file to use in functional testing for env:commit command.');
         fclose($stream);
-        sleep(30);
 
         // Check the diff.
         $expectedDiff = [
