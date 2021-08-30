@@ -17,15 +17,42 @@ class RemoteCommandsTest extends TestCase
     use LoginHelperTrait;
 
     /**
+     * {@inheritdoc}
+     *
+     * @throws \Exception
+     */
+    protected function setUp(): void
+    {
+        if (!$this->isSiteFrameworkDrupal()) {
+            $this->markTestSkipped(
+                'A Drupal-based test site is required to test remote Drush commands.'
+            );
+        }
+    }
+
+    /**
      * @test
      * @covers \Pantheon\Terminus\Commands\Remote\DrushCommand
      * @covers \Pantheon\Terminus\Commands\Remote\WPCommand
      *
      * @group remote
-     * @group todo
+     * @group short
      */
-    public function testConnection()
+    public function testDrushCommands()
     {
-        $this->fail("To Be Written");
+        // @todo: change env to 'dev'.
+        $commandPrefix = sprintf('drush %s.%s', $this->getSiteName(), 'fix-drush');
+
+        $command = sprintf('%s -- %s', $commandPrefix, 'version');
+        $drushVersion = $this->terminusJsonResponse($command);
+        $this->assertIsString($drushVersion);
+        $this->assertIsInt(preg_match('(^\d{1,2})', $drushVersion, $matches));
+        $this->assertGreaterThanOrEqual(8, $matches[0]);
+
+        $command = sprintf('%s -- %s', $commandPrefix, 'status');
+        $drushStatus = $this->terminusJsonResponse($command);
+        $this->assertIsArray($drushStatus);
+        $this->assertTrue(isset($drushStatus['drush-version']));
+        $this->assertEquals($drushStatus['drupal-version'], $drushVersion);
     }
 }
