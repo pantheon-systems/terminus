@@ -62,9 +62,7 @@ trait TerminusTestTrait
         if ($expected_status !== null) {
             $this->assertEquals($expected_status, $status, $output);
         }
-        if (is_array($output)) {
-            join("", $output);
-        }
+
         return $output;
     }
 
@@ -131,6 +129,16 @@ trait TerminusTestTrait
     protected function getSiteName(): string
     {
         return getenv('TERMINUS_SITE');
+    }
+
+    /**
+     * Returns the organization ID.
+     *
+     * @return string
+     */
+    protected function getOrg(): string
+    {
+        return getenv('TERMINUS_ORG');
     }
 
     /**

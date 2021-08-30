@@ -3,7 +3,6 @@
 namespace Pantheon\Terminus\Tests\Functional;
 
 use Pantheon\Terminus\Tests\Traits\TerminusTestTrait;
-use Pantheon\Terminus\Tests\Traits\UrlStatusCodeHelperTrait;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Filesystem\Filesystem;
 
@@ -82,7 +81,7 @@ class PluginManagerCommandsTest extends TestCase
             $results[0]['name'],
             "Terminus plugin recently installed is not listed."
         );
-        
+
         // LIST COMMANDS AGAIN
         $output = $this->terminus("list");
         $this->assertStringContainsString($command, $output);
