@@ -21,10 +21,10 @@ class ServiceLevelCommandsTest extends TestCase
      * @covers \Pantheon\Terminus\Commands\ServiceLevel\SetCommand
      *
      * @group service-level
-     * @group todo
+     * @group short
      */
-    public function testConnection()
+    public function testServiceLevelSetCommand()
     {
-        $this->fail("To Be Written");
+        $this->terminus(sprintf('service-level:set %s %s', $this->getSiteName(), 'performance_small'));
     }
 }

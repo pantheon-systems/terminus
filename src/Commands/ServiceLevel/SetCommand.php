@@ -29,6 +29,8 @@ class SetCommand extends TerminusCommand implements SiteAwareInterface
      * @param string $level [free|basic|pro|business] Service level
      *
      * @usage <site> <service_level> Updates <site>'s service level to <service_level>.
+     *
+     * @throws \Pantheon\Terminus\Exceptions\TerminusException
      */
     public function set($site_id, $level)
     {
