@@ -23,7 +23,7 @@
     "consolidation/robo": "^3",
     "consolidation/site-alias": "^3.1",
     "czproject/git-php": "^4.0",
-    "guzzlehttp/guzzle": "^6.2",
+    "guzzlehttp/guzzle": "^6.2 || ^7.0",
     "justinrainbow/json-schema": "^5.2",
     "monolog/monolog": "^2.2",
     "rogervila/array-diff-multidimensional": "^2.0",
