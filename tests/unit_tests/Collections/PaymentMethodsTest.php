@@ -27,7 +27,7 @@ class PaymentMethodsTest extends UserOwnedCollectionTest
     /**
      * @inheritdoc
      */
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
 
