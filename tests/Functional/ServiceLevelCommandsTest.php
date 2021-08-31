@@ -3,9 +3,7 @@
 namespace Pantheon\Terminus\Tests\Functional;
 
 use Pantheon\Terminus\Tests\Traits\LoginHelperTrait;
-use Pantheon\Terminus\Tests\Traits\SiteBaseSetupTrait;
 use Pantheon\Terminus\Tests\Traits\TerminusTestTrait;
-use Pantheon\Terminus\Tests\Traits\UrlStatusCodeHelperTrait;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -23,10 +21,10 @@ class ServiceLevelCommandsTest extends TestCase
      * @covers \Pantheon\Terminus\Commands\ServiceLevel\SetCommand
      *
      * @group service-level
-     * @group todo
+     * @group short
      */
-    public function testConnection()
+    public function testServiceLevelSetCommand()
     {
-        $this->fail("To Be Written");
+        $this->terminus(sprintf('service-level:set %s %s', $this->getSiteName(), 'performance_small'));
     }
 }
