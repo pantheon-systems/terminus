@@ -21,7 +21,7 @@ class BindingTest extends ModelTestCase
     /**
      * @inheritdoc
      */
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
         $site = $this->getMockBuilder(Site::class)

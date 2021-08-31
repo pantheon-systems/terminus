@@ -19,7 +19,7 @@ class CreateCommandTest extends BackupCommandTest
     /**
      * @inheritdoc
      */
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
         $this->command = new CreateCommand($this->sites);

@@ -28,7 +28,7 @@ class SavedTokenTest extends ModelTestCase
      */
     protected $token_data;
 
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
 

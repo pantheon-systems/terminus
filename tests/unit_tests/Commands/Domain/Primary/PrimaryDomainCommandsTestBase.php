@@ -20,7 +20,7 @@ abstract class PrimaryDomainCommandsTestBase extends CommandTestCase
 
     abstract protected function getSystemUnderTest();
 
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
 

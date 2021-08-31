@@ -19,7 +19,7 @@ class ApplyCommandTest extends UpdatesCommandTest
     /**
      * @inheritdoc
      */
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
 

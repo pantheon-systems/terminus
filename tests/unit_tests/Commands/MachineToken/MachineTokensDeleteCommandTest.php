@@ -22,7 +22,7 @@ class MachineTokenDeleteCommandTest extends MachineTokenCommandTest
     /**
      * @inheritdoc
      */
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
 

@@ -22,7 +22,7 @@ class RemoveCommandTest extends TeamCommandTest
     /**
      * Setup the test fixture.
      */
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
 

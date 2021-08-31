@@ -22,7 +22,7 @@ class LoginCommandTest extends AuthTest
     /**
      * @inheritdoc
      */
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
 

@@ -7,7 +7,7 @@ use Pantheon\Terminus\UnitTests\TerminusTestCase;
 
 class FileStoreTest extends TerminusTestCase
 {
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
 

@@ -43,7 +43,7 @@ class RoleValidatorTest extends \PHPUnit_Framework_TestCase
     /**
      * @inheritDoc
      */
-    public function setUp()
+    public function setUp(): void
     {
         $this->config = new TerminusConfig();
 
