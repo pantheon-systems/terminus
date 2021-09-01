@@ -266,8 +266,7 @@ abstract class PluginBaseCommand extends TerminusCommand
         if ($results['exit_code'] === 0) {
             $json = json_decode($results['output'], true);
             foreach ($json as $key => $repository) {
-                if (
-                    isset($repository['type']) &&
+                if (isset($repository['type']) &&
                     ($repository['type'] == 'path') &&
                     isset($repository['url']) &&
                     !empty($repository['url'])
