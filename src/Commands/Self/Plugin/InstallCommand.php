@@ -65,8 +65,7 @@ class InstallCommand extends PluginBaseCommand
             if (!$this->hasProjectAtPath($project_or_path)) {
                 // No project was found, presume the parameter is a project and it has no path
                 $resultList[$project_or_path] = '';
-            }
-            else {
+            } else {
                 $project_name = $this->getProjectNameFromPath($project_or_path);
                 // A project name was found at the path, so record the name and its path
                 $resultList[$project_name] = $project_or_path;
@@ -90,12 +89,18 @@ class InstallCommand extends PluginBaseCommand
         // If the specified dir does not contain a terminus plugin, throw an error
         $composerData = json_decode($composerContents, true);
         if (!isset($composerData['type']) || ($composerData['type'] != 'terminus-plugin')) {
-            throw new TerminusException('Cannot install from path {path} because the project there is not of type "terminus-plugin"' . $composerJson, ['path' => $project_or_path]);
+            throw new TerminusException(
+                'Cannot install from path {path} because the project there is not of type "terminus-plugin"',
+                ['path' => $project_or_path]
+            );
         }
 
         // If the specified dir does not have a name in the composer.json, throw an error
         if (empty($composerData['name'])) {
-            throw new TerminusException('Cannot install from path {path} because the project there does not have a name', ['path' => $project_or_path]);
+            throw new TerminusException(
+                'Cannot install from path {path} because the project there does not have a name',
+                ['path' => $project_or_path]
+            );
         }
 
         // Finally, return the project name and let install command install it as normal.
