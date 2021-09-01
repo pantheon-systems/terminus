@@ -70,7 +70,6 @@ class WorkflowCommandsTest extends TestCase
         $workflow = $this->getLatestWorkflow(['workflow' => sprintf('Clear cache for "%s"', $env)]);
         $this->assertEquals('succeeded', $workflow['status']);
         $this->assertEquals($env, $workflow['env']);
-        $this->assertEquals(sprintf('Clear cache for "%s"', $env), $workflow['workflow']);
 
         $operations = $this->terminusJsonResponse(
             sprintf('workflow:info:operations %s --id=%s', $this->getSiteName(), $workflow['id'])
