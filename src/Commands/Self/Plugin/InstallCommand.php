@@ -125,17 +125,20 @@ class InstallCommand extends PluginBaseCommand
         $dependencies_dir = $folders['dependencies_dir'];
         try {
             if (!empty($instalation_path)) {
-                $command = str_replace(
-                    ['{dir}', '{name}', '{path}',],
-                    [$plugins_dir, $project_name_without_version, realpath($instalation_path),],
-                    self::CONFIGURE_PATH_REPO_COMMAND
-                );
-                $results = $this->runCommand($command);
-                if ($results['exit_code'] !== 0) {
-                    throw new TerminusException(
-                        'Error requiring package in terminus-plugins.',
-                        []
+                // Update path repository in plugins dir and dependencies dir.
+                foreach ([$plugins_dir, $dependencies_dir] as $dir) {
+                    $command = str_replace(
+                        ['{dir}', '{name}', '{path}',],
+                        [$dir, $project_name_without_version, realpath($instalation_path),],
+                        self::CONFIGURE_PATH_REPO_COMMAND
                     );
+                    $results = $this->runCommand($command);
+                    if ($results['exit_code'] !== 0) {
+                        throw new TerminusException(
+                            'Error configuring path repository in ' . basename($dir),
+                            []
+                        );
+                    }
                 }
             }
 
