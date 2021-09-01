@@ -2,6 +2,7 @@
 
 namespace Pantheon\Terminus\UnitTests\Hooks;
 
+use PHPUnit\Framework\TestCase;
 use Consolidation\AnnotatedCommand\AnnotationData;
 use Consolidation\AnnotatedCommand\CommandData;
 use Pantheon\Terminus\Config\TerminusConfig;
@@ -14,7 +15,7 @@ use Symfony\Component\Console\Input\InputInterface;
  * Testing class for Pantheon\Terminus\Hooks\RoleValidator
  * @package Pantheon\Terminus\UnitTests\Hooks
  */
-class RoleValidatorTest extends \PHPUnit_Framework_TestCase
+class RoleValidatorTest extends TestCase
 {
     const ORG_ROLES = 'admin, developer, team_member, or unprivileged';
     const PARAM_NAME = 'role';
