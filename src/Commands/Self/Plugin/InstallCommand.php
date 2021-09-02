@@ -75,6 +75,9 @@ class InstallCommand extends PluginBaseCommand
         return $resultList;
     }
 
+    /**
+     * Determines whether the given path contains a composer project.
+     */
     protected function hasProjectAtPath($project_or_path)
     {
         // If the specified path does not exist or does not have a composer.json file, presume it is a project.
@@ -82,13 +85,16 @@ class InstallCommand extends PluginBaseCommand
         return is_dir($project_or_path) && file_exists($composerJson);
     }
 
+    /**
+     * Gets project name from given path.
+     */
     protected function getProjectNameFromPath($project_or_path)
     {
         $composerJson = $project_or_path . '/composer.json';
         $composerContents = file_get_contents($composerJson);
         // If the specified dir does not contain a terminus plugin, throw an error
         $composerData = json_decode($composerContents, true);
-        if (!isset($composerData['type']) || ($composerData['type'] != 'terminus-plugin')) {
+        if (!isset($composerData['type']) || ($composerData['type'] !== 'terminus-plugin')) {
             throw new TerminusException(
                 'Cannot install from path {path} because the project there is not of type "terminus-plugin"',
                 ['path' => $project_or_path]
