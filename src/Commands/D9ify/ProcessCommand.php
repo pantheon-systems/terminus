@@ -85,9 +85,8 @@ class ProcessCommand extends TerminusCommand implements SiteAwareInterface, Conf
                 $sourceSiteObject = $this->getSite($sourceSite);
             }
             if (isset($sourceSiteObject) && $sourceSiteObject instanceof Site) {
-                $this->getContainer()->add("sourceDir", Directory::class)
-                    ->addArgument(['site' => $sourceSiteObject]);
-                $this->sourceDirectory = $this->getContainer()->get("sourceDir");
+                $this->sourceDirectory = new Directory(['site' => $sourceSiteObject]);
+                $this->getContainer()->inflect($this->sourceDirectory);
             }
 
             // Create destination Site if not exists or value is null.

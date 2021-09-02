@@ -18,10 +18,8 @@ trait WorkflowProcessingTrait
     public function processWorkflow(Workflow $workflow): ?Workflow
     {
         if ($this->input()->isInteractive()) {
-            $nickname = \uniqid(__METHOD__ . "-");
-            $this->getContainer()->add($nickname, WorkflowProgressBar::class)
-                ->addArguments([$this->output(), $workflow]);
-            $progressBar = $this->getContainer()->get($nickname);
+            $progressBar = new WorkflowProgressBar($this->output(), $workflow);
+            $this->getContainer()->inflect($progressBar);
             return $progressBar->cycle();
         }
         $retry_interval = $this->getConfig()->get('http_retry_delay_ms', 100);
