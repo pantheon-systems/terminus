@@ -39,4 +39,30 @@ class PlanCommandsTest extends TestCase
             $this->assertArrayHasKey('monthly_price', $plan);
         }
     }
+
+    /**
+     * @test
+     * @covers \Pantheon\Terminus\Commands\Plan\InfoCommand
+     *
+     * @group plan
+     * @group short
+     */
+    public function testPlanInfo()
+    {
+        $plan = $this->terminusJsonResponse(sprintf('plan:info %s', $this->getSiteName()));
+        $this->assertIsArray($plan);
+        $this->assertNotEmpty($plan);
+
+        $this->assertArrayHasKey('id', $plan);
+        $this->assertArrayHasKey('sku', $plan);
+        $this->assertNotEmpty($plan['sku']);
+        $this->assertArrayHasKey('name', $plan);
+        $this->assertNotEmpty($plan['name']);
+        $this->assertArrayHasKey('billing_cycle', $plan);
+        $this->assertNotEmpty($plan['billing_cycle']);
+        $this->assertArrayHasKey('price', $plan);
+        $this->assertNotEmpty($plan['price']);
+        $this->assertArrayHasKey('monthly_price', $plan);
+        $this->assertNotEmpty($plan['monthly_price']);
+    }
 }
