@@ -18,14 +18,25 @@ class PlanCommandsTest extends TestCase
 
     /**
      * @test
-     * @covers \Pantheon\Terminus\Commands\Plan\InfoCommand
      * @covers \Pantheon\Terminus\Commands\Plan\ListCommand
-     * @covers \Pantheon\Terminus\Commands\Plan\SetCommand
      *
-     * @group todo
+     * @group plan
+     * @group short
      */
-    public function testConnection()
+    public function testPlanList()
     {
-        $this->fail("To Be Written");
+        $plans = $this->terminusJsonResponse(sprintf('plan:list %s', $this->getSiteName()));
+        $this->assertIsArray($plans);
+        $this->assertNotEmpty($plans);
+
+        foreach ($plans as $plan) {
+            $this->assertIsArray($plan);
+            $this->assertNotEmpty($plan);
+            $this->assertArrayHasKey('sku', $plan);
+            $this->assertArrayHasKey('name', $plan);
+            $this->assertArrayHasKey('billing_cycle', $plan);
+            $this->assertArrayHasKey('price', $plan);
+            $this->assertArrayHasKey('monthly_price', $plan);
+        }
     }
 }
