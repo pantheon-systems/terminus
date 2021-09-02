@@ -99,11 +99,9 @@ class RemoveCommandTest extends SSHKeyCommandTest
             ->willReturn(
                 $token
             );
-        
-        $this->setExpectedException(
-            \Exception::class,
-            'There was an problem deleting the SSH key.'
-        );
+
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage('There was an problem deleting the SSH key.');
 
         $out = $this->command->delete('123');
         $this->assertNull($out);

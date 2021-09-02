@@ -101,7 +101,8 @@ class DeleteCommandTest extends MultidevCommandTest
             ->with()
             ->will($this->throwException(new TerminusException($message, ['env' => $this->environment->id,])));
 
-        $this->setExpectedException(TerminusException::class, $expected_message);
+        $this->expectException(TerminusException::class);
+        $this->expectExceptionMessage($expected_message);
 
         $out = $this->command->deleteMultidev("site.{$this->environment->id}");
         $this->assertNull($out);

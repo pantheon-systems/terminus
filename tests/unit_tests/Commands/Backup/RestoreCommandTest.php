@@ -92,7 +92,8 @@ class RestoreCommandTest extends BackupCommandTest
             ->with()
             ->willReturn($message);
 
-        $this->setExpectedException(TerminusException::class, $better_message);
+        $this->expectException(TerminusException::class);
+        $this->expectExceptionMessage($better_message);
 
         $out = $this->command->restoreBackup("mysite.{$this->environment->id}", ['file' => $test_filename,]);
         $this->assertNull($out);
@@ -173,7 +174,8 @@ class RestoreCommandTest extends BackupCommandTest
             ->with()
             ->willReturn($message);
 
-        $this->setExpectedException(TerminusException::class, $better_message);
+        $this->expectException(TerminusException::class);
+        $this->expectExceptionMessage($better_message);
 
         $out = $this->command->restoreBackup('mysite.dev', ['element' => 'db',]);
         $this->assertNull($out);
@@ -199,10 +201,9 @@ class RestoreCommandTest extends BackupCommandTest
             ->method('get')
             ->with($this->equalTo('name'))
             ->willReturn($site_name);
-        $this->setExpectedException(
-            TerminusNotFoundException::class,
-            "No backups available. Create one with `terminus backup:create $site_name.{$this->environment->id}`"
-        );
+
+        $this->expectException(TerminusNotFoundException::class);
+        $this->expectExceptionMessage("No backups available. Create one with `terminus backup:create $site_name.{$this->environment->id}`");
 
         $out = $this->command->restoreBackup("$site_name.{$this->environment->id}", compact('element'));
         $this->assertNull($out);

@@ -93,7 +93,8 @@ class SetCommandTest extends CommandTestCase
         // should display a notice about the mode switch
         $this->logger->expects($this->never())
             ->method('log');
-        $this->setExpectedException(TerminusException::class, $message);
+        $this->expectException(TerminusException::class);
+        $this->expectExceptionMessage($message);
 
         // trigger command call expectations
         $this->command->connectionSet('dummy-site.dummy-env', $mode);
@@ -170,10 +171,8 @@ class SetCommandTest extends CommandTestCase
     {
         $this->environment->id = 'test';
 
-        $this->setExpectedException(
-            TerminusException::class,
-            'Connection mode cannot be set on the test environment'
-        );
+        $this->expectException(TerminusException::class);
+        $this->expectExceptionMessage('Connection mode cannot be set on the test environment');
 
         // trigger command call expectations
         $this->command->connectionSet('dummy-site.test', 'any-mode');
@@ -186,10 +185,8 @@ class SetCommandTest extends CommandTestCase
     {
         $this->environment->id = 'live';
 
-        $this->setExpectedException(
-            TerminusException::class,
-            'Connection mode cannot be set on the live environment'
-        );
+        $this->expectException(TerminusException::class);
+        $this->expectExceptionMessage('Connection mode cannot be set on the live environment');
 
         // trigger command call expectations
         $this->command->connectionSet('dummy-site.live', 'any-mode');

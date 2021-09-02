@@ -194,7 +194,8 @@ class RequestTest extends TerminusTestCase
         $this->client->expects($this->never())
             ->method('request');
 
-        $this->setExpectedException(TerminusException::class, "Target file $target already exists.");
+        $this->expectException(TerminusException::class);
+        $this->expectExceptionMessage("Target file $target already exists.");
 
         $out = $this->request->download($url, $target);
         $this->assertNull($out);
@@ -295,10 +296,8 @@ class RequestTest extends TerminusTestCase
                 );
         }
 
-        $this->setExpectedException(
-            TerminusException::class,
-            "HTTPS request failed with error Something bad happened. Maximum retry attempts reached."
-        );
+        $this->expectException(TerminusException::class);
+        $this->expectExceptionMessage("HTTPS request failed with error Something bad happened. Maximum retry attempts reached.");
 
         $this->request->request($uri, $request_options);
     }
@@ -328,7 +327,8 @@ class RequestTest extends TerminusTestCase
             ->with($this->http_request)
             ->will($this->throwException($e));
 
-        $this->setExpectedException(ClientException::class, "Something bad happened. And it is your fault.");
+        $this->expectException(ClientException::class);
+        $this->expectExceptionMessage("Something bad happened. And it is your fault.");
 
         $this->request->request($uri, $request_options);
     }

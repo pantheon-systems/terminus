@@ -114,10 +114,8 @@ class SavedTokenTest extends ModelTestCase
         $this->data_store->expects($this->never())
             ->method('remove');
 
-        $this->setExpectedException(
-            TerminusException::class,
-            'Could not save the machine token because it is missing an ID'
-        );
+        $this->expectException(TerminusException::class);
+        $this->expectExceptionMessage('Could not save the machine token because it is missing an ID');
 
         $this->token->saveToDir();
     }
