@@ -136,7 +136,7 @@ jobs:
       matrix:
         # TODO: test on Win10/WSL+Ubunutu
         operating-system: [ 'macos-latest', 'ubuntu-latest' ]
-        php-versions: [ '7.4', '8.0' ]
+        php-versions: [ '8.0' ]
     if: ${{ startsWith(github.ref, 'refs/tags/') && github.repository_owner == 'pantheon-systems' }}
     steps:
       - name: Download repo content from artifact
@@ -155,8 +155,9 @@ jobs:
           coverage: pcov
       - name: Install
         run: composer install --no-interaction --prefer-dist
+# No functional tests for now
       - name: Full testing scheme
-        run: composer functional:all
+        run: echo composer functional:all
       - name: Coverage Report
         run: composer coverage
       - name: Save coverage as artifact
@@ -165,15 +166,16 @@ jobs:
           name: CoverageReport
           path: docs/TestCoverage.md
       # If you've gotten this far, tag it as a release
-      - name: Release
-        uses: softprops/action-gh-release@v1
-        with:
-          files: |
-            t3
-          prerelease: true
-          # TODO: add a changelog to the release process
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      # Don't tag releases for now
+#      - name: Release
+#        uses: softprops/action-gh-release@v1
+#        with:
+#          files: |
+#            t3
+#         prerelease: true
+#          # TODO: add a changelog to the release process
+#        env:
+#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 
   package_macos:

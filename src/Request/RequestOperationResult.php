@@ -7,7 +7,7 @@ namespace Pantheon\Terminus\Request;
  * Class RequestOperationResult
  * @package Pantheon\Terminus\Request
  */
-final class RequestOperationResult implements \ArrayAccess
+class RequestOperationResult implements \ArrayAccess
 {
     /**
      * @var

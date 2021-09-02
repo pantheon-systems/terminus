@@ -83,15 +83,6 @@ class TagsTest extends CollectionTestCase
     }
 
     /**
-     * Tests Tags::fetch($options)
-     */
-    public function testFetch()
-    {
-        $data = ['tag1',];
-        $this->collection->fetch($data);
-    }
-
-    /**
      * Tests Tags::has($id)
      */
     public function testHas()

@@ -65,13 +65,11 @@ class Domain extends TerminusModel implements
     public function getDNSRecords()
     {
         if (empty($this->dns_records)) {
-            $nickname = \uniqid(__FUNCTION__ . "-");
-            $this->getContainer()->add($nickname, DNSRecords::class)
-                ->addArgument([
-                    'data' => $this->get('dns_status_details')->dns_records,
-                    'domain' => $this
-                ]);
-            $this->dns_records = $this->getContainer()->get($nickname);
+            $this->dns_records = new DNSRecords([
+                'data' => $this->get('dns_status_details')->dns_records,
+                'domain' => $this
+            ]);
+            $this->getContainer()->inflect($this->dns_records);
         }
         return $this->dns_records;
     }
