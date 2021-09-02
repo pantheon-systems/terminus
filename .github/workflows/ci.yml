@@ -6,36 +6,36 @@ on:
     - cron: '0 0 * * *'
 jobs:
   # Checkout in separate job because docker image is alpine based and checkout action doesn't work.
-  checkout_build:
-    runs-on: ubuntu-latest
-    container:
-      image: quay.io/pantheon-public/php-ci:v7.4
-    name: Checkout & build Phar
-    env:
-      TZ: "/usr/share/zoneinfo/America/Los_Angeles"
-      TERM: dumb
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-      - name: Save repo content as artifact
-        uses: actions/upload-artifact@v2
-        with:
-          name: full-workspace
-          path: /home/runner/work/terminus/terminus
-      - name: Full Composer Install
-        run: composer install
-      - name: Validate Code
-        run: composer code:lint
-      - name: Phar Build
-        run: composer phar:build
-      - name: permissions
-        run: chmod +x ./t3
-      - name: Save t3.phar as artifact
-        uses: actions/upload-artifact@v2
-        with:
-          name: t3-phar
-          path: t3
-          if-no-files-found: error
+  # checkout_build:
+  #   runs-on: ubuntu-latest
+  #   container:
+  #     image: quay.io/pantheon-public/php-ci:v7.4
+  #   name: Checkout & build Phar
+  #   env:
+  #     TZ: "/usr/share/zoneinfo/America/Los_Angeles"
+  #     TERM: dumb
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v2
+  #     - name: Save repo content as artifact
+  #       uses: actions/upload-artifact@v2
+  #       with:
+  #         name: full-workspace
+  #         path: /home/runner/work/terminus/terminus
+  #     - name: Full Composer Install
+  #       run: composer install
+  #     - name: Validate Code
+  #       run: composer code:lint
+  #     - name: Phar Build
+  #       run: composer phar:build
+  #     - name: permissions
+  #       run: chmod +x ./t3
+  #     - name: Save t3.phar as artifact
+  #       uses: actions/upload-artifact@v2
+  #       with:
+  #         name: t3-phar
+  #         path: t3
+  #         if-no-files-found: error
 
 
   # commit:
