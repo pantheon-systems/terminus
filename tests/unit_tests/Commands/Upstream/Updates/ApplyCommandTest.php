@@ -154,10 +154,8 @@ class ApplyCommandTest extends UpdatesCommandTest
         $this->environment->expects($this->never())
             ->method('applyUpstreamUpdates');
 
-        $this->setExpectedException(
-            TerminusException::class,
-            "Upstream updates cannot be applied to the {$this->environment->id} environment"
-        );
+        $this->expectException(TerminusException::class);
+        $this->expectExceptionMessage("Upstream updates cannot be applied to the {$this->environment->id} environment");
 
         $out = $this->command->applyUpstreamUpdates('123', ['accept-updates' => true, 'updatedb' => true,]);
         $this->assertNull($out);

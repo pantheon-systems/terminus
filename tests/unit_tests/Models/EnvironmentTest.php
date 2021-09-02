@@ -182,20 +182,16 @@ class EnvironmentTest extends ModelTestCase
     public function testChangeConnectionModeToSame()
     {
         $model = $this->createModel(['id' => 'dev', 'on_server_development' => true,]);
-        $this->setExpectedException(
-            TerminusException::class,
-            'The connection mode is already set to sftp.'
-        );
+        $this->expectException(TerminusException::class);
+        $this->expectExceptionMessage('The connection mode is already set to sftp.');
         $this->assertNull($model->changeConnectionMode('sftp'));
     }
 
     public function testChangeConnectionModeToInvalid()
     {
         $model = $this->createModel(['id' => 'dev', 'on_server_development' => true,]);
-        $this->setExpectedException(
-            TerminusException::class,
-            'You must specify the mode as either sftp or git.'
-        );
+        $this->expectException(TerminusException::class);
+        $this->expectExceptionMessage('You must specify the mode as either sftp or git.');
         $this->assertNull($model->changeConnectionMode('doggo'));
     }
 
@@ -860,10 +856,8 @@ class EnvironmentTest extends ModelTestCase
             ['updatedb' => true, 'from_environment' => 'mymulti',]
         );
 
-        $this->setExpectedException(
-            TerminusException::class,
-            'Environment::mergeToDev() may only be run on the dev environment.'
-        );
+        $this->expectException(TerminusException::class);
+        $this->expectExceptionMessage('Environment::mergeToDev() may only be run on the dev environment.');
         $model = $this->createModel(['id' => 'stage',]);
         $model->mergeToDev();
     }

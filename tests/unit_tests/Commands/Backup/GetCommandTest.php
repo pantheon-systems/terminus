@@ -103,10 +103,8 @@ class GetCommandTest extends BackupCommandTest
             ->method('get')
             ->with($this->equalTo('name'))
             ->willReturn($site);
-        $this->setExpectedException(
-            TerminusNotFoundException::class,
-            "No backups available. Create one with `terminus backup:create $site.{$this->environment->id}`"
-        );
+        $this->expectException(TerminusNotFoundException::class);
+        $this->expectExceptionMessage("No backups available. Create one with `terminus backup:create $site.{$this->environment->id}`");
 
         $out = $this->command->get("$site.{$this->environment->id}", compact('element'));
         $this->assertNull($out);

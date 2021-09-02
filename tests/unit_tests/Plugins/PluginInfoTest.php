@@ -59,10 +59,8 @@ class PluginInfoTest extends TerminusTestCase
         $this->MarkTestSkipped('Plugin manager rewritten in T3, need to re-evaluate plugin tests.');
 
         $dir = $this->paths[6];
-        $this->setExpectedException(
-            TerminusException::class,
-            'The composer.json must contain a "compatible-version" field in "extras/terminus"'
-        );
+        $this->expectException(TerminusException::class);
+        $this->expectExceptionMessage('The composer.json must contain a "compatible-version" field in "extras/terminus"');
         new PluginInfo($dir);
     }
 
@@ -87,10 +85,8 @@ class PluginInfoTest extends TerminusTestCase
         $this->MarkTestSkipped('Plugin manager rewritten in T3, need to re-evaluate plugin tests.');
 
         $dir = $this->paths[5];
-        $this->setExpectedException(
-            TerminusException::class,
-            'The composer.json must contain a "terminus" section in "extras"'
-        );
+        $this->expectException(TerminusException::class);
+        $this->expectExceptionMessage('The composer.json must contain a "terminus" section in "extras"');
         new PluginInfo($dir);
     }
 
@@ -114,11 +110,9 @@ class PluginInfoTest extends TerminusTestCase
         $this->MarkTestSkipped('Plugin manager rewritten in T3, need to re-evaluate plugin tests.');
 
         $dir = $this->paths[7];
-        $this->setExpectedException(
-            TerminusException::class,
-            'The namespace "OrgName\\\\PluginName" in the composer.json autoload psr-4 section must end with '
-            . 'a namespace separator. Should be "OrgName\\\\PluginName\\\\"'
-        );
+        $this->expectException(TerminusException::class);
+        $this->expectExceptionMessage('The namespace "OrgName\\\\PluginName" in the composer.json autoload '
+            . 'psr-4 section must end with a namespace separator. Should be "OrgName\\\\PluginName\\\\"');
         new PluginInfo($dir);
     }
 

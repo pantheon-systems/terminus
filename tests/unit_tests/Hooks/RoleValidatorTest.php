@@ -211,7 +211,8 @@ class RoleValidatorTest extends TestCase
             'The available roles for {command_name} are unknown.',
             compact('command_name')
         );
-        $this->setExpectedException(get_class($expected_exception), $expected_exception->getMessage());
+        $this->expectException(get_class($expected_exception));
+        $this->expectExceptionMessage($expected_exception->getMessage());
     }
 
     /**
@@ -226,6 +227,7 @@ class RoleValidatorTest extends TestCase
             '{role} is not a valid role selection. Please enter {roles}.',
             compact('role', 'roles')
         );
-        $this->setExpectedException(get_class($expected_exception), $expected_exception->getMessage());
+        $this->expectException(get_class($expected_exception));
+        $this->expectExceptionMessage($expected_exception->getMessage());
     }
 }

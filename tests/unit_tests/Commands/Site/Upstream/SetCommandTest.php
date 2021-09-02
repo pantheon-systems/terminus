@@ -209,10 +209,8 @@ class SetCommandTest extends CommandTestCase
             ->method('getUpstream');
         $this->site->expects($this->never())
             ->method('setUpstream');
-        $this->setExpectedException(
-            TerminusException::class,
-            'You do not have permission to change the upstream of this site.'
-        );
+        $this->expectException(TerminusException::class);
+        $this->expectExceptionMessage('You do not have permission to change the upstream of this site.');
 
         $out = $this->command->set($site_name, $upstream_id);
         $this->assertNull($out);

@@ -296,10 +296,8 @@ class RequestTest extends TerminusTestCase
                 );
         }
 
-        $this->setExpectedException(
-            TerminusException::class,
-            "HTTPS request failed with error Something bad happened. Maximum retry attempts reached."
-        );
+        $this->expectException(TerminusException::class);
+        $this->expectExceptionMessage("HTTPS request failed with error Something bad happened. Maximum retry attempts reached.");
 
         $this->request->request($uri, $request_options);
     }
