@@ -253,6 +253,9 @@ abstract class PluginBaseCommand extends TerminusCommand
         }
     }
 
+    /**
+     * Return existing path repositories in given dir.
+     */
     protected function getPathRepositories($plugins_dir)
     {
         $path_repositories = [];
