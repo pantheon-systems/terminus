@@ -73,7 +73,7 @@ class RemoveCommandTest extends SSHKeyCommandTest
             ->will($this->throwException(new TerminusException));
 
 
-        $this->setExpectedException(TerminusException::class);
+        $this->expectException(TerminusException::class);
 
         $out = $this->command->delete('123');
         $this->assertNull($out);

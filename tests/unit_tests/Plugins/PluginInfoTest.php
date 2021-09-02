@@ -101,7 +101,7 @@ class PluginInfoTest extends TerminusTestCase
         $this->MarkTestSkipped('Plugin manager rewritten in T3, need to re-evaluate plugin tests.');
 
         $dir = $this->paths[4];
-        $this->setExpectedException(TerminusException::class);
+        $this->expectException(TerminusException::class);
         new PluginInfo($dir);
     }
 
@@ -128,7 +128,7 @@ class PluginInfoTest extends TerminusTestCase
     {
         $this->MarkTestSkipped('Plugin manager rewritten in T3, need to re-evaluate plugin tests.');
 
-        $this->setExpectedException(TerminusException::class);
+        $this->expectException(TerminusException::class);
         new PluginInfo($this->paths[0]);
     }
 
@@ -162,7 +162,7 @@ class PluginInfoTest extends TerminusTestCase
     {
         $this->MarkTestSkipped('Plugin manager rewritten in T3, need to re-evaluate plugin tests.');
 
-        $this->setExpectedException(TerminusException::class);
+        $this->expectException(TerminusException::class);
         new PluginInfo($this->paths[0]);
     }
 

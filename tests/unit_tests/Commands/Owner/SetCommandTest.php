@@ -111,7 +111,7 @@ class SetCommandTest extends CommandTestCase
         $this->logger->expects($this->never())
             ->method('log');
 
-        $this->setExpectedException(TerminusNotFoundException::class);
+        $this->expectException(TerminusNotFoundException::class);
 
         $out = $this->command->setOwner('dummy-site', $email);
         $this->assertNull($out);

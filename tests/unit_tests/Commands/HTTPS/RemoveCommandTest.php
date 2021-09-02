@@ -65,7 +65,7 @@ class RemoveCommandTest extends CommandTestCase
             ->method('disableHttpsCertificate')
             ->will($this->throwException(new TerminusException('Could not delete')));
 
-        $this->setExpectedException(TerminusException::class);
+        $this->expectException(TerminusException::class);
         $this->command->remove('mysite.dev');
     }
 }

@@ -66,7 +66,7 @@ class MachineTokenDeleteCommandTest extends MachineTokenCommandTest
         $this->token->expects($this->never())
             ->method('delete');
 
-        $this->setExpectedException(TerminusException::class);
+        $this->expectException(TerminusException::class);
 
         $out = $this->command->delete('123');
         $this->assertNull($out);
