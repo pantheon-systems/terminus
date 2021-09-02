@@ -92,7 +92,8 @@ class RestoreCommandTest extends BackupCommandTest
             ->with()
             ->willReturn($message);
 
-        $this->setExpectedException(TerminusException::class, $better_message);
+        $this->expectException(TerminusException::class);
+        $this->expectExceptionMessage($better_message);
 
         $out = $this->command->restoreBackup("mysite.{$this->environment->id}", ['file' => $test_filename,]);
         $this->assertNull($out);
@@ -173,7 +174,8 @@ class RestoreCommandTest extends BackupCommandTest
             ->with()
             ->willReturn($message);
 
-        $this->setExpectedException(TerminusException::class, $better_message);
+        $this->expectException(TerminusException::class);
+        $this->expectExceptionMessage($better_message);
 
         $out = $this->command->restoreBackup('mysite.dev', ['element' => 'db',]);
         $this->assertNull($out);

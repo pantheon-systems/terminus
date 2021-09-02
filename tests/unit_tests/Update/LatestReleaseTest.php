@@ -166,7 +166,8 @@ class LatestReleaseTest extends TerminusTestCase
         $this->logger->expects($this->never())
             ->method('debug');
 
-        $this->setExpectedException(TerminusNotFoundException::class, 'There is no attribute called invalid.');
+        $this->expectException(TerminusNotFoundException::class);
+        $this->expectExceptionMessage('There is no attribute called invalid.');
 
         $out = $this->latest_release->get('invalid');
         $this->assertNull($out);

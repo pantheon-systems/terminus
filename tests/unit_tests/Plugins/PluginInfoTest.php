@@ -74,7 +74,8 @@ class PluginInfoTest extends TerminusTestCase
         $this->MarkTestSkipped('Plugin manager rewritten in T3, need to re-evaluate plugin tests.');
 
         $dir = '/i/definitely/do/not/exist';
-        $this->setExpectedException(TerminusException::class, 'The directory "' . $dir . '" does not exist');
+        $this->expectException(TerminusException::class);
+        $this->expectExceptionMessage('The directory "' . $dir . '" does not exist');
         new PluginInfo($dir);
     }
 
@@ -140,7 +141,8 @@ class PluginInfoTest extends TerminusTestCase
         $this->MarkTestSkipped('Plugin manager rewritten in T3, need to re-evaluate plugin tests.');
 
         $file = __FILE__;
-        $this->setExpectedException(TerminusException::class, 'The file "' . $file . '" is not a directory');
+        $this->expectException(TerminusException::class);
+        $this->expectExceptionMessage('The file "' . $file . '" is not a directory');
         new PluginInfo($file);
     }
 
@@ -151,7 +153,8 @@ class PluginInfoTest extends TerminusTestCase
     {
         $this->MarkTestSkipped('Plugin manager rewritten in T3, need to re-evaluate plugin tests.');
 
-        $this->setExpectedException(TerminusException::class, 'No plugin directory was specified');
+        $this->expectException(TerminusException::class);
+        $this->expectExceptionMessage('No plugin directory was specified');
         new PluginInfo(false);
     }
 

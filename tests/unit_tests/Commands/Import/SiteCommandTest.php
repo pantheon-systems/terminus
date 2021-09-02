@@ -82,7 +82,8 @@ class SiteCommandTest extends CommandTestCase
             ->with()
             ->will($this->throwException(new \Exception('Successfully queued import_site')));
 
-        $this->setExpectedException(TerminusException::class, 'Site import failed');
+        $this->expectException(TerminusException::class);
+        $this->expectExceptionMessage('Site import failed');
 
         $out = $this->command->import('dummy-site', $url);
         $this->assertNull($out);

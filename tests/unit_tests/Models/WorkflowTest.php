@@ -69,7 +69,8 @@ class WorkflowTest extends ModelTestCase
             ->method('request')
             ->willReturn(new \Pantheon\Terminus\Request\RequestOperationResult(['headers' => [], 'status_code' => 200, 'status_code_reason' => '', 'data' => ['result' => 'failed', 'final_task' => $final_task,],]));
 
-        $this->setExpectedException(TerminusException::class, $message);
+        $this->expectException(TerminusException::class);
+        $this->expectExceptionMessage($message);
 
         $workflow->setRequest($this->request);
         $this->assertFalse($workflow->checkProgress());

@@ -93,7 +93,8 @@ class SetCommandTest extends CommandTestCase
         // should display a notice about the mode switch
         $this->logger->expects($this->never())
             ->method('log');
-        $this->setExpectedException(TerminusException::class, $message);
+        $this->expectException(TerminusException::class);
+        $this->expectExceptionMessage($message);
 
         // trigger command call expectations
         $this->command->connectionSet('dummy-site.dummy-env', $mode);
