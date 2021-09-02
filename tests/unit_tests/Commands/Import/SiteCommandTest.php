@@ -108,7 +108,8 @@ class SiteCommandTest extends CommandTestCase
             ->with()
             ->will($this->throwException(new \Exception($message)));
 
-        $this->setExpectedException(\Exception::class, $message);
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage($message);
 
         $out = $this->command->import('dummy-site', $url);
         $this->assertNull($out);
