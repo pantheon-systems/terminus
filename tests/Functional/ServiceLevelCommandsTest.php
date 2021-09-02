@@ -21,7 +21,7 @@ class ServiceLevelCommandsTest extends TestCase
      * @covers \Pantheon\Terminus\Commands\ServiceLevel\SetCommand
      *
      * @group service-level
-     * @group short
+     * @group long
      */
     public function testServiceLevelSetCommand()
     {
