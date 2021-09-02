@@ -270,7 +270,7 @@ class Site extends TerminusModel implements ContainerAwareInterface, Organizatio
         if (empty($this->plan)) {
             $nickname = \uniqid(__FUNCTION__ . "-");
             $this->getContainer()->add($nickname, Plan::class)
-                ->addArgument(['site' => $this]);
+                ->addArguments([null, ['site' => $this]]);
             $this->plan = $this->getContainer()->get($nickname);
         }
         return $this->plan;
