@@ -21,7 +21,7 @@ class RedisCommandsTest extends TestCase
      * @covers \Pantheon\Terminus\Commands\Redis\EnableCommand
      *
      * @group redis
-     * @group short
+     * @group long
      */
     public function testRedisEnable()
     {
@@ -33,7 +33,7 @@ class RedisCommandsTest extends TestCase
      * @covers \Pantheon\Terminus\Commands\Redis\DisableCommand
      *
      * @group redis
-     * @group short
+     * @group long
      */
     public function testRedisDisable()
     {
