@@ -57,6 +57,9 @@ class InstallCommand extends PluginBaseCommand
         }
     }
 
+    /**
+     * Convert given projects into an array indexed by project name and path (if exists) as value.
+     */
     protected function convertPathProjects($projects)
     {
         $resultList = [];
