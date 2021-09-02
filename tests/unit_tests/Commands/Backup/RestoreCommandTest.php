@@ -110,7 +110,7 @@ class RestoreCommandTest extends BackupCommandTest
             ->with($this->equalTo($bad_file_name))
             ->will($this->throwException(new TerminusNotFoundException()));
 
-        $this->setExpectedException(TerminusNotFoundException::class);
+        $this->expectException(TerminusNotFoundException::class);
 
         $out = $this->command->restoreBackup('mysite.dev', ['file' => $bad_file_name,]);
         $this->assertNull($out);
