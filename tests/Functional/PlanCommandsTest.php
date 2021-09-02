@@ -23,7 +23,7 @@ class PlanCommandsTest extends TestCase
      * @group plan
      * @group short
      */
-    public function testPlanList()
+    public function testPlanListCommand()
     {
         $plans = $this->terminusJsonResponse(sprintf('plan:list %s', $this->getSiteName()));
         $this->assertIsArray($plans);
@@ -47,7 +47,7 @@ class PlanCommandsTest extends TestCase
      * @group plan
      * @group short
      */
-    public function testPlanInfo()
+    public function testPlanInfoCommand()
     {
         $plan = $this->terminusJsonResponse(sprintf('plan:info %s', $this->getSiteName()));
         $this->assertIsArray($plan);
@@ -61,8 +61,37 @@ class PlanCommandsTest extends TestCase
         $this->assertArrayHasKey('billing_cycle', $plan);
         $this->assertNotEmpty($plan['billing_cycle']);
         $this->assertArrayHasKey('price', $plan);
-        $this->assertNotEmpty($plan['price']);
         $this->assertArrayHasKey('monthly_price', $plan);
-        $this->assertNotEmpty($plan['monthly_price']);
+    }
+
+    /**
+     * @test
+     * @covers \Pantheon\Terminus\Commands\Plan\SetCommand
+     *
+     * @group plan
+     * @group long
+     */
+    public function testSetPanCommand()
+    {
+        // Get the current site plan.
+        $plan = $this->terminusJsonResponse(sprintf('plan:info %s', $this->getSiteName()));
+        $this->assertArrayHasKey('sku', $plan);
+        $this->assertNotEmpty($plan['sku']);
+        $currentPlanSku = $plan['sku'];
+
+        // Change site plan to "Performance Small".
+        $targetPlanSku = 'plan-free-preferred-monthly-1';
+        $this->terminus(sprintf('plan:set %s %s', $this->getSiteName(), $targetPlanSku));
+        $plan = $this->terminusJsonResponse(sprintf('plan:info %s', $this->getSiteName()));
+        $this->assertArrayHasKey('sku', $plan);
+        $this->assertNotEmpty($plan['sku']);
+        $this->assertEquals($targetPlanSku, $plan['sku']);
+
+        // Change the site plan back.
+        $this->terminus(sprintf('plan:set %s %s', $this->getSiteName(), $currentPlanSku));
+        $plan = $this->terminusJsonResponse(sprintf('plan:info %s', $this->getSiteName()));
+        $this->assertArrayHasKey('sku', $plan);
+        $this->assertNotEmpty($plan['sku']);
+        $this->assertEquals($currentPlanSku, $plan['sku']);
     }
 }
