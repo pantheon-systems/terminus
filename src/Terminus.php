@@ -499,8 +499,6 @@ class Terminus implements
         $this->commands = $commands;
     }
 
-
-
     public static function factory($dependencies_version = null): Terminus
     {
         $input = new ArgvInput($_SERVER['argv']);
@@ -512,7 +510,7 @@ class Terminus implements
         $config->extend(new EnvConfig());
         if ($dependencies_version) {
             $dependenciesBaseDir = $config->get('dependencies_base_dir');
-            $terminusDependenciesDir = $dependenciesBaseDir . '/' . $dependencies_version;
+            $terminusDependenciesDir = $dependenciesBaseDir . '-' . $dependencies_version;
             $config->set('terminus_dependencies_dir', $terminusDependenciesDir);
             if (file_exists($terminusDependenciesDir . '/vendor/autoload.php')) {
                 include_once("$terminusDependenciesDir/vendor/autoload.php");
