@@ -349,6 +349,7 @@ class Terminus implements
             'Pantheon\\Terminus\\Commands\\Self\\ConfigDumpCommand',
             'Pantheon\\Terminus\\Commands\\Self\\ConsoleCommand',
             'Pantheon\\Terminus\\Commands\\Self\\InfoCommand',
+            'Pantheon\\Terminus\\Commands\\Self\\Plugin\\CreateCommand',
             'Pantheon\\Terminus\\Commands\\Self\\Plugin\\InstallCommand',
             'Pantheon\\Terminus\\Commands\\Self\\Plugin\\ListCommand',
             'Pantheon\\Terminus\\Commands\\Self\\Plugin\\ReloadCommand',
