@@ -45,7 +45,7 @@ jobs:
     strategy:
       matrix:
         operating-system: [ 'macos-latest' ]
-        php-versions: [ '7.4', '8.0' ]
+        php-versions: [ '8.0' ]
       max-parallel: 1
     env:
       TZ: "/usr/share/zoneinfo/America/Los_Angeles"
@@ -76,8 +76,17 @@ jobs:
           name: t3-phar
       - name: Install Composer Dependencies
         run: composer install --no-interaction --prefer-dist
-      - name: Functional Tests
+      - name: Functional Tests (short)
+        if: ${{ github.ref != '3.x' }}
         run: composer test:short
+        env:
+          COMPOSER_ALLOW_SUPERUSER: 1
+          TERMINUS_TOKEN: ${{ secrets.TERMINUS_TOKEN }}
+          TERMINUS_SITE: ${{ secrets.TERMINUS_SITE }}
+          TERMINUS_ORG: ${{ secrets.TERMINUS_ORG }}
+      - name: Functional Tests (all)
+        if: ${{ github.ref == '3.x' }}
+        run: composer test:functional
         env:
           COMPOSER_ALLOW_SUPERUSER: 1
           TERMINUS_TOKEN: ${{ secrets.TERMINUS_TOKEN }}

@@ -20,6 +20,8 @@ class UninstallCommand extends PluginBaseCommand
     const USAGE_MESSAGE = 'terminus self:plugin:<uninstall|remove> <project> [project 2] ...';
     const UNINSTALL_COMMAND =
     'composer remove -d {dir} {project} --no-update';
+    const REMOVE_PATH_REPO_COMMAND =
+        'composer config -d {dir} --unset repositories.{name}';
 
     /**
      * Remove one or more Terminus plugins.
@@ -93,6 +95,22 @@ class UninstallCommand extends PluginBaseCommand
                     'Error running composer update in terminus-dependencies.',
                     []
                 );
+            }
+
+            // Cleanup path repositories if they exist.
+            foreach ([$plugins_dir, $dependencies_dir] as $dir) {
+                $command = str_replace(
+                    ['{dir}', '{name}',],
+                    [$dir, $project_name,],
+                    self::REMOVE_PATH_REPO_COMMAND
+                );
+                $results = $this->runCommand($command);
+                if ($results['exit_code'] !== 0) {
+                    throw new TerminusException(
+                        'Error removing path repository in ' . basename($dir),
+                        []
+                    );
+                }
             }
 
             $this->replaceFolder($plugins_dir, $original_plugins_dir);

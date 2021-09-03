@@ -22,6 +22,7 @@ abstract class PluginBaseCommand extends TerminusCommand
     const PROJECT_NOT_FOUND_MESSAGE = 'No project or plugin named {project} found.';
     const DEPENDENCIES_REQUIRE_COMMAND = 'composer require -d {dir} {packages}';
     const COMPOSER_ADD_REPOSITORY = 'composer config -d {dir} repositories.{repo_name} path {path}';
+    const COMPOSER_GET_REPOSITORIES = 'composer config -d {dir} repositories';
     const BACKUP_COMMAND =
         "mkdir -p {backup_dir} && tar czvf {backup_dir}"
         . DIRECTORY_SEPARATOR . "backup.tar.gz \"{dir}\"";
@@ -178,6 +179,9 @@ abstract class PluginBaseCommand extends TerminusCommand
         }
         $this->ensureComposerJsonExists($plugins_dir, 'pantheon-systems/terminus-plugins');
         $this->ensureComposerJsonExists($dependencies_dir, 'pantheon-systems/terminus-dependencies');
+        // Get our path repositories and add the default entry
+        $path_repositories = $this->getPathRepositories($plugins_dir);
+        $path_repositories['pantheon-systems/terminus-plugins'] = '../' . $plugins_dir_basename;
         if (file_exists($this->getConfig()->get('root') . '/composer.lock')) {
             $terminus_composer_lock = json_decode(
                 file_get_contents($this->getConfig()->get('root') . '/composer.lock'),
@@ -194,30 +198,37 @@ abstract class PluginBaseCommand extends TerminusCommand
             $results = $this->runCommand($command);
             if ($results['exit_code'] === 0) {
                 // Second: Add path repositories.
-                $plugins_dir_basename = $this->getConfig()->get('plugins_dir_basename');
+                foreach ($path_repositories as $repo_name => $path) {
+                    $plugins_dir_basename = $this->getConfig()->get('plugins_dir_basename');
+                    $command = str_replace(
+                        ['{dir}', '{repo_name}', '{path}',],
+                        [$dependencies_dir, $repo_name, $path,],
+                        self::COMPOSER_ADD_REPOSITORY
+                    );
+                    $results = $this->runCommand($command);
+                    if ($results['exit_code'] !== 0) {
+                        throw new TerminusException(
+                            'Error configuring composer.json terminus-dependencies.',
+                            []
+                        );
+                    }
+                }
+
+                // Third: Require packages.
                 $command = str_replace(
-                    ['{dir}', '{repo_name}', '{path}',],
-                    [$dependencies_dir, 'pantheon-systems/terminus-plugins', '../' . $plugins_dir_basename,],
-                    self::COMPOSER_ADD_REPOSITORY
+                    ['{dir}', '{packages}',],
+                    [$dependencies_dir, 'pantheon-systems/terminus-plugins:*',],
+                    self::DEPENDENCIES_REQUIRE_COMMAND
                 );
                 $results = $this->runCommand($command);
                 if ($results['exit_code'] === 0) {
-                    // Third: Require packages.
-                    $command = str_replace(
-                        ['{dir}', '{packages}',],
-                        [$dependencies_dir, 'pantheon-systems/terminus-plugins:*',],
-                        self::DEPENDENCIES_REQUIRE_COMMAND
-                    );
-                    $results = $this->runCommand($command);
+                    // Finally: Update packages.
+                    $results = $this->runComposerUpdate($dependencies_dir);
                     if ($results['exit_code'] === 0) {
-                        // Finally: Update packages.
-                        $results = $this->runComposerUpdate($dependencies_dir);
-                        if ($results['exit_code'] === 0) {
-                            return [
-                                'plugins_dir' => $plugins_dir,
-                                'dependencies_dir' => $dependencies_dir,
-                            ];
-                        }
+                        return [
+                            'plugins_dir' => $plugins_dir,
+                            'dependencies_dir' => $dependencies_dir,
+                        ];
                     }
                 }
             }
@@ -240,6 +251,34 @@ abstract class PluginBaseCommand extends TerminusCommand
             $this->runCommand("composer --working-dir=${path} config minimum-stability dev");
             $this->runCommand("composer --working-dir=${path} config prefer-stable true");
         }
+    }
+
+    /**
+     * Return existing path repositories in given dir.
+     */
+    protected function getPathRepositories($plugins_dir)
+    {
+        $path_repositories = [];
+
+        $command = str_replace(
+            ['{dir}',],
+            [$plugins_dir],
+            self::COMPOSER_GET_REPOSITORIES
+        );
+        $results = $this->runCommand($command);
+        if ($results['exit_code'] === 0) {
+            $json = json_decode($results['output'], true);
+            foreach ($json as $key => $repository) {
+                if (isset($repository['type']) &&
+                    ($repository['type'] == 'path') &&
+                    isset($repository['url']) &&
+                    !empty($repository['url'])
+                ) {
+                    $path_repositories[$key] = $repository['url'];
+                }
+            }
+        }
+        return $path_repositories;
     }
 
     /**

@@ -21,7 +21,7 @@ class SolrCommandsTest extends TestCase
      * @covers \Pantheon\Terminus\Commands\Solr\EnableCommand
      *
      * @group solr
-     * @group short
+     * @group long
      */
     public function testSolrEnable()
     {
@@ -33,7 +33,7 @@ class SolrCommandsTest extends TestCase
      * @covers \Pantheon\Terminus\Commands\Solr\DisableCommand
      *
      * @group solr
-     * @group short
+     * @group long
      */
     public function testSolrDisable()
     {
