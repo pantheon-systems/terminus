@@ -5,14 +5,15 @@ namespace Pantheon\Terminus\UnitTests\Request;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\ServerException;
-use GuzzleHttp\RequestOptions;
 use GuzzleHttp\Psr7\Request as HttpRequest;
 use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\Psr7\Stream;
+use GuzzleHttp\RequestOptions;
 use League\Container\Container;
 use Pantheon\Terminus\Config\TerminusConfig;
 use Pantheon\Terminus\Exceptions\TerminusException;
 use Pantheon\Terminus\Helpers\LocalMachineHelper;
+use Pantheon\Terminus\InflectionContainer;
 use Pantheon\Terminus\Request\Request;
 use Pantheon\Terminus\Session\Session;
 use Pantheon\Terminus\UnitTests\TerminusTestCase;
@@ -86,7 +87,7 @@ class RequestTest extends TerminusTestCase
         $this->http_request = $this->getMockBuilder(HttpRequest::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $this->client = $this->getMock(Client::class);
+        $this->client = $this->createMock(Client::class);
         $this->local_machine_helper = $this->getMockBuilder(LocalMachineHelper::class)
             ->disableOriginalConstructor()
             ->getMock();
@@ -118,11 +119,11 @@ class RequestTest extends TerminusTestCase
         $this->config->set('http_retry_jitter_ms', 0);
         $this->config->set('http_max_retries', 3);
 
-        $this->container = $this->getMock(Container::class);
+        $this->container = new InflectionContainer();
         $this->session = $this->getMockBuilder(Session::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $this->logger = $this->getMock(LoggerInterface::class);
+        $this->logger = $this->createMock(LoggerInterface::class);
 
         $this->request->setContainer($this->container);
         $this->request->setConfig($this->config);
@@ -354,7 +355,7 @@ class RequestTest extends TerminusTestCase
 
         $e = new ServerException('Something bad happened', $this->http_request);
 
-        $message = $this->getMock(Response::class);
+        $message = $this->createMock(Response::class);
         $body = $this->getMockBuilder(Stream::class)
             ->disableOriginalConstructor()
             ->getMock();
@@ -517,7 +518,7 @@ class RequestTest extends TerminusTestCase
             ->with(Client::class, [$this->client_options,])
             ->willReturn($this->client);
 
-        $message = $this->getMock(Response::class);
+        $message = $this->createMock(Response::class);
         $body = $this->getMockBuilder(Stream::class)
             ->disableOriginalConstructor()
             ->getMock();
@@ -590,7 +591,7 @@ class RequestTest extends TerminusTestCase
             ->with(Client::class, [$this->client_options,])
             ->willReturn($this->client);
 
-        $message = $this->getMock(Response::class);
+        $message = $this->createMock(Response::class);
         $body = $this->getMockBuilder(Stream::class)
             ->disableOriginalConstructor()
             ->getMock();
@@ -641,6 +642,8 @@ class RequestTest extends TerminusTestCase
             $expected_objects[$id] = (object)compact('id');
         }
 
+        $this->container = new
+
         $this->container->expects($this->at(0))
             ->method('get')
             ->with(HttpRequest::class, $expected_options)
@@ -658,7 +661,7 @@ class RequestTest extends TerminusTestCase
             ->with(Client::class, [$this->client_options,])
             ->willReturn($this->client);
 
-        $message = $this->getMock(Response::class);
+        $message = $this->createMock(Response::class);
         $body = $this->getMockBuilder(Stream::class)
             ->disableOriginalConstructor()
             ->getMock();
@@ -704,7 +707,7 @@ class RequestTest extends TerminusTestCase
             ->with(Client::class, [$this->client_options,])
             ->willReturn($this->client);
 
-        $message = $this->getMock(Response::class);
+        $message = $this->createMock(Response::class);
         $body = $this->getMockBuilder(Stream::class)
             ->disableOriginalConstructor()
             ->getMock();
