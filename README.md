@@ -64,7 +64,16 @@ These packages will install when you install Terminus.
 
 `*** TBD ***`
 
+## Testing
 
+To run the functional tests:
+
+1. If you need the basics (php, git, direnv, etc): `brew bundle install`
+2. For code coverage: `pecl install pcov`
+3. Prepare a new test site, e.g. make a new multidev in ci-terminus-composer
+4. Copy .env.dist to .env and make an .envrc to include it with `dotenv`, or copy .env.dist to .envrc and add `export` at the head of each line. Customize values as needed. Use `direnv allow` to enable automatic loading of environment variables needed for tests.
+5. Run `composer test:short` to run the short functional tests, or `composer test:long` to run everything.
+ 
 
 | Command                   | Description                                                  | ⚖️ |
 | ------------------------- | ------------------------------------------------------------ | -- |
