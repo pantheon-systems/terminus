@@ -74,7 +74,7 @@ class CreateCommand extends PluginBaseCommand
                 );
             }
 
-            $project_name = $this->getProjectNameFromPath($realpath) . ':*';
+            $project_name = $this->getProjectNameFromPath($realpath) . ':@dev';
             return $this->installProject($project_name, $realpath);
 
         } catch (TerminusException $e) {
