@@ -77,16 +77,15 @@ jobs:
       - name: Install Composer Dependencies
         run: composer install --no-interaction --prefer-dist
       - name: Functional Tests (short)
-        if: ${{ github.ref != '3.x' }}
         run: composer test:short
         env:
           COMPOSER_ALLOW_SUPERUSER: 1
           TERMINUS_TOKEN: ${{ secrets.TERMINUS_TOKEN }}
           TERMINUS_SITE: ${{ secrets.TERMINUS_SITE }}
           TERMINUS_ORG: ${{ secrets.TERMINUS_ORG }}
-      - name: Functional Tests (all)
-        if: ${{ github.ref == '3.x' }}
-        run: composer test:functional
+      - name: Functional Tests (long)
+        if: ${{ github.ref == 'refs/heads/3.x' }}
+        run: composer test:long
         env:
           COMPOSER_ALLOW_SUPERUSER: 1
           TERMINUS_TOKEN: ${{ secrets.TERMINUS_TOKEN }}
