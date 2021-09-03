@@ -38,9 +38,9 @@ jobs:
           if-no-files-found: error
 
 
-  commit:
+  functional:
     runs-on: ${{ matrix.operating-system }}
-    name: Commit testing matrix - PHP ${{ matrix.php-versions }} on ${{ matrix.operating-system }}
+    name: Functional testing matrix - PHP ${{ matrix.php-versions }} on ${{ matrix.operating-system }}
     if: ${{ ! startsWith(github.ref, 'refs/tags/')  && github.repository_owner == 'pantheon-systems' }}
     strategy:
       matrix:
