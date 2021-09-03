@@ -74,7 +74,7 @@ class Session implements ContainerAwareInterface, ConfigAwareInterface, DataStor
                 "No user ID. Please login via t3 auth:login"
             );
         }
-        $user = new User(['id' => $user_id]);
+        $user = new User((object)['id' => $user_id]);
         $this->getContainer()->inflect($user);
         return $user;
     }

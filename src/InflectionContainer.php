@@ -7,7 +7,7 @@ use League\Container\Container;
 
 // TODO: Move to Robo
 
-class InflectingContainer extends Container
+class InflectionContainer extends Container
 {
     public function inflect($obj)
     {

@@ -234,7 +234,7 @@ class Site extends TerminusModel implements ContainerAwareInterface, Organizatio
     public function getNewRelic()
     {
         if (empty($this->new_relic)) {
-            $this->new_relic = new NewRelic(['site' => $this]);
+            $this->new_relic = new NewRelic(null, ['site' => $this]);
             $this->getContainer()->inflect($this->new_relic);
         }
         return $this->new_relic;
