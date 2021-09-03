@@ -100,7 +100,7 @@ class AliasesCommand extends TerminusCommand implements SiteAwareInterface
         if ($this->emitterTypeMatches($emitterType, 'php')) {
             $drushRcEmitter = new AliasesDrushRcEmitter($location, $base_dir);
             $this->getContainer()->inflect($drushRcEmitter);
-            $emitters[] = $drushRcEmitter
+            $emitters[] = $drushRcEmitter;
         }
         if ($this->emitterTypeMatches($emitterType, 'yml')) {
             $sitesYmlEmitter = new DrushSitesYmlEmitter($base_dir, $home, $target_name);

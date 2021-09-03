@@ -640,8 +640,8 @@ class ProcessCommand extends TerminusCommand implements SiteAwareInterface, Conf
      */
     protected function downloadDatabase()
     {
-        $this->getContainer()->add(GetLiveDBCommand::class);
-        $downloadDbCommand = $this->getContainer()->get(GetLiveDBCommand::class);
+        $downloadDbCommand = new GetLiveDBCommand();
+        $this->getContainer()->inflect($downloadDbCommand);
         $downloadDbCommand->downloadLiveDbBackup($this->getSourceDirectory()->getSource());
     }
 
@@ -658,8 +658,8 @@ class ProcessCommand extends TerminusCommand implements SiteAwareInterface, Conf
      */
     protected function downloadSourceSiteFilesDirectory()
     {
-        $this->getContainer()->add(GetLiveFilesCommand::class);
-        $downloadFilesCommand = $this->getContainer()->get(GetLiveFilesCommand::class);
+        $downloadFilesCommand = new GetLiveFilesCommand();
+        $this->getContainer()->inflect($downloadFilesCommand);
         $downloadFilesCommand->downloadLiveFilesBackup($this->getSourceDirectory()->getSource());
     }
 }

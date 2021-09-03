@@ -93,8 +93,8 @@ class Directory implements ContainerAwareInterface, IOAwareInterface, SiteAwareI
                 throw new \Exception("Site does not exist and cannot be created.");
             }
         }
-        $this->getContainer()->add(CloneCommand::class);
-        $cloneCommand = $this->getContainer()->get(CloneCommand::class);
+        $cloneCommand = new CloneCommand();
+        $this->getContainer()->inflect($cloneCommand);
         $clonePath = $cloneCommand->clone($this->getSource());
         $this->logger->info("Clone Path:" . $clonePath);
         $this->setClonePath($clonePath);

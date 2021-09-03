@@ -112,11 +112,8 @@ class Organization extends TerminusModel implements
     public function getSiteMemberships()
     {
         if (empty($this->site_memberships)) {
-            $nickname = \uniqid(__FUNCTION__ . '-');
-            $this->getContainer()->add($nickname, OrganizationSiteMemberships::class)
-                ->addArgument(['organization' => $this]);
-            $this->site_memberships = $this->getContainer()
-                ->get($nickname);
+            $this->site_memberships = new OrganizationSiteMemberships(['organization' => $this]);
+            $this->getContainer()->inflect($this->site_memberships);
         }
         return $this->site_memberships;
     }
@@ -127,10 +124,8 @@ class Organization extends TerminusModel implements
     public function getUpstreams()
     {
         if (empty($this->upstreams)) {
-            $nickname = \uniqid(__FUNCTION__ . '-');
-            $this->getContainer()->add($nickname, OrganizationUpstreams::class)
-                ->addArgument(['organization' => $this]);
-            $this->upstreams = $this->getContainer()->get($nickname);
+            $this->upstreams = new OrganizationUpstreams(['organization' => $this]);
+            $this->getContainer()->inflect($this->upstreams);
         }
         return $this->upstreams;
     }
@@ -141,11 +136,8 @@ class Organization extends TerminusModel implements
     public function getUserMemberships()
     {
         if (empty($this->user_memberships)) {
-            $nickname = \uniqid(__FUNCTION__ . '-');
-            $this->getContainer()->add($nickname, OrganizationUserMemberships::class)
-                ->addArgument(['organization' => $this]);
-            $this->user_memberships = $this->getContainer()
-                ->get($nickname);
+            $this->user_memberships = new OrganizationUserMemberships(['organization' => $this]);
+            $this->getContainer()->inflect($this->user_memberships);
         }
         return $this->user_memberships;
     }
@@ -156,10 +148,8 @@ class Organization extends TerminusModel implements
     public function getWorkflows()
     {
         if (empty($this->workflows)) {
-            $nickname = \uniqid(__FUNCTION__ . '-');
-            $this->getContainer()->add($nickname, Workflows::class)
-                ->addArgument(['organization' => $this]);
-            $this->workflows = $this->getContainer()->get($nickname);
+            $this->workflows = new Workflows(['organization' => $this]);
+            $this->getContainer()->inflect($this->workflows);
         }
         return $this->workflows;
     }
