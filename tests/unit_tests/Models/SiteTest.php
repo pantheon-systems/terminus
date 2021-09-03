@@ -86,7 +86,7 @@ class SiteTest extends ModelTestCase
     /**
      * @inheritdoc
      */
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
 
@@ -662,10 +662,8 @@ class SiteTest extends ModelTestCase
             )
             ->will($this->throwException(new \Exception('message', 403)));
 
-        $this->setExpectedException(
-            TerminusException::class,
-            'A payment method is required to increase the service level of this site.'
-        );
+        $this->expectException(TerminusException::class);
+        $this->expectExceptionMessage('A payment method is required to increase the service level of this site.');
 
         $out = $this->model->updateServiceLevel($service_level);
         $this->assertNull($out);
@@ -687,7 +685,8 @@ class SiteTest extends ModelTestCase
             )
             ->will($this->throwException($expected_exception));
 
-        $this->setExpectedException(get_class($expected_exception), $expected_exception->getMessage());
+        $this->expectException(get_class($expected_exception));
+        $this->expectExceptionMessage($expected_exception->getMessage());
 
         $out = $this->model->updateServiceLevel($service_level);
         $this->assertNull($out);

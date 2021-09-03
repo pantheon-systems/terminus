@@ -25,7 +25,7 @@ class SiteAuthorizationsTest extends CollectionTestCase
     /**
      * @inheritdoc
      */
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
 

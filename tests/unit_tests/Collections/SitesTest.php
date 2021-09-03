@@ -52,7 +52,7 @@ class SitesTest extends CollectionTestCase
     /**
      * @inheritdoc
      */
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
 
@@ -337,10 +337,8 @@ class SitesTest extends CollectionTestCase
             ->with()
             ->will($this->throwException(new \Exception()));
 
-        $this->setExpectedException(
-            TerminusException::class,
-            "Could not locate a site your user may access identified by $uuid."
-        );
+        $this->expectException(TerminusException::class);
+        $this->expectExceptionMessage("Could not locate a site your user may access identified by $uuid.");
 
         $out = $this->collection->get($uuid);
         $this->assertNull($out);

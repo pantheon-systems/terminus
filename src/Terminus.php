@@ -83,7 +83,7 @@ class Terminus implements
         $this->setInput($input);
         $this->setOutput($output);
         $application = new Application('Terminus', $config->get('version'));
-        $container = new Container();
+        $container = new InflectingContainer();
         Robo::configureContainer(
             $container,
             $application,

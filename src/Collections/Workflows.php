@@ -91,7 +91,6 @@ class Workflows extends APICollection implements SessionAwareInterface
      */
     public function create($type, array $options = [])
     {
-
         $params = $options['params'] ?? [];
         $results = $this->request()->request(
             $this->getUrl(),
@@ -109,17 +108,15 @@ class Workflows extends APICollection implements SessionAwareInterface
                 ['error' => $results->getStatusCodeReason()]
             );
         }
-        $nickname = \uniqid(__CLASS__ . "-");
-        $this->getContainer()->add($nickname, $this->collected_class)
-            ->addArguments([
-                $results->getData(),
-                [
-                    'id' => $results->getData()->id,
-                    'collection' => $this,
-                    'owner' => $this->owner
-                ]
-            ]);
-        $model = $this->getContainer()->get($nickname);
+        $model = new $this->collected_class(
+            $results->getData(),
+            [
+                'id' => $results->getData()->id,
+                'collection' => $this,
+                'owner' => $this->owner
+            ]
+        );
+        $this->getContainer()->inflect($model);
         $this->add($model);
         return $model;
     }

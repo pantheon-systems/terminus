@@ -86,7 +86,7 @@ class SiteEnvLookupTest extends TerminusTestCase
     /**
      * @inheritdoc
      */
-    public function setUp()
+    public function setUp(): void
     {
         $this->config = new TerminusConfig();
 

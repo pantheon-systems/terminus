@@ -15,7 +15,7 @@ class RemoveCommandTest extends TagCommandTest
     /**
      * @inheritdoc
      */
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
 

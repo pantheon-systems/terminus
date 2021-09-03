@@ -41,7 +41,7 @@ class AuthorizerTest extends TerminusTestCase
     /**
      * @inheritdoc
      */
-    public function setUp()
+    public function setUp(): void
     {
         $this->config = $this->getMockBuilder(TerminusConfig::class)
             ->disableOriginalConstructor()
@@ -172,10 +172,8 @@ class AuthorizerTest extends TerminusTestCase
         $this->token->expects($this->never())
             ->method('logIn');
 
-        $this->setExpectedException(
-            TerminusException::class,
-            'You are not logged in. Run `auth:login` to authenticate or `help auth:login` for more info.'
-        );
+        $this->expectException(TerminusException::class);
+        $this->expectExceptionMessage('You are not logged in. Run `auth:login` to authenticate or `help auth:login` for more info.');
 
         $this->assertNull($this->authorizer->ensureLogin());
     }

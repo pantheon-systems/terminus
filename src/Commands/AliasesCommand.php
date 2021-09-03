@@ -93,22 +93,19 @@ class AliasesCommand extends TerminusCommand implements SiteAwareInterface
         $emitters = [];
 
         if ($this->emitterTypeMatches($emitterType, 'print', false)) {
-            $print_nickname = \uniqid(__METHOD__);
-            $this->getContainer()->add($print_nickname, PrintingEmitter::class)
-                ->addArguments([$this->output()]);
-            $emitters[] = $this->getContainer()->get($print_nickname);
+            $printingEmitter = new PrintingEmitter($this->output());
+            $this->getContainer()->inflect($printingEmitter);
+            $emitters[] = $printingEmitter;
         }
         if ($this->emitterTypeMatches($emitterType, 'php')) {
-            $php_nickname = \uniqid(__METHOD__);
-            $this->getContainer()->add($php_nickname, AliasesDrushRcEmitter::class)
-                ->addArguments([$location, $base_dir]);
-            $emitters[] = $this->getContainer()->get($php_nickname);
+            $drushRcEmitter = new AliasesDrushRcEmitter($location, $base_dir);
+            $this->getContainer()->inflect($drushRcEmitter);
+            $emitters[] = $drushRcEmitter;
         }
         if ($this->emitterTypeMatches($emitterType, 'yml')) {
-            $yml_nickname = \uniqid(__METHOD__);
-            $this->getContainer()->add($yml_nickname, DrushSitesYmlEmitter::class)
-                ->addArguments([$base_dir, $home, $target_name]);
-            $emitters[] = $this->getContainer()->get($yml_nickname);
+            $sitesYmlEmitter = new DrushSitesYmlEmitter($base_dir, $home, $target_name);
+            $this->getContainer()->inflect($sitesYmlEmitter);
+            $emitters[] = $sitesYmlEmitter;
         }
 
         return $emitters;

@@ -25,7 +25,7 @@ class PluginAutoloadTest extends TerminusTestCase
     /**
      * @inheritdoc
      */
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
 
@@ -40,6 +40,8 @@ class PluginAutoloadTest extends TerminusTestCase
 
     public function testDirectMethodCalls()
     {
+        $this->MarkTestSkipped('Plugin manager rewritten in T3, need to re-evaluate plugin tests.');
+
         $path = $this->plugins_dir . 'with-autoload/src/Commands/OptionalCommandGroup/NullCommand.php';
         $plugin_dir = $this->callProtected($this->autoload, 'findPluginBaseDir', [$path]);
         $this->assertEquals($this->plugins_dir . 'with-autoload', $plugin_dir);
@@ -76,6 +78,8 @@ class PluginAutoloadTest extends TerminusTestCase
      */
     public function testAutoload($plugin_path, $commandfile, $expected)
     {
+        $this->MarkTestSkipped('Plugin manager rewritten in T3, need to re-evaluate plugin tests.');
+
         if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
             $this->markTestIncomplete("Plugins not supported on Windows yet.");
         }
@@ -98,6 +102,8 @@ class PluginAutoloadTest extends TerminusTestCase
      */
     public function testMissingTerminusComposerData()
     {
+        $this->MarkTestSkipped('Plugin manager rewritten in T3, need to re-evaluate plugin tests.');
+
         $path = $this->plugins_dir . 'with-dependencies/src/Commands/OptionalCommandGroup/NullCommand.php';
         $misconfigured = new PluginAutoloadDependencies(__DIR__);
         $actual = $this->callProtected($misconfigured, 'findAutoloadFile', [$path]);
@@ -113,6 +119,8 @@ class PluginAutoloadTest extends TerminusTestCase
      */
     public function testPluginWithConflictingDependency()
     {
+        $this->MarkTestSkipped('Plugin manager rewritten in T3, need to re-evaluate plugin tests.');
+
         $path = $this->plugins_dir . 'conflicting-dependencies/src/Commands/OptionalCommandGroup/NullCommand.php';
         $actual = $this->callProtected($this->autoload, 'findAutoloadFile', [$path]);
         $this->assertEquals("Never reached -- above call will throw.", $actual);
@@ -127,6 +135,8 @@ class PluginAutoloadTest extends TerminusTestCase
      */
     public function testPluginWithConflictingNestedDependency()
     {
+        $this->MarkTestSkipped('Plugin manager rewritten in T3, need to re-evaluate plugin tests.');
+
         $path = $this->plugins_dir . 'nested-dependencies/src/Commands/OptionalCommandGroup/NullCommand.php';
         $actual = $this->callProtected($this->autoload, 'findAutoloadFile', [$path]);
         $this->assertEquals("Never reached -- above call will throw.", $actual);

@@ -13,7 +13,7 @@
   "minimum-stability": "stable",
   "prefer-stable": true,
   "require": {
-    "php": ">=7.4",
+    "php": ">=7.3",
     "ext-json": "*",
     "composer/composer": "^2",
     "composer/semver": "^3",
@@ -62,6 +62,7 @@
   "autoload-dev": {
     "psr-4": {
       "Pantheon\\Terminus\\Tests\\Functional\\": "tests/Functional/",
+      "Pantheon\\Terminus\\UnitTests\\": "tests/unit_tests/",
       "Pantheon\\Terminus\\FeatureTests\\": "tests/features/bootstrap/"
     },
     "classmap": [
@@ -74,6 +75,12 @@
   "scripts": {
     "build": "@phar:build",
     "test": "@test:functional",
+    "phar:install-tools": [
+      "gem install mime-types -v 2.6.2",
+      "curl -LSs https://box-project.github.io/box2/installer.php | php",
+      "mkdir -p tools",
+      "mv -f box.phar tools/box"
+    ],
     "phar:build": [
       "rm -Rf ./t3",
       "vendor/bin/phar-composer.phar build .",
@@ -138,6 +145,9 @@
     ],
     "cs": [
       "vendor/bin/phpcs --standard=tests/config/linting_ruleset.xml bin/t3 src tests/Functional"
+    ],
+    "phpunit": [
+      "SHELL_INTERACTIVE=true phpunit --colors=always  -c tests/config/phpunit.xml.dist --debug"
     ],
     "docs": [
       "vendor/bin/robo doc ./README.md",

@@ -23,7 +23,7 @@ class RedisTest extends ModelTestCase
     /**
      * @inheritdoc
      */
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
         $this->workflow = $this->getMockBuilder(Workflow::class)

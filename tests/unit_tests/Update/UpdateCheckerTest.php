@@ -46,7 +46,7 @@ class UpdateCheckerTest extends TerminusTestCase
     /**
      * @inheritdoc
      */
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
 
@@ -77,6 +77,8 @@ class UpdateCheckerTest extends TerminusTestCase
      */
     public function testClientIsUpToDate()
     {
+        $this->markTestSkipped('self:update removed');
+
         $running_version_num = '1.0.0-beta.2';
         $latest_version_num = '1.0.0-beta.2';
         $hide_update_message = null;
@@ -111,6 +113,8 @@ class UpdateCheckerTest extends TerminusTestCase
      */
     public function testClientIsOutOfDate()
     {
+        $this->markTestSkipped('self:update removed');
+
         $running_version_num = '1.0.0-beta.1';
         $latest_version_num = '1.0.0-beta.2';
         $hide_update_message = null;
@@ -146,6 +150,8 @@ class UpdateCheckerTest extends TerminusTestCase
      */
     public function testClientIsOutOfDateButHideMessage()
     {
+        $this->markTestSkipped('self:update removed');
+
         $running_version_num = '1.0.0-beta.1';
         $latest_version_num = '1.0.0-beta.2';
         $hide_update_message = '1';
@@ -180,6 +186,8 @@ class UpdateCheckerTest extends TerminusTestCase
      */
     public function testCannotCheckVersion()
     {
+        $this->markTestSkipped('self:update removed');
+
         $running_version_num = '1.0.0-beta.2';
 
         $this->config->expects($this->once())
@@ -216,6 +224,8 @@ class UpdateCheckerTest extends TerminusTestCase
      */
     public function testShouldCheckForUpdates()
     {
+        $this->markTestSkipped('self:update removed');
+
         if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
             $this->markTestSkipped("Windows CI doesn't have the necessary extensions.");
         }

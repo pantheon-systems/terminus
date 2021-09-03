@@ -18,7 +18,7 @@ class LockTest extends ModelTestCase
     protected $workflows;
     protected $environment;
 
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
 

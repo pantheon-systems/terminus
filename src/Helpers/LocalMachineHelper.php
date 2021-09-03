@@ -111,9 +111,8 @@ class LocalMachineHelper implements ConfigAwareInterface, ContainerAwareInterfac
     public function getProgressBar(Process $process)
     {
         $process->start();
-        $nickname = \uniqid(__METHOD__ . "-");
-        $this->getContainer()->add($nickname, ProcessProgressBar::class)
-            ->addArguments([$this->output(), $process]);
+        $progressBar = new ProcessProgressBar($this->output(), $process);
+        $this->getContainer()->inflect($progressBar);
         return $this->getContainer()->get($nickname);
     }
 

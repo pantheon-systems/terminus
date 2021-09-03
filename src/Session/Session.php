@@ -74,16 +74,8 @@ class Session implements ContainerAwareInterface, ConfigAwareInterface, DataStor
                 "No user ID. Please login via t3 auth:login"
             );
         }
-        $nickname = \uniqid(__METHOD__ . "-");
-        $this->getContainer()
-            ->add($nickname, User::class)
-            ->addArgument((object)['id' => $user_id]);
-        $user = $this->getContainer()->get($nickname);
-        if (!$user instanceof User) {
-            throw new TerminusException(
-                "No User ID. Please ling via t3 auth:login"
-            );
-        }
+        $user = new User(['id' => $user_id]);
+        $this->getContainer()->inflect($user);
         return $user;
     }
 
@@ -133,10 +125,9 @@ class Session implements ContainerAwareInterface, ConfigAwareInterface, DataStor
     public function getTokens()
     {
         if (empty($this->tokens)) {
-            $nickname = \uniqid(__METHOD__ . "-");
-            $this->getContainer()->add($nickname, SavedTokens::class)
-                ->addMethodCall('setDataStore', [$this->data_store]);
-            $this->tokens = $this->getContainer()->get($nickname);
+            $this->tokens = new SavedTokens();
+            $this->tokens->setDataStore($this->data_store);
+            $this->getContainer()->inflect($this->tokens);
         }
         return $this->tokens;
     }

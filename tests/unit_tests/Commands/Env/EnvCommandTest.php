@@ -21,7 +21,7 @@ abstract class EnvCommandTest extends CommandTestCase
     /**
      * @inheritdoc
      */
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
         $this->workflow = $this->getMockBuilder(Workflow::class)

@@ -16,7 +16,7 @@ class ListCommandTest extends SSHKeyCommandTest
     /**
      * @inheritdoc
      */
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
         $this->ssh_keys->method('getCollectedClass')->willReturn(SSHKey::class);

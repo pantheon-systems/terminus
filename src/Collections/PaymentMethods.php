@@ -2,6 +2,7 @@
 
 namespace Pantheon\Terminus\Collections;
 
+use Pantheon\Terminus\Models\TerminusModel;
 use Pantheon\Terminus\Exceptions\TerminusException;
 use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
 use Pantheon\Terminus\Models\PaymentMethod;
@@ -30,7 +31,7 @@ class PaymentMethods extends UserOwnedCollection
      * @throws TerminusException When there is more than one matching payment method
      * @throws TerminusNotFoundException When there are no matching payment methods
      */
-    public function get($id)
+    public function get($id): TerminusModel
     {
         $payment_methods = $this->all();
         if (isset($payment_methods[$id])) {

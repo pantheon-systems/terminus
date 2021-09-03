@@ -15,7 +15,7 @@ class InfoCommandTest extends LockCommandTest
     /**
      * @inheritdoc
      */
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
 

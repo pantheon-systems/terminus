@@ -22,7 +22,7 @@ class RemoveCommandTest extends TeamCommandTest
     /**
      * Setup the test fixture.
      */
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -88,7 +88,8 @@ class RemoveCommandTest extends TeamCommandTest
         $this->progress_bar->method('cycle')
             ->with()
             ->will($this->throwException(new \Exception($this->message, 403)));
-        $this->setExpectedException(\Exception::class, $this->message);
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage($this->message);
 
         $out = $this->command->remove('mysite', 'test@example.com');
         $this->assertNull($out);

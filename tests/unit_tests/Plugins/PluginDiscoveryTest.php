@@ -29,7 +29,7 @@ class PluginDiscoveryTest extends TerminusTestCase
     /**
      * @inheritdoc
      */
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
 
@@ -50,6 +50,8 @@ class PluginDiscoveryTest extends TerminusTestCase
      */
     public function testDiscover()
     {
+        $this->MarkTestSkipped('Plugin manager rewritten in T3, need to re-evaluate plugin tests.');
+
         if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
             $this->markTestIncomplete("Plugins not supported on Windows yet.");
         }
@@ -88,6 +90,8 @@ class PluginDiscoveryTest extends TerminusTestCase
 
     public function testDiscoverFailDirDNE()
     {
+        $this->MarkTestSkipped('Plugin manager rewritten in T3, need to re-evaluate plugin tests.');
+
         $discovery = new PluginDiscovery(null);
         $this->assertEmpty($discovery->discover());
     }

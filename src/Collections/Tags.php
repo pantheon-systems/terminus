@@ -46,12 +46,11 @@ class Tags extends APICollection
             "organizations/{$this->org_site_membership->getOrganization()->id}/tags",
             ['method' => 'put', 'form_params' => $params,]
         );
-        $this->getContainer()->add($this->collected_class)
-            ->addArguments([
-                (object)['id' => $tag],
-                ['collection' => $this],
-            ]);
-        $this->models[$tag] = $this->getContainer()->get($this->collected_class);
+        $this->models[$tag] = new $this->collected_class(
+            (object)['id' => $tag],
+            ['collection' => $this]
+        );
+        $this->getContainer()->inflect($this->models[$tag]);
         return $this->models[$tag];
     }
 

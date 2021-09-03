@@ -35,7 +35,7 @@ class TagsTest extends CollectionTestCase
     /**
      * @inheritdoc
      */
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
 
@@ -80,15 +80,6 @@ class TagsTest extends CollectionTestCase
                 )
             );
         $this->collection->create($tag_id);
-    }
-
-    /**
-     * Tests Tags::fetch($options)
-     */
-    public function testFetch()
-    {
-        $data = ['tag1',];
-        $this->collection->fetch($data);
     }
 
     /**

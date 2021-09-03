@@ -55,7 +55,7 @@ class CreateCommandTest extends CommandTestCase
     /**
      * @inheritdoc
      */
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -151,7 +151,8 @@ class CreateCommandTest extends CommandTestCase
             ->willReturn(true);
 
         $this->expectWorkflowProcessing();
-        $this->setExpectedException(TerminusException::class, "The site name $site_name is already taken.");
+        $this->expectException(TerminusException::class);
+        $this->expectExceptionMessage("The site name $site_name is already taken.");
 
         $out = $this->command->create($site_name, $site_name, 'upstream');
         $this->assertNull($out);

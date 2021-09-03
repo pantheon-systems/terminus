@@ -187,15 +187,11 @@ class Sites extends APICollection implements SessionAwareInterface
             $uuid = $this->findUUIDByNameOrUUID($id);
             $site = $this->models[$uuid] ?? null;
             if (!$site instanceof Site) {
-                $nickname = 'site-' . $uuid;
-                $this->getContainer()->add($nickname, $this->collected_class)
-                    ->addArguments(
-                        [
-                            (object)['id' => $uuid],
-                            ['id' => $uuid, 'collection' => $this]
-                        ]
-                    );
-                $site = $this->getContainer()->get($nickname);
+                $site = new $this->collected_class(
+                    (object)['id' => $uuid],
+                    ['id' => $uuid, 'collection' => $this]
+                );
+                $this->getContainer()->inflect($site);
                 $site->fetch();
                 if (!$site->valid()) {
                     throw new TerminusException("Site is not valid!");

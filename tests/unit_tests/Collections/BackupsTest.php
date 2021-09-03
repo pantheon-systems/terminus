@@ -30,7 +30,7 @@ class BackupsTest extends CollectionTestCase
      */
     protected $environment;
 
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
 
@@ -273,7 +273,8 @@ class BackupsTest extends CollectionTestCase
         $this->assertEquals($out->get('task_id'), $data->task_id);
         $this->assertEquals($out->get('filename'), $data->filename);
 
-        $this->setExpectedException(TerminusException::class, "Could not find a backup identified by not-there.");
+        $this->expectException(TerminusException::class);
+        $this->expectExceptionMessage("Could not find a backup identified by not-there.");
         $out = $backups->getBackupByFileName('not-there');
         $this->assertNull($out);
     }

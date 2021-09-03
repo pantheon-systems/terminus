@@ -3,17 +3,17 @@
   colors="true"
   >
   <testsuites>
-    <testsuite>
+    <testsuite name="unit">
       <directory suffix="Test.php">../unit_tests/</directory>
     </testsuite>
   </testsuites>
-  <filter>
-    <whitelist>
-        <directory suffix=".php">../../src/</directory>
-        <directory suffix=".php">../../utils/</directory>
-        <exclude>
-            <directory suffix=".php">../../vendor/</directory>
-        </exclude>
-    </whitelist>
-  </filter>    
+  <coverage>
+    <include>
+      <directory suffix=".php">../../src/</directory>
+      <directory suffix=".php">../../utils/</directory>
+    </include>
+    <exclude>
+        <directory suffix=".php">../../vendor/</directory>
+    </exclude>
+  </coverage>
 </phpunit>

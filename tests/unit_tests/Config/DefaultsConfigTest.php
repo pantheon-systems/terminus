@@ -21,7 +21,7 @@ class DefaultsConfigTest extends TerminusTestCase
     /**
      * @inheritdoc
      */
-    public function setUp()
+    public function setUp(): void
     {
         $this->config = new DefaultsConfig();
     }
@@ -92,7 +92,8 @@ class DefaultsConfigTest extends TerminusTestCase
     public function testGetTerminusRootInvalid()
     {
         $config = new DummyConfigClass();
-        $this->setExpectedException(TerminusException::class, 'Could not locate root to set TERMINUS_ROOT.');
+        $this->expectException(TerminusException::class);
+        $this->expectExceptionMessage('Could not locate root to set TERMINUS_ROOT.');
         $this->assertNull($config->runGetTerminusRoot('/'));
     }
 }

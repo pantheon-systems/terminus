@@ -7,7 +7,7 @@ use Pantheon\Terminus\UnitTests\TerminusTestCase;
 
 class FileStoreTest extends TerminusTestCase
 {
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
 
@@ -17,7 +17,7 @@ class FileStoreTest extends TerminusTestCase
         $this->filestore = new FileStore($this->tmp);
     }
 
-    public function tearDown()
+    public function tearDown(): void
     {
         parent::tearDown();
 
@@ -65,7 +65,7 @@ class FileStoreTest extends TerminusTestCase
         $this->filestore->remove('foo');
         $this->assertFalse($this->filestore->has('foo'));
         $this->assertEquals(['bar'], array_values($this->filestore->keys()));
-        
+
         // Key cleaning
         $this->filestore->set('foo/bar&baz!bop', '123');
         $this->assertTrue($this->filestore->has('foo/bar&baz!bop'));

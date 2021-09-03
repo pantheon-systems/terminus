@@ -23,7 +23,7 @@ class MachineTokenTest extends ModelTestCase
      */
     protected $model;
 
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
 
@@ -55,7 +55,7 @@ class MachineTokenTest extends ModelTestCase
             ->with("users/{$user->id}/machine_tokens/{$this->model->id}", ['method' => 'delete',])
             ->willReturn(['status_code' => 404,]);
 
-        $this->setExpectedException(TerminusException::class);
+        $this->expectException(TerminusException::class);
 
         $out = $this->model->delete();
         $this->assertNull($out);

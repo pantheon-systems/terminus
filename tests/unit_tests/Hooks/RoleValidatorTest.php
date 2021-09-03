@@ -2,6 +2,7 @@
 
 namespace Pantheon\Terminus\UnitTests\Hooks;
 
+use PHPUnit\Framework\TestCase;
 use Consolidation\AnnotatedCommand\AnnotationData;
 use Consolidation\AnnotatedCommand\CommandData;
 use Pantheon\Terminus\Config\TerminusConfig;
@@ -14,7 +15,7 @@ use Symfony\Component\Console\Input\InputInterface;
  * Testing class for Pantheon\Terminus\Hooks\RoleValidator
  * @package Pantheon\Terminus\UnitTests\Hooks
  */
-class RoleValidatorTest extends \PHPUnit_Framework_TestCase
+class RoleValidatorTest extends TestCase
 {
     const ORG_ROLES = 'admin, developer, team_member, or unprivileged';
     const PARAM_NAME = 'role';
@@ -43,7 +44,7 @@ class RoleValidatorTest extends \PHPUnit_Framework_TestCase
     /**
      * @inheritDoc
      */
-    public function setUp()
+    public function setUp(): void
     {
         $this->config = new TerminusConfig();
 
@@ -210,7 +211,8 @@ class RoleValidatorTest extends \PHPUnit_Framework_TestCase
             'The available roles for {command_name} are unknown.',
             compact('command_name')
         );
-        $this->setExpectedException(get_class($expected_exception), $expected_exception->getMessage());
+        $this->expectException(get_class($expected_exception));
+        $this->expectExceptionMessage($expected_exception->getMessage());
     }
 
     /**
@@ -225,6 +227,7 @@ class RoleValidatorTest extends \PHPUnit_Framework_TestCase
             '{role} is not a valid role selection. Please enter {roles}.',
             compact('role', 'roles')
         );
-        $this->setExpectedException(get_class($expected_exception), $expected_exception->getMessage());
+        $this->expectException(get_class($expected_exception));
+        $this->expectExceptionMessage($expected_exception->getMessage());
     }
 }

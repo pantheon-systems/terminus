@@ -19,7 +19,7 @@ class CreateCommandTest extends BackupCommandTest
     /**
      * @inheritdoc
      */
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
         $this->command = new CreateCommand($this->sites);
@@ -143,7 +143,7 @@ class CreateCommandTest extends BackupCommandTest
         $this->logger->expects($this->never())
             ->method('log');
 
-        $this->setExpectedException(TerminusException::class);
+        $this->expectException(TerminusException::class);
 
         $out = $this->command->create("mysite.{$this->environment->id}");
         $this->assertNull($out);

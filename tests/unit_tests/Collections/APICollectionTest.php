@@ -4,6 +4,7 @@ namespace Pantheon\Terminus\UnitTests\Collections;
 
 use Pantheon\Terminus\Collections\APICollection;
 use Pantheon\Terminus\Models\TerminusModel;
+use Pantheon\Terminus\Request\RequestOperationResult;
 
 /**
  * Class APICollectionTest

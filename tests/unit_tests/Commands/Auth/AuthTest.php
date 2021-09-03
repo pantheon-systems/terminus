@@ -19,7 +19,7 @@ abstract class AuthTest extends CommandTestCase
     /**
      * @inheritdoc
      */
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
 

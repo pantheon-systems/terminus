@@ -36,7 +36,7 @@ class LatestReleaseTest extends TerminusTestCase
     /**
      * @inheritdoc
      */
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
 
@@ -64,6 +64,8 @@ class LatestReleaseTest extends TerminusTestCase
      */
     public function testFirstTime()
     {
+        $this->markTestSkipped('self:update removed');
+
         $version = '1.0.0-beta.2';
 
         $this->data_store->expects($this->once())
@@ -88,6 +90,8 @@ class LatestReleaseTest extends TerminusTestCase
      */
     public function testCannotCheckGithub()
     {
+        $this->markTestSkipped('self:update removed');
+
         $version = '1.0.0-beta.2';
         $check_date = strtotime('-' . LatestRelease::TIME_BETWEEN_CHECKS) - 999999;
         $data = (object)['version' => $version, 'check_date' => $check_date,];
@@ -119,6 +123,8 @@ class LatestReleaseTest extends TerminusTestCase
      */
     public function testCheckedRecently()
     {
+        $this->markTestSkipped('self:update removed');
+
         $version = '1.0.0-beta.2';
         $check_date = time();
         $data = (object)['version' => $version, 'check_date' => $check_date,];
@@ -143,6 +149,8 @@ class LatestReleaseTest extends TerminusTestCase
      */
     public function testGetInvalidAttribute()
     {
+        $this->markTestSkipped('self:update removed');
+
         $version = '1.0.0-beta.2';
         $check_date = time();
         $data = (object)['version' => $version, 'check_date' => $check_date,];
@@ -158,7 +166,8 @@ class LatestReleaseTest extends TerminusTestCase
         $this->logger->expects($this->never())
             ->method('debug');
 
-        $this->setExpectedException(TerminusNotFoundException::class, 'There is no attribute called invalid.');
+        $this->expectException(TerminusNotFoundException::class);
+        $this->expectExceptionMessage('There is no attribute called invalid.');
 
         $out = $this->latest_release->get('invalid');
         $this->assertNull($out);

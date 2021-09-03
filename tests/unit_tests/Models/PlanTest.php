@@ -25,7 +25,7 @@ class PlanTest extends ModelTestCase
     /**
      * @inheritdoc
      */
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
         $this->plans = $this->getMockBuilder(Plans::class)

@@ -16,7 +16,7 @@ class LookupCommandTest extends CommandTestCase
     /**
      * @inheritdoc
      */
-    protected function setup()
+    protected function setUp(): void
     {
         parent::setUp();
         $this->command = new LookupCommand($this->getConfig());

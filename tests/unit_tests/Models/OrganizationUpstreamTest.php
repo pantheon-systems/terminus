@@ -30,7 +30,7 @@ class OrganizationUpstreamTest extends TerminusTestCase
     /**
      * @inheritdoc
      */
-    public function setUp()
+    public function setUp(): void
     {
         $this->data = [
             'id' => 'upstream id',

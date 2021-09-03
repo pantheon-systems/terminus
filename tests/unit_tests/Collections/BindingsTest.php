@@ -19,7 +19,7 @@ class BindingsTest extends CollectionTestCase
      */
     protected $bindings_data;
 
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
 

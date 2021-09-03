@@ -18,7 +18,7 @@ class GetCommandTest extends BackupCommandTest
      * Sets up the fixture, for example, open a network connection.
      * This method is called before a test is executed.
      */
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
         $this->command = new GetCommand($this->sites);
@@ -78,7 +78,7 @@ class GetCommandTest extends BackupCommandTest
             ->with($this->equalTo($bad_file_name))
             ->will($this->throwException(new TerminusNotFoundException()));
 
-        $this->setExpectedException(TerminusNotFoundException::class);
+        $this->expectException(TerminusNotFoundException::class);
 
         $out = $this->command->get('mysite.dev', ['file' => $bad_file_name,]);
         $this->assertNull($out);
@@ -103,10 +103,8 @@ class GetCommandTest extends BackupCommandTest
             ->method('get')
             ->with($this->equalTo('name'))
             ->willReturn($site);
-        $this->setExpectedException(
-            TerminusNotFoundException::class,
-            "No backups available. Create one with `terminus backup:create $site.{$this->environment->id}`"
-        );
+        $this->expectException(TerminusNotFoundException::class);
+        $this->expectExceptionMessage("No backups available. Create one with `terminus backup:create $site.{$this->environment->id}`");
 
         $out = $this->command->get("$site.{$this->environment->id}", compact('element'));
         $this->assertNull($out);

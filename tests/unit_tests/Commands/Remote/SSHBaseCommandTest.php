@@ -22,7 +22,7 @@ class SSHBaseCommandTest extends CommandTestCase
     /**
      * @inheritdoc
      */
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -135,7 +135,8 @@ class SSHBaseCommandTest extends CommandTestCase
                 ])
             );
 
-        $this->setExpectedException(TerminusProcessException::class, $dummy_output);
+        $this->expectException(TerminusProcessException::class);
+        $this->expectExceptionMessage($dummy_output);
 
         $out = $this->command->dummyCommand("$site_name.{$this->environment->id}", $options);
         $this->assertNull($out);

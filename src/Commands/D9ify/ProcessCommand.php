@@ -85,9 +85,8 @@ class ProcessCommand extends TerminusCommand implements SiteAwareInterface, Conf
                 $sourceSiteObject = $this->getSite($sourceSite);
             }
             if (isset($sourceSiteObject) && $sourceSiteObject instanceof Site) {
-                $this->getContainer()->add("sourceDir", Directory::class)
-                    ->addArgument(['site' => $sourceSiteObject]);
-                $this->sourceDirectory = $this->getContainer()->get("sourceDir");
+                $this->sourceDirectory = new Directory(['site' => $sourceSiteObject]);
+                $this->getContainer()->inflect($this->sourceDirectory);
             }
 
             // Create destination Site if not exists or value is null.
@@ -115,8 +114,8 @@ class ProcessCommand extends TerminusCommand implements SiteAwareInterface, Conf
             }
 
             if (!isset($destinationSiteObject) || !$destinationSiteObject instanceof Site) {
-                $this->getContainer()->add(CreateCommand::class);
-                $createCommand = $this->getContainer()->get(CreateCommand::class);
+                $createCommand = new CreateCommand();
+                $this->getContainer()->inflect($createCommand);
                 $createCommand->create(
                     $destinationSite,
                     $destinationSite,
@@ -125,14 +124,12 @@ class ProcessCommand extends TerminusCommand implements SiteAwareInterface, Conf
                 );
                 $destinationSiteInfoCommand = $this->getContainer()->get(InfoCommand::class);
                 $destinationSiteInfo = $destinationSiteInfoCommand->info($destinationSite)->getArrayCopy();
-                $this->getContainer()->add('destinationSiteModel', Site::class)
-                    ->addArgument($destinationSiteInfo);
-                $destinationSiteObject = $this->getContainer()->get('destinationSiteModel');
+                $destinationSiteObject = new Site($destinationSiteInfo);
+                $this->getContainer()->inflect($destinationSiteObject);
             }
-            if (isset($destinationSiteObject) || $destinationSiteObject instanceof Site) {
-                $this->getContainer()->add('destinationDir', Directory::class)
-                    ->addArgument(['site' => $destinationSiteObject ]);
-                $this->destinationDirectory = $this->getContainer()->get('destinationDir');
+            if (isset($destinationSiteObject) && $destinationSiteObject instanceof Site) {
+                $this->destinationDirectory = new Directory(['site' => $destinationSiteObject ]);
+                $this->getContainer()->inflect($this->destinationDirectory);
             }
 
             if (!isset($this->sourceDirectory) || !isset($this->destinationDirectory)) {
@@ -643,8 +640,8 @@ class ProcessCommand extends TerminusCommand implements SiteAwareInterface, Conf
      */
     protected function downloadDatabase()
     {
-        $this->getContainer()->add(GetLiveDBCommand::class);
-        $downloadDbCommand = $this->getContainer()->get(GetLiveDBCommand::class);
+        $downloadDbCommand = new GetLiveDBCommand();
+        $this->getContainer()->inflect($downloadDbCommand);
         $downloadDbCommand->downloadLiveDbBackup($this->getSourceDirectory()->getSource());
     }
 
@@ -661,8 +658,8 @@ class ProcessCommand extends TerminusCommand implements SiteAwareInterface, Conf
      */
     protected function downloadSourceSiteFilesDirectory()
     {
-        $this->getContainer()->add(GetLiveFilesCommand::class);
-        $downloadFilesCommand = $this->getContainer()->get(GetLiveFilesCommand::class);
+        $downloadFilesCommand = new GetLiveFilesCommand();
+        $this->getContainer()->inflect($downloadFilesCommand);
         $downloadFilesCommand->downloadLiveFilesBackup($this->getSourceDirectory()->getSource());
     }
 }
