@@ -22,15 +22,14 @@ abstract class PluginBaseCommand extends TerminusCommand
     const INSTALL_GIT_MESSAGE = 'Please install Git to enable plugin management.';
     const PROJECT_NOT_FOUND_MESSAGE = 'No project or plugin named {project} found.';
     const DEPENDENCIES_REQUIRE_COMMAND = 'composer require -d {dir} {packages}';
-    const COMPOSER_ADD_REPOSITORY = 'composer config -d {dir} repositories.{repo_name} path {path}';
+    const COMPOSER_ADD_REPOSITORY =
+        "composer config -d {dir} repositories.{repo_name} '{\"type\": \"path\", \"url\": \"{path}\", \"options\": {\"symlink\": true}}'";
     const COMPOSER_GET_REPOSITORIES = 'composer config -d {dir} repositories';
     const BACKUP_COMMAND =
         "mkdir -p {backup_dir} && tar czvf {backup_dir}"
         . DIRECTORY_SEPARATOR . "backup.tar.gz \"{dir}\"";
     const COMPOSER_REMOVE_REPOSITORY = 'composer config -d {dir} --unset repositories.{repo_name}';
     const DEPENDENCIES_UPDATE_COMMAND = 'composer update -d {dir} {packages} --with-dependencies';
-    const CONFIGURE_PATH_REPO_COMMAND =
-    'composer config -d {dir} repositories.{name} path {path}';
     const INSTALL_COMMAND =
     'composer require -d {dir} {project} --no-update';
 
@@ -386,9 +385,9 @@ abstract class PluginBaseCommand extends TerminusCommand
                 // Update path repository in plugins dir and dependencies dir.
                 foreach ([$plugins_dir, $dependencies_dir] as $dir) {
                     $command = str_replace(
-                        ['{dir}', '{name}', '{path}',],
+                        ['{dir}', '{repo_name}', '{path}',],
                         [$dir, $project_name_without_version, realpath($instalation_path),],
-                        self::CONFIGURE_PATH_REPO_COMMAND
+                        self::COMPOSER_ADD_REPOSITORY
                     );
                     $results = $this->runCommand($command);
                     if ($results['exit_code'] !== 0) {
