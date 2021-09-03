@@ -12,6 +12,7 @@ All notable changes to this project will be documented in this file. This projec
     - New command `self:plugin:search` to locate Terminus plugins to install.
     - New command `self:plugin:uninstall` to uninstall Terminus plugins.
     - New command `self:plugin:update` to update already-installed Terminus plugins.
+    - New command `self:plugin:create` to create new Terminus plugins.
 
 ## 2.6.0 - 2021-06-04
 
