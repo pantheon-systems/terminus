@@ -150,10 +150,8 @@ class Site extends TerminusModel implements ContainerAwareInterface, Organizatio
     public function getAuthorizations()
     {
         if (empty($this->authorizations)) {
-            $nickname = \uniqid(__FUNCTION__ . "-");
-            $this->getContainer()->add($nickname, SiteAuthorizations::class)
-                ->addArgument(['site' => $this]);
-            $this->authorizations = $this->getContainer()->get($nickname);
+            $this->authorizations = new SiteAuthorizations(['site' => $this]);
+            $this->getContainer()->inflect($this->authorizations);
         }
         return $this->authorizations;
     }
@@ -164,10 +162,8 @@ class Site extends TerminusModel implements ContainerAwareInterface, Organizatio
     public function getBranches()
     {
         if (empty($this->branches)) {
-            $nickname = \uniqid(__FUNCTION__ . "-");
-            $this->getContainer()->add($nickname, Branches::class)
-                ->addArgument(['site' => $this]);
-            $this->branches = $this->getContainer()->get($nickname);
+            $this->branches = new Branches(['site' => $this]);
+            $this->getContainer()->inflect($this->branches);
         }
         return $this->branches;
     }
@@ -188,10 +184,8 @@ class Site extends TerminusModel implements ContainerAwareInterface, Organizatio
     public function getEnvironments(): Environments
     {
         if (empty($this->environments)) {
-            $nickname = \uniqid(__FUNCTION__ . "-");
-            $this->getContainer()->add($nickname, Environments::class)
-                ->addArgument(['site' => $this]);
-            $this->environments = $this->getContainer()->get($nickname);
+            $this->environments = new Environments(['site' => $this]);
+            $this->getContainer()->inflect($this->environments);
         }
         return $this->environments;
     }
@@ -240,10 +234,8 @@ class Site extends TerminusModel implements ContainerAwareInterface, Organizatio
     public function getNewRelic()
     {
         if (empty($this->new_relic)) {
-            $nickname = \uniqid(__FUNCTION__ . "-");
-            $this->getContainer()->add($nickname, NewRelic::class)
-                ->addArguments([null, ['site' => $this]]);
-            $this->new_relic = $this->getContainer()->get($nickname);
+            $this->new_relic = new NewRelic(['site' => $this]);
+            $this->getContainer()->inflect($this->new_relic);
         }
         return $this->new_relic;
     }
@@ -254,10 +246,8 @@ class Site extends TerminusModel implements ContainerAwareInterface, Organizatio
     public function getOrganizationMemberships()
     {
         if (empty($this->user_memberships)) {
-            $nickname = \uniqid(__FUNCTION__ . "-");
-            $this->getContainer()->add($nickname, SiteOrganizationMemberships::class)
-                ->addArgument(['site' => $this]);
-            $this->org_memberships = $this->getContainer()->get($nickname);
+            $this->org_memberships = new SiteOrganizationMemberships(['site' => $this]);
+            $this->getContainer()->inflect($this->org_memberships);
         }
         return $this->org_memberships;
     }
@@ -268,10 +258,8 @@ class Site extends TerminusModel implements ContainerAwareInterface, Organizatio
     public function getPlan()
     {
         if (empty($this->plan)) {
-            $nickname = \uniqid(__FUNCTION__ . "-");
-            $this->getContainer()->add($nickname, Plan::class)
-                ->addArgument(['site' => $this]);
-            $this->plan = $this->getContainer()->get($nickname);
+            $this->plan = new Plan(['site' => $this]);
+            $this->getContainer()->inflect($this->plan);
         }
         return $this->plan;
     }
@@ -282,10 +270,8 @@ class Site extends TerminusModel implements ContainerAwareInterface, Organizatio
     public function getPlans()
     {
         if (empty($this->plans)) {
-            $nickname = \uniqid(__FUNCTION__ . "-");
-            $this->getContainer()->add($nickname, Plans::class)
-                ->addArguments([null, ['site' => $this]]);
-            $this->plans = $this->getContainer()->get($nickname);
+            $this->plans = new plans(null, ['site' => $this]);
+            $this->getContainer()->inflect($this->plans);
         }
         return $this->plans;
     }
@@ -296,10 +282,8 @@ class Site extends TerminusModel implements ContainerAwareInterface, Organizatio
     public function getRedis()
     {
         if (empty($this->redis)) {
-            $nickname = \uniqid(__FUNCTION__ . "-");
-            $this->getContainer()->add($nickname, Redis::class)
-                ->addArguments([null, ['site' => $this]]);
-            $this->redis = $this->getContainer()->get($nickname);
+            $this->redis = new Redis(null, ['site' => $this]);
+            $this->getContainer()->inflect($this->redis);
         }
         return $this->redis;
     }
@@ -318,10 +302,8 @@ class Site extends TerminusModel implements ContainerAwareInterface, Organizatio
     public function getSiteMetrics()
     {
         if (empty($this->site_metrics)) {
-            $nickname = \uniqid(__FUNCTION__ . "-");
-            $this->getContainer()->add($nickname, SiteMetrics::class)
-                ->addArguemnt(['site' => $this]);
-            $this->site_metrics = $this->getContainer()->get($nickname);
+            $this->site_metrics = new SiteMetrics(['site' => $this]);
+            $this->getContainer()->inflect($this->site_metrics);
         }
         return $this->site_metrics;
     }
@@ -332,10 +314,8 @@ class Site extends TerminusModel implements ContainerAwareInterface, Organizatio
     public function getSolr()
     {
         if (empty($this->solr)) {
-            $nickname = \uniqid(__FUNCTION__ . "-");
-            $this->getContainer()->add($nickname, Solr::class)
-                ->addArguments([null, ['site' => $this]]);
-            $this->solr = $this->getContainer()->get($nickname);
+            $this->solr = new Solr(null, ['site' => $this]);
+            $this->getContainer()->inflect($this->solr);
         }
         return $this->solr;
     }
@@ -352,10 +332,9 @@ class Site extends TerminusModel implements ContainerAwareInterface, Organizatio
         ) {
             $upstream_data = $settings->upstream;
         }
-        $nickname = \uniqid(__FUNCTION__ . "-");
-        $this->getContainer()->add($nickname, SiteUpstream::class)
-            ->addArguments([$upstream_data, ['site' => $this]]);
-        return $this->getContainer()->get($nickname);
+        $siteUpstream = new SiteUpstream($upstream_data, ['site' => $this]);
+        $this->getContainer()->inflect($siteUpstream);
+        return $siteUpstream;
     }
 
     /**
@@ -364,10 +343,8 @@ class Site extends TerminusModel implements ContainerAwareInterface, Organizatio
     public function getUserMemberships()
     {
         if (empty($this->user_memberships)) {
-            $nickname = \uniqid(__FUNCTION__ . "-");
-            $this->getContainer()->add($nickname, SiteUserMemberships::class)
-                ->addArgument(['site' => $this]);
-            $this->user_memberships = $this->getContainer()->get($nickname);
+            $this->user_memberships = new SiteUserMemberships(['site' => $this]);
+            $this->getContainer()->inflect($this->user_memberships);
         }
         return $this->user_memberships;
     }
@@ -378,10 +355,8 @@ class Site extends TerminusModel implements ContainerAwareInterface, Organizatio
     public function getWorkflows()
     {
         if (empty($this->workflows)) {
-            $nickname = \uniqid(__FUNCTION__ . "-");
-            $this->getContainer()->add($nickname, Workflows::class)
-                ->addArgument(['site' => $this]);
-            $this->workflows = $this->getContainer()->get($nickname);
+            $this->workflows = new Workflows(['site' => $this]);
+            $this->getContainer()->inflect($this->workflows);
         }
         return $this->workflows;
     }
