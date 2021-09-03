@@ -99,109 +99,109 @@ jobs:
           name: CoverageReport
           path: docs/TestCoverage.md
 
-  behat_tests:
-    runs-on: ubuntu-latest
-    name: Behat Tests
-    needs: [ checkout_build ]
-    if: ${{ startsWith(github.ref, 'refs/tags/')  && github.repository_owner == 'pantheon-systems' }}
-    strategy:
-      matrix:
-        php-versions: [ '7.4', '8.0' ]
-      fail-fast: false
-    env:
-      TERMINUS_VERBOSITY: 22
-      TERMINUS_EXECUTABLE: t3
-      TERMINUS_TEST_MODE: 1
-      TERMINUS_TOKEN: ${{ secrets.TERMINUS_TOKEN }}
-    steps:
-      - name: Setup PHP with PECL extension
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: ${{ matrix.php-versions }}
-          extensions: gd, mbstring, zip
-          coverage: pcov
-      - name: Download repo content from artifact
-        uses: actions/download-artifact@v2
-        with:
-          name: full-workspace
-      - name: Download terminus.phar as artifact
-        uses: actions/download-artifact@v2
-        with:
-          name: t3-phar
-      - name: Install Composer Dependencies
-        run: composer install --no-interaction --prefer-dist
-      - name: Fix permissions
-        run: chmod +x ./bin/t3
-      - name: Behat Tests
-        run: composer test:behat
+  # behat_tests:
+  #   runs-on: ubuntu-latest
+  #   name: Behat Tests
+  #   needs: [ checkout_build ]
+  #   if: ${{ startsWith(github.ref, 'refs/tags/')  && github.repository_owner == 'pantheon-systems' }}
+  #   strategy:
+  #     matrix:
+  #       php-versions: [ '7.4', '8.0' ]
+  #     fail-fast: false
+  #   env:
+  #     TERMINUS_VERBOSITY: 22
+  #     TERMINUS_EXECUTABLE: t3
+  #     TERMINUS_TEST_MODE: 1
+  #     TERMINUS_TOKEN: ${{ secrets.TERMINUS_TOKEN }}
+  #   steps:
+  #     - name: Setup PHP with PECL extension
+  #       uses: shivammathur/setup-php@v2
+  #       with:
+  #         php-version: ${{ matrix.php-versions }}
+  #         extensions: gd, mbstring, zip
+  #         coverage: pcov
+  #     - name: Download repo content from artifact
+  #       uses: actions/download-artifact@v2
+  #       with:
+  #         name: full-workspace
+  #     - name: Download terminus.phar as artifact
+  #       uses: actions/download-artifact@v2
+  #       with:
+  #         name: t3-phar
+  #     - name: Install Composer Dependencies
+  #       run: composer install --no-interaction --prefer-dist
+  #     - name: Fix permissions
+  #       run: chmod +x ./bin/t3
+  #     - name: Behat Tests
+  #       run: composer test:behat
 
 
-  package_macos:
-    runs-on: macos-latest
-    name: Package a Homebrew release
-    if: ${{ startsWith(github.ref, 'refs/tags/')  && github.repository_owner == 'pantheon-systems' }}
-    needs: [ 'functional_tests', 'behat_tests' ]
-    steps:
-      - name: Brew Tap Terminus
-        run: brew install stovak/t3/terminus
-      - name: Update tap with new release
-        run: brew bump-formula-pr --url=${{ steps.tagged.outputs.url }} --no-browse --no-audit --commit stovak/t3/terminus
+  # package_macos:
+  #   runs-on: macos-latest
+  #   name: Package a Homebrew release
+  #   if: ${{ startsWith(github.ref, 'refs/tags/')  && github.repository_owner == 'pantheon-systems' }}
+  #   needs: [ 'functional_tests', 'behat_tests' ]
+  #   steps:
+  #     - name: Brew Tap Terminus
+  #       run: brew install stovak/t3/terminus
+  #     - name: Update tap with new release
+  #       run: brew bump-formula-pr --url=${{ steps.tagged.outputs.url }} --no-browse --no-audit --commit stovak/t3/terminus
 
 
-  package_linux:
-    runs-on: ubuntu-latest
-    name: Package .deb Release
-    container:
-      image: quay.io/pantheon-public/php-ci:v7.4
-    if: ${{ startsWith(github.ref, 'refs/tags/')  && github.repository_owner == 'pantheon-systems' }}
-    needs: [ 'functional_tests', 'behat_tests' ]
-    steps:
-      - name: Download repo content from artifact
-        uses: actions/download-artifact@v2
-        with:
-          name: full-workspace
-      - name: Download terminus.phar as artifact
-        uses: actions/download-artifact@v2
-        with:
-          name: t3-phar
-      - name: Full Composer Install
-        run: composer install
-      - name: Prepare needed folder and fix permissions
-        run: mkdir -p ~/.terminus/cache/tokens && chmod +x ./t3
-      - name: Passegers, gather ye packages
-        run: composer bundle:linux
-      - name: Save t3 deb as artifact
-        uses: actions/upload-artifact@v2
-        with:
-          name: t3-deb
-          path: ./*.deb
-          if-no-files-found: error
+  # package_linux:
+  #   runs-on: ubuntu-latest
+  #   name: Package .deb Release
+  #   container:
+  #     image: quay.io/pantheon-public/php-ci:v7.4
+  #   if: ${{ startsWith(github.ref, 'refs/tags/')  && github.repository_owner == 'pantheon-systems' }}
+  #   needs: [ 'functional_tests', 'behat_tests' ]
+  #   steps:
+  #     - name: Download repo content from artifact
+  #       uses: actions/download-artifact@v2
+  #       with:
+  #         name: full-workspace
+  #     - name: Download terminus.phar as artifact
+  #       uses: actions/download-artifact@v2
+  #       with:
+  #         name: t3-phar
+  #     - name: Full Composer Install
+  #       run: composer install
+  #     - name: Prepare needed folder and fix permissions
+  #       run: mkdir -p ~/.terminus/cache/tokens && chmod +x ./t3
+  #     - name: Passegers, gather ye packages
+  #       run: composer bundle:linux
+  #     - name: Save t3 deb as artifact
+  #       uses: actions/upload-artifact@v2
+  #       with:
+  #         name: t3-deb
+  #         path: ./*.deb
+  #         if-no-files-found: error
 
-  publish_linux:
-    runs-on: ubuntu-latest
-    name: Publish .deb Release
-    strategy:
-      matrix:
-        # Add needed repositories in the form of <package_name>/<distro>/<version>.
-        repository:
-          - 'terminus/debian/buster'
-          - 'terminus/debian/bullseye'
-          - 'terminus/ubuntu/bionic'
-          - 'terminus/ubuntu/focal'
-          - 'terminus/ubuntu/groovy'
-          - 'terminus/ubuntu/hirsute'
-    if: ${{ startsWith(github.ref, 'refs/tags/')  && github.repository_owner == 'pantheon-systems' }}
-    needs: [ 'package_linux' ]
-    steps:
-      - name: Download terminus deb as artifact
-        uses: actions/download-artifact@v2
-        with:
-          name: t3-deb
-      - uses: docker://lpenz/ghaction-packagecloud:v0.2
-        with:
-          user: stovak
-          repository: ${{ matrix.repository }}
-          files: |
-            *.deb
-        env:
-          PACKAGECLOUD_TOKEN: ${{ secrets.PACKAGECLOUD_TOKEN }}
+  # publish_linux:
+  #   runs-on: ubuntu-latest
+  #   name: Publish .deb Release
+  #   strategy:
+  #     matrix:
+  #       # Add needed repositories in the form of <package_name>/<distro>/<version>.
+  #       repository:
+  #         - 'terminus/debian/buster'
+  #         - 'terminus/debian/bullseye'
+  #         - 'terminus/ubuntu/bionic'
+  #         - 'terminus/ubuntu/focal'
+  #         - 'terminus/ubuntu/groovy'
+  #         - 'terminus/ubuntu/hirsute'
+  #   if: ${{ startsWith(github.ref, 'refs/tags/')  && github.repository_owner == 'pantheon-systems' }}
+  #   needs: [ 'package_linux' ]
+  #   steps:
+  #     - name: Download terminus deb as artifact
+  #       uses: actions/download-artifact@v2
+  #       with:
+  #         name: t3-deb
+  #     - uses: docker://lpenz/ghaction-packagecloud:v0.2
+  #       with:
+  #         user: stovak
+  #         repository: ${{ matrix.repository }}
+  #         files: |
+  #           *.deb
+  #       env:
+  #         PACKAGECLOUD_TOKEN: ${{ secrets.PACKAGECLOUD_TOKEN }}
