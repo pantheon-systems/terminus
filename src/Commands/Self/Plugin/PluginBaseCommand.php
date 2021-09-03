@@ -23,7 +23,8 @@ abstract class PluginBaseCommand extends TerminusCommand
     const PROJECT_NOT_FOUND_MESSAGE = 'No project or plugin named {project} found.';
     const DEPENDENCIES_REQUIRE_COMMAND = 'composer require -d {dir} {packages}';
     const COMPOSER_ADD_REPOSITORY =
-        "composer config -d {dir} repositories.{repo_name} '{\"type\": \"path\", \"url\": \"{path}\", \"options\": {\"symlink\": true}}'";
+        "composer config -d {dir} repositories.{repo_name} '{\"type\": \"path\","
+        . "\"url\": \"{path}\", \"options\": {\"symlink\": true}}'";
     const COMPOSER_GET_REPOSITORIES = 'composer config -d {dir} repositories';
     const BACKUP_COMMAND =
         "mkdir -p {backup_dir} && tar czvf {backup_dir}"

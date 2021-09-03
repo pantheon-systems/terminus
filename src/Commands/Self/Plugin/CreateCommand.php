@@ -14,7 +14,7 @@ use Pantheon\Terminus\Plugins\PluginInfo;
 class CreateCommand extends PluginBaseCommand
 {
     const USAGE_MESSAGE = 'terminus self:plugin:<create|new> <path';
-    const EXISTING_FOlDER_MESSAGE = 'Path should be a non-existing folder that will be created';
+    const EXISTING_FOLDER_MESSAGE = 'Path should be a non-existing folder that will be created';
     const COMPOSER_CREATE_PROJECT = 'composer create-project pantheon-systems/terminus-plugin-example {dir}';
 
     /**
@@ -33,7 +33,7 @@ class CreateCommand extends PluginBaseCommand
             $results = $this->doCreate($path);
             $this->log()->notice($results['output']);
         } else {
-            throw new TerminusException(self::EXISTING_FOlDER_MESSAGE);
+            throw new TerminusException(self::EXISTING_FOLDER_MESSAGE);
         }
     }
 
@@ -76,10 +76,8 @@ class CreateCommand extends PluginBaseCommand
 
             $project_name = $this->getProjectNameFromPath($realpath) . ':@dev';
             return $this->installProject($project_name, $realpath);
-
         } catch (TerminusException $e) {
             $this->log()->error($e->getMessage());
         }
     }
-
 }
