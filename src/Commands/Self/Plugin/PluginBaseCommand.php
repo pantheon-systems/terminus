@@ -31,8 +31,7 @@ abstract class PluginBaseCommand extends TerminusCommand
         . DIRECTORY_SEPARATOR . "backup.tar.gz \"{dir}\"";
     const COMPOSER_REMOVE_REPOSITORY = 'composer config -d {dir} --unset repositories.{repo_name}';
     const DEPENDENCIES_UPDATE_COMMAND = 'composer update -d {dir} {packages} --with-dependencies';
-    const INSTALL_COMMAND =
-    'composer require -d {dir} {project} --no-update';
+    const INSTALL_COMMAND = 'composer require -d {dir} {project} --no-update';
 
     /**
      * @var array|null
@@ -339,14 +338,18 @@ abstract class PluginBaseCommand extends TerminusCommand
 
     /**
      * Gets project name from given path.
+     *
+     * @param string $project_or_path Project or path for the plugins.
+     *
+     * @return string Project name.
      */
-    protected function getProjectNameFromPath($project_or_path)
+    protected function getProjectNameFromPath(string $project_or_path)
     {
         $composerJson = $project_or_path . '/composer.json';
         $composerContents = file_get_contents($composerJson);
         // If the specified dir does not contain a terminus plugin, throw an error
         $composerData = json_decode($composerContents, true);
-        if (!isset($composerData['type']) || ($composerData['type'] !== 'terminus-plugin')) {
+        if ($composerData['type'] ?? null !== 'terminus-plugin') {
             throw new TerminusException(
                 'Cannot install from path {path} because the project there is not of type "terminus-plugin"',
                 ['path' => $project_or_path]
@@ -366,8 +369,11 @@ abstract class PluginBaseCommand extends TerminusCommand
     }
 
     /**
+     * Install given project. Optionally from path repository.
+     *
      * @param string $project_name Name of project to be installed
      * @param string $instalation_path If not empty, install as a path repository
+     *
      * @return array Results from the install command
      */
     protected function installProject($project_name, $instalation_path = '')
