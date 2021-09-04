@@ -126,8 +126,8 @@
       "@coverage"
     ],
     "test:functional": [
-      "XDEBUG_MODE=coverage vendor/bin/phpunit --colors=always -c ./phpunit.xml --debug --do-not-cache-result",
-      "@coverage"
+      "@test:short",
+      "@test:long"
     ],
     "test:all": [
       "@test:functional",
