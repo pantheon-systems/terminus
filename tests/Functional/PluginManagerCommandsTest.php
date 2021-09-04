@@ -158,7 +158,11 @@ class PluginManagerCommandsTest extends TestCase
             $filesystem->remove($tempfile);
         }
         $results = $this->terminusWithStderrRedirected("self:plugin:create ${tempfile}");
-        $this->assertStringContainsString("Installed pantheon-systems/terminus-plugin-example:@dev", $results, "Terminus plugin creation failed.");
+        $this->assertStringContainsString(
+            "Installed pantheon-systems/terminus-plugin-example:@dev",
+            $results,
+            "Terminus plugin creation failed."
+        );
 
         // LIST COMMANDS AGAIN
         $output = $this->terminus("list");
