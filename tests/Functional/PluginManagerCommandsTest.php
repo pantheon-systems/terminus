@@ -151,5 +151,25 @@ class PluginManagerCommandsTest extends TestCase
         // LIST COMMANDS AGAIN TO CHECK THAT PLUGIN COMMANDS ARE NOT AVAILABLE
         $output = $this->terminus("list");
         $this->assertStringNotContainsString($command, $output);
+
+        // CREATE NEW PLUGIN.
+        $tempfile = $filesystem->tempnam(sys_get_temp_dir(), 'terminustest');
+        if ($filesystem->exists($tempfile)) {
+            $filesystem->remove($tempfile);
+        }
+        $results = $this->terminusWithStderrRedirected("self:plugin:create ${tempfile}");
+        $this->assertStringContainsString("Installed pantheon-systems/terminus-plugin-example:@dev", $results, "Terminus plugin creation failed.");
+
+        // LIST COMMANDS AGAIN
+        $output = $this->terminus("list");
+        $this->assertStringContainsString($command, $output);
+
+        // UNINSTALL RECENTLY CREATED PLUGIN
+        $plugin = 'pantheon-systems/terminus-plugin-example';
+        $results = $this->terminusWithStderrRedirected("self:plugin:uninstall $plugin");
+        $this->assertStringContainsString("Uninstalled $plugin", $results, "Terminus plugin uninstall failed.");
+
+        // CLEANUP FOLDER.
+        $filesystem->remove($tempfile);
     }
 }
