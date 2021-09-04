@@ -349,7 +349,7 @@ abstract class PluginBaseCommand extends TerminusCommand
         $composerContents = file_get_contents($composerJson);
         // If the specified dir does not contain a terminus plugin, throw an error
         $composerData = json_decode($composerContents, true);
-        if ($composerData['type'] ?? null !== 'terminus-plugin') {
+        if (!empty($composerData['type']) && $composerData['type'] !== 'terminus-plugin') {
             throw new TerminusException(
                 'Cannot install from path {path} because the project there is not of type "terminus-plugin"',
                 ['path' => $project_or_path]
