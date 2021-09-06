@@ -105,6 +105,12 @@ class EnvCommandsTest extends TestCase
      */
     public function testCommitAndDiffStatCommands()
     {
+        if (!extension_loaded('ssh2')) {
+            $this->markTestSkipped(
+                'PECL SSH2 extension for PHP is required to run this test.'
+            );
+        }
+
         $sitename = $this->getSiteName();
         $multidev = 'commit-cmd';
 
