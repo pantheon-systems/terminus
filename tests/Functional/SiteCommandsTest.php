@@ -2,7 +2,6 @@
 
 namespace Pantheon\Terminus\Tests\Functional;
 
-use Pantheon\Terminus\Tests\Traits\LoginHelperTrait;
 use Pantheon\Terminus\Tests\Traits\SiteBaseSetupTrait;
 use Pantheon\Terminus\Tests\Traits\TerminusTestTrait;
 use Pantheon\Terminus\Tests\Traits\ValidUuidTrait;
@@ -14,7 +13,6 @@ class SiteCommandsTest extends TestCase
     use ValidUuidTrait;
     use TerminusTestTrait;
     use SiteBaseSetupTrait;
-    use LoginHelperTrait;
 
     /**
      * @test

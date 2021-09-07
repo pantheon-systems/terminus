@@ -2,7 +2,6 @@
 
 namespace Pantheon\Terminus\Tests\Functional;
 
-use Pantheon\Terminus\Tests\Traits\LoginHelperTrait;
 use Pantheon\Terminus\Tests\Traits\TerminusTestTrait;
 use PHPUnit\Framework\TestCase;
 
@@ -13,8 +12,6 @@ use PHPUnit\Framework\TestCase;
  */
 class WorkflowCommandsTest extends TestCase
 {
-
-    use LoginHelperTrait;
     use TerminusTestTrait;
 
     /**

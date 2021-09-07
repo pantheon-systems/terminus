@@ -2,8 +2,6 @@
 
 namespace Pantheon\Terminus\Tests\Functional;
 
-use Pantheon\Terminus\Tests\Traits\LoginHelperTrait;
-use Pantheon\Terminus\Tests\Traits\TerminusTestTrait;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -13,9 +11,6 @@ use PHPUnit\Framework\TestCase;
  */
 class PaymentMethodCommandsTest extends TestCase
 {
-    use TerminusTestTrait;
-    use LoginHelperTrait;
-
     /**
      * @test
      * @covers \Pantheon\Terminus\Commands\PaymentMethod\AddCommand
