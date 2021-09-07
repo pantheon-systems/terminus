@@ -2,7 +2,6 @@
 
 namespace Pantheon\Terminus\Tests\Functional;
 
-use Pantheon\Terminus\Tests\Traits\LoginHelperTrait;
 use Pantheon\Terminus\Tests\Traits\SiteBaseSetupTrait;
 use Pantheon\Terminus\Tests\Traits\TerminusTestTrait;
 use Pantheon\Terminus\Tests\Traits\UrlStatusCodeHelperTrait;
@@ -18,7 +17,6 @@ class EnvCommandsTest extends TestCase
     use TerminusTestTrait;
     use SiteBaseSetupTrait;
     use UrlStatusCodeHelperTrait;
-    use LoginHelperTrait;
 
     /**
      * @test
