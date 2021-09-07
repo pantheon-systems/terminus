@@ -21,11 +21,9 @@ class PaymentMethodCommandsTest extends TestCase
      * @covers \Pantheon\Terminus\Commands\PaymentMethod\AddCommand
      * @covers \Pantheon\Terminus\Commands\PaymentMethod\ListCommand
      * @covers \Pantheon\Terminus\Commands\PaymentMethod\RemoveCommand
-     *
-     * @group todo
      */
-    public function testConnection()
+    public function testPaymentMethodCommands()
     {
-        $this->fail("To Be Written");
+        $this->markTestSkipped('No easy way to mock a payment.');
     }
 }
