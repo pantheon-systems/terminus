@@ -2,7 +2,6 @@
 
 namespace Pantheon\Terminus\Tests\Functional;
 
-use Pantheon\Terminus\Tests\Traits\SiteBaseSetupTrait;
 use Pantheon\Terminus\Tests\Traits\TerminusTestTrait;
 use PHPUnit\Framework\TestCase;
 
@@ -19,7 +18,6 @@ use PHPUnit\Framework\TestCase;
 class MultiDevTest extends TestCase
 {
     use TerminusTestTrait;
-    use SiteBaseSetupTrait;
 
     /**
      * @test

@@ -2,7 +2,6 @@
 
 namespace Pantheon\Terminus\Tests\Functional;
 
-use Pantheon\Terminus\Tests\Traits\SiteBaseSetupTrait;
 use Pantheon\Terminus\Tests\Traits\TerminusTestTrait;
 use Pantheon\Terminus\Tests\Traits\UrlStatusCodeHelperTrait;
 use PHPUnit\Framework\TestCase;
@@ -14,9 +13,7 @@ use PHPUnit\Framework\TestCase;
  */
 class BackupCommandsTest extends TestCase
 {
-
     use TerminusTestTrait;
-    use SiteBaseSetupTrait;
     use UrlStatusCodeHelperTrait;
 
     /**
