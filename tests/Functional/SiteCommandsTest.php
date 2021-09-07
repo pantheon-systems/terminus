@@ -3,13 +3,11 @@
 namespace Pantheon\Terminus\Tests\Functional;
 
 use Pantheon\Terminus\Tests\Traits\TerminusTestTrait;
-use Pantheon\Terminus\Tests\Traits\ValidUuidTrait;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Output\ConsoleOutput;
 
 class SiteCommandsTest extends TestCase
 {
-    use ValidUuidTrait;
     use TerminusTestTrait;
 
     /**
