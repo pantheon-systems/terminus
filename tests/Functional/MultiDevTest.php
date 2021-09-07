@@ -6,6 +6,16 @@ use Pantheon\Terminus\Tests\Traits\SiteBaseSetupTrait;
 use Pantheon\Terminus\Tests\Traits\TerminusTestTrait;
 use PHPUnit\Framework\TestCase;
 
+/**
+ * Class ConnectionCommandsTest.
+ *
+ * @package Pantheon\Terminus\Tests\Functional
+ *
+ * @covers \Pantheon\Terminus\Commands\Multidev\CreateCommand
+ *   Indirectly by creating a testing runtime multidev env in /tests/config/bootstrap.php
+ * @covers \Pantheon\Terminus\Commands\Multidev\DeleteCommand
+ *   Indirectly by deleting a testing runtime multidev env in /tests/config/bootstrap.php
+ */
 class MultiDevTest extends TestCase
 {
     use TerminusTestTrait;
@@ -13,45 +23,21 @@ class MultiDevTest extends TestCase
 
     /**
      * @test
-     * @covers \Pantheon\Terminus\Commands\Multidev\CreateCommand
      * @covers \Pantheon\Terminus\Commands\Multidev\ListCommand
-     * @covers \Pantheon\Terminus\Commands\Multidev\DeleteCommand
      *
      * @group multidev
-     * @group long
+     * @group short
      */
-    public function testMultidevCreateListDeleteCommands()
+    public function testMultidevListCommand()
     {
-        $sitename = $this->getSiteName();
-        $envname = substr(uniqid('md-'), 0, 11);
-        $this->terminus(
-            vsprintf(
-                "multidev:create %s.dev %s",
-                [$sitename, $envname]
-            ),
-            null
-        );
-        sleep(10);
-        $list = $this->terminusJsonResponse(
-            vsprintf(
-                "multidev:list %s",
-                [$sitename]
-            ),
-            null
-        );
-        $envInfo = null;
-        foreach ($list as $environment) {
-            if ($environment['id'] == $envname) {
-                $envInfo = $environment;
-            }
-        }
-        $this->assertNotNull($envInfo, "newly-created environment should be in the environment list");
-        $this->terminus(
-            vsprintf(
-                "multidev:delete %s.%s --delete-branch --yes",
-                [$sitename, $envname]
-            ),
-            null
+        $list = $this->terminusJsonResponse(sprintf('multidev:list %s', $this->getSiteName()));
+        $this->assertIsArray($list);
+        $this->assertNotEmpty($list);
+
+        $envIds = array_column($list, 'id');
+        $this->assertTrue(
+            false !== array_search($this->getMdEnv(), $envIds),
+            sprintf('Multidev "%s" should be in the list on multidev environments', $this->getMdEnv())
         );
     }
 }
