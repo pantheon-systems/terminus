@@ -126,7 +126,7 @@ trait TerminusTestTrait
      *
      * @return string
      */
-    protected function getSiteName(): string
+    public static function getSiteName(): string
     {
         return getenv('TERMINUS_SITE');
     }
@@ -238,5 +238,33 @@ trait TerminusTestTrait
         }
 
         return $site_info;
+    }
+
+    /**
+     * Returns the testing runtime multidev name.
+     *
+     * @return string
+     */
+    public static function getMdEnv(): string
+    {
+        return getenv('TERMINUS_TESTING_RUNTIME_ENV');
+    }
+
+    /**
+     * Sets the testing runtime multidev name.
+     */
+    public static function setMdEnv(string $name): void
+    {
+        putenv(sprintf('TERMINUS_TESTING_RUNTIME_ENV=%s', $name));
+    }
+
+    /**
+     * Returns site and environment in a form of "<site>.<env>" string which used in most commands.
+     *
+     * @return string
+     */
+    public function getSiteEnv(): string
+    {
+        return sprintf('%s.%s', $this->getSiteName(), $this->getMdEnv());
     }
 }
