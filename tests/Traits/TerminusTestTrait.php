@@ -21,7 +21,7 @@ trait TerminusTestTrait
     {
         $project_dir = dirname(__DIR__, 2);
         exec(
-            sprintf("%s/%s %s", $project_dir, TERMINUE_BIN_FILE, $command),
+            sprintf("%s/%s %s", $project_dir, TERMINUS_BIN_FILE, $command),
             $output,
             $status
         );

@@ -4,7 +4,6 @@
  * Bootstrap file for functional tests
  */
 
-
 $tokens_dir = $_SERVER['HOME'] .
     DIRECTORY_SEPARATOR . ".terminus" . DIRECTORY_SEPARATOR .
     "cache" . DIRECTORY_SEPARATOR . "tokens";
@@ -57,15 +56,15 @@ if (empty($token)) {
 }
 
 
-define("TERMINUE_BIN_FILE", "./t3");
+define('TERMINUS_BIN_FILE', './t3');
 
-chmod(TERMINUE_BIN_FILE, 0700);
+chmod(TERMINUS_BIN_FILE, 0700);
 
 if ($token) {
     exec(
         sprintf(
             "%s auth:login --machine-token=%s",
-            TERMINUE_BIN_FILE,
+            TERMINUS_BIN_FILE,
             $token
         )
     );
