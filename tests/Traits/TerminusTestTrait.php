@@ -105,7 +105,7 @@ trait TerminusTestTrait
     public function assertTerminusCommandResultEqualsInAttempts(
         callable $callable,
         $expected,
-        int $attempts = 12,
+        int $attempts = 15,
         int $intervalSeconds = 10
     ): void {
         do {
