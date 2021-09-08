@@ -134,7 +134,6 @@ abstract class TerminusCollection implements ContainerAwareInterface, RequestAwa
      */
     public function get($id): ?TerminusModel
     {
-        $all = $this->all();
         foreach ($this->all() as $member) {
             if (in_array($id, $member->getReferences())) {
                 return $member;
