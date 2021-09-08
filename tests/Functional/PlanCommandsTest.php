@@ -67,7 +67,7 @@ class PlanCommandsTest extends TestCase
      * @covers \Pantheon\Terminus\Commands\Plan\SetCommand
      *
      * @group plan
-     * @group long
+     * @group long_fixme
      */
     public function testSetPanCommand()
     {
