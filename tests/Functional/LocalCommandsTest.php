@@ -38,7 +38,7 @@ class LocalCommandsTest extends TestCase
     public function testLocalClone()
     {
         $sitename = $this->getSiteName();
-        $result = $this->terminus("local:clone {$sitename}", null);
+        $result = $this->terminus("local:clone {$sitename}");
         if (!is_string($result)) {
             throw new \Exception("The response from the local clone command didn't return the path.");
         }

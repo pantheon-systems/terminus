@@ -75,7 +75,7 @@ class UpstreamCommandsTest extends TestCase
     public function testUpstreamUpdatesListStatus()
     {
         $sitename = $this->getSiteName();
-        $updatesList = $this->terminusJsonResponse("upstream:updates:list {$sitename}.dev", null);
+        $updatesList = $this->terminusJsonResponse("upstream:updates:list {$sitename}.dev");
         $this->assertIsArray(
             $updatesList,
             'Response from upstream list should be unserialized json'

@@ -114,13 +114,13 @@ class SiteCommandsTest extends TestCase
             [ $sitename, $sitename, $org ]
         );
         $output->writeln($command);
-        $this->terminus($command, null);
+        $this->terminus($command);
         $output->writeln("Step 2 => get info => {$sitename}");
         $command = vsprintf(
             'site:info %s',
             [$sitename]
         );
-        $info = $this->terminusJsonResponse($command, null);
+        $info = $this->terminusJsonResponse($command);
         $this->assertEquals($org, $info['organization']);
         $output->writeln("Step 3 => Delete Site => {$sitename}");
         $command = vsprintf(
@@ -128,6 +128,6 @@ class SiteCommandsTest extends TestCase
             [$info['id']]
         );
         $output->writeln($command);
-        $this->terminus($command, null);
+        $this->terminus($command);
     }
 }

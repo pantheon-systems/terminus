@@ -23,13 +23,13 @@ class DashboardCommandsTest extends TestCase
      */
     public function testDashboardUrl()
     {
-        $response = $this->terminus("dashboard --print", null);
+        $response = $this->terminus("dashboard --print");
         $this->assertNotNull($response);
         $this->assertIsString($response);
         $this->assertGreaterThan(0, strlen($response));
         $siteName = $this->getSiteName();
         $env = getenv('TERMINUS_ENV');
-        $response = $this->terminus("dashboard {$siteName}.{$env} --print", null);
+        $response = $this->terminus("dashboard {$siteName}.{$env} --print");
         $this->assertNotNull($response);
         $this->assertIsString($response);
         $this->assertGreaterThan(0, strlen($response));

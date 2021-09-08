@@ -29,7 +29,7 @@ class BackupCommandsTest extends TestCase
     public function testCreateListInfoGetCommand()
     {
         $siteName = $this->getSiteName();
-        $this->terminus("backup:create {$siteName}.live --element=database", null);
+        $this->terminus("backup:create {$siteName}.live --element=database");
         $backupList = $this->terminusJsonResponse("backup:list {$siteName}.live --element=database");
         $this->assertIsArray($backupList, "Backup list response should be an array");
         $backup = array_shift($backupList);
@@ -87,12 +87,12 @@ class BackupCommandsTest extends TestCase
             'Backup info response should have file property'
         );
         $newValue = $auto['weekly_backup_day'] === null ? "enable" : "disable";
-        $this->terminus("backup:automatic:{$newValue} {$siteName}.live", null);
+        $this->terminus("backup:automatic:{$newValue} {$siteName}.live");
         sleep(20);
         $auto2 = $this->terminusJsonResponse("backup:automatic:info {$siteName}.live");
         $newValue2 = $auto2['weekly_backup_day'] === null ? 'enable' : 'disable';
         $this->assertNotEquals($newValue, $newValue2);
-        $this->terminus("backup:automatic:{$newValue2} {$siteName}.live", null);
+        $this->terminus("backup:automatic:{$newValue2} {$siteName}.live");
     }
 
     /**
@@ -105,7 +105,7 @@ class BackupCommandsTest extends TestCase
     public function testBackupGetLatest()
     {
         $startOfCommandExecutionTimestamp = time();
-        $this->terminus("backup:create {$this->getSiteName()}.live --element=database --keep-for=1", null);
+        $this->terminus("backup:create {$this->getSiteName()}.live --element=database --keep-for=1");
 
         $latestBackupUrl = $this->terminus("backup:get {$this->getSiteName()}.live --element=database");
         $this->assertIsString($latestBackupUrl, 'A URL of a backup should be string');

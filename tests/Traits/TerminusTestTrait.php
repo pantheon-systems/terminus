@@ -35,15 +35,11 @@ trait TerminusTestTrait
      *
      * @param string $command
      *   The command to run.
-     * @param int|null $expected_status
-     *   Status code. Null = no status check
      */
-    protected function terminus(string $command, ?int $expected_status = 0): ?string
+    protected function terminus(string $command): ?string
     {
         [$output, $status] = static::callTerminus(sprintf('%s --yes', $command));
-        if ($expected_status !== null) {
-            $this->assertEquals($expected_status, $status, $output);
-        }
+        $this->assertEquals(0, $status, $output);
 
         return $output;
     }
@@ -53,31 +49,23 @@ trait TerminusTestTrait
      *
      * @param string $command
      *   The command to run.
-     * @param int|null $expected_status
-     *   Status code. Null = no status check
      */
-    protected function terminusWithStderrRedirected(string $command, ?int $expected_status = 0): ?string
+    protected function terminusWithStderrRedirected(string $command): ?string
     {
-        [$output, $status] = static::callTerminus($command . ' 2>&1');
-        if ($expected_status !== null) {
-            $this->assertEquals($expected_status, $status, $output);
-        }
+        [$output, $status] = static::callTerminus(sprintf('%s --yes 2>&1', $command));
+        $this->assertEquals(0, $status, $output);
 
         return $output;
     }
 
     /**
      * @param $command
-     * @param int|null $expected_status
      *
      * @return array|string|null
      */
-    protected function terminusJsonResponse($command, ?int $expected_status = 0)
+    protected function terminusJsonResponse($command)
     {
-        $response = trim($this->terminus(
-            $command . " --format=json",
-            $expected_status
-        ));
+        $response = trim($this->terminus($command . " --format=json"));
         try {
             return json_decode(
                 $response,
