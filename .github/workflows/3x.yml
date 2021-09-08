@@ -50,6 +50,7 @@ jobs:
       COMPOSER_ALLOW_SUPERUSER: 1
       TERMINUS_TOKEN: ${{ secrets.TERMINUS_TOKEN }}
       TERMINUS_SITE: ${{ secrets.TERMINUS_SITE }}
+      TERMINUS_ORG: ${{ secrets.TERMINUS_ORG }}
     needs: [ checkout_build ]
     steps:
       - name: Install SSH key
