@@ -13,7 +13,7 @@ use Pantheon\Terminus\Plugins\PluginInfo;
  */
 class CreateCommand extends PluginBaseCommand
 {
-    const USAGE_MESSAGE = 'terminus self:plugin:<create|new> <path';
+    const USAGE_MESSAGE = 'terminus self:plugin:create <path>';
     const EXISTING_FOLDER_MESSAGE = 'Path should be a non-existing folder that will be created';
     const COMPOSER_CREATE_PROJECT = 'composer create-project pantheon-systems/terminus-plugin-example {dir}';
 
