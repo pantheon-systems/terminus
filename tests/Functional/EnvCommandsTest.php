@@ -94,7 +94,7 @@ class EnvCommandsTest extends TestCase
      * @covers \Pantheon\Terminus\Commands\Env\CommitCommand
      *
      * @group env
-     * @group short
+     * @group long
      */
     public function testCommitAndDiffStatCommands()
     {
@@ -154,7 +154,7 @@ class EnvCommandsTest extends TestCase
 
         $this->assertTerminusCommandResultEqualsInAttempts(function () use ($siteEnv) {
             return $this->terminusJsonResponse(sprintf('env:diffstat %s', $siteEnv));
-        }, $expectedDiff);
+        }, $expectedDiff, 24);
 
         // Commit the changes.
         $this->terminus(
@@ -168,7 +168,7 @@ class EnvCommandsTest extends TestCase
         // Check the diff - no diff is expected.
         $this->assertTerminusCommandResultEqualsInAttempts(function () use ($siteEnv) {
             return $this->terminusJsonResponse(sprintf('env:diffstat %s', $siteEnv));
-        }, []);
+        }, [], 24);
     }
 
     /**
