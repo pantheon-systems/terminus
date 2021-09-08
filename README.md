@@ -56,9 +56,9 @@ These packages will install when you install Terminus.
 
 ### Mac OS:
 
-`> brew tap *** TBD ***`
+`> brew install pantheon-systems/external/terminus` for stable version (currently 2.x)
 
-`> brew install *** TBD ***`
+`> brew install pantheon-systems/external/t3` for 3.x (currently alpha status)
 
 ### Ubuntu / WinWSL+Ubuntu:
 
@@ -72,8 +72,8 @@ To run the functional tests:
 2. For code coverage: `pecl install pcov`
 3. Prepare a new test site, e.g. make a new multidev in ci-terminus-composer
 4. Copy .env.dist to .env and make an .envrc to include it with `dotenv`, or copy .env.dist to .envrc and add `export` at the head of each line. Customize values as needed. Use `direnv allow` to enable automatic loading of environment variables needed for tests.
-5. Run `composer test:short` to run the short functional tests, or `composer test:long` to run everything.
- 
+5. Run `composer test:short` to run the short-running functional tests, `composer test:long` to run the ones that take a long time, or `coposer test:functional` to run all of them.
+
 
 | Command                   | Description                                                  | ⚖️ |
 | ------------------------- | ------------------------------------------------------------ | -- |
