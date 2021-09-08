@@ -101,7 +101,7 @@ class SiteCommandsTest extends TestCase
      * @covers \Pantheon\Terminus\Commands\Site\InfoCommand
      *
      * @group site
-     * @group long
+     * @group long_fixme
      */
     public function testSiteCreateInfoDeleteCommand()
     {
@@ -123,6 +123,7 @@ class SiteCommandsTest extends TestCase
         $info = $this->terminusJsonResponse($command);
         $this->assertEquals($org, $info['organization']);
         $output->writeln("Step 3 => Delete Site => {$sitename}");
+        // @fixme Sometimes 'site:delete' takes forever.
         $command = vsprintf(
             'site:delete %s',
             [$info['id']]
