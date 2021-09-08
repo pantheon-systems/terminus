@@ -75,11 +75,6 @@ jobs:
         run: composer install --no-interaction --prefer-dist
       - name: Functional Tests (short)
         run: composer test:short
-        env:
-          COMPOSER_ALLOW_SUPERUSER: 1
-          TERMINUS_TOKEN: ${{ secrets.TERMINUS_TOKEN }}
-          TERMINUS_SITE: ${{ secrets.TERMINUS_SITE }}
-          TERMINUS_ORG: ${{ secrets.TERMINUS_ORG }}
       - name: Coverage Report
         run: composer coverage
       - name: Save coverage as artifact
