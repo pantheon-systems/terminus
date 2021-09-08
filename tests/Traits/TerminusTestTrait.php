@@ -35,10 +35,18 @@ trait TerminusTestTrait
      *
      * @param string $command
      *   The command to run.
+     * @param array $suffixParts
+     *   Additional command options added to the end of the command line.
      */
-    protected function terminus(string $command): ?string
+    protected function terminus(string $command, array $suffixParts = []): ?string
     {
-        [$output, $status] = static::callTerminus(sprintf('%s --yes', $command));
+        if ($suffixParts > 0) {
+            $command = sprintf('%s --yes %s', $command, implode(' ', $suffixParts));
+        } else {
+            $command = sprintf('%s --yes', $command);
+        }
+
+        [$output, $status] = static::callTerminus($command);
         $this->assertEquals(0, $status, $output);
 
         return $output;
@@ -52,10 +60,7 @@ trait TerminusTestTrait
      */
     protected function terminusWithStderrRedirected(string $command): ?string
     {
-        [$output, $status] = static::callTerminus(sprintf('%s --yes 2>&1', $command));
-        $this->assertEquals(0, $status, $output);
-
-        return $output;
+        return $this->terminus($command, ['2>&1']);
     }
 
     /**
@@ -65,7 +70,7 @@ trait TerminusTestTrait
      */
     protected function terminusJsonResponse($command)
     {
-        $response = trim($this->terminus($command . " --format=json"));
+        $response = trim($this->terminus($command, ['--format=json']));
         try {
             return json_decode(
                 $response,
