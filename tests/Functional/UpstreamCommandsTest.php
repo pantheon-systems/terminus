@@ -2,8 +2,6 @@
 
 namespace Pantheon\Terminus\Tests\Functional;
 
-use Pantheon\Terminus\Tests\Traits\LoginHelperTrait;
-use Pantheon\Terminus\Tests\Traits\SiteBaseSetupTrait;
 use Pantheon\Terminus\Tests\Traits\TerminusTestTrait;
 use PHPUnit\Framework\TestCase;
 
@@ -15,8 +13,6 @@ use PHPUnit\Framework\TestCase;
 class UpstreamCommandsTest extends TestCase
 {
     use TerminusTestTrait;
-    use SiteBaseSetupTrait;
-    use LoginHelperTrait;
 
     /**
      * Test UpstreamListCommand
@@ -79,7 +75,7 @@ class UpstreamCommandsTest extends TestCase
     public function testUpstreamUpdatesListStatus()
     {
         $sitename = $this->getSiteName();
-        $updatesList = $this->terminusJsonResponse("upstream:updates:list {$sitename}.dev", null);
+        $updatesList = $this->terminusJsonResponse("upstream:updates:list {$sitename}.dev");
         $this->assertIsArray(
             $updatesList,
             'Response from upstream list should be unserialized json'

@@ -21,7 +21,7 @@ trait TerminusTestTrait
     {
         $project_dir = dirname(__DIR__, 2);
         exec(
-            sprintf("%s/%s %s", $project_dir, TERMINUE_BIN_FILE, $command),
+            sprintf("%s/%s %s", $project_dir, TERMINUS_BIN_FILE, $command),
             $output,
             $status
         );
@@ -35,15 +35,19 @@ trait TerminusTestTrait
      *
      * @param string $command
      *   The command to run.
-     * @param int|null $expected_status
-     *   Status code. Null = no status check
+     * @param array $suffixParts
+     *   Additional command options added to the end of the command line.
      */
-    protected function terminus(string $command, ?int $expected_status = 0): ?string
+    protected function terminus(string $command, array $suffixParts = []): ?string
     {
-        [$output, $status] = static::callTerminus($command);
-        if ($expected_status !== null) {
-            $this->assertEquals($expected_status, $status, $output);
+        if ($suffixParts > 0) {
+            $command = sprintf('%s --yes %s', $command, implode(' ', $suffixParts));
+        } else {
+            $command = sprintf('%s --yes', $command);
         }
+
+        [$output, $status] = static::callTerminus($command);
+        $this->assertEquals(0, $status, $output);
 
         return $output;
     }
@@ -53,31 +57,20 @@ trait TerminusTestTrait
      *
      * @param string $command
      *   The command to run.
-     * @param int|null $expected_status
-     *   Status code. Null = no status check
      */
-    protected function terminusWithStderrRedirected(string $command, ?int $expected_status = 0): ?string
+    protected function terminusWithStderrRedirected(string $command): ?string
     {
-        [$output, $status] = static::callTerminus($command . ' 2>&1');
-        if ($expected_status !== null) {
-            $this->assertEquals($expected_status, $status, $output);
-        }
-
-        return $output;
+        return $this->terminus($command, ['2>&1']);
     }
 
     /**
      * @param $command
-     * @param int|null $expected_status
      *
      * @return array|string|null
      */
-    protected function terminusJsonResponse($command, ?int $expected_status = 0)
+    protected function terminusJsonResponse($command)
     {
-        $response = trim($this->terminus(
-            $command . " --format=json",
-            $expected_status
-        ));
+        $response = trim($this->terminus($command, ['--format=json']));
         try {
             return json_decode(
                 $response,
@@ -105,7 +98,7 @@ trait TerminusTestTrait
     public function assertTerminusCommandResultEqualsInAttempts(
         callable $callable,
         $expected,
-        int $attempts = 12,
+        int $attempts = 15,
         int $intervalSeconds = 10
     ): void {
         do {
@@ -126,7 +119,7 @@ trait TerminusTestTrait
      *
      * @return string
      */
-    protected function getSiteName(): string
+    public static function getSiteName(): string
     {
         return getenv('TERMINUS_SITE');
     }
@@ -238,5 +231,33 @@ trait TerminusTestTrait
         }
 
         return $site_info;
+    }
+
+    /**
+     * Returns the testing runtime multidev name.
+     *
+     * @return string
+     */
+    public static function getMdEnv(): string
+    {
+        return getenv('TERMINUS_TESTING_RUNTIME_ENV');
+    }
+
+    /**
+     * Sets the testing runtime multidev name.
+     */
+    public static function setMdEnv(string $name): void
+    {
+        putenv(sprintf('TERMINUS_TESTING_RUNTIME_ENV=%s', $name));
+    }
+
+    /**
+     * Returns site and environment in a form of "<site>.<env>" string which used in most commands.
+     *
+     * @return string
+     */
+    public function getSiteEnv(): string
+    {
+        return sprintf('%s.%s', $this->getSiteName(), $this->getMdEnv());
     }
 }

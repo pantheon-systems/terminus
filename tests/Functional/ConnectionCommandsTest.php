@@ -2,19 +2,17 @@
 
 namespace Pantheon\Terminus\Tests\Functional;
 
-use Pantheon\Terminus\Tests\Traits\LoginHelperTrait;
 use Pantheon\Terminus\Tests\Traits\TerminusTestTrait;
 use PHPUnit\Framework\TestCase;
 
 /**
- * Class ConnectionCommandsTest
+ * Class ConnectionCommandsTest.
  *
  * @package Pantheon\Terminus\Tests\Functional
  */
 class ConnectionCommandsTest extends TestCase
 {
     use TerminusTestTrait;
-    use LoginHelperTrait;
 
     /**
      * @test
@@ -23,46 +21,30 @@ class ConnectionCommandsTest extends TestCase
      * @covers \Pantheon\Terminus\Commands\Env\InfoCommand
      *
      * @group connection
-     * @group long
-     *
-     * @throws \JsonException
+     * @group short
      */
-    public function testConnection()
+    public function testConnectionCommands()
     {
-        $sitename = $this->getSiteName();
         $info = $this->terminusJsonResponse(
-            "connection:info {$sitename}.dev"
+            sprintf('connection:info %s', $this->getSiteEnv())
         );
-        $this->assertIsArray(
-            $info,
-            "returned data should be an array"
-        );
+        $this->assertIsArray($info);
+        $this->assertArrayHasKey('sftp_command', $info, 'Returned data should have sftp command.');
+        $envInfo = $this->terminusJsonResponse(sprintf('env:info %s', $this->getSiteEnv()));
+        $this->assertIsArray($envInfo);
         $this->assertArrayHasKey(
-            "sftp_command",
-            $info,
-            "returned data should have sftp command."
+            'connection_mode',
+            $envInfo,
+            'Returned ENV info should have a "connection_mode" property'
         );
-        $env_info = $this->terminusJsonResponse(
-            "env:info {$sitename}.dev"
-        );
-        $this->assertIsArray(
-            $env_info,
-            "Assert Returned Env Info is array"
-        );
-        $this->assertArrayHasKey(
-            "connection_mode",
-            $env_info,
-            "Returned ENV info should have a 'connection_mode' property"
-        );
-        $mode_to_set = ($env_info['connection_mode'] == "git") ? "sftp" : "git";
-        $this->terminus("connection:set {$sitename}.dev {$mode_to_set}");
-        $new_env_info = $this->terminusJsonResponse(
-            "env:info {$sitename}.dev"
-        );
+
+        $modeToSet = $envInfo['connection_mode'] === 'git' ? 'sftp' : 'git';
+        $this->terminus(sprintf('connection:set %s %s', $this->getSiteEnv(), $modeToSet));
+        $newEnvInfo = $this->terminusJsonResponse(sprintf('env:info %s', $this->getSiteEnv()));
         $this->assertEquals(
-            $mode_to_set,
-            $new_env_info['connection_mode'],
-            "Connection mode should return set value"
+            $modeToSet,
+            $newEnvInfo['connection_mode'],
+            'Connection mode should return set value'
         );
     }
 }

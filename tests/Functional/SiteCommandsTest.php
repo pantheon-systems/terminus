@@ -2,19 +2,13 @@
 
 namespace Pantheon\Terminus\Tests\Functional;
 
-use Pantheon\Terminus\Tests\Traits\LoginHelperTrait;
-use Pantheon\Terminus\Tests\Traits\SiteBaseSetupTrait;
 use Pantheon\Terminus\Tests\Traits\TerminusTestTrait;
-use Pantheon\Terminus\Tests\Traits\ValidUuidTrait;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Output\ConsoleOutput;
 
 class SiteCommandsTest extends TestCase
 {
-    use ValidUuidTrait;
     use TerminusTestTrait;
-    use SiteBaseSetupTrait;
-    use LoginHelperTrait;
 
     /**
      * @test
@@ -107,7 +101,7 @@ class SiteCommandsTest extends TestCase
      * @covers \Pantheon\Terminus\Commands\Site\InfoCommand
      *
      * @group site
-     * @group long
+     * @group long_fixme
      */
     public function testSiteCreateInfoDeleteCommand()
     {
@@ -120,20 +114,21 @@ class SiteCommandsTest extends TestCase
             [ $sitename, $sitename, $org ]
         );
         $output->writeln($command);
-        $this->terminus($command, null);
+        $this->terminus($command);
         $output->writeln("Step 2 => get info => {$sitename}");
         $command = vsprintf(
             'site:info %s',
             [$sitename]
         );
-        $info = $this->terminusJsonResponse($command, null);
+        $info = $this->terminusJsonResponse($command);
         $this->assertEquals($org, $info['organization']);
         $output->writeln("Step 3 => Delete Site => {$sitename}");
+        // @fixme Sometimes 'site:delete' takes forever.
         $command = vsprintf(
-            'site:delete %s --yes',
+            'site:delete %s',
             [$info['id']]
         );
         $output->writeln($command);
-        $this->terminus($command, null);
+        $this->terminus($command);
     }
 }

@@ -2,7 +2,6 @@
 
 namespace Pantheon\Terminus\Tests\Functional;
 
-use Pantheon\Terminus\Tests\Traits\LoginHelperTrait;
 use Pantheon\Terminus\Tests\Traits\TerminusTestTrait;
 use PHPUnit\Framework\TestCase;
 
@@ -14,7 +13,6 @@ use PHPUnit\Framework\TestCase;
 class ImportCommandsTest extends TestCase
 {
     use TerminusTestTrait;
-    use LoginHelperTrait;
 
     /**
      * @test
@@ -28,7 +26,7 @@ class ImportCommandsTest extends TestCase
         $backupUrl = $this->getBackupUrl('database');
 
         $importDatabaseCommand = sprintf(
-            'import:database --yes %s.%s "%s"',
+            'import:database %s.%s "%s"',
             $this->getSiteName(),
             'live',
             $backupUrl
@@ -48,7 +46,7 @@ class ImportCommandsTest extends TestCase
         $backupUrl = $this->getBackupUrl('files');
 
         $importFilesCommand = sprintf(
-            'import:files --yes %s.%s "%s"',
+            'import:files %s.%s "%s"',
             $this->getSiteName(),
             'live',
             $backupUrl

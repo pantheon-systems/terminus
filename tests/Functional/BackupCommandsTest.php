@@ -2,10 +2,8 @@
 
 namespace Pantheon\Terminus\Tests\Functional;
 
-use Pantheon\Terminus\Tests\Traits\LoginHelperTrait;
-use Pantheon\Terminus\Tests\Traits\SiteBaseSetupTrait;
+use GuzzleHttp\Client;
 use Pantheon\Terminus\Tests\Traits\TerminusTestTrait;
-use Pantheon\Terminus\Tests\Traits\UrlStatusCodeHelperTrait;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -15,11 +13,20 @@ use PHPUnit\Framework\TestCase;
  */
 class BackupCommandsTest extends TestCase
 {
-
     use TerminusTestTrait;
-    use SiteBaseSetupTrait;
-    use UrlStatusCodeHelperTrait;
-    use LoginHelperTrait;
+
+    /**
+     * @var Client
+     */
+    protected $client;
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function setUp(): void
+    {
+        $this->client = new Client();
+    }
 
     /**
      * @test
@@ -28,13 +35,13 @@ class BackupCommandsTest extends TestCase
      * @covers \Pantheon\Terminus\Commands\Backup\ListCommand
      * @covers \Pantheon\Terminus\Commands\Backup\CreateCommand
      *
-     * @group backup
+     * @group backup1
      * @group short
      */
     public function testCreateListInfoGetCommand()
     {
         $siteName = $this->getSiteName();
-        $this->terminus("backup:create {$siteName}.live --element=database", null);
+        $this->terminus("backup:create {$siteName}.live --element=database");
         $backupList = $this->terminusJsonResponse("backup:list {$siteName}.live --element=database");
         $this->assertIsArray($backupList, "Backup list response should be an array");
         $backup = array_shift($backupList);
@@ -56,11 +63,11 @@ class BackupCommandsTest extends TestCase
             $backup,
             "Backup info response should be an array."
         );
-        $statusCode = $this->getStatusCodeForUrl($backup['url']);
+        $statusCode = $this->client->head($backup['url'])->getStatusCode();
         $this->assertEquals(200, $statusCode, "Status Code from backup url should be 200");
         $url = $this->terminus("backup:get {$siteName}.live");
         $this->assertIsString($url, "Backup url should be a string.");
-        $statusCode = $this->getStatusCodeForUrl($url);
+        $statusCode = $this->client->head($url)->getStatusCode();
         $this->assertEquals(200, $statusCode, "Status Code from backup url should be 200");
     }
 
@@ -92,12 +99,12 @@ class BackupCommandsTest extends TestCase
             'Backup info response should have file property'
         );
         $newValue = $auto['weekly_backup_day'] === null ? "enable" : "disable";
-        $this->terminus("backup:automatic:{$newValue} {$siteName}.live", null);
+        $this->terminus("backup:automatic:{$newValue} {$siteName}.live");
         sleep(20);
         $auto2 = $this->terminusJsonResponse("backup:automatic:info {$siteName}.live");
         $newValue2 = $auto2['weekly_backup_day'] === null ? 'enable' : 'disable';
         $this->assertNotEquals($newValue, $newValue2);
-        $this->terminus("backup:automatic:{$newValue2} {$siteName}.live", null);
+        $this->terminus("backup:automatic:{$newValue2} {$siteName}.live");
     }
 
     /**
@@ -110,7 +117,7 @@ class BackupCommandsTest extends TestCase
     public function testBackupGetLatest()
     {
         $startOfCommandExecutionTimestamp = time();
-        $this->terminus("backup:create {$this->getSiteName()}.live --element=database --keep-for=1", null);
+        $this->terminus("backup:create {$this->getSiteName()}.live --element=database --keep-for=1");
 
         $latestBackupUrl = $this->terminus("backup:get {$this->getSiteName()}.live --element=database");
         $this->assertIsString($latestBackupUrl, 'A URL of a backup should be string');

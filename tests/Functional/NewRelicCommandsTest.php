@@ -2,7 +2,6 @@
 
 namespace Pantheon\Terminus\Tests\Functional;
 
-use Pantheon\Terminus\Tests\Traits\LoginHelperTrait;
 use Pantheon\Terminus\Tests\Traits\TerminusTestTrait;
 use PHPUnit\Framework\TestCase;
 
@@ -14,7 +13,6 @@ use PHPUnit\Framework\TestCase;
 class NewRelicCommandsTest extends TestCase
 {
     use TerminusTestTrait;
-    use LoginHelperTrait;
 
     /**
      * @test
@@ -23,7 +21,7 @@ class NewRelicCommandsTest extends TestCase
      * @covers \Pantheon\Terminus\Commands\NewRelic\InfoCommand
      *
      * @group new-relic
-     * @group long
+     * @group long_fixme
      */
     public function testNewRelicInfoEnableDisable()
     {

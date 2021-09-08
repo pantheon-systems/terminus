@@ -2,17 +2,12 @@
 
 namespace Pantheon\Terminus\Tests\Functional;
 
-use Pantheon\Terminus\Tests\Traits\LoginHelperTrait;
-use Pantheon\Terminus\Tests\Traits\SiteBaseSetupTrait;
 use Pantheon\Terminus\Tests\Traits\TerminusTestTrait;
 use PHPUnit\Framework\TestCase;
 
 class OrgCommandsTest extends TestCase
 {
     use TerminusTestTrait;
-    use SiteBaseSetupTrait;
-    use LoginHelperTrait;
-
 
     /**
      * @test
@@ -47,7 +42,7 @@ class OrgCommandsTest extends TestCase
      */
     public function testOrgPeopleListCommand()
     {
-        $people = $this->terminusJsonResponse("org:people:list " . $this->org);
+        $people = $this->terminusJsonResponse("org:people:list " . $this->getOrg());
         $this->assertIsArray(
             $people,
             'Response from org:people:list should be an array'
@@ -75,7 +70,7 @@ class OrgCommandsTest extends TestCase
      */
     public function testOrgSiteListCommand()
     {
-        $orgSites = $this->terminusJsonResponse("org:site:list " . $this->org);
+        $orgSites = $this->terminusJsonResponse("org:site:list " . $this->getOrg());
         $this->assertIsArray(
             $orgSites,
             "Response from org list should be an array of orgs"
@@ -99,7 +94,7 @@ class OrgCommandsTest extends TestCase
      */
     public function testOrgUpstreamList()
     {
-        $upstreams = $this->terminusJsonResponse("org:upstream:list " . $this->org);
+        $upstreams = $this->terminusJsonResponse("org:upstream:list " . $this->getOrg());
         $this->assertIsArray(
             $upstreams,
             "Response from org list should be an array of orgs"

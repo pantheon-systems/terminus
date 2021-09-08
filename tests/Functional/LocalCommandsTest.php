@@ -2,7 +2,6 @@
 
 namespace Pantheon\Terminus\Tests\Functional;
 
-use Pantheon\Terminus\Tests\Traits\LoginHelperTrait;
 use Pantheon\Terminus\Tests\Traits\TerminusTestTrait;
 use PHPUnit\Framework\TestCase;
 
@@ -14,7 +13,6 @@ use PHPUnit\Framework\TestCase;
 class LocalCommandsTest extends TestCase
 {
     use TerminusTestTrait;
-    use LoginHelperTrait;
 
     /**
      * @setup
@@ -35,12 +33,12 @@ class LocalCommandsTest extends TestCase
      * @covers \Pantheon\Terminus\Commands\Local\CloneCommand
      *
      * @group local
-     * @group long
+     * @group long_fixme
      */
     public function testLocalClone()
     {
         $sitename = $this->getSiteName();
-        $result = $this->terminus("local:clone {$sitename}", null);
+        $result = $this->terminus("local:clone {$sitename}");
         if (!is_string($result)) {
             throw new \Exception("The response from the local clone command didn't return the path.");
         }
@@ -73,7 +71,7 @@ class LocalCommandsTest extends TestCase
      * @covers \Pantheon\Terminus\Commands\Local\GetLiveFilesCommand
      *
      * @group local
-     * @group long
+     * @group long_fixme
      */
     public function testCommitFiles()
     {

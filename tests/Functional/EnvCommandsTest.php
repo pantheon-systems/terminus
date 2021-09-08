@@ -2,23 +2,17 @@
 
 namespace Pantheon\Terminus\Tests\Functional;
 
-use Pantheon\Terminus\Tests\Traits\LoginHelperTrait;
-use Pantheon\Terminus\Tests\Traits\SiteBaseSetupTrait;
 use Pantheon\Terminus\Tests\Traits\TerminusTestTrait;
-use Pantheon\Terminus\Tests\Traits\UrlStatusCodeHelperTrait;
 use PHPUnit\Framework\TestCase;
 
 /**
- * Class EnvCommandsTest
+ * Class EnvCommandsTest.
  *
  * @package Pantheon\Terminus\Tests\Functional
  */
 class EnvCommandsTest extends TestCase
 {
     use TerminusTestTrait;
-    use SiteBaseSetupTrait;
-    use UrlStatusCodeHelperTrait;
-    use LoginHelperTrait;
 
     /**
      * @test
@@ -29,8 +23,7 @@ class EnvCommandsTest extends TestCase
      */
     public function testClearCacheCommand()
     {
-        $sitename = $this->getSiteName();
-        $this->terminus("env:clear-cache $sitename.dev");
+        $this->terminus(sprintf('env:clear-cache %s', $this->getSiteEnv()));
     }
 
     /**
@@ -42,8 +35,7 @@ class EnvCommandsTest extends TestCase
      */
     public function testDeployCommand()
     {
-        $sitename = $this->getSiteName();
-        $this->terminus("env:deploy $sitename.live");
+        $this->terminus(sprintf('env:deploy %s.%s', $this->getSiteName(), 'live'));
     }
 
     /**
@@ -55,8 +47,7 @@ class EnvCommandsTest extends TestCase
      */
     public function testCloneContentCommand()
     {
-        $sitename = $this->getSiteName();
-        $this->terminus("env:clone $sitename.live test");
+        $this->terminus(sprintf('env:clone-content %s.%s %s', $this->getSiteName(), 'dev', $this->getMdEnv()));
     }
 
     /**
@@ -69,29 +60,31 @@ class EnvCommandsTest extends TestCase
     public function testCodelogCommand()
     {
         $sitename = $this->getSiteName();
-        $codeLogs = $this->terminusJsonResponse("env:code-log $sitename");
-        $this->assertIsArray($codeLogs, "Returned data from codelogs should be json.");
+        $codeLogs = $this->terminusJsonResponse(sprintf('env:code-log %s', $sitename));
+        $this->assertIsArray($codeLogs);
+        $this->assertNotEmpty($codeLogs);
         $codeLog = array_shift($codeLogs);
-        $this->assertIsArray($codeLog, "Assert returned data from codelogs are made of codelog entries.");
+        $this->assertIsArray($codeLog, 'A code log should be an array.');
+        $this->assertNotEmpty($codeLog);
         $this->assertArrayHasKey(
             'datetime',
             $codeLog,
-            "returned codelog should have datetime property"
+            'A code log should have "datetime" field.'
         );
         $this->assertArrayHasKey(
             'author',
             $codeLog,
-            'returned codelog should have author property'
+            'A code log should have "author" field.'
         );
         $this->assertArrayHasKey(
             'labels',
             $codeLog,
-            "returned codelog should have datetime property"
+            'A code log should have "labels" field.'
         );
         $this->assertArrayHasKey(
             'message',
             $codeLog,
-            'returned codelog should have author property'
+            'returned codelog should have "message" field.'
         );
     }
 
@@ -101,7 +94,7 @@ class EnvCommandsTest extends TestCase
      * @covers \Pantheon\Terminus\Commands\Env\CommitCommand
      *
      * @group env
-     * @group short
+     * @group long
      */
     public function testCommitAndDiffStatCommands()
     {
@@ -111,30 +104,21 @@ class EnvCommandsTest extends TestCase
             );
         }
 
-        $sitename = $this->getSiteName();
-        $multidev = 'commit-cmd';
+        $siteEnv = $this->getSiteEnv();
 
-        // Prepare multidev environment.
-        $envs = $this->terminusJsonResponse(sprintf('env:list %s', $sitename));
-        $this->assertIsArray($envs);
-        if (!isset($envs[$multidev])) {
-            // Create multidev environment.
-            $this->terminus(sprintf('multidev:create %s.dev %s', $sitename, $multidev));
-        } else {
-            // Enable Git mode to reset all uncommitted changes if present.
-            $this->terminus(sprintf('connection:set %s.%s git -y', $sitename, $multidev));
-        }
+        // Enable Git mode to reset all uncommitted changes if present.
+        $this->terminus(sprintf('connection:set %s git', $siteEnv));
 
         // Enable SFTP mode.
-        $this->terminus(sprintf('connection:set %s.%s sftp', $sitename, $multidev));
+        $this->terminus(sprintf('connection:set %s sftp', $siteEnv));
 
         // Check the diff - no diff is expected.
-        $diff = $this->terminusJsonResponse(sprintf('env:diffstat %s.%s', $sitename, $multidev));
+        $diff = $this->terminusJsonResponse(sprintf('env:diffstat %s', $siteEnv));
         $this->assertEquals([], $diff);
 
         // Get SFTP connection information.
         $connectionInfo = $this->terminusJsonResponse(
-            sprintf('connection:info %s.%s --fields=sftp_username,sftp_host', $sitename, $multidev)
+            sprintf('connection:info %s --fields=sftp_username,sftp_host', $siteEnv)
         );
         $this->assertNotEmpty($connectionInfo);
         $this->assertTrue(
@@ -167,24 +151,24 @@ class EnvCommandsTest extends TestCase
                 'additions' => '1',
             ],
         ];
-        $this->assertTerminusCommandResultEqualsInAttempts(function () use ($sitename, $multidev) {
-            return $this->terminusJsonResponse(sprintf('env:diffstat %s.%s', $sitename, $multidev));
-        }, $expectedDiff);
+
+        $this->assertTerminusCommandResultEqualsInAttempts(function () use ($siteEnv) {
+            return $this->terminusJsonResponse(sprintf('env:diffstat %s', $siteEnv));
+        }, $expectedDiff, 24);
 
         // Commit the changes.
         $this->terminus(
             sprintf(
-                'env:commit %s.%s --message="%s"',
-                $sitename,
-                $multidev,
+                'env:commit %s --message="%s"',
+                $siteEnv,
                 sprintf('Add test file %s', $fileUniqueId)
             )
         );
 
         // Check the diff - no diff is expected.
-        $this->assertTerminusCommandResultEqualsInAttempts(function () use ($sitename, $multidev) {
-            return $this->terminusJsonResponse(sprintf('env:diffstat %s.%s', $sitename, $multidev));
-        }, []);
+        $this->assertTerminusCommandResultEqualsInAttempts(function () use ($siteEnv) {
+            return $this->terminusJsonResponse(sprintf('env:diffstat %s', $siteEnv));
+        }, [], 24);
     }
 
     /**
@@ -196,28 +180,27 @@ class EnvCommandsTest extends TestCase
      */
     public function testInfoCommand()
     {
-        $sitename = $this->getSiteName();
-        $info = $this->terminusJsonResponse("env:info $sitename.dev");
-        $this->assertIsArray($info, "Assert returned data from environment is array.");
+        $envInfo = $this->terminusJsonResponse(sprintf('env:info %s', $this->getSiteEnv()));
+        $this->assertIsArray($envInfo);
         $this->assertArrayHasKey(
             'id',
-            $info,
-            "returned codelog should have datetime property"
+            $envInfo,
+            'Environment info should have "id" field.'
         );
         $this->assertArrayHasKey(
             'created',
-            $info,
-            'returned codelog should have author property'
+            $envInfo,
+            'Environment info should have "created" field.'
         );
         $this->assertArrayHasKey(
             'domain',
-            $info,
-            "returned codelog should have datetime property"
+            $envInfo,
+            'Environment info should have "domain" field.'
         );
         $this->assertArrayHasKey(
             'php_version',
-            $info,
-            'returned codelog should have author property'
+            $envInfo,
+            'Environment info should have "php_version" field.'
         );
     }
 
@@ -230,27 +213,27 @@ class EnvCommandsTest extends TestCase
      */
     public function testMetricsCommand()
     {
-        // Randomly chosen customer site
-        $sitename = $this->getSiteName();
-        $metrics = $this->terminusJsonResponse("env:metrics $sitename.live");
-        $this->assertIsArray($metrics, "Assert returned data from metrics are made of metrics entries.");
-        $this->assertArrayHasKey('timeseries', $metrics, "Returned metrics should have a timeseries property.");
+        $metrics = $this->terminusJsonResponse(sprintf('env:metrics %s', $this->getSiteEnv()));
+        $this->assertIsArray($metrics);
+        $this->assertNotEmpty($metrics);
+        $this->assertArrayHasKey('timeseries', $metrics, 'Metrics should have "timeseries" field.');
         $metric = array_shift($metrics['timeseries']);
-        $this->assertIsArray($metric, "metrics returned data from metrics are made of metrics entries.");
+        $this->assertIsArray($metric);
+        $this->assertNotEmpty($metric);
         $this->assertArrayHasKey(
             'datetime',
             $metric,
-            'returned codelog should have author property'
+            'A metric should have "datetime" field.'
         );
         $this->assertArrayHasKey(
             'visits',
             $metric,
-            'returned codelog should have author property'
+            'A metric should have "visits" field.'
         );
         $this->assertArrayHasKey(
             'pages_served',
             $metric,
-            "returned codelog should have datetime property"
+            'A metric should have "pages_served" field.'
         );
     }
 
@@ -263,25 +246,24 @@ class EnvCommandsTest extends TestCase
      */
     public function testListCommand()
     {
-        $sitename = $this->getSiteName();
-        $envs = $this->terminusJsonResponse("env:list $sitename");
-        $this->assertIsArray($envs, "Assert returned data from list are made of env entries.");
+        $envs = $this->terminusJsonResponse(sprintf('env:list %s', $this->getSiteName()));
+        $this->assertIsArray($envs);
         $env = array_shift($envs);
 
         $this->assertArrayHasKey(
             'id',
             $env,
-            "returned env list should have datetime property"
+            'An environment should have "id" field.'
         );
         $this->assertArrayHasKey(
             'created',
             $env,
-            'returned env list should have author property'
+            'An environment should have "created" field.'
         );
         $this->assertArrayHasKey(
             'initialized',
             $env,
-            "returned env list should have datetime property"
+            'An environment should have "initialized" field.'
         );
     }
 
@@ -290,11 +272,12 @@ class EnvCommandsTest extends TestCase
      * @covers \Pantheon\Terminus\Commands\Env\ViewCommand
      *
      * @group env
-     * @group long
+     * @group short
      */
     public function testViewCommand()
     {
-        $sitename = $this->getSiteName();
-        $this->terminus("env:view $sitename.dev");
+        $url = $this->terminus(sprintf('env:view %s --print', $this->getSiteEnv()));
+        $expectedUrl = sprintf('https://%s-%s.pantheonsite.io/', $this->getMdEnv(), $this->getSiteName());
+        $this->assertEquals($expectedUrl, $url);
     }
 }

@@ -2,7 +2,6 @@
 
 namespace Pantheon\Terminus\Tests\Functional;
 
-use Pantheon\Terminus\Tests\Traits\LoginHelperTrait;
 use Pantheon\Terminus\Tests\Traits\TerminusTestTrait;
 use PHPUnit\Framework\TestCase;
 
@@ -14,7 +13,6 @@ use PHPUnit\Framework\TestCase;
 class DomainCommandsTest extends TestCase
 {
     use TerminusTestTrait;
-    use LoginHelperTrait;
 
     /**
      * @test
@@ -43,18 +41,17 @@ class DomainCommandsTest extends TestCase
             "Count of domains should be greater than 0"
         );
 
-
         // ADD
-        $this->terminus("domain:add {$sitename}.live {$newDomain}", null);
+        $this->terminus("domain:add {$sitename}.live {$newDomain}");
         sleep(10);
         $results2 = $this->terminusJsonResponse("domain:list {$sitename}.live");
         $domains = array_column($results2, 'id');
         $this->assertContains($newDomain, $domains, "Domain list should contain added domain");
 
-
-        // LOOKUP - TODO: actually test this result (BWeaver 2021-07-23)
-        $lookedUp = $this->terminusJsonResponse("domain:lookup {$newDomain}", null);
-
+        // LOOKUP
+        // @fixme CMS-238
+//        $lookUpResult = $this->terminusJsonResponse(sprintf('domain:lookup %s', $newDomain));
+//        $this->assertEquals([], $lookUpResult);
 
         // ADD PRIMARY
         $this->terminus("domain:primary:add {$sitename}.live {$newDomain}");
@@ -64,7 +61,6 @@ class DomainCommandsTest extends TestCase
         $this->assertArrayHasKey($newDomain, $primaryDomains, "Domain list should contain new domain");
         $this->assertEquals('1', $primaryDomains[$newDomain], "New domain should be primary");
 
-
         // REMOVE PRIMARY
         $this->terminus("domain:primary:remove {$sitename}.live");
         $results2 = $this->terminusJsonResponse("domain:list {$sitename}.live");
@@ -72,7 +68,6 @@ class DomainCommandsTest extends TestCase
         $primaryDomains = array_combine(array_column($results2, 'id'), array_column($results2, 'primary'));
         $this->assertArrayHasKey($newDomain, $primaryDomains, "Domain list should contain new domain");
         $this->assertNotEquals("1", $primaryDomains[$newDomain], "New domain should not be primary anymore");
-
 
         // REMOVE
         $this->terminus("domain:remove {$sitename}.live {$newDomain}");
