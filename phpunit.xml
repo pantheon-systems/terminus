@@ -2,9 +2,7 @@
 <phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd"
          bootstrap="./tests/config/bootstrap.php"
-         colors="true"
-         failOnRisky="true"
-         failOnWarning="true">
+         colors="true">
     <testsuites>
         <testsuite name="functional">
             <directory suffix="Test.php">tests/Functional/</directory>
