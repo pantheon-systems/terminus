@@ -55,6 +55,7 @@ jobs:
       COMPOSER_ALLOW_SUPERUSER: 1
       TERMINUS_TOKEN: ${{ secrets.TERMINUS_TOKEN }}
       TERMINUS_SITE: ${{ secrets.TERMINUS_SITE }}
+      TERMINUS_ORG: ${{ secrets.TERMINUS_ORG }}
     needs: [ checkout_build ]
     steps:
       - name: Install SSH key
@@ -77,20 +78,8 @@ jobs:
           name: t3-phar
       - name: Install Composer Dependencies
         run: composer install --no-interaction --prefer-dist
-      - name: Functional Tests (short)
-        run: composer test:short
-        env:
-          COMPOSER_ALLOW_SUPERUSER: 1
-          TERMINUS_TOKEN: ${{ secrets.TERMINUS_TOKEN }}
-          TERMINUS_SITE: ${{ secrets.TERMINUS_SITE }}
-          TERMINUS_ORG: ${{ secrets.TERMINUS_ORG }}
-      - name: Functional Tests (long)
-        run: composer test:long
-        env:
-          COMPOSER_ALLOW_SUPERUSER: 1
-          TERMINUS_TOKEN: ${{ secrets.TERMINUS_TOKEN }}
-          TERMINUS_SITE: ${{ secrets.TERMINUS_SITE }}
-          TERMINUS_ORG: ${{ secrets.TERMINUS_ORG }}
+      - name: Functional Tests (short and long)
+        run: composer test:functional
       - name: Coverage Report
         run: composer coverage
       - name: Save coverage as artifact
