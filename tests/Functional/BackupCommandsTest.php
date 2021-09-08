@@ -2,8 +2,8 @@
 
 namespace Pantheon\Terminus\Tests\Functional;
 
+use GuzzleHttp\Client;
 use Pantheon\Terminus\Tests\Traits\TerminusTestTrait;
-use Pantheon\Terminus\Tests\Traits\UrlStatusCodeHelperTrait;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -14,7 +14,19 @@ use PHPUnit\Framework\TestCase;
 class BackupCommandsTest extends TestCase
 {
     use TerminusTestTrait;
-    use UrlStatusCodeHelperTrait;
+
+    /**
+     * @var Client
+     */
+    protected $client;
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function setUp(): void
+    {
+        $this->client = new Client();
+    }
 
     /**
      * @test
@@ -23,7 +35,7 @@ class BackupCommandsTest extends TestCase
      * @covers \Pantheon\Terminus\Commands\Backup\ListCommand
      * @covers \Pantheon\Terminus\Commands\Backup\CreateCommand
      *
-     * @group backup
+     * @group backup1
      * @group short
      */
     public function testCreateListInfoGetCommand()
@@ -51,11 +63,11 @@ class BackupCommandsTest extends TestCase
             $backup,
             "Backup info response should be an array."
         );
-        $statusCode = $this->getStatusCodeForUrl($backup['url']);
+        $statusCode = $this->client->head($backup['url'])->getStatusCode();
         $this->assertEquals(200, $statusCode, "Status Code from backup url should be 200");
         $url = $this->terminus("backup:get {$siteName}.live");
         $this->assertIsString($url, "Backup url should be a string.");
-        $statusCode = $this->getStatusCodeForUrl($url);
+        $statusCode = $this->client->head($url)->getStatusCode();
         $this->assertEquals(200, $statusCode, "Status Code from backup url should be 200");
     }
 
