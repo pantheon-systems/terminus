@@ -26,7 +26,7 @@ class ImportCommandsTest extends TestCase
         $backupUrl = $this->getBackupUrl('database');
 
         $importDatabaseCommand = sprintf(
-            'import:database --yes %s.%s "%s"',
+            'import:database %s.%s "%s"',
             $this->getSiteName(),
             'live',
             $backupUrl
@@ -46,7 +46,7 @@ class ImportCommandsTest extends TestCase
         $backupUrl = $this->getBackupUrl('files');
 
         $importFilesCommand = sprintf(
-            'import:files --yes %s.%s "%s"',
+            'import:files %s.%s "%s"',
             $this->getSiteName(),
             'live',
             $backupUrl

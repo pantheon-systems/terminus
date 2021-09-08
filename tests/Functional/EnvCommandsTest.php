@@ -47,7 +47,7 @@ class EnvCommandsTest extends TestCase
      */
     public function testCloneContentCommand()
     {
-        $this->terminus(sprintf('env:clone-content %s.%s %s --yes', $this->getSiteName(), 'dev', $this->getMdEnv()));
+        $this->terminus(sprintf('env:clone-content %s.%s %s', $this->getSiteName(), 'dev', $this->getMdEnv()));
     }
 
     /**
@@ -107,7 +107,7 @@ class EnvCommandsTest extends TestCase
         $siteEnv = $this->getSiteEnv();
 
         // Enable Git mode to reset all uncommitted changes if present.
-        $this->terminus(sprintf('connection:set %s git -y', $siteEnv));
+        $this->terminus(sprintf('connection:set %s git', $siteEnv));
 
         // Enable SFTP mode.
         $this->terminus(sprintf('connection:set %s sftp', $siteEnv));

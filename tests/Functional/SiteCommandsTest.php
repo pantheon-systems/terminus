@@ -124,7 +124,7 @@ class SiteCommandsTest extends TestCase
         $this->assertEquals($org, $info['organization']);
         $output->writeln("Step 3 => Delete Site => {$sitename}");
         $command = vsprintf(
-            'site:delete %s --yes',
+            'site:delete %s',
             [$info['id']]
         );
         $output->writeln($command);

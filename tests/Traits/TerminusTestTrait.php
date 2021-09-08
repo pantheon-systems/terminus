@@ -40,7 +40,7 @@ trait TerminusTestTrait
      */
     protected function terminus(string $command, ?int $expected_status = 0): ?string
     {
-        [$output, $status] = static::callTerminus($command);
+        [$output, $status] = static::callTerminus(sprintf('%s --yes', $command));
         if ($expected_status !== null) {
             $this->assertEquals($expected_status, $status, $output);
         }
