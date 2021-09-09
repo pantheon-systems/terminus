@@ -38,7 +38,7 @@ class BackupCommandsTest extends TestCase
      * @group backup
      * @group short
      */
-    public function testCreateListInfoGetCommand()
+    public function testBackupCreateListInfoGetCommand()
     {
         $this->terminus(sprintf('backup:create %s --element=database', $this->getSiteEnv()));
         $backupList = $this->terminusJsonResponse(sprintf('backup:list %s --element=database', $this->getSiteEnv()));
@@ -46,14 +46,14 @@ class BackupCommandsTest extends TestCase
         $backup = array_shift($backupList);
         $this->assertArrayHasKey('file', $backup, 'A backup should have "file" field.');
 
-        $backupInfo = $this->terminusJsonResponse(sprintf('backup:info %s', $this->getSiteEnv()));
+        $backupInfo = $this->terminusJsonResponse(sprintf('backup:info %s --element=database', $this->getSiteEnv()));
         $this->assertIsArray($backupInfo);
         $this->assertArrayHasKey('file', $backupInfo, 'A backup info should have "file" field.');
         $this->assertArrayHasKey('url', $backupInfo, 'A backup info should have "url" field.');
-
         $statusCode = $this->client->head($backupInfo['url'])->getStatusCode();
         $this->assertEquals(200, $statusCode, sprintf('Can\'t find a backup file by URL %s.', $backupInfo['url']));
-        $url = $this->terminus(sprintf('backup:get %s', $this->getSiteEnv()));
+
+        $url = $this->terminus(sprintf('backup:get %s --element=database', $this->getSiteEnv()));
         $this->assertNotEmpty($url);
         $this->assertIsString($url);
         $statusCode = $this->client->head($url)->getStatusCode();
