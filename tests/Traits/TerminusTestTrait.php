@@ -95,10 +95,10 @@ trait TerminusTestTrait
      * @param int $intervalSeconds
      *   The interval between attempts in seconds.
      */
-    public function assertTerminusCommandResultEqualsInAttempts(
+    protected function assertTerminusCommandResultEqualsInAttempts(
         callable $callable,
         $expected,
-        int $attempts = 15,
+        int $attempts = 24,
         int $intervalSeconds = 10
     ): void {
         do {
