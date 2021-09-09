@@ -3,6 +3,7 @@
 namespace Pantheon\Terminus\Commands\Self\Plugin;
 
 use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
+use Consolidation\AnnotatedCommand\CommandData;
 
 /**
  * Lists installed Terminus plugins
@@ -49,5 +50,15 @@ class ListCommand extends PluginBaseCommand
 
         // Output the plugin list in table format.
         return new RowsOfFields($plugins);
+    }
+
+    /**
+     * Check for minimum plugin commands requirements.
+     * @hook validate self:plugin:list
+     * @param CommandData $commandData
+     */
+    public function validate(CommandData $commandData)
+    {
+        $this->checkRequirements();
     }
 }

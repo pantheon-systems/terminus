@@ -8,6 +8,7 @@ use Pantheon\Terminus\Helpers\LocalMachineHelper;
 use Pantheon\Terminus\Plugins\PluginDiscovery;
 use Pantheon\Terminus\Exceptions\TerminusException;
 use Pantheon\Terminus\Plugins\PluginInfo;
+use Composer\Semver\Semver;
 
 /**
  * Class PluginBaseCommand
@@ -19,6 +20,8 @@ abstract class PluginBaseCommand extends TerminusCommand
     // Messages
     const INSTALL_COMPOSER_MESSAGE =
         'Please install Composer to enable plugin management. See https://getcomposer.org/download/.';
+    const OUTDATED_COMPOSER_MESSAGE =
+        'Please update Composer to enable plugin management. Run composer self-update.';
     const INSTALL_GIT_MESSAGE = 'Please install Git to enable plugin management.';
     const PROJECT_NOT_FOUND_MESSAGE = 'No project or plugin named {project} found.';
     const DEPENDENCIES_REQUIRE_COMMAND = 'composer require -d {dir} {packages}';
@@ -32,6 +35,7 @@ abstract class PluginBaseCommand extends TerminusCommand
     const COMPOSER_REMOVE_REPOSITORY = 'composer config -d {dir} --unset repositories.{repo_name}';
     const DEPENDENCIES_UPDATE_COMMAND = 'composer update -d {dir} {packages} --with-dependencies';
     const INSTALL_COMMAND = 'composer require -d {dir} {project} --no-update';
+    const COMPOSER_VERSION_COMMAND = 'composer --version';
 
     /**
      * @var array|null
@@ -54,6 +58,20 @@ abstract class PluginBaseCommand extends TerminusCommand
     {
         if (!self::commandExists('composer')) {
             throw new TerminusNotFoundException(self::INSTALL_COMPOSER_MESSAGE);
+        } else {
+            // Validate composer version >= 2.1.0.
+            $result = $this->runCommand(self::COMPOSER_VERSION_COMMAND);
+            if ($result['exit_code'] === 0) {
+                $output = $result['output'];
+                if (preg_match('/version\s(\d+\.\d+\.\d+)\s.+/', $output, $matches)) {
+                    if (isset($matches[1])) {
+                        $version = $matches[1];
+                        if (!Semver::satisfies($version, '>=2.1.0')) {
+                            throw new TerminusNotFoundException(self::OUTDATED_COMPOSER_MESSAGE);
+                        }
+                    }
+                }
+            }
         }
         if (!self::commandExists('git')) {
             throw new TerminusNotFoundException(self::INSTALL_GIT_MESSAGE);
