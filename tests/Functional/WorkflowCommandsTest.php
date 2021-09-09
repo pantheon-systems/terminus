@@ -6,7 +6,7 @@ use Pantheon\Terminus\Tests\Traits\TerminusTestTrait;
 use PHPUnit\Framework\TestCase;
 
 /**
- * Class WorkflowCommandsTest
+ * Class WorkflowCommandsTest.
  *
  * @package Pantheon\Terminus\Tests\Functional
  */
@@ -61,12 +61,11 @@ class WorkflowCommandsTest extends TestCase
      */
     public function testWorkflowOperationsAndLogsCommands()
     {
-        $env = 'dev';
-        $this->terminus(sprintf('env:clear-cache %s.%s', $this->getSiteName(), $env));
+        $this->terminus(sprintf('env:clear-cache %s', $this->getSiteEnv()));
 
-        $workflow = $this->getLatestWorkflow(['workflow' => sprintf('Clear cache for "%s"', $env)]);
+        $workflow = $this->getLatestWorkflow(['workflow' => sprintf('Clear cache for "%s"', $this->getMdEnv())]);
         $this->assertEquals('succeeded', $workflow['status']);
-        $this->assertEquals($env, $workflow['env']);
+        $this->assertEquals($this->getMdEnv(), $workflow['env']);
 
         $operations = $this->terminusJsonResponse(
             sprintf('workflow:info:operations %s --id=%s', $this->getSiteName(), $workflow['id'])
