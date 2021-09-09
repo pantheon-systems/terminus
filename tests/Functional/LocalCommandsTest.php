@@ -6,7 +6,7 @@ use Pantheon\Terminus\Tests\Traits\TerminusTestTrait;
 use PHPUnit\Framework\TestCase;
 
 /**
- * Class LocalCommandsTest
+ * Class LocalCommandsTest.
  *
  * @package Pantheon\Terminus\Tests\Functional
  */
@@ -15,17 +15,19 @@ class LocalCommandsTest extends TestCase
     use TerminusTestTrait;
 
     /**
-     * @setup
+     * @inheritdoc
      */
     public function setUp(): void
     {
-        $sitename = $this->getSiteName();
-        $local_sites_folder = realpath(getenv('TERMINUS_LOCAL_SITES')) . DIRECTORY_SEPARATOR .
-            'pantheon-local-copies';
-        $willBeCreated = $local_sites_folder . DIRECTORY_SEPARATOR . $sitename;
-        if (is_dir($willBeCreated)) {
-            exec("rm -Rf $willBeCreated");
-        }
+        $this->cleanUpTestSiteDir();
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function tearDown(): void
+    {
+        $this->cleanUpTestSiteDir();
     }
 
     /**
@@ -37,15 +39,14 @@ class LocalCommandsTest extends TestCase
      */
     public function testLocalClone()
     {
-        $sitename = $this->getSiteName();
-        $result = $this->terminus("local:clone {$sitename}");
-        if (!is_string($result)) {
-            throw new \Exception("The response from the local clone command didn't return the path.");
-        }
-        $shouldExist = $result . DIRECTORY_SEPARATOR . '.git';
+        $localSiteDir = $this->terminus(sprintf('local:clone %s', $this->getSiteName()));
+        $this->assertNotEmpty($localSiteDir);
+        $this->assertIsString($localSiteDir);
+
+        $localSiteGitDir = $localSiteDir . DIRECTORY_SEPARATOR . '.git';
         $this->assertTrue(
-            is_dir($shouldExist),
-            "The sites .git directory does not exist: {$shouldExist}"
+            is_dir($localSiteGitDir),
+            sprintf('The test local site ".git" directory %s does not exist.', $localSiteGitDir)
         );
     }
 
@@ -58,11 +59,10 @@ class LocalCommandsTest extends TestCase
      */
     public function testCommitDb()
     {
-        $sitename = $this->getSiteName();
-        $result = $this->terminus("local:getLiveDB {$sitename}.live");
+        $siteDatabaseSnapshotArchive = $this->terminus(sprintf('local:getLiveDB %s --overwrite', $this->getSiteName()));
         $this->assertTrue(
-            is_file($result),
-            "The db file failed to download."
+            is_file($siteDatabaseSnapshotArchive),
+            'The database snapshot archive file failed to download.'
         );
     }
 
@@ -75,24 +75,18 @@ class LocalCommandsTest extends TestCase
      */
     public function testCommitFiles()
     {
-        $sitename = $this->getSiteName();
-        $result = $this->terminus("local:getLiveFiles {$sitename}.live");
-        $this->assertTrue(
-            is_file($result),
-            'The site file failed to download.'
-        );
+        $siteFilesArchive = $this->terminus(sprintf('local:getLiveFiles %s --overwrite', $this->getSiteName()));
+        $this->assertTrue(is_file($siteFilesArchive), 'The site files archive file failed to download.');
     }
 
     /**
-     * @after
+     * Deletes the local copy of the test site if exists.
      */
-    public function tearDown(): void
+    private function cleanUpTestSiteDir()
     {
-        $sitename = $this->getSiteName();
-        $local_site_folder = realpath(getenv('TERMINUS_LOCAL_SITES')) . DIRECTORY_SEPARATOR .
-            'pantheon-local-copies' . DIRECTORY_SEPARATOR . $sitename;
-        if (is_dir($local_site_folder)) {
-            exec("rm -Rf {$local_site_folder}");
+        $localTestSiteDir = $this->getLocalTestSiteDir();
+        if (is_dir($localTestSiteDir)) {
+            exec(sprintf('rm -rf %s', $localTestSiteDir));
         }
     }
 }

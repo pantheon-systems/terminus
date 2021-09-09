@@ -260,4 +260,14 @@ trait TerminusTestTrait
     {
         return sprintf('%s.%s', $this->getSiteName(), $this->getMdEnv());
     }
+
+    /**
+     * Returns the absolute path to the local test site directory.
+     *
+     * @return string
+     */
+    protected function getLocalTestSiteDir(): string
+    {
+        return implode(DIRECTORY_SEPARATOR, [$_SERVER['HOME'], 'pantheon-local-copies', self::getSiteName()]);
+    }
 }
