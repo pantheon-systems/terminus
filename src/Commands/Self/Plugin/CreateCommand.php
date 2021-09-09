@@ -24,13 +24,17 @@ class CreateCommand extends PluginBaseCommand
      * @aliases self:plugin:new
      *
      * @param string $path Path where the plugin will be created.
+     * @option project-name Namme of the project to be created (vendor/project-name).
      *
-     * @usage <path>
+     * @usage <path> --project-name=vendor/project_name
      */
-    public function create(string $path)
+    public function create(string $path, $options = [
+        'project-name' => '',
+    ])
     {
+        $project_name = $options['project-name'];
         if (!file_exists($path)) {
-            $results = $this->doCreate($path);
+            $results = $this->doCreate($path, $project_name);
             $this->log()->notice($results['output']);
         } else {
             throw new TerminusException(self::EXISTING_FOLDER_MESSAGE);
@@ -53,9 +57,10 @@ class CreateCommand extends PluginBaseCommand
 
     /**
      * @param string $path Path where this project will be created
+     * @param string $project_name Name for the new project.
      * @return array Results from the create command
      */
-    private function doCreate($path)
+    private function doCreate($path, $project_name)
     {
         $parent_folder = dirname($path);
         $basename = basename($path);
@@ -73,11 +78,23 @@ class CreateCommand extends PluginBaseCommand
                     []
                 );
             }
-
+            $this->renameProject($realpath, $project_name);
             $project_name = $this->getProjectNameFromPath($realpath) . ':@dev';
             return $this->installProject($project_name, $realpath);
         } catch (TerminusException $e) {
             $this->log()->error($e->getMessage());
         }
+    }
+
+    /**
+     * Rename generated project.
+     */
+    private function renameProject($path, $new_name = '') {
+        if (!$new_name) {
+            $new_name = 'terminus-plugin-project/' . basename($path);
+        }
+        $composer_json_contents = file_get_contents($path . '/composer.json');
+        $composer_json_contents = str_replace('pantheon-systems/terminus-plugin-example', $new_name, $composer_json_contents);
+        file_put_contents($path . '/composer.json', $composer_json_contents);
     }
 }

@@ -155,15 +155,18 @@ class PluginInfo implements ConfigAwareInterface, ContainerAwareInterface, Logge
             self::GET_LATEST_AVAILABLE_VERSION
         );
         $results = $this->runCommand($command);
-        $package_info = json_decode($results['output'], true, 10);
-        if (empty($package_info)) {
-            throw new TerminusNotFoundException('Package info not found.');
+        if (!empty($results['output'])) {
+            $package_info = json_decode($results['output'], true, 10);
+            if (empty($package_info)) {
+                throw new TerminusNotFoundException('Package info not found.');
+            }
+            if (!empty($package_info['latest'])) {
+                return $package_info['latest'];
+            }
+            $versions = $package_info['versions'];
+            return reset($versions);
         }
-        if (!empty($package_info['latest'])) {
-            return $package_info['latest'];
-        }
-        $versions = $package_info['versions'];
-        return reset($versions);
+        return self::UNKNOWN_VERSION;
     }
 
     /**
