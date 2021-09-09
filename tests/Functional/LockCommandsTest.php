@@ -6,7 +6,7 @@ use Pantheon\Terminus\Tests\Traits\TerminusTestTrait;
 use PHPUnit\Framework\TestCase;
 
 /**
- * Class LockCommandsTest
+ * Class LockCommandsTest.
  *
  * @package Pantheon\Terminus\Tests\Functional
  */
@@ -28,11 +28,11 @@ class LockCommandsTest extends TestCase
     public function testLockCommands()
     {
         // Disable the lock if set.
-        $disableLockCommand = sprintf('lock:disable %s.%s', $this->getSiteName(), 'dev');
+        $disableLockCommand = sprintf('lock:disable %s', $this->getSiteEnv());
         $this->terminus($disableLockCommand);
 
         // Verify the lock is disabled.
-        $getLockInfoCommand = sprintf('lock:info %s.%s ', $this->getSiteName(), 'dev');
+        $getLockInfoCommand = sprintf('lock:info %s', $this->getSiteEnv());
         $this->assertTerminusCommandResultEqualsInAttempts(function () use ($getLockInfoCommand) {
             return $this->terminusJsonResponse($getLockInfoCommand);
         }, [
@@ -45,9 +45,8 @@ class LockCommandsTest extends TestCase
         $lockUserName = 'test_user';
         $lockPassword = 'test_password';
         $enableLockInfoCommand = sprintf(
-            'lock:enable %s.%s %s %s',
-            $this->getSiteName(),
-            'dev',
+            'lock:enable %s %s %s',
+            $this->getSiteEnv(),
             $lockUserName,
             $lockPassword
         );
