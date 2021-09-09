@@ -157,7 +157,9 @@ class PluginManagerCommandsTest extends TestCase
         if ($filesystem->exists($tempfile)) {
             $filesystem->remove($tempfile);
         }
-        $results = $this->terminusWithStderrRedirected("self:plugin:create ${tempfile} --project-name=terminus-test/newplugin");
+        $results = $this->terminusWithStderrRedirected(
+            "self:plugin:create ${tempfile} --project-name=terminus-test/newplugin"
+        );
         $this->assertStringContainsString(
             "Installed terminus-test/newplugin:@dev",
             $results,
