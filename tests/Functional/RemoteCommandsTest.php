@@ -15,7 +15,7 @@ class RemoteCommandsTest extends TestCase
     use TerminusTestTrait;
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      *
      * @throws \Exception
      */

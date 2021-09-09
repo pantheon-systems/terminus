@@ -16,7 +16,7 @@ class AliasesCommandTest extends TestCase
     use TerminusTestTrait;
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      *
      * @throws \Exception
      */

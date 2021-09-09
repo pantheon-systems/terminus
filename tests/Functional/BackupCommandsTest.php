@@ -21,7 +21,7 @@ class BackupCommandsTest extends TestCase
     protected $client;
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     protected function setUp(): void
     {
