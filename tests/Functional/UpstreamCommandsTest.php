@@ -6,7 +6,7 @@ use Pantheon\Terminus\Tests\Traits\TerminusTestTrait;
 use PHPUnit\Framework\TestCase;
 
 /**
- * Class UpstreamCommandsTest
+ * Class UpstreamCommandsTest.
  *
  * @package Pantheon\Terminus\Tests\Functional
  */
@@ -25,17 +25,13 @@ class UpstreamCommandsTest extends TestCase
      */
     public function testUpstreamListCommand()
     {
-
-        $upstreamList = $this->terminusJsonResponse("upstream:list");
-        $this->assertIsArray(
-            $upstreamList,
-            "Response from upstream list should be unserialized json"
-        );
+        $upstreamList = $this->terminusJsonResponse('upstream:list');
+        $this->assertIsArray($upstreamList);
         $upstreamInfo = array_shift($upstreamList);
-        $this->assertArrayHasKey('id', $upstreamInfo, "Upstream data should have an id");
-        $this->assertArrayHasKey('label', $upstreamInfo, "Upstream data should have a name");
-        $this->assertArrayHasKey('machine_name', $upstreamInfo, "Upstream data should have a machine_name");
-        $this->assertArrayHasKey('type', $upstreamInfo, "Upstream data should have a type");
+        $this->assertArrayHasKey('id', $upstreamInfo, 'An upstream should have "id" field.');
+        $this->assertArrayHasKey('label', $upstreamInfo, 'An upstream should have "label" field.');
+        $this->assertArrayHasKey('machine_name', $upstreamInfo, 'An upstream should have "machine_name" field.');
+        $this->assertArrayHasKey('type', $upstreamInfo, 'An upstream should have "type" field.');
     }
 
     /**
@@ -44,22 +40,18 @@ class UpstreamCommandsTest extends TestCase
      *
      * @group upstream
      * @group short
-     *
-     * @throws \JsonException
      */
     public function testUpstreamInfoCommand()
     {
-        $upstreamList = $this->terminusJsonResponse("upstream:list");
-        $this->assertIsArray(
-            $upstreamList,
-            "Response from upstream list should be unserialized json"
-        );
+        $upstreamList = $this->terminusJsonResponse('upstream:list');
+        $this->assertIsArray($upstreamList);
         $upstream = array_shift($upstreamList);
-        $upstreamInfo = $this->terminusJsonResponse("upstream:info " . $upstream['id']);
-        $this->assertArrayHasKey('id', $upstreamInfo, "Upstream data should have an id");
-        $this->assertArrayHasKey('label', $upstreamInfo, "Upstream data should have a name");
-        $this->assertArrayHasKey('machine_name', $upstreamInfo, "Upstream data should have a machine_name");
-        $this->assertArrayHasKey('type', $upstreamInfo, "Upstream data should have a type");
+        $this->assertArrayHasKey('id', $upstream, 'An upstream should have "id" field.');
+        $upstreamInfo = $this->terminusJsonResponse(sprintf('upstream:info %s', $upstream['id']));
+        $this->assertArrayHasKey('id', $upstreamInfo, 'An upstream should have "id" field.');
+        $this->assertArrayHasKey('label', $upstreamInfo, 'An upstream should have "label" field.');
+        $this->assertArrayHasKey('machine_name', $upstreamInfo, 'An upstream should have "machine_name" field.');
+        $this->assertArrayHasKey('type', $upstreamInfo, 'An upstream should have "type" field.');
     }
 
     /**
@@ -69,23 +61,25 @@ class UpstreamCommandsTest extends TestCase
      *
      * @group upstream
      * @group short
-     *
-     * @throws \JsonException
      */
     public function testUpstreamUpdatesListStatus()
     {
-        $sitename = $this->getSiteName();
-        $updatesList = $this->terminusJsonResponse("upstream:updates:list {$sitename}.dev");
-        $this->assertIsArray(
-            $updatesList,
-            'Response from upstream list should be unserialized json'
-        );
-        $status = $this->terminus("upstream:updates:status {$sitename}.dev");
+        $updatesList = $this->terminusJsonResponse(sprintf('upstream:updates:list %s', $this->getSiteEnv()));
+        $this->assertIsArray($updatesList);
+        $status = $this->terminus(sprintf('upstream:updates:status %s', $this->getSiteEnv()));
         if (count($updatesList) == 0) {
-            $this->assertEquals("current", $status, "if there are no updates, the status should be 'current'.");
+            $this->assertEquals(
+                'current',
+                $status,
+                'If no updates detected, the "status" field should have "current" value.'
+            );
         }
         if (count($updatesList) >= 1) {
-            $this->assertNotEquals('current', $status, "if there are no updates, the status should NOT be 'current'.");
+            $this->assertNotEquals(
+                'current',
+                $status,
+                'If updates detected, the "status" fields should not have "current" value.'
+            );
         }
     }
 }
