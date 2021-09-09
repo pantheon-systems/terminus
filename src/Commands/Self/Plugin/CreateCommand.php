@@ -64,7 +64,7 @@ class CreateCommand extends PluginBaseCommand
     {
         $parent_folder = dirname($path);
         $basename = basename($path);
-        $realpath = realpath($parent_folder) . '/' . $basename;
+        $realpath = realpath($parent_folder) . DIRECTORY_SEPARATOR . $basename;
         try {
             $command = str_replace(
                 ['{dir}',],
@@ -94,12 +94,12 @@ class CreateCommand extends PluginBaseCommand
         if (!$new_name) {
             $new_name = 'terminus-plugin-project/' . basename($path);
         }
-        $composer_json_contents = file_get_contents($path . '/composer.json');
+        $composer_json_contents = file_get_contents($path . DIRECTORY_SEPARATOR . 'composer.json');
         $composer_json_contents = str_replace(
             'pantheon-systems/terminus-plugin-example',
             $new_name,
             $composer_json_contents
         );
-        file_put_contents($path . '/composer.json', $composer_json_contents);
+        file_put_contents($path . DIRECTORY_SEPARATOR . 'composer.json', $composer_json_contents);
     }
 }
