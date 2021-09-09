@@ -6,7 +6,7 @@ use Pantheon\Terminus\Tests\Traits\TerminusTestTrait;
 use PHPUnit\Framework\TestCase;
 
 /**
- * Class ImportCommandsTest
+ * Class ImportCommandsTest.
  *
  * @package Pantheon\Terminus\Tests\Functional
  */
@@ -25,12 +25,7 @@ class ImportCommandsTest extends TestCase
     {
         $backupUrl = $this->getBackupUrl('database');
 
-        $importDatabaseCommand = sprintf(
-            'import:database %s.%s "%s"',
-            $this->getSiteName(),
-            'live',
-            $backupUrl
-        );
+        $importDatabaseCommand = sprintf('import:database %s "%s"', $this->getSiteEnv(), $backupUrl);
         $this->terminus($importDatabaseCommand);
     }
 
@@ -45,12 +40,7 @@ class ImportCommandsTest extends TestCase
     {
         $backupUrl = $this->getBackupUrl('files');
 
-        $importFilesCommand = sprintf(
-            'import:files %s.%s "%s"',
-            $this->getSiteName(),
-            'live',
-            $backupUrl
-        );
+        $importFilesCommand = sprintf('import:files %s "%s"', $this->getSiteEnv(), $backupUrl);
         $this->terminus($importFilesCommand);
     }
 
@@ -75,7 +65,7 @@ class ImportCommandsTest extends TestCase
      */
     public function testImportComplete()
     {
-        $this->terminus("import:complete {$this->getSiteName()}");
+        $this->terminus(sprintf('import:complete %s', $this->getSiteName()));
     }
 
     /**
@@ -89,15 +79,10 @@ class ImportCommandsTest extends TestCase
      */
     private function getBackupUrl(string $element): string
     {
-        $backupCreateCommand = sprintf(
-            'backup:create %s.%s --element=%s --keep-for=1',
-            $this->getSiteName(),
-            'live',
-            $element
-        );
+        $backupCreateCommand = sprintf('backup:create %s --element=%s --keep-for=1', $this->getSiteEnv(), $element);
         $this->terminus($backupCreateCommand);
 
-        $backupListCommand = sprintf('backup:list %s.%s --element=%s', $this->getSiteName(), 'live', $element);
+        $backupListCommand = sprintf('backup:list %s --element=%s', $this->getSiteEnv(), $element);
         $listOfBackups = $this->terminusJsonResponse($backupListCommand);
         $this->assertIsArray($listOfBackups, 'List of backups should be an array');
         $latestBackup = array_shift($listOfBackups);
@@ -107,12 +92,7 @@ class ImportCommandsTest extends TestCase
             'An item from the list of backups should have "file" property'
         );
 
-        $backupInfoCommand = sprintf(
-            'backup:get %s.%s --file=%s',
-            $this->getSiteName(),
-            'live',
-            $latestBackup['file']
-        );
+        $backupInfoCommand = sprintf('backup:get %s --file=%s', $this->getSiteEnv(), $latestBackup['file']);
         $latestBackupUrl = $this->terminus($backupInfoCommand);
         $this->assertIsString($latestBackupUrl, 'A URL of a backup should be string');
         $this->assertNotEmpty($latestBackupUrl, 'A URL of a backup should not be empty');
