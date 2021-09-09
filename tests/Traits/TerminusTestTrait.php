@@ -223,7 +223,7 @@ trait TerminusTestTrait
      *
      * @return array
      */
-    private function getSiteInfo(): array
+    protected function getSiteInfo(): array
     {
         static $site_info;
         if (is_null($site_info)) {
@@ -238,7 +238,7 @@ trait TerminusTestTrait
      *
      * @return string
      */
-    public static function getMdEnv(): string
+    protected static function getMdEnv(): string
     {
         return getenv('TERMINUS_TESTING_RUNTIME_ENV');
     }
@@ -256,7 +256,7 @@ trait TerminusTestTrait
      *
      * @return string
      */
-    public function getSiteEnv(): string
+    protected function getSiteEnv(): string
     {
         return sprintf('%s.%s', $this->getSiteName(), $this->getMdEnv());
     }
