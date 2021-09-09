@@ -157,9 +157,9 @@ class PluginManagerCommandsTest extends TestCase
         if ($filesystem->exists($tempfile)) {
             $filesystem->remove($tempfile);
         }
-        $results = $this->terminusWithStderrRedirected("self:plugin:create ${tempfile}");
+        $results = $this->terminusWithStderrRedirected("self:plugin:create ${tempfile} --project-name=terminus-test/newplugin");
         $this->assertStringContainsString(
-            "Installed pantheon-systems/terminus-plugin-example:@dev",
+            "Installed terminus-test/newplugin:@dev",
             $results,
             "Terminus plugin creation failed."
         );
@@ -169,7 +169,7 @@ class PluginManagerCommandsTest extends TestCase
         $this->assertStringContainsString($command, $output);
 
         // UNINSTALL RECENTLY CREATED PLUGIN
-        $plugin = 'pantheon-systems/terminus-plugin-example';
+        $plugin = 'terminus-test/newplugin';
         $results = $this->terminusWithStderrRedirected("self:plugin:uninstall $plugin");
         $this->assertStringContainsString("Uninstalled $plugin", $results, "Terminus plugin uninstall failed.");
 
