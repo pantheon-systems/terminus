@@ -6,7 +6,7 @@ use Pantheon\Terminus\Tests\Traits\TerminusTestTrait;
 use PHPUnit\Framework\TestCase;
 
 /**
- * Class HTTPSCommandsTest
+ * Class HTTPSCommandsTest.
  *
  * @package Pantheon\Terminus\Tests\Functional
  */
@@ -23,10 +23,10 @@ class HTTPSCommandsTest extends TestCase
      */
     public function testHttpsInfoCommand()
     {
-        $httpsInfo = $this->terminusJsonResponse(sprintf('https:info %s.%s', $this->getSiteName(), 'dev'));
+        $httpsInfo = $this->terminusJsonResponse(sprintf('https:info %s', $this->getSiteEnv()));
         $this->assertIsArray($httpsInfo);
         $this->assertNotEmpty($httpsInfo);
-        $key = sprintf('%s-%s.pantheonsite.io', 'dev', $this->getSiteName());
+        $key = sprintf('%s-%s.pantheonsite.io', $this->getMdEnv(), $this->getSiteName());
         $this->assertArrayHasKey($key, $httpsInfo);
 
         $this->assertArrayHasKey('id', $httpsInfo[$key]);

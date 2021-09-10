@@ -108,9 +108,11 @@ class EnvCommandsTest extends TestCase
 
         // Enable Git mode to reset all uncommitted changes if present.
         $this->terminus(sprintf('connection:set %s git', $siteEnv));
+        sleep(30);
 
         // Enable SFTP mode.
         $this->terminus(sprintf('connection:set %s sftp', $siteEnv));
+        sleep(30);
 
         // Check the diff - no diff is expected.
         $diff = $this->terminusJsonResponse(sprintf('env:diffstat %s', $siteEnv));
@@ -131,7 +133,10 @@ class EnvCommandsTest extends TestCase
             $connectionInfo['sftp_host'],
             2222
         );
-        ssh2_auth_agent($session, $connectionInfo['sftp_username']);
+        $this->assertTrue(
+            ssh2_auth_agent($session, $connectionInfo['sftp_username']),
+            'Failed to authenticate over SSH using the ssh agent'
+        );
         $sftp = ssh2_sftp($session);
         $this->assertNotFalse($sftp);
         $fileUniqueId = md5(mt_rand());
@@ -139,6 +144,7 @@ class EnvCommandsTest extends TestCase
             sprintf('ssh2.sftp://%d/code/env-commit-test-file-%s.txt', intval($sftp), $fileUniqueId),
             'w'
         );
+        $this->assertNotFalse($stream, 'Failed to open a file for writing');
         fwrite($stream, 'This is a test file to use in functional testing for env:commit command.');
         fclose($stream);
 
@@ -154,7 +160,7 @@ class EnvCommandsTest extends TestCase
 
         $this->assertTerminusCommandResultEqualsInAttempts(function () use ($siteEnv) {
             return $this->terminusJsonResponse(sprintf('env:diffstat %s', $siteEnv));
-        }, $expectedDiff, 24);
+        }, $expectedDiff);
 
         // Commit the changes.
         $this->terminus(
@@ -168,7 +174,7 @@ class EnvCommandsTest extends TestCase
         // Check the diff - no diff is expected.
         $this->assertTerminusCommandResultEqualsInAttempts(function () use ($siteEnv) {
             return $this->terminusJsonResponse(sprintf('env:diffstat %s', $siteEnv));
-        }, [], 24);
+        }, []);
     }
 
     /**

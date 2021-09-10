@@ -7,7 +7,7 @@ use Pantheon\Terminus\Tests\Traits\TerminusTestTrait;
 use PHPUnit\Framework\TestCase;
 
 /**
- * Class BackupCommandsTest
+ * Class BackupCommandsTest.
  *
  * @package Pantheon\Terminus\Tests\Functional
  */
@@ -21,7 +21,7 @@ class BackupCommandsTest extends TestCase
     protected $client;
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     protected function setUp(): void
     {
@@ -35,40 +35,29 @@ class BackupCommandsTest extends TestCase
      * @covers \Pantheon\Terminus\Commands\Backup\ListCommand
      * @covers \Pantheon\Terminus\Commands\Backup\CreateCommand
      *
-     * @group backup1
+     * @group backup
      * @group short
      */
-    public function testCreateListInfoGetCommand()
+    public function testBackupCreateListInfoGetCommand()
     {
-        $siteName = $this->getSiteName();
-        $this->terminus("backup:create {$siteName}.live --element=database");
-        $backupList = $this->terminusJsonResponse("backup:list {$siteName}.live --element=database");
-        $this->assertIsArray($backupList, "Backup list response should be an array");
+        $this->terminus(sprintf('backup:create %s --element=database', $this->getSiteEnv()));
+        $backupList = $this->terminusJsonResponse(sprintf('backup:list %s --element=database', $this->getSiteEnv()));
+        $this->assertIsArray($backupList);
         $backup = array_shift($backupList);
-        $this->assertArrayHasKey('file', $backup, "backup from list should have file property");
-        $backup = $this->terminusJsonResponse(
-            "backup:info {$siteName}.live"
-        );
-        $this->assertIsArray(
-            $backup,
-            "Backup info response should be an array."
-        );
-        $this->assertArrayHasKey(
-            "file",
-            $backup,
-            "Backup info response should have file property"
-        );
-        $this->assertArrayHasKey(
-            "url",
-            $backup,
-            "Backup info response should be an array."
-        );
-        $statusCode = $this->client->head($backup['url'])->getStatusCode();
-        $this->assertEquals(200, $statusCode, "Status Code from backup url should be 200");
-        $url = $this->terminus("backup:get {$siteName}.live");
-        $this->assertIsString($url, "Backup url should be a string.");
+        $this->assertArrayHasKey('file', $backup, 'A backup should have "file" field.');
+
+        $backupInfo = $this->terminusJsonResponse(sprintf('backup:info %s --element=database', $this->getSiteEnv()));
+        $this->assertIsArray($backupInfo);
+        $this->assertArrayHasKey('file', $backupInfo, 'A backup info should have "file" field.');
+        $this->assertArrayHasKey('url', $backupInfo, 'A backup info should have "url" field.');
+        $statusCode = $this->client->head($backupInfo['url'])->getStatusCode();
+        $this->assertEquals(200, $statusCode, sprintf('Can\'t find a backup file by URL %s.', $backupInfo['url']));
+
+        $url = $this->terminus(sprintf('backup:get %s --element=database', $this->getSiteEnv()));
+        $this->assertNotEmpty($url);
+        $this->assertIsString($url);
         $statusCode = $this->client->head($url)->getStatusCode();
-        $this->assertEquals(200, $statusCode, "Status Code from backup url should be 200");
+        $this->assertEquals(200, $statusCode, sprintf('Can\'t find a backup file by URL %s.', $url));
     }
 
     /**
@@ -82,29 +71,22 @@ class BackupCommandsTest extends TestCase
      */
     public function testAutomaticBackupInfoEnableDisable()
     {
-        $siteName = $this->getSiteName();
-        $auto = $this->terminusJsonResponse("backup:automatic:info {$siteName}.live");
-        $this->assertIsArray(
-            $auto,
-            "returned auto database backup call should return an array"
-        );
-        $this->assertArrayHasKey(
-            'daily_backup_hour',
-            $auto,
-            'Backup info response should have file property'
-        );
-        $this->assertArrayHasKey(
-            'expiry',
-            $auto,
-            'Backup info response should have file property'
-        );
-        $newValue = $auto['weekly_backup_day'] === null ? "enable" : "disable";
-        $this->terminus("backup:automatic:{$newValue} {$siteName}.live");
-        sleep(20);
-        $auto2 = $this->terminusJsonResponse("backup:automatic:info {$siteName}.live");
-        $newValue2 = $auto2['weekly_backup_day'] === null ? 'enable' : 'disable';
-        $this->assertNotEquals($newValue, $newValue2);
-        $this->terminus("backup:automatic:{$newValue2} {$siteName}.live");
+        $siteEnv = $this->getSiteEnv();
+
+        $this->terminus(sprintf('backup:automatic:disable %s', $siteEnv));
+        $this->assertTerminusCommandResultEqualsInAttempts(function () use ($siteEnv) {
+            return $this->terminusJsonResponse(sprintf('backup:automatic:info %s', $siteEnv));
+        }, [
+            'daily_backup_hour' => null,
+            'weekly_backup_day' => null,
+            'expiry' => null,
+        ]);
+
+        $this->terminus(sprintf('backup:automatic:enable %s', $siteEnv));
+        $this->assertTerminusCommandResultEqualsInAttempts(function () use ($siteEnv) {
+            // Count non-empty elements in the result which is expected to be exactly 3 ("daily_backup_hour", "weekly_backup_day" and "expiry").
+            return count(array_filter($this->terminusJsonResponse(sprintf('backup:automatic:info %s', $siteEnv))));
+        }, 3);
     }
 
     /**
@@ -117,11 +99,11 @@ class BackupCommandsTest extends TestCase
     public function testBackupGetLatest()
     {
         $startOfCommandExecutionTimestamp = time();
-        $this->terminus("backup:create {$this->getSiteName()}.live --element=database --keep-for=1");
+        $this->terminus(sprintf('backup:create %s --element=database --keep-for=1', $this->getSiteEnv()));
 
-        $latestBackupUrl = $this->terminus("backup:get {$this->getSiteName()}.live --element=database");
-        $this->assertIsString($latestBackupUrl, 'A URL of a backup should be string');
-        $this->assertNotEmpty($latestBackupUrl, 'A URL of a backup should not be empty');
+        $latestBackupUrl = $this->terminus(sprintf('backup:get %s --element=database', $this->getSiteEnv()));
+        $this->assertIsString($latestBackupUrl, 'A URL of a backup should be string.');
+        $this->assertNotEmpty($latestBackupUrl, 'A URL of a backup should not be empty.');
 
         preg_match('/(\d+)_backup/', $latestBackupUrl, $matches);
         if (!isset($matches[1])) {
@@ -130,7 +112,7 @@ class BackupCommandsTest extends TestCase
         $latestBackupTimestamp = $matches[1];
 
         if ($latestBackupTimestamp < $startOfCommandExecutionTimestamp) {
-            $this->fail('Command "backup:get" should return URL of the most recent backup');
+            $this->fail('Command "backup:get" should return URL of the most recent backup.');
         }
     }
 }

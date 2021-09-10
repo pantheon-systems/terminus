@@ -6,7 +6,7 @@ use Pantheon\Terminus\Tests\Traits\TerminusTestTrait;
 use PHPUnit\Framework\TestCase;
 
 /**
- * Class RemoteCommandsTest
+ * Class RemoteCommandsTest.
  *
  * @package Pantheon\Terminus\Tests\Functional
  */
@@ -15,7 +15,7 @@ class RemoteCommandsTest extends TestCase
     use TerminusTestTrait;
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      *
      * @throws \Exception
      */
@@ -38,7 +38,7 @@ class RemoteCommandsTest extends TestCase
      */
     public function testDrushCommands()
     {
-        $commandPrefix = sprintf('drush %s.%s', $this->getSiteName(), 'dev');
+        $commandPrefix = sprintf('drush %s', $this->getSiteEnv());
 
         $command = sprintf('%s -- %s', $commandPrefix, 'version');
         $drushVersion = $this->terminusJsonResponse($command);
