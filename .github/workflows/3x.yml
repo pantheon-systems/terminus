@@ -18,7 +18,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: full-workspace
-          path: /home/runner/work/terminus/terminus
+          path: ${{ github.workspace }}
       - name: Full Composer Install
         run: composer install
       - name: Validate Code
@@ -37,7 +37,7 @@ jobs:
   functional:
     runs-on: ${{ matrix.operating-system }}
     name: Functional testing matrix - PHP ${{ matrix.php-versions }} on ${{ matrix.operating-system }}
-    if: ${{ ! startsWith(github.ref, 'refs/tags/')  && github.repository_owner == 'pantheon-systems' }}
+    if: ${{ github.repository_owner == 'pantheon-systems' }}
     strategy:
       matrix:
         operating-system: [ 'macos-latest' ]
@@ -82,6 +82,40 @@ jobs:
         with:
           name: CoverageReport
           path: docs/TestCoverage.md
+
+  release:
+    runs-on: ubuntu-latest
+    name: Release
+    container:
+      image: quay.io/pantheon-public/php-ci:1.x
+    needs: [ checkout_build ]
+    if: ${{ startsWith(github.ref, 'refs/tags/')  && github.repository == 'pantheon-systems/pantheon-cli' }}
+    steps:
+      - name: Download t3.phar as artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: t3-phar
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: t3
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  package_macos:
+    runs-on: macos-latest
+    name: Package a Homebrew release
+    needs: [ release ]
+    if: ${{ startsWith(github.ref, 'refs/tags/')  && github.repository == 'pantheon-systems/pantheon-cli' }}
+    steps:
+      - name: Bump Homebrew formula
+        uses: dawidd6/action-homebrew-bump-formula@v3
+        with:
+          token: ${{secrets.HOMEBREW_GITHUB_API_TOKEN}}
+          tap: pantheon-systems/external
+          tag: ${{github.ref}}
+          revision: ${{github.sha}}
+          formula: t3
 
   # # NOT CURRENTLY USED
   # behat_tests:
