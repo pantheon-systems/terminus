@@ -40,7 +40,9 @@ class SSHKeyCommandsTest extends TestCase
         $this->assertGreaterThan($key_count, count($ssh_key_list_new));
         $new_id_list = array_keys($ssh_key_list_new);
         $new_key = array_diff($new_id_list, $original_id_list);
-        $new_key = $new_key[0];
+        if (is_array($new_key)) {
+            $new_key = array_pop($new_key);
+        }
 
         // Remove
         $this->terminus("ssh-key:remove $new_key");
