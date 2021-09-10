@@ -84,7 +84,8 @@ class BackupCommandsTest extends TestCase
 
         $this->terminus(sprintf('backup:automatic:enable %s', $siteEnv));
         $this->assertTerminusCommandResultEqualsInAttempts(function () use ($siteEnv) {
-            // Count non-empty elements in the result which is expected to be exactly 3 ("daily_backup_hour", "weekly_backup_day" and "expiry").
+            // Count non-empty elements in the result which is expected to be exactly 3
+            // ("daily_backup_hour", "weekly_backup_day" and "expiry").
             return count(array_filter($this->terminusJsonResponse(sprintf('backup:automatic:info %s', $siteEnv))));
         }, 3);
     }
