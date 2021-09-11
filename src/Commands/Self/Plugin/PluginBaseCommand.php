@@ -7,6 +7,8 @@ use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
 use Pantheon\Terminus\Helpers\LocalMachineHelper;
 use Pantheon\Terminus\Plugins\PluginDiscovery;
 use Pantheon\Terminus\Exceptions\TerminusException;
+use Pantheon\Terminus\Plugins\PluginInfo;
+use Composer\Semver\Semver;
 
 /**
  * Class PluginBaseCommand
@@ -18,16 +20,22 @@ abstract class PluginBaseCommand extends TerminusCommand
     // Messages
     const INSTALL_COMPOSER_MESSAGE =
         'Please install Composer to enable plugin management. See https://getcomposer.org/download/.';
+    const OUTDATED_COMPOSER_MESSAGE =
+        'Please update Composer to enable plugin management. Run composer self-update.';
     const INSTALL_GIT_MESSAGE = 'Please install Git to enable plugin management.';
     const PROJECT_NOT_FOUND_MESSAGE = 'No project or plugin named {project} found.';
     const DEPENDENCIES_REQUIRE_COMMAND = 'composer require -d {dir} {packages}';
-    const COMPOSER_ADD_REPOSITORY = 'composer config -d {dir} repositories.{repo_name} path {path}';
+    const COMPOSER_ADD_REPOSITORY =
+        "composer config -d {dir} repositories.{repo_name} '{\"type\": \"path\","
+        . "\"url\": \"{path}\", \"options\": {\"symlink\": true}}'";
     const COMPOSER_GET_REPOSITORIES = 'composer config -d {dir} repositories';
     const BACKUP_COMMAND =
         "mkdir -p {backup_dir} && tar czvf {backup_dir}"
         . DIRECTORY_SEPARATOR . "backup.tar.gz \"{dir}\"";
     const COMPOSER_REMOVE_REPOSITORY = 'composer config -d {dir} --unset repositories.{repo_name}';
     const DEPENDENCIES_UPDATE_COMMAND = 'composer update -d {dir} {packages} --with-dependencies';
+    const INSTALL_COMMAND = 'composer require -d {dir} {project} --no-update';
+    const COMPOSER_VERSION_COMMAND = 'composer --version';
 
     /**
      * @var array|null
@@ -50,6 +58,20 @@ abstract class PluginBaseCommand extends TerminusCommand
     {
         if (!self::commandExists('composer')) {
             throw new TerminusNotFoundException(self::INSTALL_COMPOSER_MESSAGE);
+        } else {
+            // Validate composer version >= 2.1.0.
+            $result = $this->runCommand(self::COMPOSER_VERSION_COMMAND);
+            if ($result['exit_code'] === 0) {
+                $output = $result['output'];
+                if (preg_match('/version\s(\d+\.\d+\.\d+)\s.+/', $output, $matches)) {
+                    if (isset($matches[1])) {
+                        $version = $matches[1];
+                        if (!Semver::satisfies($version, '>=2.1.0')) {
+                            throw new TerminusNotFoundException(self::OUTDATED_COMPOSER_MESSAGE);
+                        }
+                    }
+                }
+            }
         }
         if (!self::commandExists('git')) {
             throw new TerminusNotFoundException(self::INSTALL_GIT_MESSAGE);
@@ -330,5 +352,104 @@ abstract class PluginBaseCommand extends TerminusCommand
     protected function ensureDirectoryExists($path, $permissions = 0755)
     {
         $this->getLocalMachine()->getFileSystem()->mkdir($path, $permissions);
+    }
+
+    /**
+     * Gets project name from given path.
+     *
+     * @param string $project_or_path Project or path for the plugins.
+     *
+     * @return string Project name.
+     */
+    protected function getProjectNameFromPath(string $project_or_path)
+    {
+        $composerJson = $project_or_path . '/composer.json';
+        $composerContents = file_get_contents($composerJson);
+        // If the specified dir does not contain a terminus plugin, throw an error
+        $composerData = json_decode($composerContents, true);
+        if (!empty($composerData['type']) && $composerData['type'] !== 'terminus-plugin') {
+            throw new TerminusException(
+                'Cannot install from path {path} because the project there is not of type "terminus-plugin"',
+                ['path' => $project_or_path]
+            );
+        }
+
+        // If the specified dir does not have a name in the composer.json, throw an error
+        if (empty($composerData['name'])) {
+            throw new TerminusException(
+                'Cannot install from path {path} because the project there does not have a name',
+                ['path' => $project_or_path]
+            );
+        }
+
+        // Finally, return the project name and let install command install it as normal.
+        return $composerData['name'];
+    }
+
+    /**
+     * Install given project. Optionally from path repository.
+     *
+     * @param string $project_name Name of project to be installed
+     * @param string $instalation_path If not empty, install as a path repository
+     *
+     * @return array Results from the install command
+     */
+    protected function installProject($project_name, $instalation_path = '')
+    {
+        $plugin_name = PluginInfo::getPluginNameFromProjectName($project_name);
+        $project_name_parts = explode(':', $project_name);
+        $project_name_without_version = reset($project_name_parts);
+        $config = $this->getConfig();
+        $original_plugins_dir = $config->get('plugins_dir');
+        $original_dependencies_dir = $config->get('terminus_dependencies_dir');
+        $folders = $this->updateTerminusDependencies($original_plugins_dir, $original_dependencies_dir);
+        $plugins_dir = $folders['plugins_dir'];
+        $dependencies_dir = $folders['dependencies_dir'];
+        try {
+            if (!empty($instalation_path)) {
+                // Update path repository in plugins dir and dependencies dir.
+                foreach ([$plugins_dir, $dependencies_dir] as $dir) {
+                    $command = str_replace(
+                        ['{dir}', '{repo_name}', '{path}',],
+                        [$dir, $project_name_without_version, realpath($instalation_path),],
+                        self::COMPOSER_ADD_REPOSITORY
+                    );
+                    $results = $this->runCommand($command);
+                    if ($results['exit_code'] !== 0) {
+                        throw new TerminusException(
+                            'Error configuring path repository in ' . basename($dir),
+                            []
+                        );
+                    }
+                }
+            }
+
+            $command = str_replace(
+                ['{dir}', '{project}',],
+                [$plugins_dir, $project_name,],
+                self::INSTALL_COMMAND
+            );
+            $results = $this->runCommand($command);
+            if ($results['exit_code'] !== 0) {
+                throw new TerminusException(
+                    'Error requiring package in terminus-plugins.',
+                    []
+                );
+            }
+            $results = $this->runComposerUpdate($dependencies_dir, $project_name_without_version);
+            if ($results['exit_code'] !== 0) {
+                throw new TerminusException(
+                    'Error running composer update in terminus-dependencies.',
+                    []
+                );
+            }
+            $this->replaceFolder($plugins_dir, $original_plugins_dir);
+            $this->replaceFolder($dependencies_dir, $original_dependencies_dir);
+            $this->log()->notice('Installed {project_name}.', compact('project_name'));
+        } catch (TerminusException $e) {
+            $this->log()->error($e->getMessage());
+        }
+
+        return $results;
     }
 }
