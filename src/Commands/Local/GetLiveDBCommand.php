@@ -7,7 +7,6 @@ use Pantheon\Terminus\Commands\WorkflowProcessingTrait;
 use Pantheon\Terminus\Exceptions\TerminusProcessException;
 use Pantheon\Terminus\Friends\LocalCopiesTrait;
 use Pantheon\Terminus\Models\Site;
-use Pantheon\Terminus\Models\Workflow;
 use Pantheon\Terminus\Request\RequestAwareInterface;
 use Pantheon\Terminus\Request\RequestAwareTrait;
 use Pantheon\Terminus\Site\SiteAwareInterface;
@@ -28,7 +27,7 @@ class GetLiveDBCommand extends TerminusCommand implements
     use LocalCopiesTrait;
 
     /**
-     * Create new backup of your live site db and download to $HOME/pantheon-local-copies/{Site}/db
+     * Create new backup of your live site db and download to $HOME/pantheon-local-copies/db
      *
      * @authorize
      *
@@ -38,7 +37,7 @@ class GetLiveDBCommand extends TerminusCommand implements
      * @param string|Site $site Site
      * @option bool $overwrite Overwrite existing file
      *
-     * @usage <site> Create new backup of your live site and download to $HOME/pantheon-local-copies/{Site}/db
+     * @usage <site> Create new backup of your live site and download to $HOME/pantheon-local-copies/db
      * @usage <site> --overwrite Same + overwrite existing file
      *
      * @throws \Pantheon\Terminus\Exceptions\TerminusException
@@ -55,47 +54,37 @@ class GetLiveDBCommand extends TerminusCommand implements
             ->getEnvironments()
             ->get('live');
 
+        $backups = $liveEnv->getBackups();
         $this->logger->notice(
-            '===> Fetching the backup catalog for {site}.',
+            '===> Creating database backup for {site}',
             ['site' => $liveEnv->getName()]
         );
-        $backups = $liveEnv->getBackups();
+        $backupWorkflow = $backups->create(['element' => ['database']]);
+        $this->processWorkflow($backupWorkflow);
+        if (!$backupWorkflow->isSuccessful()) {
+            throw new TerminusProcessException('Backup workflow failed.');
+        }
         $backups->fetch();
         $dbBackups = $backups->getBackupsByElement('database');
-        if (count($dbBackups) === 0) {
-            $this->logger->notice(
-                '===> Creating database backup for {site}',
-                ['site' => $liveEnv->getName()]
-            );
-            $backupWorkflow = $backups->create(['element' => ['database']]);
-            if ($backupWorkflow instanceof Workflow) {
-                $this->processWorkflow($backupWorkflow);
-                if (!$backupWorkflow->isSuccessful()) {
-                    throw new TerminusProcessException('Backup workflow failed.');
-                }
-            }
-            $backups->fetch();
-            $dbBackups = $backups->getBackupsByElement('database');
-        }
-        $lastBackup = reset($dbBackups);
+        $latestBackup = reset($dbBackups);
         $this->logger->notice(
-            '===> Downloading db backup of {site} to {dir}.',
+            '===> Downloading db backup file of {site} into {dir}.',
             ['site' => $liveEnv->getName(), 'dir' => $this->getLocalCopiesDbDir()]
         );
 
-        $dbLocalFilename = sprintf(
+        $dbBackupPath = sprintf(
             '%s%s%s-db.tgz',
             $this->getLocalCopiesDbDir(),
             DIRECTORY_SEPARATOR,
             $site->getName()
         );
         $this->request()->download(
-            $lastBackup->getArchiveURL(),
-            $dbLocalFilename,
+            $latestBackup->getArchiveURL(),
+            $dbBackupPath,
             $options['overwrite']
         );
-        $this->logger->notice('Database backup downloaded into: {path}', ['path' => $dbLocalFilename]);
+        $this->logger->notice('Database backup downloaded into: {path}', ['path' => $dbBackupPath]);
 
-        return $dbLocalFilename;
+        return $dbBackupPath;
     }
 }
