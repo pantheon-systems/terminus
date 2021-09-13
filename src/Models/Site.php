@@ -499,7 +499,7 @@ class Site extends TerminusModel implements ContainerAwareInterface, Organizatio
      */
     public function getLocalCopyFolder(): string
     {
-        $local_copy_folder = $this->getLocalCopiesFolder() . DIRECTORY_SEPARATOR . $this->getName();
+        $local_copy_folder = $this->getLocalCopiesDir() . DIRECTORY_SEPARATOR . $this->getName();
         if (!is_dir($local_copy_folder)) {
             mkdir($local_copy_folder);
             if (!is_dir($local_copy_folder)) {
