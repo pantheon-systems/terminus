@@ -64,7 +64,7 @@ if ($token) {
 if (!getenv('TERMINUS_TESTING_RUNTIME_ENV')) {
     // Create a testing runtime multidev environment.
     $sitename = TerminusTestTrait::getSiteName();
-    $multidev = substr(uniqid('test-'), 0, 11);
+    $multidev = sprintf('test-%s', substr(uniqid(), -6, 6));
     $createMdCommand = sprintf('multidev:create %s.dev %s', $sitename, $multidev);
     exec(
         sprintf('%s %s', TERMINUS_BIN_FILE, $createMdCommand),
