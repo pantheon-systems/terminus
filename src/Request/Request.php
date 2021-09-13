@@ -71,10 +71,13 @@ class Request implements
      *
      * @param string $url URL to download from
      * @param string $target Target file or directory's name
+     * @param bool $overwrite
+     *   Overwrite the target file if already exists.
      *
      * @throws TerminusException
+     * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    public function download($url, $target)
+    public function download($url, $target, bool $overwrite = false)
     {
         if (is_dir($target)) {
             if (substr($target, -1) == DIRECTORY_SEPARATOR) {
@@ -88,7 +91,7 @@ class Request implements
             "target" => $target,
         ]);
 
-        if ($this->getContainer()->get(LocalMachineHelper::class)->getFilesystem()->exists($target)) {
+        if (!$overwrite && $this->getContainer()->get(LocalMachineHelper::class)->getFilesystem()->exists($target)) {
             throw new TerminusException('Target file {target} already exists.', compact('target'));
         }
 
