@@ -54,6 +54,22 @@ trait LocalCopiesTrait
     }
 
     /**
+     * Returns the path to the local site directory.
+     *
+     * @param string $site
+     *   The site's name.
+     * @return string
+     *
+     * @throws TerminusException
+     */
+    protected function getLocalCopiesSiteDir(string $site): string
+    {
+        $siteDir = $this->getLocalCopiesDir() . DIRECTORY_SEPARATOR . $site;
+
+        return $this->createDirIfNotExists($siteDir);
+    }
+
+    /**
      * Creates the directory if not exists.
      *
      * @param $dir
@@ -63,7 +79,7 @@ trait LocalCopiesTrait
      *
      * @throws TerminusException
      */
-    protected function createDirIfNotExists($dir): string
+    protected function createDirIfNotExists(string $dir): string
     {
         if (!is_dir($dir)) {
             if (!mkdir($dir, 0755, true)) {

@@ -54,7 +54,7 @@ class CommitAndPushCommand extends TerminusCommand implements SiteAwareInterface
             }
         }
         $git = new \CzProject\GitPhp\Git();
-        $repo = $git->open($siteData->getLocalCopyFolder());
+        $repo = $git->open($siteData->getLocalCopyDir());
         $repo->addAllChanges();
         $repo->commit('changes committed from terminus');
         $repo->push('origin');
