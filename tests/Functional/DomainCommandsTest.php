@@ -6,7 +6,7 @@ use Pantheon\Terminus\Tests\Traits\TerminusTestTrait;
 use PHPUnit\Framework\TestCase;
 
 /**
- * Class DomainCommandsTest
+ * Class DomainCommandsTest.
  *
  * @package Pantheon\Terminus\Tests\Functional
  */
@@ -27,52 +27,38 @@ class DomainCommandsTest extends TestCase
      * @group domain
      * @group long
      */
-    public function testAddListLookupRemove()
+    public function testDomainAddListLookupRemove()
     {
-        $sitename = $this->getSiteName();
-        $newDomain = uniqid("test-") . ".test";
+        $domainList = $this->terminusJsonResponse(sprintf('domain:list %s', $this->getSiteEnv()));
+        $this->assertIsArray($domainList);
+        $this->assertNotEmpty($domainList);
 
-        // LIST
-        $results = $this->terminusJsonResponse("domain:list {$sitename}.live");
-        $this->assertIsArray($results, "Returned values from domain list should be array");
-        $this->assertGreaterThan(
-            0,
-            count($results),
-            "Count of domains should be greater than 0"
-        );
-
-        // ADD
-        $this->terminus("domain:add {$sitename}.live {$newDomain}");
+        $testDomain = uniqid('test-') . '.test';
+        $this->terminus(sprintf('domain:add %s %s', $this->getSiteEnv(), $testDomain));
         sleep(10);
-        $results2 = $this->terminusJsonResponse("domain:list {$sitename}.live");
-        $domains = array_column($results2, 'id');
-        $this->assertContains($newDomain, $domains, "Domain list should contain added domain");
+        $domainList = $this->terminusJsonResponse(sprintf('domain:list %s', $this->getSiteEnv()));
+        $domains = array_column($domainList, 'id');
+        $this->assertContains($testDomain, $domains, 'Domain list should contain added domain');
 
-        // LOOKUP
         // @fixme CMS-238
 //        $lookUpResult = $this->terminusJsonResponse(sprintf('domain:lookup %s', $newDomain));
 //        $this->assertEquals([], $lookUpResult);
 
-        // ADD PRIMARY
-        $this->terminus("domain:primary:add {$sitename}.live {$newDomain}");
-        $results2 = $this->terminusJsonResponse("domain:list {$sitename}.live");
-        // $primaryDomains has domain names as keys, 'primary' value as values
-        $primaryDomains = array_combine(array_column($results2, 'id'), array_column($results2, 'primary'));
-        $this->assertArrayHasKey($newDomain, $primaryDomains, "Domain list should contain new domain");
-        $this->assertEquals('1', $primaryDomains[$newDomain], "New domain should be primary");
+        $this->terminus(sprintf('domain:primary:add %s %s', $this->getSiteEnv(), $testDomain));
+        $domainList = $this->terminusJsonResponse(sprintf('domain:list %s', $this->getSiteEnv()));
+        $primaryDomains = array_combine(array_column($domainList, 'id'), array_column($domainList, 'primary'));
+        $this->assertArrayHasKey($testDomain, $primaryDomains, 'Domain list should contain the test domain');
+        $this->assertEquals('1', $primaryDomains[$testDomain], 'The test domain should be primary');
 
-        // REMOVE PRIMARY
-        $this->terminus("domain:primary:remove {$sitename}.live");
-        $results2 = $this->terminusJsonResponse("domain:list {$sitename}.live");
-        // $primaryDomains has domain names as keys, 'primary' value as values
-        $primaryDomains = array_combine(array_column($results2, 'id'), array_column($results2, 'primary'));
-        $this->assertArrayHasKey($newDomain, $primaryDomains, "Domain list should contain new domain");
-        $this->assertNotEquals("1", $primaryDomains[$newDomain], "New domain should not be primary anymore");
+        $this->terminus(sprintf('domain:primary:remove %s', $this->getSiteEnv()));
+        $domainList = $this->terminusJsonResponse(sprintf('domain:list %s', $this->getSiteEnv()));
+        $primaryDomains = array_combine(array_column($domainList, 'id'), array_column($domainList, 'primary'));
+        $this->assertArrayHasKey($testDomain, $primaryDomains, 'Domain list should contain the test domain');
+        $this->assertNotEquals('1', $primaryDomains[$testDomain], 'The test domain should not be primary anymore');
 
-        // REMOVE
-        $this->terminus("domain:remove {$sitename}.live {$newDomain}");
-        $results2 = $this->terminusJsonResponse("domain:list {$sitename}.live");
-        $domains = array_column($results2, 'id');
-        $this->assertFalse(array_search($newDomain, $domains), "Domain list should no longer contain domain");
+        $this->terminus(sprintf('domain:remove %s %s', $this->getSiteEnv(), $testDomain));
+        $domainList = $this->terminusJsonResponse(sprintf('domain:list %s', $this->getSiteEnv()));
+        $domains = array_column($domainList, 'id');
+        $this->assertFalse(array_search($testDomain, $domains), 'Domain list should no longer contain the test domain');
     }
 }

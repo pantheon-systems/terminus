@@ -101,7 +101,10 @@
       "\\Terminus\\UpdateClassLists::update"
     ],
     "code:fix": [
-      "phpcbf --standard=tests/config/linting_ruleset.xml bin/t3 src/* tests/Functional"
+      "vendor/bin/phpcbf --standard=phpcs_ruleset.xml src tests/Functional tests/unit_tests tests/Traits"
+    ],
+    "cs": [
+      "vendor/bin/phpcs --standard=phpcs_ruleset.xml src tests/Functional tests/unit_tests tests/Traits"
     ],
     "code:lint": [
       "@cs"
@@ -135,9 +138,6 @@
     ],
     "coverage": [
       "vendor/bin/robo coverage ./docs/TestCoverage.md"
-    ],
-    "cs": [
-      "vendor/bin/phpcs --standard=tests/config/linting_ruleset.xml bin/t3 src tests/Functional"
     ],
     "docs": [
       "vendor/bin/robo doc ./README.md",
