@@ -61,7 +61,7 @@ class GetLiveFilesCommand extends TerminusCommand implements
             ['site' => $liveEnv->getName()]
         );
         $this->logger->notice('Depending on how large your "files" directory is, this could take a while.');
-        $backupWorkflow = $backups->create(['element' => ['files']]);
+        $backupWorkflow = $backups->create(['element' => 'files']);
         $this->processWorkflow($backupWorkflow);
         if (!$backupWorkflow->isSuccessful()) {
             throw new TerminusProcessException('Backup workflow failed.');

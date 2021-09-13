@@ -39,7 +39,6 @@ class LocalCommandsTest extends TestCase
      */
     public function testLocalClone()
     {
-        $this->markTestSkipped('Debugging');
         $localSiteDir = $this->terminus(sprintf('local:clone %s', $this->getSiteName()));
         $this->assertNotEmpty($localSiteDir);
         $this->assertIsString($localSiteDir);

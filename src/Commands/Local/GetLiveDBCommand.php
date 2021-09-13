@@ -59,7 +59,7 @@ class GetLiveDBCommand extends TerminusCommand implements
             '===> Creating database backup for {site}',
             ['site' => $liveEnv->getName()]
         );
-        $backupWorkflow = $backups->create(['element' => ['database']]);
+        $backupWorkflow = $backups->create(['element' => 'database']);
         $this->processWorkflow($backupWorkflow);
         if (!$backupWorkflow->isSuccessful()) {
             throw new TerminusProcessException('Backup workflow failed.');
