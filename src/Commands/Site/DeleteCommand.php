@@ -3,13 +3,12 @@
 namespace Pantheon\Terminus\Commands\Site;
 
 use Pantheon\Terminus\Commands\WorkflowProcessingTrait;
-use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
-use Pantheon\Terminus\Models\Site;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 
 /**
- * Class DeleteCommand
+ * Class DeleteCommand.
+ *
  * @package Pantheon\Terminus\Commands\Site
  */
 class DeleteCommand extends SiteCommand implements SiteAwareInterface
@@ -27,26 +26,21 @@ class DeleteCommand extends SiteCommand implements SiteAwareInterface
      * @param string $site_id Site name
      *
      * @usage <site> Deletes <site> from Pantheon.
+     *
+     * @throws \Pantheon\Terminus\Exceptions\TerminusException
      */
     public function delete($site_id)
     {
         $site = $this->sites()->get($site_id);
-        if (!$site instanceof Site || $site->valid() === false) {
-            throw new TerminusNotFoundException(
-                "Cannot find site {site}",
-                ['site' => $site]
-            );
-        }
-        if (!$this->io()->confirm(
-            sprintf('Are you sure you want to delete %s?', $site),
-            $this->input()->getOption('yes')
-        )
+        if (!$this->input()->getOption('yes')
+            && !$this->io()->confirm(sprintf('Are you sure you want to delete %s site?', $site_id))
         ) {
             return;
         }
+
         $workflow = $site->delete();
         $this->processWorkflow($workflow);
         $message = $workflow->getMessage();
-        $this->log()->notice($message, ['site' => $site]);
+        $this->log()->notice($message, ['site' => $site_id]);
     }
 }
