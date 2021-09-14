@@ -6,7 +6,7 @@ use Pantheon\Terminus\Tests\Traits\TerminusTestTrait;
 use PHPUnit\Framework\TestCase;
 
 /**
- * Class PlanCommandsTest
+ * Class PlanCommandsTest.
  *
  * @package Pantheon\Terminus\Tests\Functional
  */
@@ -67,29 +67,18 @@ class PlanCommandsTest extends TestCase
      * @covers \Pantheon\Terminus\Commands\Plan\SetCommand
      *
      * @group plan
-     * @group long_fixme
+     * @group long
      */
     public function testSetPanCommand()
     {
-        // Get the current site plan.
-        $plan = $this->terminusJsonResponse(sprintf('plan:info %s', $this->getSiteName()));
-        $this->assertArrayHasKey('sku', $plan);
-        $this->assertNotEmpty($plan['sku']);
-        $currentPlanSku = $plan['sku'];
+        $plans = $this->terminusJsonResponse(sprintf('plan:list %s', $this->getSiteName()));
+        $smallPlans = array_filter($plans, fn ($plan) => false !== strpos($plan['sku'], 'small'));
+        $targetPlanSku = reset($smallPlans)['sku'];
 
-        // Change site plan to "Performance Small".
-        $targetPlanSku = 'plan-free-preferred-monthly-1';
         $this->terminus(sprintf('plan:set %s %s', $this->getSiteName(), $targetPlanSku));
         $plan = $this->terminusJsonResponse(sprintf('plan:info %s', $this->getSiteName()));
         $this->assertArrayHasKey('sku', $plan);
         $this->assertNotEmpty($plan['sku']);
         $this->assertEquals($targetPlanSku, $plan['sku']);
-
-        // Change the site plan back.
-        $this->terminus(sprintf('plan:set %s %s', $this->getSiteName(), $currentPlanSku));
-        $plan = $this->terminusJsonResponse(sprintf('plan:info %s', $this->getSiteName()));
-        $this->assertArrayHasKey('sku', $plan);
-        $this->assertNotEmpty($plan['sku']);
-        $this->assertEquals($currentPlanSku, $plan['sku']);
     }
 }
