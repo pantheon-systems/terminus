@@ -497,19 +497,9 @@ class Site extends TerminusModel implements ContainerAwareInterface, Organizatio
      * @return string
      * @throws \Pantheon\Terminus\Exceptions\TerminusException
      */
-    public function getLocalCopyFolder(): string
+    public function getLocalCopyDir(): string
     {
-        $local_copy_folder = $this->getLocalCopiesFolder() . DIRECTORY_SEPARATOR . $this->getName();
-        if (!is_dir($local_copy_folder)) {
-            mkdir($local_copy_folder);
-            if (!is_dir($local_copy_folder)) {
-                throw new TerminusException(
-                    "Cannot create local copy folder for site: {site}",
-                    ['site' => $this->getName()]
-                );
-            }
-        }
-        return $local_copy_folder;
+        return $this->getLocalCopiesSiteDir($this->getName());
     }
 
     public function __toString()

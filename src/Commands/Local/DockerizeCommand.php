@@ -68,7 +68,7 @@ class DockerizeCommand extends TerminusCommand implements
             }
         }
         $env = $siteData->getEnvironments()->get('dev');
-        $clone_path = $siteData->getLocalCopyFolder();
+        $clone_path = $siteData->getLocalCopyDir();
         $connection = $env->connectionInfo();
         if (!is_dir($clone_path . DIRECTORY_SEPARATOR . '.git')) {
             $this->execute(

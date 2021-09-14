@@ -71,7 +71,7 @@ class LocalCommandsTest extends TestCase
      * @covers \Pantheon\Terminus\Commands\Local\GetLiveFilesCommand
      *
      * @group local
-     * @group long_fixme
+     * @group long
      */
     public function testCommitFiles()
     {

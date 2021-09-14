@@ -57,7 +57,7 @@ class CloneCommand extends TerminusCommand implements SiteAwareInterface, Config
 
         $env = $siteData->getEnvironments()->get('dev');
 
-        $clone_path = $siteData->getLocalCopyFolder();
+        $clone_path = $siteData->getLocalCopyDir();
         $connection =  $env->connectionInfo();
 
         if (!is_dir($clone_path . DIRECTORY_SEPARATOR . ".git")) {
