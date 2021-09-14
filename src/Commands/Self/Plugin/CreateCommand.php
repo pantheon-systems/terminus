@@ -15,7 +15,9 @@ class CreateCommand extends PluginBaseCommand
 {
     const USAGE_MESSAGE = 'terminus self:plugin:create <path>';
     const EXISTING_FOLDER_MESSAGE = 'Path should be a non-existing folder that will be created';
-    const COMPOSER_CREATE_PROJECT = 'composer create-project pantheon-systems/terminus-plugin-example {dir}';
+    // @todo Switch from dev-php80-cleanup version to 2.x when branch gets merged.
+    const COMPOSER_CREATE_PROJECT =
+        'composer create-project pantheon-systems/terminus-plugin-example:dev-php80-cleanup {dir}';
 
     /**
      * Create a new terminus plugin.
