@@ -30,11 +30,20 @@ class NewRelicCommandsTest extends TestCase
             $this->terminus(sprintf('new-relic:disable %s', $this->getSiteName()));
             $newRelicInfo = $this->getNewRelicInfo();
             $this->assertEmpty(array_filter($newRelicInfo));
+
+            $this->terminus(sprintf('new-relic:enable %s', $this->getSiteName()));
+            $newRelicInfo = $this->getNewRelicInfo();
+            $this->assertNotEmpty(array_filter($newRelicInfo));
+            $this->assertEquals('active', $newRelicInfo['state']);
         } else {
             $this->terminus(sprintf('new-relic:enable %s', $this->getSiteName()));
             $newRelicInfo = $this->getNewRelicInfo();
             $this->assertNotEmpty(array_filter($newRelicInfo));
             $this->assertEquals('active', $newRelicInfo['state']);
+
+            $this->terminus(sprintf('new-relic:disable %s', $this->getSiteName()));
+            $newRelicInfo = $this->getNewRelicInfo();
+            $this->assertEmpty(array_filter($newRelicInfo));
         }
     }
 
