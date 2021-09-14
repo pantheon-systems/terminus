@@ -69,7 +69,7 @@ class PlanCommandsTest extends TestCase
      * @group plan
      * @group long
      */
-    public function testSetPanCommand()
+    public function testSetPlanCommand()
     {
         $plans = $this->terminusJsonResponse(sprintf('plan:list %s', $this->getSiteName()));
         $smallPlans = array_filter($plans, fn ($plan) => false !== strpos($plan['sku'], 'small'));
