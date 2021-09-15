@@ -4,12 +4,11 @@ namespace Pantheon\Terminus\Request;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\ClientInterface;
-use GuzzleHttp\Exception\ClientException;
-use GuzzleHttp\Exception\RequestException;
-use GuzzleHttp\Exception\TooManyRedirectsException;
+use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Handler\CurlHandler;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Middleware;
+use GuzzleHttp\Psr7\Request as GuzzleRequest;
 use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\RequestOptions;
 use League\Container\ContainerAwareInterface;
@@ -21,15 +20,15 @@ use Pantheon\Terminus\Session\SessionAwareInterface;
 use Pantheon\Terminus\Session\SessionAwareTrait;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
-use Psr\Log\LoggerInterface;
 use Robo\Common\IO;
 use Robo\Contract\ConfigAwareInterface;
 use Robo\Contract\IOAwareInterface;
+use Throwable;
 
 /**
- * Class Request
+ * Class Request.
  *
- * Handles requests made by Terminus
+ * Handles requests made by Terminus.
  *
  * This is simply a class to manage the interactions between Terminus and Guzzle
  * (the HTTP library Terminus uses). This class should eventually evolve to
@@ -67,7 +66,7 @@ class Request implements
     protected $sensitive_data = ['machine_token', 'Authorization', 'session',];
 
     /**
-     * Download file from target URL
+     * Download file from target URL.
      *
      * @param string $url URL to download from
      * @param string $target Target file or directory's name
@@ -86,9 +85,9 @@ class Request implements
                 $target = $target . DIRECTORY_SEPARATOR . strtok(basename($url), '?');
             }
         }
-        $this->logger->notice("Downloading {url} to {target}", [
-            "url" => strtok(basename($url), '?'),
-            "target" => $target,
+        $this->logger->notice('Downloading {url} to {target}', [
+            'url' => strtok(basename($url), '?'),
+            'target' => $target,
         ]);
 
         if (!$overwrite && $this->getContainer()->get(LocalMachineHelper::class)->getFilesystem()->exists($target)) {
@@ -100,7 +99,7 @@ class Request implements
     }
 
     /**
-     * Returns a configured Client object
+     * Returns a configured Client object.
      *
      * @param string $base_uri Defaults to the getBaseURI() value
      */
@@ -110,17 +109,11 @@ class Request implements
             $config = $this->getConfig();
             $stack = HandlerStack::create(new CurlHandler());
             $stack->push(Middleware::retry(
-                $this->createRetryDecider($this->logger),
-                function (
-                    $retries,
-                    Response $response = null
-                ) {
-                    return 1000 * $retries;
-                }
+                $this->createRetryDecider()
             ));
             $params = $config->get('client_options') + [
                     'base_uri' => ($base_uri === null) ? $this->getBaseURI() : $base_uri,
-                    RequestOptions::VERIFY => (boolean)$config->get('verify_host_cert', true),
+                    RequestOptions::VERIFY => (boolean) $config->get('verify_host_cert', true),
                     'handler' => $stack,
                 ];
 
@@ -134,65 +127,71 @@ class Request implements
         return $this->client;
     }
 
-    private function createRetryDecider(LoggerInterface $logger = null)
+    /**
+     * Returns the Retry Decider middleware.
+     *
+     * @return callable
+     */
+    private function createRetryDecider(): callable
     {
         $config = $this->getConfig();
-        $logger = $logger ?? $this->logger;
+        $maxRetries = $config->get('http_max_retries', 5);
+        $logger = $this->logger;
+
         return function (
-            $retries,
-            \GuzzleHttp\Psr7\Request $request,
-            Response $response = null,
-            RequestException $e = null
+            $retry,
+            GuzzleRequest $request,
+            ?Response $response,
+            ?Throwable $t
         ) use (
-            $logger,
-            $config
+            $maxRetries,
+            $logger
         ) {
-            $retry_max = $config->get('http_max_retries', 5);
-            //$logger->debug(@\Kint::dump(get_defined_vars()));
-            if ($e instanceof ClientException or $e instanceof TooManyRedirectsException) {
-                throw $e;
+            if (null === $response) {
+                throw new TerminusException(
+                    'HTTPS request has failed with error {error}.',
+                    ['error' => $t->getMessage()]
+                );
             }
 
-            switch ($response->getStatusCode() ?? 500) {
-                ## Do not try these status codes again
-                case 200:
-                case 201:
-                case 202:
-                case 203:
-                case 204:
-                case 400:
-                case 401:
-                case 402:
-                case 403:
-                case 404:
-                case 405:
-                case 409:
-                case 500:
-                    return false;
-
-                default:
-                    $logger->warning(sprintf(
-                        'Retrying %s %s %s/%s, %s',
-                        $request->getMethod(),
-                        $request->getUri(),
-                        $retries + 1,
-                        $retry_max,
-                        $response ? 'status code: ' . $response->getStatusCode() : $e->getMessage()
-                    ), [$request->getHeader('Host')[0]]);
-                    if ($retries >= $retry_max) {
-                        throw new TerminusException(
-                            'HTTPS request failed with error {error}. Maximum retry attempts reached.',
-                            ['error' => $e->getMessage()]
-                        );
-                    }
-                    return true;
+            $responseStatusCode = $response->getStatusCode();
+            if (preg_match('/20\d/', $responseStatusCode)) {
+                // Do not retry on 20x responses.
+                return false;
             }
+
+            if (0 === $retry) {
+                $logger->warning(sprintf(
+                    'HTTP request %s %s has failed with the status code %s',
+                    $request->getMethod(),
+                    $request->getUri(),
+                    $responseStatusCode
+                ));
+
+                return true;
+            }
+
+            $logger->warning(sprintf(
+                'Retrying %s %s %s out of %s (status code: %s)',
+                $request->getMethod(),
+                $request->getUri(),
+                $retry,
+                $maxRetries,
+                $responseStatusCode
+            ));
+
+            if ($retry !== $maxRetries) {
+                return true;
+            }
+
+            throw new TerminusException(
+                'HTTP request has failed with error "Maximum retry attempts reached".',
+            );
         };
     }
 
-
     /**
-     * Parses the base URI for requests
+     * Parses the base URI for requests.
      *
      * @return string
      */
@@ -208,7 +207,7 @@ class Request implements
     }
 
     /**
-     * Make a request to the Dashbord's internal API
+     * Make a request to the Dashboard's internal API.
      *
      * @param string $path API path (URL)
      * @param array $options Options for the request
@@ -217,12 +216,15 @@ class Request implements
      *   integer limit      Max number of entries to return
      *
      * @return array
+     *
+     * @throws GuzzleException
+     * @throws TerminusException
      */
     public function pagedRequest($path, array $options = [])
     {
-        $limit = isset($options['limit']) ? $options['limit'] : self::PAGED_REQUEST_ENTRY_LIMIT;
+        $limit = $options['limit'] ?? self::PAGED_REQUEST_ENTRY_LIMIT;
 
-        //$results is an associative array so we don't refetch
+        // $results is an associative array, so we don't re-fetch.
         $results = [];
         $finished = false;
         $start = null;
@@ -242,8 +244,8 @@ class Request implements
                 }
                 $start = end($data)->id;
 
-                //If the last item of the results has previously been received,
-                //that means there are no more pages to fetch
+                // If the last item of the results has previously been received,
+                // that means there are no more pages to fetch.
                 if (isset($results[$start])) {
                     $finished = true;
                     continue;
@@ -261,7 +263,7 @@ class Request implements
     }
 
     /**
-     * Simplified request method for Pantheon API
+     * Simplified request method for Pantheon API.
      *
      * @param string $path API path (URL)
      * @param array $options Options for the request
@@ -269,13 +271,14 @@ class Request implements
      *   array form_params  Fed into the body of the request
      *
      * @return RequestOperationResult
+     *
      * @throws \GuzzleHttp\Exception\GuzzleException
+     * @throws TerminusException
      */
     public function request($path, array $options = []) : RequestOperationResult
     {
-        // Set headers
-
-        $parts = explode("/", $path);
+        // Set headers.
+        $parts = explode('/', $path);
         $part = array_pop($parts);
         $headers = $this->getDefaultHeaders();
         if (isset($options['headers'])) {
@@ -284,8 +287,8 @@ class Request implements
 
         if (strpos($path, '://') === false) {
             $uri = "{$this->getBaseURI()}/api/$path";
-            if ($part !== "machine-token") {
-                $headers['Authorization'] = sprintf("Bearer %s", $this->session()->get('session'));
+            if ($part !== 'machine-token') {
+                $headers['Authorization'] = sprintf('Bearer %s', $this->session()->get('session'));
             }
         } else {
             $uri = $path;
@@ -295,7 +298,7 @@ class Request implements
             $debug_body = $this->stripSensitiveInfo($options['form_params']);
             $body = json_encode($options['form_params'], JSON_UNESCAPED_SLASHES);
             unset($options['form_params']);
-            $headers['Content-Type'] = "application/json";
+            $headers['Content-Type'] = 'application/json';
             $headers['Content-Length'] = strlen($body);
         }
 
@@ -341,7 +344,7 @@ class Request implements
     }
 
     /**
-     * Gives the default headers for requests
+     * Gives the default headers for requests.
      *
      * @return array
      */
@@ -354,7 +357,7 @@ class Request implements
     }
 
     /**
-     * Gives the user-agent string
+     * Gives the user-agent string.
      *
      * @return string
      */
@@ -370,6 +373,8 @@ class Request implements
     }
 
     /**
+     * Removes sensitive information.
+     *
      * @param array
      *
      * @return array
@@ -377,9 +382,9 @@ class Request implements
     private function stripSensitiveInfo($data = [])
     {
         if (is_array($data)) {
-            foreach ($this->sensitive_data as $verboten) {
-                if (isset($data[$verboten])) {
-                    $data[$verboten] = self::HIDDEN_VALUE_REPLACEMENT;
+            foreach ($this->sensitive_data as $key) {
+                if (isset($data[$key])) {
+                    $data[$key] = self::HIDDEN_VALUE_REPLACEMENT;
                 }
             }
         }
