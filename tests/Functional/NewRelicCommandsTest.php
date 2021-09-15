@@ -6,7 +6,7 @@ use Pantheon\Terminus\Tests\Traits\TerminusTestTrait;
 use PHPUnit\Framework\TestCase;
 
 /**
- * Class NewRelicCommandsTest
+ * Class NewRelicCommandsTest.
  *
  * @package Pantheon\Terminus\Tests\Functional
  */
@@ -21,40 +21,47 @@ class NewRelicCommandsTest extends TestCase
      * @covers \Pantheon\Terminus\Commands\NewRelic\InfoCommand
      *
      * @group new-relic
-     * @group long_fixme
+     * @group long
      */
-    public function testNewRelicInfoEnableDisable()
+    public function testNewRelicInfoEnableDisableCommands()
     {
-        $sitename = $this->getSiteName();
+        $newRelicInfo = $this->getNewRelicInfo();
+        if ('active' === $newRelicInfo['state']) {
+            $this->terminus(sprintf('new-relic:disable %s', $this->getSiteName()));
+            $newRelicInfo = $this->getNewRelicInfo();
+            $this->assertEmpty(array_filter($newRelicInfo));
 
-        // ENABLE
-        $this->terminus("new-relic:enable {$sitename}");
-        $info = $this->terminusJsonResponse("new-relic:info {$sitename}");
-        $this->assertIsArray($info, "Returned data from new-relic:info should be an array");
-        $this->assertArrayHasKey(
-            "state",
-            $info,
-            "Returned data from new-relic:info should have a state value"
-        );
-        $this->assertEquals(
-            "active",
-            $info['state'],
-            "Returned data from new-relic:info should have an active state"
-        );
+            $this->terminus(sprintf('new-relic:enable %s', $this->getSiteName()));
+            $newRelicInfo = $this->getNewRelicInfo();
+            $this->assertNotEmpty(array_filter($newRelicInfo));
+            $this->assertEquals('active', $newRelicInfo['state']);
+        } else {
+            $this->terminus(sprintf('new-relic:enable %s', $this->getSiteName()));
+            $newRelicInfo = $this->getNewRelicInfo();
+            $this->assertNotEmpty(array_filter($newRelicInfo));
+            $this->assertEquals('active', $newRelicInfo['state']);
 
-        // DISABLE
-        $this->terminus("new-relic:disable {$sitename}");
-        $info2 = $this->terminusJsonResponse("new-relic:info {$sitename}");
-        $this->assertIsArray($info2, "Returned data from new-relic:info should be an array");
-        $this->assertArrayHasKey(
-            "state",
-            $info2,
-            "Returned data from new-relic:info should have a state value"
-        );
-        $this->assertNotEquals(
-            "active",
-            $info2['state'],
-            "Returned data from new-relic:info should not have an active state"
-        );
+            $this->terminus(sprintf('new-relic:disable %s', $this->getSiteName()));
+            $newRelicInfo = $this->getNewRelicInfo();
+            $this->assertEmpty(array_filter($newRelicInfo));
+        }
+    }
+
+    /**
+     * Returns the new relic info.
+     *
+     * @return array
+     */
+    protected function getNewRelicInfo(): array
+    {
+        $newRelicInfo = $this->terminusJsonResponse(sprintf('new-relic:info %s', $this->getSiteName()));
+        $this->assertIsArray($newRelicInfo);
+        $this->assertNotEmpty($newRelicInfo);
+        $this->assertArrayHasKey('name', $newRelicInfo);
+        $this->assertArrayHasKey('status', $newRelicInfo);
+        $this->assertArrayHasKey('subscribed', $newRelicInfo);
+        $this->assertArrayHasKey('state', $newRelicInfo);
+
+        return $newRelicInfo;
     }
 }
