@@ -37,8 +37,10 @@ trait TerminusTestTrait
      *   The command to run.
      * @param array $suffixParts
      *   Additional command options added to the end of the command line.
+     * @param bool $assertExitCode
+     *   If set to TRUE, assert the exit code equals to zero.
      */
-    protected function terminus(string $command, array $suffixParts = []): ?string
+    protected function terminus(string $command, array $suffixParts = [], bool $assertExitCode = true): ?string
     {
         if ($suffixParts > 0) {
             $command = sprintf('%s --yes %s', $command, implode(' ', $suffixParts));
@@ -47,7 +49,9 @@ trait TerminusTestTrait
         }
 
         [$output, $status] = static::callTerminus($command);
-        $this->assertEquals(0, $status, $output);
+        if (true === $assertExitCode) {
+            $this->assertEquals(0, $status, $output);
+        }
 
         return $output;
     }
