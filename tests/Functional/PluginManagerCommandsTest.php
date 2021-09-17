@@ -45,10 +45,13 @@ class PluginManagerCommandsTest extends TestCase
         $pluginList = $this->terminusJsonResponse(sprintf('self:plugin:search %s', $pluginName));
         $this->assertIsArray($pluginList);
         $this->assertNotEmpty($pluginList);
+        $plugin = reset($pluginList);
+        $this->assertIsArray($plugin);
+        $this->assertArrayHasKey('name', $plugin);
         $this->assertStringContainsString(
             $pluginPackage,
-            $pluginList[0]['name'],
-            "Terminus plugin search didn't return the expected plugin."
+            $plugin['name'],
+            sprintf('Plugin search result should contain %s plugin.', $pluginPackage)
         );
 
         // Install plugin.
