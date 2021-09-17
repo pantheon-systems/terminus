@@ -32,8 +32,7 @@ TERMINUS_TIME_ZONE:       'UTC'
 
 # File Storage
 TERMINUS_CACHE_DIR:             '[[ TERMINUS_USER_HOME ]]/.terminus/cache'
-TERMINUS_PLUGINS_DIR_BASENAME:  'plugins-3.x'
-TERMINUS_PLUGINS_DIR:           '[[ TERMINUS_USER_HOME ]]/.terminus/[[ TERMINUS_PLUGINS_DIR_BASENAME ]]'
+TERMINUS_PLUGINS_DIR:           '[[ TERMINUS_USER_HOME ]]/.terminus/plugins-3.x'
 TERMINUS_DEPENDENCIES_BASE_DIR: '[[ TERMINUS_USER_HOME ]]/.terminus/terminus-dependencies'
 TERMINUS_COMMAND_CACHE_DIR:     '[[ TERMINUS_CACHE_DIR ]]/commands'
 TERMINUS_TOKENS_DIR:            '[[ TERMINUS_CACHE_DIR ]]/tokens'
