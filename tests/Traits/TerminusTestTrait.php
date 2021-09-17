@@ -155,7 +155,13 @@ trait TerminusTestTrait
      */
     protected function getDependenciesBaseDir(): string
     {
-        return getenv('TERMINUS_DEPENDENCIES_BASE_DIR');
+        global $terminusPluginsDependenciesVersion;
+
+        return sprintf(
+            '%s-%s',
+            getenv('TERMINUS_DEPENDENCIES_BASE_DIR'),
+            $terminusPluginsDependenciesVersion
+        );
     }
 
     /**
