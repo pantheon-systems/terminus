@@ -36,7 +36,7 @@ class PluginManagerCommandsTest extends TestCase
 
         // List commands to check that plugin commands are not available.
         $helloCommand = 'hello';
-        $this->assertCommandNotExists($helloCommand);
+        $this->assertCommandDoesNotExist($helloCommand);
         $this->assertNoPlugins();
 
         // Search plugin.
@@ -88,7 +88,7 @@ class PluginManagerCommandsTest extends TestCase
             'Terminus plugin uninstall failed.'
         );
         $this->assertNoPlugins();
-        $this->assertCommandNotExists($helloCommand);
+        $this->assertCommandDoesNotExist($helloCommand);
 
         // Create new plugin.
         $tempPluginFile = $filesystem->tempnam(sys_get_temp_dir(), 'terminustest');
@@ -168,7 +168,7 @@ class PluginManagerCommandsTest extends TestCase
      * @param string $commandName
      *   The command name to assert.
      */
-    protected function assertCommandNotExists(string $commandName)
+    protected function assertCommandDoesNotExist(string $commandName)
     {
         $commandList = $this->terminus('list');
         $this->assertStringNotContainsString($commandName, $commandList);
