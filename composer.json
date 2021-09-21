@@ -135,7 +135,7 @@
       "@test:behat"
     ],
     "test:group": [
-      "vendor/bin/phpunit -c ./phpunit.xml --do-not-cache-result --verbose --group"
+      "vendor/bin/phpunit -c ./phpunit.xml --debug --do-not-cache-result --verbose --group"
     ],
     "coverage": [
       "vendor/bin/robo coverage ./docs/TestCoverage.md"
