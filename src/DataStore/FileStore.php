@@ -13,6 +13,19 @@ class FileStore extends \DirectoryIterator implements DataStoreInterface
 {
 
     /**
+     * Creates FileStore instance.
+     *
+     * Creates directory if it doesn't exist before invoking DirectoryIterator constructor.
+     */
+    public function __construct(string $directory)
+    {
+        if (!is_dir($directory)) {
+            mkdir($directory, 0755, true);
+        }
+        parent::__construct($directory);
+    }
+
+    /**
      * Reads retrieves data from the store
      *
      * @param string $key A key
