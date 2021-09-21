@@ -105,13 +105,9 @@ class EnvCommandsTest extends TestCase
 
         $siteEnv = $this->getSiteEnv();
 
-        // Enable Git mode to reset all uncommitted changes if present.
-        $this->terminus(sprintf('connection:set %s git', $siteEnv));
-        sleep(30);
-
         // Enable SFTP mode.
         $this->terminus(sprintf('connection:set %s sftp', $siteEnv));
-        sleep(30);
+        sleep(60);
 
         // Check the diff - no diff is expected.
         $diff = $this->terminusJsonResponse(sprintf('env:diffstat %s', $siteEnv));
