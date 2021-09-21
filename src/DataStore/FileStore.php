@@ -19,7 +19,7 @@ class FileStore extends \DirectoryIterator implements DataStoreInterface
      */
     public function __construct(string $directory)
     {
-        if (!file_exists($directory)) {
+        if (!is_dir($directory)) {
             mkdir($directory, 0755, true);
         }
         parent::__construct($directory);
