@@ -3,7 +3,7 @@
 namespace Pantheon\Terminus\Tests\Traits;
 
 /**
- * Trait TerminusTestTrait
+ * Trait TerminusTestTrait.
  *
  * @package Pantheon\Terminus\Tests\Traits
  */
@@ -12,22 +12,38 @@ trait TerminusTestTrait
     /**
      * Run a terminus command.
      *
-     * @param string $command The command to run
+     * @param string $command
+     *   The command to run.
      *
      * @return array
-     *   The execution's output and status.
+     *   The execution's stdout [0], exit code [1] and stderr [2].
      */
     protected static function callTerminus(string $command): array
     {
-        $project_dir = dirname(__DIR__, 2);
-        exec(
-            sprintf("%s/%s %s", $project_dir, TERMINUS_BIN_FILE, $command),
-            $output,
-            $status
+        $procCommand = sprintf('%s %s', TERMINUS_BIN_FILE, $command);
+        $process = proc_open(
+            $procCommand,
+            [
+                1 => ['pipe', 'w'],
+                2 => ['pipe', 'w'],
+            ],
+            $pipes,
+            dirname(__DIR__, 2)
         );
-        $output = implode("\n", $output);
 
-        return [$output, $status];
+        if (!is_resource($process)) {
+            return ['', 1, sprintf('Failed executing command "%s"', $procCommand)];
+        }
+
+        $stdout = trim(stream_get_contents($pipes[1]));
+        fclose($pipes[1]);
+
+        $stderr = trim(stream_get_contents($pipes[2]));
+        fclose($pipes[2]);
+
+        $exitCode = proc_close($process);
+
+        return [$stdout, $exitCode, $stderr];
     }
 
     /**
@@ -48,9 +64,9 @@ trait TerminusTestTrait
             $command = sprintf('%s --yes', $command);
         }
 
-        [$output, $status] = static::callTerminus($command);
+        [$output, $exitCode, $error] = static::callTerminus($command);
         if (true === $assertExitCode) {
-            $this->assertEquals(0, $status, $output);
+            $this->assertEquals(0, $exitCode, $error);
         }
 
         return $output;
