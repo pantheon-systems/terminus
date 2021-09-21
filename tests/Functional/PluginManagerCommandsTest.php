@@ -7,7 +7,7 @@ use PHPUnit\Framework\TestCase;
 use Symfony\Component\Filesystem\Filesystem;
 
 /**
- * Class DomainCommandsTest
+ * Class PluginManagerCommandsTest.
  *
  * @package Pantheon\Terminus\Tests\Functional
  */
@@ -15,167 +15,163 @@ class PluginManagerCommandsTest extends TestCase
 {
     use TerminusTestTrait;
 
+    protected const HELLO_COMMAND = 'hello';
+    protected const PLUGIN_NAME = 'terminus-plugin-example';
+    protected const PLUGIN_PACKAGE = 'pantheon-systems/terminus-plugin-example';
+
     /**
      * @test
-     * @covers \Pantheon\Terminus\Commands\Self\ListCommand
-     * @covers \Pantheon\Terminus\Commands\Self\ReloadCommand
-     * @covers \Pantheon\Terminus\Commands\Self\InstallCommand
-     * @covers \Pantheon\Terminus\Commands\Self\UpdateCommand
-     * @covers \Pantheon\Terminus\Commands\Self\UninstallCommand
-     * @covers \Pantheon\Terminus\Commands\Self\SearchCommand
+     * @covers \Pantheon\Terminus\Commands\Self\Plugin\ListCommand
+     * @covers \Pantheon\Terminus\Commands\Self\Plugin\ReloadCommand
+     * @covers \Pantheon\Terminus\Commands\Self\Plugin\InstallCommand
+     * @covers \Pantheon\Terminus\Commands\Self\Plugin\UpdateCommand
+     * @covers \Pantheon\Terminus\Commands\Self\Plugin\UninstallCommand
+     * @covers \Pantheon\Terminus\Commands\Self\Plugin\SearchCommand
      *
      * @group plugins
      * @group long
      */
-    public function testPluginsOperations()
+    public function testPluginsCommands()
     {
-
         $filesystem = new Filesystem();
         $pluginsDir = $this->getPluginsDir();
         $dependenciesBaseDir = $this->getDependenciesBaseDir();
         $filesystem->remove([$pluginsDir, $dependenciesBaseDir]);
 
-        // LIST COMMANDS TO CHECK THAT PLUGIN COMMANDS ARE NOT AVAILABLE
-        $command = 'hello';
-        $output = $this->terminus("list");
-        $this->assertStringNotContainsString($command, $output);
+        // List commands to check that plugin commands are not available.
+        $this->assertCommandDoesNotExist(self::HELLO_COMMAND);
+        $this->assertNoPlugins();
 
-        // LIST PLUGINS
-        $results = $this->terminusWithStderrRedirected("self:plugin:list");
+        // Search plugin.
+        $pluginList = $this->terminusJsonResponse(sprintf('self:plugin:search %s', self::PLUGIN_NAME));
+        $this->assertIsArray($pluginList);
+        $this->assertNotEmpty($pluginList);
+        $plugin = reset($pluginList);
+        $this->assertIsArray($plugin);
+        $this->assertArrayHasKey('name', $plugin);
         $this->assertStringContainsString(
-            "You have no plugins installed",
-            $results,
-            "Terminus plugins should be empty at this point."
+            self::PLUGIN_PACKAGE,
+            $plugin['name'],
+            sprintf('Plugin search result should contain %s plugin.', self::PLUGIN_PACKAGE)
         );
 
-        // SEARCH PLUGIN
-        $plugin = 'plugin-example';
-        $results = $this->terminusJsonResponse("self:plugin:search $plugin");
-        $this->assertIsArray($results, "Returned values from self:plugin:search should be array");
-        $this->assertGreaterThan(
-            0,
-            count($results),
-            "Count of plugins should be greater than 0"
-        );
+        // Install plugin.
+        $pluginList = $this->terminusWithStderrRedirected(sprintf('self:plugin:install %s', self::PLUGIN_PACKAGE));
         $this->assertStringContainsString(
-            'pantheon-systems/terminus-plugin-example',
-            $results[0]['name'],
-            "Terminus plugin search didn't return the expected plugin."
+            sprintf('Installed %s', self::PLUGIN_PACKAGE),
+            $pluginList,
+            'Terminus plugin installation failed.'
         );
+        $this->assertPluginExists(self::PLUGIN_NAME);
+        $this->assertCommandExists(self::HELLO_COMMAND);
 
-        // INSTALL PLUGIN
-        $plugin = 'pantheon-systems/terminus-plugin-example';
-        $results = $this->terminusWithStderrRedirected("self:plugin:install $plugin");
-        $this->assertStringContainsString("Installed $plugin", $results, "Terminus plugin installation failed.");
-
-        // LIST PLUGINS AGAIN
-        $results = $this->terminusJsonResponse("self:plugin:list");
-        $this->assertIsArray($results, "Returned values from self:plugin:list should be array");
-        $this->assertGreaterThan(
-            0,
-            count($results),
-            "Count of plugins should be greater than 0"
-        );
+        // Try updating plugin.
+        $pluginList = $this->terminusWithStderrRedirected(sprintf('self:plugin:update %s', self::PLUGIN_PACKAGE));
         $this->assertStringContainsString(
-            'terminus-plugin-example',
-            $results[0]['name'],
-            "Terminus plugin recently installed is not listed."
+            'Nothing to install, update or remove',
+            $pluginList,
+            'Terminus plugin update failed.'
         );
+        $this->assertPluginExists(self::PLUGIN_NAME);
+        $this->assertCommandExists(self::HELLO_COMMAND);
 
-        // LIST COMMANDS AGAIN
-        $output = $this->terminus("list");
-        $this->assertStringContainsString($command, $output);
+        // Try reloading plugins.
+        $pluginList = $this->terminusWithStderrRedirected('self:plugin:reload');
+        $this->assertStringContainsString('Plugins reload done', $pluginList, 'Terminus plugin reload failed.');
+        $this->assertPluginExists(self::PLUGIN_NAME);
+        $this->assertCommandExists(self::HELLO_COMMAND);
 
-        // TRY UPDATING PLUGIN
-        $plugin = 'pantheon-systems/terminus-plugin-example';
-        $results = $this->terminusWithStderrRedirected("self:plugin:update $plugin");
+        // Try uninstalling plugin.
+        $pluginList = $this->terminusWithStderrRedirected(sprintf('self:plugin:uninstall %s', self::PLUGIN_PACKAGE));
         $this->assertStringContainsString(
-            "Nothing to install, update or remove",
-            $results,
-            "Terminus plugin update failed."
+            sprintf('Uninstalled %s', self::PLUGIN_PACKAGE),
+            $pluginList,
+            'Terminus plugin uninstall failed.'
         );
+        $this->assertNoPlugins();
+        $this->assertCommandDoesNotExist(self::HELLO_COMMAND);
 
-        // LIST PLUGINS AGAIN
-        $results = $this->terminusJsonResponse("self:plugin:list");
-        $this->assertIsArray($results, "Returned values from self:plugin:list should be array");
-        $this->assertGreaterThan(
-            0,
-            count($results),
-            "Count of plugins should be greater than 0"
-        );
-        $this->assertStringContainsString(
-            'terminus-plugin-example',
-            $results[0]['name'],
-            "Terminus plugin recently installed is not listed."
-        );
-
-        // LIST COMMANDS AGAIN
-        $output = $this->terminus("list");
-        $this->assertStringContainsString($command, $output);
-
-        // TRY RELOADING PLUGINS
-        $results = $this->terminusWithStderrRedirected("self:plugin:reload");
-        $this->assertStringContainsString("Plugins reload done", $results, "Terminus plugin reload failed.");
-
-        // LIST PLUGINS AGAIN
-        $results = $this->terminusJsonResponse("self:plugin:list");
-        $this->assertIsArray($results, "Returned values from self:plugin:list should be array");
-        $this->assertGreaterThan(
-            0,
-            count($results),
-            "Count of plugins should be greater than 0"
-        );
-        $this->assertStringContainsString(
-            'terminus-plugin-example',
-            $results[0]['name'],
-            "Terminus plugin recently installed is not listed."
-        );
-
-        // LIST COMMANDS AGAIN
-        $output = $this->terminus("list");
-        $this->assertStringContainsString($command, $output);
-
-        // TRY UNINSTALLING PLUGIN
-        $plugin = 'pantheon-systems/terminus-plugin-example';
-        $results = $this->terminusWithStderrRedirected("self:plugin:uninstall $plugin");
-        $this->assertStringContainsString("Uninstalled $plugin", $results, "Terminus plugin uninstall failed.");
-
-        // LIST PLUGINS
-        $results = $this->terminusWithStderrRedirected("self:plugin:list");
-        $this->assertStringContainsString(
-            "You have no plugins installed",
-            $results,
-            "Terminus plugins should be empty at this point."
-        );
-
-        // LIST COMMANDS AGAIN TO CHECK THAT PLUGIN COMMANDS ARE NOT AVAILABLE
-        $output = $this->terminus("list");
-        $this->assertStringNotContainsString($command, $output);
-
-        // CREATE NEW PLUGIN.
-        $tempfile = $filesystem->tempnam(sys_get_temp_dir(), 'terminustest');
-        if ($filesystem->exists($tempfile)) {
-            $filesystem->remove($tempfile);
+        // Create new plugin.
+        $tempPluginFile = $filesystem->tempnam(sys_get_temp_dir(), 'terminustest');
+        if ($filesystem->exists($tempPluginFile)) {
+            $filesystem->remove($tempPluginFile);
         }
-        $results = $this->terminusWithStderrRedirected(
-            "self:plugin:create ${tempfile} --project-name=terminus-test/newplugin"
+        $pluginList = $this->terminusWithStderrRedirected(
+            sprintf('self:plugin:create %s --project-name=terminus-test/newplugin', $tempPluginFile)
         );
         $this->assertStringContainsString(
-            "Installed terminus-test/newplugin:@dev",
-            $results,
-            "Terminus plugin creation failed."
+            'Installed terminus-test/newplugin:@dev',
+            $pluginList,
+            'Terminus plugin creation failed.'
+        );
+        $this->assertCommandExists(self::HELLO_COMMAND);
+
+        // Uninstall recently created plugin.
+        $pluginName = 'terminus-test/newplugin';
+        $pluginList = $this->terminusWithStderrRedirected(sprintf('self:plugin:uninstall %s', $pluginName));
+        $this->assertStringContainsString(
+            sprintf('Uninstalled %s', $pluginName),
+            $pluginList,
+            'Terminus plugin uninstall failed.'
         );
 
-        // LIST COMMANDS AGAIN
-        $output = $this->terminus("list");
-        $this->assertStringContainsString($command, $output);
+        // Cleanup folder.
+        $filesystem->remove($tempPluginFile);
+    }
 
-        // UNINSTALL RECENTLY CREATED PLUGIN
-        $plugin = 'terminus-test/newplugin';
-        $results = $this->terminusWithStderrRedirected("self:plugin:uninstall $plugin");
-        $this->assertStringContainsString("Uninstalled $plugin", $results, "Terminus plugin uninstall failed.");
+    /**
+     * Asserts the plugin exists.
+     *
+     * @param string $pluginName
+     *   The plugin name to assert.
+     */
+    protected function assertPluginExists(string $pluginName)
+    {
+        $pluginList = $this->terminusJsonResponse('self:plugin:list');
+        $this->assertIsArray($pluginList);
+        $this->assertNotEmpty($pluginList);
 
-        // CLEANUP FOLDER.
-        $filesystem->remove($tempfile);
+        $plugin = reset($pluginList);
+        $this->assertIsArray($plugin);
+        $this->assertArrayHasKey('name', $plugin);
+        $this->assertStringContainsString(
+            $pluginName,
+            $plugin['name'],
+            sprintf('Plugin %s should be in the list of plugins.', $pluginName)
+        );
+    }
+
+    /**
+     * Asserts no plugins.
+     */
+    protected function assertNoPlugins()
+    {
+        $pluginList = $this->terminusJsonResponse('self:plugin:list');
+        $this->assertIsArray($pluginList);
+        $this->assertEmpty($pluginList, 'Plugins list should be empty.');
+    }
+
+    /**
+     * Asserts the command exists.
+     *
+     * @param string $commandName
+     *   The command name to assert.
+     */
+    protected function assertCommandExists(string $commandName)
+    {
+        $commandList = $this->terminus('list');
+        $this->assertStringContainsString($commandName, $commandList);
+    }
+
+    /**
+     * Asserts the command does not exist.
+     *
+     * @param string $commandName
+     *   The command name to assert.
+     */
+    protected function assertCommandDoesNotExist(string $commandName)
+    {
+        $commandList = $this->terminus('list');
+        $this->assertStringNotContainsString($commandName, $commandList);
     }
 }

@@ -121,12 +121,10 @@
       "SHELL_INTERACTIVE=true TERMINUS_TEST_MODE=1 behat --colors --config tests/config/behat.yml --stop-on-failure --suite=default"
     ],
     "test:short": [
-      "XDEBUG_MODE=coverage vendor/bin/phpunit --colors=always -c ./phpunit.xml --debug --group=short --do-not-cache-result --verbose",
-      "@coverage"
+      "XDEBUG_MODE=coverage vendor/bin/phpunit --colors=always -c ./phpunit.xml --debug --group=short --do-not-cache-result --verbose"
     ],
     "test:long": [
-      "XDEBUG_MODE=coverage vendor/bin/phpunit --colors=always -c ./phpunit.xml --debug --group=long --do-not-cache-result --verbose",
-      "@coverage"
+      "XDEBUG_MODE=coverage vendor/bin/phpunit --colors=always -c ./phpunit.xml --debug --group=long --do-not-cache-result --verbose"
     ],
     "test:functional": [
       "XDEBUG_MODE=coverage vendor/bin/phpunit --colors=always -c ./phpunit.xml --debug --group=short,long --do-not-cache-result --verbose",
@@ -135,6 +133,9 @@
     "test:all": [
       "@test:functional",
       "@test:behat"
+    ],
+    "test:group": [
+      "vendor/bin/phpunit -c ./phpunit.xml --do-not-cache-result --verbose --group"
     ],
     "coverage": [
       "vendor/bin/robo coverage ./docs/TestCoverage.md"
