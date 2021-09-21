@@ -89,7 +89,7 @@ class AliasesCommandTest extends TestCase
 
         // Test Drush 8 aliases.
         $drush_8_aliases_in_file = file_get_contents($aliases_dir . 'pantheon.aliases.drushrc.php');
-        $this->assertEquals($aliases_printed, $drush_8_aliases_in_file);
+        $this->assertEquals($aliases_printed, trim($drush_8_aliases_in_file));
 
         // Get the first item from the list of available aliases.
         /** @var array $aliases */
