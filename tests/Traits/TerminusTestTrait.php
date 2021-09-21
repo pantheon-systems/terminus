@@ -42,7 +42,7 @@ trait TerminusTestTrait
      */
     protected function terminus(string $command, array $suffixParts = [], bool $assertExitCode = true): ?string
     {
-        if ($suffixParts > 0) {
+        if (count($suffixParts) > 0) {
             $command = sprintf('%s --yes %s', $command, implode(' ', $suffixParts));
         } else {
             $command = sprintf('%s --yes', $command);
