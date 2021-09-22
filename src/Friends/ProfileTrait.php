@@ -25,8 +25,7 @@ trait ProfileTrait
             if (!empty($this->attributes->profile)) {
                 $this->getContainer()->add($nickname, new Profile($this->attributes->profile))
                     ->addArgument([$this->get('profile')]);
-            }
-            else {
+            } else {
                 $this->getContainer()->add($nickname, Profile::class)
                     ->addArgument([$this->get('profile')]);
             }
