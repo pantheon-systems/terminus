@@ -29,35 +29,45 @@ class DomainCommandsTest extends TestCase
      */
     public function testDomainAddListLookupRemove()
     {
-        $domainList = $this->terminusJsonResponse(sprintf('domain:list %s', $this->getSiteEnv()));
+        // Running tests against the "test" environment instead of a multidev one since "domain:lookup" command does not
+        // search domains across multidev environments.
+        $siteEnv = sprintf('%s.test', $this->getSiteName());
+        $domainList = $this->terminusJsonResponse(sprintf('domain:list %s', $siteEnv));
         $this->assertIsArray($domainList);
         $this->assertNotEmpty($domainList);
 
         $testDomain = uniqid('test-') . '.test';
-        $this->terminus(sprintf('domain:add %s %s', $this->getSiteEnv(), $testDomain));
+        $this->terminus(sprintf('domain:add %s %s', $siteEnv, $testDomain));
         sleep(10);
-        $domainList = $this->terminusJsonResponse(sprintf('domain:list %s', $this->getSiteEnv()));
+        $domainList = $this->terminusJsonResponse(sprintf('domain:list %s', $siteEnv));
         $domains = array_column($domainList, 'id');
         $this->assertContains($testDomain, $domains, 'Domain list should contain added domain');
 
-        // @fixme CMS-238
-//        $lookUpResult = $this->terminusJsonResponse(sprintf('domain:lookup %s', $newDomain));
-//        $this->assertEquals([], $lookUpResult);
+        $lookUpResult = $this->terminusJsonResponse(sprintf('domain:lookup %s', $testDomain));
+        $this->assertIsArray($lookUpResult);
+        $this->assertNotEmpty($lookUpResult);
+        $this->assertArrayHasKey('site_id', $lookUpResult);
+        $this->assertNotEmpty($lookUpResult['site_id']);
+        $this->assertArrayHasKey('site_name', $lookUpResult);
+        $this->assertNotEmpty($lookUpResult['site_name']);
+        $this->assertEquals($this->getSiteName(), $lookUpResult['site_name']);
+        $this->assertArrayHasKey('env_id', $lookUpResult);
+        $this->assertEquals('test', $lookUpResult['env_id']);
 
-        $this->terminus(sprintf('domain:primary:add %s %s', $this->getSiteEnv(), $testDomain));
-        $domainList = $this->terminusJsonResponse(sprintf('domain:list %s', $this->getSiteEnv()));
+        $this->terminus(sprintf('domain:primary:add %s %s', $siteEnv, $testDomain));
+        $domainList = $this->terminusJsonResponse(sprintf('domain:list %s', $siteEnv));
         $primaryDomains = array_combine(array_column($domainList, 'id'), array_column($domainList, 'primary'));
         $this->assertArrayHasKey($testDomain, $primaryDomains, 'Domain list should contain the test domain');
         $this->assertEquals('1', $primaryDomains[$testDomain], 'The test domain should be primary');
 
-        $this->terminus(sprintf('domain:primary:remove %s', $this->getSiteEnv()));
-        $domainList = $this->terminusJsonResponse(sprintf('domain:list %s', $this->getSiteEnv()));
+        $this->terminus(sprintf('domain:primary:remove %s', $siteEnv));
+        $domainList = $this->terminusJsonResponse(sprintf('domain:list %s', $siteEnv));
         $primaryDomains = array_combine(array_column($domainList, 'id'), array_column($domainList, 'primary'));
         $this->assertArrayHasKey($testDomain, $primaryDomains, 'Domain list should contain the test domain');
         $this->assertNotEquals('1', $primaryDomains[$testDomain], 'The test domain should not be primary anymore');
 
-        $this->terminus(sprintf('domain:remove %s %s', $this->getSiteEnv(), $testDomain));
-        $domainList = $this->terminusJsonResponse(sprintf('domain:list %s', $this->getSiteEnv()));
+        $this->terminus(sprintf('domain:remove %s %s', $siteEnv, $testDomain));
+        $domainList = $this->terminusJsonResponse(sprintf('domain:list %s', $siteEnv));
         $domains = array_column($domainList, 'id');
         $this->assertFalse(array_search($testDomain, $domains), 'Domain list should no longer contain the test domain');
     }
