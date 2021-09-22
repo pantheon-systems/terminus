@@ -22,8 +22,14 @@ trait ProfileTrait
     {
         if (empty($this->profile)) {
             $nickname = \uniqid(__FUNCTION__ . "-");
-            $this->getContainer()->add($nickname, Profile::class)
-                ->addArgument([$this->get('profile')]);
+            if (!empty($this->attributes->profile)) {
+                $this->getContainer()->add($nickname, new Profile($this->attributes->profile))
+                    ->addArgument([$this->get('profile')]);
+            }
+            else {
+                $this->getContainer()->add($nickname, Profile::class)
+                    ->addArgument([$this->get('profile')]);
+            }
             $profile = $this->getContainer()->get($nickname);
             $this->setProfile($profile);
         }

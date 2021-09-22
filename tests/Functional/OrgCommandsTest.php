@@ -30,7 +30,13 @@ class OrgCommandsTest extends TestCase
             "row from org list array of orgs should be an org item"
         );
         $this->assertArrayHasKey('id', $org, "Orgs from org list should have an id property");
+        $this->assertNotEmpty($org['id'], 'Orgs ID should not be empty');
+
         $this->assertArrayHasKey('name', $org, "Orgs from org list should have a name property");
+        $this->assertNotEmpty($org['name'], 'Orgs Name should not be empty');
+
+        $this->assertArrayHasKey('label', $org, "Orgs from org list should have a label property");
+        $this->assertNotEmpty($org['label'], 'Orgs Label should not be empty');
     }
 
     /**
