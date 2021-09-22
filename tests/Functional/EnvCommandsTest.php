@@ -113,46 +113,18 @@ class EnvCommandsTest extends TestCase
         $diff = $this->terminusJsonResponse(sprintf('env:diffstat %s', $siteEnv));
         $this->assertEquals([], $diff);
 
-        // Get SFTP connection information.
-        $connectionInfo = $this->terminusJsonResponse(
-            sprintf('connection:info %s --fields=sftp_username,sftp_host', $siteEnv)
-        );
-        $this->assertNotEmpty($connectionInfo);
-        $this->assertTrue(
-            isset($connectionInfo['sftp_username'], $connectionInfo['sftp_host']),
-            'SFTP connection info should contain "sftp_username" and "sftp_host" values.'
-        );
-
-        // Upload a test file to the server.
-        $session = ssh2_connect(
-            $connectionInfo['sftp_host'],
-            2222
-        );
-        $this->assertTrue(
-            ssh2_auth_agent($session, $connectionInfo['sftp_username']),
-            'Failed to authenticate over SSH using the ssh agent'
-        );
-        $sftp = ssh2_sftp($session);
-        $this->assertNotFalse($sftp);
-        $fileUniqueId = md5(mt_rand());
-        $stream = fopen(
-            sprintf('ssh2.sftp://%d/code/env-commit-test-file-%s.txt', intval($sftp), $fileUniqueId),
-            'w'
-        );
-        $this->assertNotFalse($stream, 'Failed to open a file for writing');
-        fwrite($stream, 'This is a test file to use in functional testing for env:commit command.');
-        fclose($stream);
+        // Upload a test file to the site.
+        $fileName = $this->uploadTestFileToSite($siteEnv, 'code');
 
         // Check the diff.
         $expectedDiff = [
             [
-                'file' => sprintf('env-commit-test-file-%s.txt', $fileUniqueId),
+                'file' => $fileName,
                 'status' => 'A',
                 'deletions' => '0',
                 'additions' => '1',
             ],
         ];
-
         $this->assertTerminusCommandResultEqualsInAttempts(function () use ($siteEnv) {
             return $this->terminusJsonResponse(sprintf('env:diffstat %s', $siteEnv));
         }, $expectedDiff);
@@ -162,7 +134,7 @@ class EnvCommandsTest extends TestCase
             sprintf(
                 'env:commit %s --message="%s"',
                 $siteEnv,
-                sprintf('Add test file %s', $fileUniqueId)
+                sprintf('Add test file %s', $fileName)
             )
         );
 
