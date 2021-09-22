@@ -3,7 +3,6 @@
 namespace Pantheon\Terminus\Tests\Functional;
 
 use GuzzleHttp\Client;
-use GuzzleHttp\Exception\GuzzleException;
 use Pantheon\Terminus\Tests\Traits\TerminusTestTrait;
 use PHPUnit\Framework\TestCase;
 
@@ -22,9 +21,18 @@ class ImportCommandsTest extends TestCase
     private $client;
 
     /**
+     * The name of the site to archive.
+     *
      * @var string
      */
-    private $mockSiteName;
+    private $archivedSiteName;
+
+    /**
+     * The name of the site to import from the archive.
+     *
+     * @var string
+     */
+    private $importedSiteName;
 
     /**
      * @inheritdoc
@@ -39,8 +47,12 @@ class ImportCommandsTest extends TestCase
      */
     protected function tearDown(): void
     {
-        if (isset($this->mockSiteName)) {
-            $this->terminus(sprintf('site:delete %s', $this->mockSiteName), [], false);
+        if (isset($this->archivedSiteName)) {
+            $this->terminus(sprintf('site:delete %s', $this->archivedSiteName), [], false);
+        }
+
+        if (isset($this->importedSiteName)) {
+            $this->terminus(sprintf('site:delete %s', $this->importedSiteName), [], false);
         }
     }
 
@@ -78,83 +90,120 @@ class ImportCommandsTest extends TestCase
      * @test
      * @covers \Pantheon\Terminus\Commands\Import\SiteCommand
      *
-     * Uses a preconfigured minimalist Drupal7 site archive uploaded as a file artifact into the test site (to be publicly
-     * available as https://dev-[test-site-name].pantheonsite.io/sites/default/files/site-import-d7-mock-archive.tar.gz).
-     * The original archive file is located at /tests/fixtures/functional/site-import-d7-mock-archive.tar.gz
-     * There are the following expectations from an imported site:
-     * - "node/1" page should be available;
-     * - an image sites/default/files/styles/large/public/field/image/image_2021-08-25_11-32-29.png should be available.
-     *
      * @group import
      * @group long
      *
      * @throws \Exception
+     * @throws \GuzzleHttp\Exception\GuzzleException
      */
     public function testImportSiteCommand()
     {
-        $this->mockSiteName = uniqid('site-import-d7-mock-');
+        $uniqueId = uniqid();
+
+        // Create a site to archive.
+        $this->archivedSiteName = sprintf('site-archive-d7-%s', $uniqueId);
         $this->terminus(
             sprintf(
                 'site:create %s %s drupal7 --org=%s',
-                $this->mockSiteName,
-                $this->mockSiteName,
+                $this->archivedSiteName,
+                $this->archivedSiteName,
                 $this->getOrg()
             )
         );
         sleep(60);
+        $archivedSiteInfo = $this->terminusJsonResponse(sprintf('site:info %s', $this->archivedSiteName));
+        $this->assertIsArray($archivedSiteInfo);
+        $this->assertNotEmpty($archivedSiteInfo);
 
-        $siteInfo = $this->terminusJsonResponse(sprintf('site:info %s', $this->mockSiteName));
-        $this->assertIsArray($siteInfo);
-        $this->assertNotEmpty($siteInfo);
-
-        $siteArchiveUrl = sprintf(
-            'https://%s-%s.pantheonsite.io/sites/default/files/site-import-d7-mock-archive.tar.gz',
-            $this->getMdEnv(),
-            $this->getSiteName(),
+        // Install the Drupal7 on the site to archive.
+        $this->terminus(sprintf('drush %s.dev -- site-install pantheon', $this->archivedSiteName));
+        $archivedSiteFrontPageUrl = sprintf('https://dev-%s.pantheonsite.io', $this->archivedSiteName);
+        $this->assertEquals(
+            200,
+            $this->client->head($archivedSiteFrontPageUrl)->getStatusCode(),
+            sprintf(
+                'An HTTP request (%s) to the installed site should return HTTP status code 200.',
+                $archivedSiteFrontPageUrl
+            ),
         );
-        try {
-            $this->client->head($siteArchiveUrl);
-        } catch (GuzzleException $e) {
-            $this->fail(
-                sprintf(
-                    'The site archive file (%s) should be publicly available. Error: %s',
-                    $siteArchiveUrl,
-                    $e->getMessage()
-                )
-            );
-        }
 
-        $this->terminus(sprintf('import:site %s %s', $this->mockSiteName, $siteArchiveUrl));
+        // Upload a test file to the site to archive.
+        $testFileName = $this->uploadTestFileToSite(
+            sprintf('%s.dev', $this->archivedSiteName),
+            'files',
+        );
+        $archivedSiteTestFileUrl = sprintf(
+            'https://dev-%s.pantheonsite.io/sites/default/files/%s',
+            $this->archivedSiteName,
+            $testFileName
+        );
+        $this->assertEquals(
+            200,
+            $this->client->head($archivedSiteTestFileUrl)->getStatusCode(),
+            sprintf('The test file should be available by URL %s.', $archivedSiteTestFileUrl)
+        );
 
-        $testPagePath = 'node/1';
-        $mockSitePageUrl = sprintf('https://dev-%s.pantheonsite.io/%s', $this->mockSiteName, $testPagePath);
-        try {
-            $this->client->head($mockSitePageUrl);
-        } catch (GuzzleException $e) {
-            $this->fail(
-                sprintf(
-                    'Test page "%s" should be accessible on mock site (%s) once the site archive imported. Error: %s',
-                    $testPagePath,
-                    $this->mockSiteName,
-                    $e->getMessage()
-                )
-            );
-        }
+        // Create the site archive file.
+        $siteArchiveFileName = 'site-archive-d7.tar.gz';
+        $this->terminus(
+            sprintf('drush %s.dev -- archive-dump', $this->archivedSiteName),
+            [sprintf('--destination=/files/%s', $siteArchiveFileName)]
+        );
+        $siteArchiveUrl = sprintf(
+            'https://dev-%s.pantheonsite.io/sites/default/files/%s',
+            $this->archivedSiteName,
+            $siteArchiveFileName,
+        );
+        $this->assertEquals(
+            200,
+            $this->client->head($siteArchiveUrl)->getStatusCode(),
+            sprintf('The site archive file should be available by URL %s.', $siteArchiveUrl)
+        );
 
-        $testImagePath = 'sites/default/files/styles/large/public/field/image/image_2021-08-25_11-32-29.png';
-        $mockSiteImageUrl = sprintf('https://dev-%s.pantheonsite.io/%s', $this->mockSiteName, $testImagePath);
-        try {
-            $this->client->head($mockSiteImageUrl);
-        } catch (GuzzleException $e) {
-            $this->fail(
-                sprintf(
-                    'Test image (%s) should be accessible on mock site (%s) once the site archive imported. Error: %s',
-                    $testImagePath,
-                    $this->mockSiteName,
-                    $e->getMessage()
-                )
-            );
-        }
+        // Create a site to import from the archive.
+        $this->importedSiteName = sprintf('site-import-d7-%s', $uniqueId);
+        $this->terminus(
+            sprintf(
+                'site:create %s %s drupal7 --org=%s',
+                $this->importedSiteName,
+                $this->importedSiteName,
+                $this->getOrg()
+            )
+        );
+        sleep(60);
+        $importedSiteInfo = $this->terminusJsonResponse(sprintf('site:info %s', $this->importedSiteName));
+        $this->assertIsArray($importedSiteInfo);
+        $this->assertNotEmpty($importedSiteInfo);
+
+        // Import the site from the archive file.
+        $this->terminus(sprintf('import:site %s %s', $this->importedSiteName, $siteArchiveUrl));
+        sleep(60);
+
+        // Verify that the code and the database have been imported.
+        $importedSiteFrontPageUrl = sprintf(
+            'https://dev-%s.pantheonsite.io',
+            $this->importedSiteName,
+        );
+        $this->assertEquals(
+            200,
+            $this->client->head($importedSiteFrontPageUrl)->getStatusCode(),
+            sprintf(
+                'An HTTP request (%s) to the imported site should return HTTP status code 200.',
+                $archivedSiteFrontPageUrl
+            ),
+        );
+
+        // Verify that the test file has been imported.
+        $importedSiteTestFileUrl = sprintf(
+            'https://dev-%s.pantheonsite.io/sites/default/files/%s',
+            $this->importedSiteName,
+            $testFileName
+        );
+        $this->assertEquals(
+            200,
+            $this->client->head($importedSiteTestFileUrl)->getStatusCode(),
+            sprintf('The test file should be available by URL %s.', $importedSiteTestFileUrl)
+        );
     }
 
     /**
