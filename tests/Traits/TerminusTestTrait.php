@@ -290,4 +290,62 @@ trait TerminusTestTrait
     {
         return implode(DIRECTORY_SEPARATOR, [$_SERVER['HOME'], 'pantheon-local-copies', self::getSiteName()]);
     }
+
+    /**
+     * Generates and uploads a test file to the site.
+     *
+     * @param string $siteEnv
+     * @param string $filePath
+     *
+     * @return string
+     *   The name of the test file.
+     */
+    protected function uploadTestFileToSite(string $siteEnv, string $filePath): string
+    {
+        if (!extension_loaded('ssh2')) {
+            $this->markTestSkipped(
+                'PECL SSH2 extension for PHP is required.'
+            );
+        }
+
+        // Get SFTP connection information.
+        $siteInfo = $this->terminusJsonResponse(
+            sprintf('connection:info %s --fields=sftp_username,sftp_host', $siteEnv)
+        );
+        $this->assertNotEmpty($siteInfo);
+        $this->assertTrue(
+            isset($siteInfo['sftp_username'], $siteInfo['sftp_host']),
+            'SFTP connection info should contain "sftp_username" and "sftp_host" values.'
+        );
+
+        // Upload a test file to the server.
+        $session = ssh2_connect(
+            $siteInfo['sftp_host'],
+            2222
+        );
+        $this->assertTrue(
+            ssh2_auth_agent($session, $siteInfo['sftp_username']),
+            'Failed to authenticate over SSH using the ssh agent'
+        );
+        $sftp = ssh2_sftp($session);
+        $this->assertNotFalse($sftp);
+
+        $uniqueId = md5(mt_rand());
+        $fileName = sprintf('terminus-functional-test-file-%s.txt', $uniqueId);
+        $stream = fopen(
+            sprintf('ssh2.sftp://%d/%s/%s', intval($sftp), $filePath, $fileName),
+            'w'
+        );
+        $this->assertNotFalse($stream, 'Failed to open a test file for writing');
+        $this->assertNotFalse(
+            fwrite(
+                $stream,
+                sprintf('This is a test file (%s) to use in Terminus functional testing assertions.', $uniqueId)
+            ),
+            'Failed to write a test file'
+        );
+        fclose($stream);
+
+        return $fileName;
+    }
 }
