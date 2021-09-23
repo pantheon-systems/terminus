@@ -36,7 +36,7 @@ class AddCommand extends TerminusCommand implements SiteAwareInterface
         $this->processWorkflow($site->addPaymentMethod($pm->id));
         $this->log()->notice(
             '{method} has been applied to the {site} site.',
-            ['method' => $pm->get('label'), 'site' => $site->get('name'),]
+            ['method' => $pm->get('label'), 'site' => $site->getName(),]
         );
     }
 }

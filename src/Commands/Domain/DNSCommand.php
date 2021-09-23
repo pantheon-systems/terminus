@@ -8,7 +8,8 @@ use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 
 /**
- * Class DNSCommand
+ * Class DNSCommand.
+ *
  * @package Pantheon\Terminus\Commands\Domain
  */
 class DNSCommand extends TerminusCommand implements SiteAwareInterface
@@ -29,24 +30,28 @@ class DNSCommand extends TerminusCommand implements SiteAwareInterface
      *     detected_value: Detected Value
      *     status: Status
      *     status_message: Status Message
-     * @return RowsOfFields
-     *
      * @param string $site_env Site & environment in the format `site-name.env`
      *
      * @usage <site>.<env> Displays recommended DNS settings for <site>'s <env> environment.
+     *
+     * @return \Consolidation\OutputFormatters\StructuredData\RowsOfFields
+     *
+     * @throws \Pantheon\Terminus\Exceptions\TerminusException
      */
     public function getRecommendations($site_env)
     {
-        list(, $env) = $this->getSiteEnv($site_env);
+        $env = $this->getEnv($site_env);
         $domains = $env->getDomains()->filter(
             function ($domain) {
                 return $domain->get('type') === 'custom';
             }
         )->all();
-        $settings = [];
+
+        $dnsSettings = [];
         foreach ($domains as $domain) {
-            $settings = array_merge($settings, $domain->getDNSRecords()->serialize());
+            $dnsSettings = array_merge($dnsSettings, $domain->getDNSRecords()->serialize());
         }
-        return new RowsOfFields($settings);
+
+        return new RowsOfFields($dnsSettings);
     }
 }

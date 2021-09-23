@@ -5,13 +5,12 @@ namespace Pantheon\Terminus\Commands\Connection;
 use Consolidation\OutputFormatters\StructuredData\PropertyList;
 
 use Pantheon\Terminus\Commands\TerminusCommand;
-use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
-use Pantheon\Terminus\Models\Environment;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 
 /**
- * Class InfoCommand
+ * Class InfoCommand.
+ *
  * @package Pantheon\Terminus\Commands\Connection
  */
 class InfoCommand extends TerminusCommand implements SiteAwareInterface
@@ -48,29 +47,20 @@ class InfoCommand extends TerminusCommand implements SiteAwareInterface
      *     redis_url: Redis URL
      *     redis_password: Redis Password
      * @default-fields *_command
-     * @return PropertyList
-     *
      * @param string $site_env Site & environment in the format `site-name.env`
+     *
+     * @return PropertyList
      *
      * @usage <site>.<env> Displays connection information for <site>'s <env> environment.
      * @usage <site>.<env> --fields='git_*' Displays connection information fields related to Git for <site>'s <env> environment.
+     *
+     * @throws \Pantheon\Terminus\Exceptions\TerminusException
+     * @throws \Pantheon\Terminus\Exceptions\TerminusNotFoundException
      */
     public function connectionInfo($site_env)
     {
-        [$site, $env] = explode('.', $site_env);
-        if (empty($site) || empty($env)) {
-            throw new TerminusNotFoundException(
-                'The Site and environment must take the form of {site}.{env} followed by the domain name you are adding'
-            );
-        }
+        $env = $this->getEnv($site_env);
 
-        $env = $this->sites()->get($site)->getEnvironments()->get($env);
-        if (!$env instanceof Environment) {
-            throw new TerminusNotFoundException(
-                'Site/env not found {site}.{env}',
-                ['site' => $site, 'env' => $env]
-            );
-        }
         return new PropertyList($env->connectionInfo());
     }
 }

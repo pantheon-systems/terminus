@@ -181,7 +181,7 @@ class Sites extends APICollection implements SessionAwareInterface
      * @return Site
      * @throws TerminusException
      */
-    public function get($id): ?TerminusModel
+    public function get($id): TerminusModel
     {
         try {
             $uuid = $this->findUUIDByNameOrUUID($id);

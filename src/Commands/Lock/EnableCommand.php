@@ -8,7 +8,8 @@ use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 
 /**
- * Class EnableCommand
+ * Class EnableCommand.
+ *
  * @package Pantheon\Terminus\Commands\Lock
  */
 class EnableCommand extends TerminusCommand implements SiteAwareInterface
@@ -27,16 +28,22 @@ class EnableCommand extends TerminusCommand implements SiteAwareInterface
      * @param string $site_env Site & environment in the format `site-name.env`
      * @param string $username HTTP basic authentication username
      * @param string $password HTTP basic authentication password
-     *
      * @usage <site>.<env> <username> <password> Enables HTTP basic authentication on <site>'s <env> environment with the username <username> and the password <password>.
+     *
+     * @throws \Pantheon\Terminus\Exceptions\TerminusException
+     * @throws \Pantheon\Terminus\Exceptions\TerminusNotFoundException
      */
     public function enable($site_env, $username, $password)
     {
-        list($site, $env) = $this->getSiteEnv($site_env);
+        $env = $this->getEnv($site_env);
+
         $this->processWorkflow($env->getLock()->enable(['username' => $username, 'password' => $password,]));
         $this->log()->notice(
             '{site}.{env} has been locked.',
-            ['site' => $site->get('name'), 'env' => $env->id,]
+            [
+                'site' => $this->getSite($site_env)->getName(),
+                'env' => $env->getName(),
+            ]
         );
     }
 }

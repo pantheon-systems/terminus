@@ -8,7 +8,8 @@ use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 
 /**
- * Class CreateCommand
+ * Class CreateCommand.
+ *
  * @package Pantheon\Terminus\Commands\Multidev
  */
 class CreateCommand extends TerminusCommand implements SiteAwareInterface
@@ -28,12 +29,16 @@ class CreateCommand extends TerminusCommand implements SiteAwareInterface
      *
      * @param string $site_env Site & source environment in the format `site-name.env`
      * @param string $multidev Multidev environment name
+     * @param array $options
      * @option bool $no-db Do not clone database
      * @option bool $no-files Do not clone files
      *
      * @usage <site>.<env> <multidev> Creates the Multidev environment, <multidev>, within <site> with database and files from the <env> environment.
      * @usage <site>.<env> <multidev> --no-db Creates the <multidev> environment without database from the <env> environment.
      * @usage <site>.<env> <multidev> --no-files Creates the <multidev> environment without files from the <env> environment.
+     *
+     * @throws \Pantheon\Terminus\Exceptions\TerminusException
+     * @throws \Pantheon\Terminus\Exceptions\TerminusNotFoundException
      */
     public function create(
         string $site_env,
@@ -43,13 +48,17 @@ class CreateCommand extends TerminusCommand implements SiteAwareInterface
             'no-files' => false,
         ]
     ) {
-        [$site, $env] = $this->getUnfrozenSiteEnv($site_env, 'dev');
+        $this->requireSiteIsNotFrozen($site_env);
+        $site = $this->getSite($site_env);
+        $env = $this->getEnv($site_env);
 
         if (strlen($multidev) > 11) {
             $multidev = substr($multidev, 0, 11);
             $this->output()->write(
-                "Pantheon puts an 11 character limit on env names. Your name has been truncated to :" .
-                $multidev
+                sprintf(
+                    'Pantheon puts an 11 character limit on env names. Your name has been truncated to: %s',
+                    $multidev
+                )
             );
         }
 

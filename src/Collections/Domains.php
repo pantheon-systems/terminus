@@ -51,11 +51,13 @@ class Domains extends EnvironmentOwnedCollection
      * Fetches domain data hydrated with recommendations
      *
      * @param array $options Additional information for the request
-     * @return void
+     *
+     * @return \Pantheon\Terminus\Collections\TerminusCollection
      */
     public function fetchWithRecommendations($options = [])
     {
         $this->setFetchArgs(['query' => ['hydrate' => ['as_list', 'recommendations',],],]);
+
         return $this->fetch();
     }
 }

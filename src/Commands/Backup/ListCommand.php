@@ -6,7 +6,8 @@ use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
 use Pantheon\Terminus\Commands\StructuredListTrait;
 
 /**
- * Class ListCommand
+ * Class ListCommand.
+ *
  * @package Pantheon\Terminus\Commands\Backup
  */
 class ListCommand extends BackupCommand
@@ -28,17 +29,22 @@ class ListCommand extends BackupCommand
      *     date: Date
      *     expiry: Expiry
      *     initiator: Initiator
+     * @param string $site_env Site & environment in the format `site-name.env`
+     * @param array $options
      * @return RowsOfFields
      *
-     * @param string $site_env Site & environment in the format `site-name.env`
      * @option string $element [all|code|files|database|db] DEPRECATED Backup element filter
      *
      * @usage <site>.<env> Lists all backups made of <site>'s <env> environment.
      * @usage <site>.<env> --element=<element> Lists all <element> backups made of <site>'s <env> environment.
+     *
+     * @throws \Pantheon\Terminus\Exceptions\TerminusException
+     * @throws \Pantheon\Terminus\Exceptions\TerminusNotFoundException
      */
     public function listBackups($site_env, array $options = ['element' => 'all',])
     {
-        list(, $env) = $this->getSiteEnv($site_env, 'dev');
+        $env = $this->getEnv($site_env);
+
         $backups = $env->getBackups()->filterForFinished();
         $element = $this->getElement($options['element']);
         if ($element !== null) {

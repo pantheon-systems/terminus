@@ -42,11 +42,15 @@ abstract class SSHBaseCommand extends TerminusCommand implements SiteAwareInterf
     /**
      * Define the environment and site properties
      *
-     * @param string $site_env_id The site/env to retrieve in <site>.<env> format
+     * @param string $site_env The site/env to retrieve in <site>.<env> format
+     *
+     * @throws \Pantheon\Terminus\Exceptions\TerminusException
+     * @throws \Pantheon\Terminus\Exceptions\TerminusNotFoundException
      */
-    protected function prepareEnvironment($site_env_id)
+    protected function prepareEnvironment($site_env)
     {
-        list($this->site, $this->environment) = $this->getSiteEnv($site_env_id);
+        $this->site = $this->getSite($site_env);
+        $this->environment = $this->getEnv($site_env);
     }
 
     /**
@@ -80,7 +84,7 @@ abstract class SSHBaseCommand extends TerminusCommand implements SiteAwareInterf
         $ssh_data = $this->sendCommandViaSsh($command_line);
 
         $this->log()->notice('Command: {site}.{env} -- {command} [Exit: {exit}]', [
-            'site'    => $this->site->get('name'),
+            'site'    => $this->site->getName(),
             'env'     => $this->environment->id,
             'command' => $command_summary,
             'exit'    => $ssh_data['exit_code'],

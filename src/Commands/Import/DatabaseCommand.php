@@ -7,6 +7,11 @@ use Pantheon\Terminus\Commands\WorkflowProcessingTrait;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 
+/**
+ * Class DatabaseCommand.
+ *
+ * @package Pantheon\Terminus\Commands\Import
+ */
 class DatabaseCommand extends TerminusCommand implements SiteAwareInterface
 {
     use SiteAwareTrait;
@@ -22,22 +27,28 @@ class DatabaseCommand extends TerminusCommand implements SiteAwareInterface
      *
      * @param string $site_env Site & environment in the format `site-name.env`
      * @param string $url Publicly accessible URL of the database archive
-     *
      * @usage <site>.<env> <archive_url> Imports the database archive at <archive_url> to <site>'s <env> environment.
+     *
+     * @throws \Pantheon\Terminus\Exceptions\TerminusException
+     * @throws \Pantheon\Terminus\Exceptions\TerminusNotFoundException
      */
     public function import($site_env, $url)
     {
-        list($site, $env) = $this->getUnfrozenSiteEnv($site_env);
+        $this->requireSiteIsNotFrozen($site_env);
+        $site = $this->getSite($site_env);
+        $env = $this->getEnv($site_env);
 
-        $tr = ['site' => $site->getName(), 'env' => $env->getName()];
-        if (!$this->confirm('Are you sure you overwrite the database for {env} on {site}?', $tr)) {
+        if (!$this->confirm(
+            'Are you sure you overwrite the database for {env} on {site}?',
+            ['site' => $site->getName(), 'env' => $env->getName()]
+        )) {
             return;
         }
 
         $this->processWorkflow($env->importDatabase($url));
         $this->log()->notice(
             'Imported database to {site}.{env}.',
-            ['site' => $site->get('name'), 'env' => $env->id,]
+            ['site' => $site->getName(), 'env' => $env->getName()]
         );
     }
 }

@@ -34,7 +34,7 @@ class RemoveCommand extends TerminusCommand implements SiteAwareInterface
         $this->processWorkflow($site->removePaymentMethod());
         $this->log()->notice(
             'The payment method for the {site} site has been removed.',
-            ['site' => $site->get('name'),]
+            ['site' => $site->getName()]
         );
     }
 }

@@ -9,7 +9,8 @@ use Pantheon\Terminus\Site\SiteAwareTrait;
 use Pantheon\Terminus\Exceptions\TerminusException;
 
 /**
- * Class SetCommand
+ * Class SetCommand.
+ *
  * @package Pantheon\Terminus\Commands\Connection
  */
 class SetCommand extends TerminusCommand implements SiteAwareInterface
@@ -37,12 +38,12 @@ class SetCommand extends TerminusCommand implements SiteAwareInterface
      */
     public function connectionSet($site_env, $mode)
     {
-        list(, $env) = $this->getSiteEnv($site_env);
-
-        if (in_array($env->id, ['test', 'live',])) {
+        $env = $this->getEnv($site_env);
+        $envName = $env->getName();
+        if (in_array($envName, ['test', 'live',])) {
             throw new TerminusException(
                 'Connection mode cannot be set on the {env} environment',
-                ['env' => $env->id,]
+                ['env' => $envName]
             );
         }
         if ($env->hasUncommittedChanges()) {
@@ -52,7 +53,7 @@ class SetCommand extends TerminusCommand implements SiteAwareInterface
             );
             if (!$this->confirm(
                 'Are you sure you want to change the connection mode of {env}?',
-                ['env' => $env->id,]
+                ['env' => $envName]
             )) {
                 return;
             }

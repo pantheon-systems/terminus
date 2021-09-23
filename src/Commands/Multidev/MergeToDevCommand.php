@@ -8,7 +8,8 @@ use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 
 /**
- * Class MergeToDevCommand
+ * Class MergeToDevCommand.
+ *
  * @package Pantheon\Terminus\Commands\Multidev
  */
 class MergeToDevCommand extends TerminusCommand implements SiteAwareInterface
@@ -25,18 +26,30 @@ class MergeToDevCommand extends TerminusCommand implements SiteAwareInterface
      * @aliases env:merge-to-dev
      *
      * @param string $site_env Site & Multidev environment in the form `site-name.env`
+     * @param false[] $options
      * @option boolean $updatedb Run update.php afterwards
      *
      * @usage <site>.<multidev> Merges code commits from <site>'s <multidev> environment into the Dev environment.
      * @usage <site>.<multidev> --updatedb Merges code commits from <site>'s <multidev> environment into the Dev environment and runs update.php afterwards.
+     *
+     * @throws \Pantheon\Terminus\Exceptions\TerminusException
+     * @throws \Pantheon\Terminus\Exceptions\TerminusNotFoundException
      */
     public function mergeToDev($site_env, $options = ['updatedb' => false,])
     {
-        list($site, $env) = $this->getSiteEnv($site_env);
+        $site = $this->getSite($site_env);
+        $env = $this->getEnv($site_env);
+
         $workflow = $site->getEnvironments()->get('dev')->mergeToDev(
-            ['from_environment' => $env->id, 'updatedb' => $options['updatedb'],]
+            [
+                'from_environment' => $env->getName(),
+                'updatedb' => $options['updatedb']
+            ]
         );
         $this->processWorkflow($workflow);
-        $this->log()->notice('Merged the {env} environment into dev.', ['env' => $env->id,]);
+        $this->log()->notice(
+            'Merged the {env} environment into dev.',
+            ['env' => $env->getName()]
+        );
     }
 }

@@ -59,8 +59,7 @@ class EnvCommandsTest extends TestCase
      */
     public function testCodelogCommand()
     {
-        $sitename = $this->getSiteName();
-        $codeLogs = $this->terminusJsonResponse(sprintf('env:code-log %s', $sitename));
+        $codeLogs = $this->terminusJsonResponse(sprintf('env:code-log %s', $this->getSiteEnv()));
         $this->assertIsArray($codeLogs);
         $this->assertNotEmpty($codeLogs);
         $codeLog = array_shift($codeLogs);

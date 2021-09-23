@@ -1,15 +1,17 @@
 <?php
 
-
 namespace Pantheon\Terminus\Commands\Domain\Primary;
 
 use Pantheon\Terminus\Commands\TerminusCommand;
 use Pantheon\Terminus\Commands\WorkflowProcessingTrait;
-use Pantheon\Terminus\Models\Environment;
-use Pantheon\Terminus\Models\Site;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 
+/**
+ * Class RemoveCommand.
+ *
+ * @package Pantheon\Terminus\Commands\Domain\Primary
+ */
 class RemoveCommand extends TerminusCommand implements SiteAwareInterface
 {
     use SiteAwareTrait;
@@ -26,20 +28,21 @@ class RemoveCommand extends TerminusCommand implements SiteAwareInterface
      * @param string $site_env Site & environment in the format `site-name.env`
      *
      * @usage <site>.<env> Un-designates the primary domain of <site>'s <env> environment.
+     *
+     * @throws \Pantheon\Terminus\Exceptions\TerminusException
+     * @throws \Pantheon\Terminus\Exceptions\TerminusNotFoundException
      */
     public function remove($site_env)
     {
-        /**
-         * @var $site Site
-         * @var $env Environment
-         */
-        list($site, $env) = $this->getSiteEnv($site_env);
-
+        $env = $this->getEnv($site_env);
         $workflow = $env->getPrimaryDomainModel()->removePrimaryDomain();
         $this->processWorkflow($workflow);
         $this->log()->notice(
             'Primary domain has been removed from {site}.{env}',
-            ['site' => $site->get('name'), 'env' => $env->id,]
+            [
+                'site' => $this->getSite($site_env)->getNme(),
+                'env' => $env->geName(),
+            ]
         );
     }
 }

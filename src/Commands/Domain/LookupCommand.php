@@ -9,7 +9,8 @@ use Pantheon\Terminus\Site\SiteAwareTrait;
 use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
 
 /**
- * Class LookupCommand
+ * Class LookupCommand.
+ *
  * @package Pantheon\Terminus\Commands\Domain
  */
 class LookupCommand extends TerminusCommand implements SiteAwareInterface
@@ -44,17 +45,18 @@ class LookupCommand extends TerminusCommand implements SiteAwareInterface
         foreach ($sites as $site) {
             foreach ($environments as $env_name) {
                 if ($site->getEnvironments()->get($env_name)->getDomains()->has($domain)) {
-                    $env = ['site_id' => $site->id, 'site_name' => $site->get('name'), 'env_id' => $env_name];
-                    break 2;
+                    return new PropertyList([
+                        'site_id' => $site->id,
+                        'site_name' => $site->getName(),
+                        'env_id' => $env_name,
+                    ]);
                 }
             }
         }
-        if (!isset($env)) {
-            throw new TerminusNotFoundException(
-                'Could not locate an environment with the domain {domain}.',
-                compact('domain')
-            );
-        }
-        return new PropertyList($env);
+
+        throw new TerminusNotFoundException(
+            'Could not locate an environment with the domain {domain}.',
+            compact('domain')
+        );
     }
 }

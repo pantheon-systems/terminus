@@ -6,7 +6,6 @@ use Pantheon\Terminus\Commands\TerminusCommand;
 use Pantheon\Terminus\Helpers\LocalMachineHelper;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
-use Pantheon\Terminus\Exceptions\TerminusException;
 
 class ViewCommand extends TerminusCommand implements SiteAwareInterface
 {
@@ -22,16 +21,17 @@ class ViewCommand extends TerminusCommand implements SiteAwareInterface
      *
      * @param string $site_env Site & environment in the format `site-name.env`
      * @option boolean $print Print URL only
-     * @return string
+     * @return string|null
      *
      * @usage <site>.<env> Opens the browser to <site>'s <env> environment.
      * @usage <site>.<env> --print Prints the URL for <site>'s <env> environment.
      *
-     * @throws TerminusException
+     * @throws \Pantheon\Terminus\Exceptions\TerminusException
      */
     public function view($site_env, $options = ['print' => false,])
     {
-        list(, $env) = $this->getUnfrozenSiteEnv($site_env);
+        $this->requireSiteIsNotFrozen($site_env);
+        $env = $this->getEnv($site_env);
 
         $domain = $env->domain();
         $protocol = 'https';
@@ -48,5 +48,7 @@ class ViewCommand extends TerminusCommand implements SiteAwareInterface
             return $url;
         }
         $this->getContainer()->get(LocalMachineHelper::class)->openUrl($url);
+
+        return null;
     }
 }

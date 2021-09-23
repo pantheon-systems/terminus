@@ -41,17 +41,22 @@ class MetricsCommand extends TerminusCommand implements SiteAwareInterface
      *     datetime: Period
      *     visits: Visits
      *     pages_served: Pages Served
-     * @return RowsOfFieldsWithMetadata
-     *
      * @param string $site_env Site & environment in the format `site-name.env`.
      *   Defaults to the live environment if `.env` is not specified.
-     * @option period The time period for each data point (month|week|day)
-     * @option datapoints How much data to return in total, or 'auto' to select
-     *   a resonable default based on the selected period.
+     * @param string[] $options
      *
      * @usage <site>.<env> Displays metrics for <site>'s <env> environment.
      * @usage <site> Displays the combined metrics for all of <site>'s environments.
      * @usage <site> --fields=datetime,pages_served Displays only the pages served for each date period.
+     *
+     * @option period The time period for each data point (month|week|day)
+     * @option datapoints How much data to return in total, or 'auto' to select
+     *   a resonable default based on the selected period.
+     *
+     * @return \Consolidation\OutputFormatters\StructuredData\RowsOfFieldsWithMetadata
+     *
+     * @throws \Pantheon\Terminus\Exceptions\TerminusException
+     * @throws \Pantheon\Terminus\Exceptions\TerminusNotFoundException
      */
     public function metrics(
         $site_env,
@@ -60,28 +65,23 @@ class MetricsCommand extends TerminusCommand implements SiteAwareInterface
             'datapoints' => 'auto'
         ]
     ) {
-        list($site_id, $env_id) = array_pad(explode('.', $site_env), 2, null);
-
-        if (empty($env_id)) {
-            $site = $this->getSite($site_id);
-
-            $data = $site->getSiteMetrics()
+        if ($env = $this->getOptionalEnv($site_env)) {
+            $metrics = $env->getEnvironmentMetrics()
                 ->setPeriod($options['period'])
                 ->setDatapoints($this->selectDatapoints($options['datapoints'], $options['period']))
                 ->serialize();
         } else {
-            list(, $env) = $this->getUnfrozenSiteEnv($site_env, 'live');
-
-            $data = $env->getEnvironmentMetrics()
+            $metrics = $this->getSite($site_env)
+                ->getSiteMetrics()
                 ->setPeriod($options['period'])
                 ->setDatapoints($this->selectDatapoints($options['datapoints'], $options['period']))
                 ->serialize();
         }
 
-        return (new RowsOfFieldsWithMetadata($data))
+        return (new RowsOfFieldsWithMetadata($metrics))
             ->setDataKey('timeseries')
             ->addRenderer(
-                new NumericCellRenderer($data['timeseries'], ['visits' => 6, 'pages_served' => 12])
+                new NumericCellRenderer($metrics['timeseries'], ['visits' => 6, 'pages_served' => 12])
             )
             ->addRendererFunction(
                 function ($key, $cellData, FormatterOptions $options, $rowData) {
@@ -91,22 +91,6 @@ class MetricsCommand extends TerminusCommand implements SiteAwareInterface
                     return $cellData;
                 }
             );
-    }
-
-    /**
-     * Find the maximum width of any data item in the specified column.
-     * @param array $data
-     * @param string $column
-     * @return int
-     */
-    protected function findWidth($data, $column)
-    {
-        $maxWidth = 0;
-        foreach ($data as $row) {
-            $str = number_format($row[$column]);
-            $maxWidth = max($maxWidth, strlen($str));
-        }
-        return $maxWidth;
     }
 
     /**

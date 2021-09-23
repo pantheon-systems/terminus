@@ -5,10 +5,13 @@ namespace Pantheon\Terminus\Site;
 use Pantheon\Terminus\Models\Site;
 use Pantheon\Terminus\Collections\Sites;
 use Pantheon\Terminus\Exceptions\TerminusException;
+use Pantheon\Terminus\Models\TerminusModel;
 
 /**
- * Class SiteAwareTrait
+ * Class SiteAwareTrait.
+ *
  * Implements the SiteAwareInterface for dependency injection of the Sites collection.
+ *
  * @package Pantheon\Terminus\Site
  */
 trait SiteAwareTrait
@@ -28,7 +31,8 @@ trait SiteAwareTrait
     }
 
     /**
-     * @return Sites The sites collection for the authenticated user.
+     * @return Sites
+     *   The sites' collection for the authenticated user.
      */
     public function sites(): Sites
     {
@@ -36,88 +40,77 @@ trait SiteAwareTrait
     }
 
     /**
-     * Look up a site by id.
+     * Returns the site by site UUID, site name or `site-name.env`.
      *
-     * @param string $site_id Either a site's UUID or its name
-     * @return null | Site
+     * @param string $site_id
+     *   Either a site's UUID or its name or site_env.
+     * @return Site
+     *
+     * @throws \Pantheon\Terminus\Exceptions\TerminusException
      */
-    public function getSite($site_id) : ?Site
+    public function getSite(string $site_id): Site
     {
-        if (strpos($site_id, ".")) {
-            $split = explode(".", $site_id);
-            $site_id = array_shift($split);
+        if (false !== strpos($site_id, '.')) {
+            $site_env_parts = explode('.', $site_id);
+            $site_id = $site_env_parts[0];
         }
+
         return $this->sites()->get($site_id);
     }
 
     /**
-     * Get the site and environment with the given ids, if provided
+     * Returns the environment by `site-name.env`.
      *
-     * @param string $site_env_id The site/environment id in the form [<site>[.<env>]]
-     * @return array The site and environment in an array, if provided; may return [null, null]
+     * @param string $site_env
+     *
+     * @return \Pantheon\Terminus\Models\Environment
+     *
+     * @throws \Pantheon\Terminus\Exceptions\TerminusException
+     * @throws \Pantheon\Terminus\Exceptions\TerminusNotFoundException
      */
-    public function getOptionalSiteEnv($site_env_id)
+    public function getEnv(string $site_env): TerminusModel
     {
-        if (empty($site_env_id)) {
-            return [null, null];
-        }
-
-        list($site_id, $env_id) = array_pad(explode('.', $site_env_id), 2, null);
-
-        $site = $this->getSite($site_id);
-        $env = !empty($env_id) ? $site->getEnvironments()->get($env_id) : null;
-        return [$site, $env];
-    }
-
-    /**
-     * Get the site and environment with the given ids.
-     *
-     * @TODO This should be moved to the input/validation stage when that is available.
-     *
-     * @param string  $site_env_id The site/environment id in the form <site>[.<env>]
-     * @param string  $default_env The default environment to use if none is specified
-     * @return array  The site and environment in an array.
-     *
-     * @deprecated
-     * Use $this->getSite($site_id | $site_env)->getEnvironments()->get($env)
-     * for a typed object return.
-     *
-     * @throws TerminusException
-     */
-    public function getSiteEnv($site_env_id, $default_env = null)
-    {
-        list($site_id, $env_id) = array_pad(explode('.', $site_env_id), 2, null);
-        $env_id = !empty($env_id) ? $env_id : $default_env;
-
-        if (empty($site_id) || empty($env_id)) {
+        if (false === strpos($site_env, '.')) {
             throw new TerminusException('The environment argument must be given as <site_name>.<environment>');
         }
 
-        $site = $this->getSite($site_id);
-        $env = $site->getEnvironments()->get($env_id);
-        return [$site, $env];
+        $site_env_parts = explode('.', $site_env);
+        $site_id = $site_env_parts[0];
+        $env_id = $site_env_parts[1];
+
+        return $this->sites()->get($site_id)->getEnvironments()->get($env_id);
     }
 
     /**
-     * Get the site and environment with the given IDs, provided the site is not frozen.
+     * @param string $site_env
+     * @return TerminusModel|null
      *
-     * @TODO This should be moved to the input/validation stage when that is available.
-     *
-     * @param string  $site_env_id The site/environment id in the form <site>[.<env>]
-     * @param string  $default_env The default environment to use if none is specified
-     * @return array  The site and environment in an array.
-     * @throws TerminusException
+     * @throws \Pantheon\Terminus\Exceptions\TerminusException
+     * @throws \Pantheon\Terminus\Exceptions\TerminusNotFoundException
      */
-    public function getUnfrozenSiteEnv($site_env_id, $default_env = null)
+    public function getOptionalEnv(string $site_env): ?TerminusModel
     {
-        [$site, $env] = $this->getSiteEnv($site_env_id, $default_env);
-        if ($site->isFrozen()) {
+        if (false === strpos($site_env, '.')) {
+            return null;
+        }
+
+        return $this->getEnv($site_env);
+    }
+
+    /**
+     * Verifies the site is not in the frozen state, throws an exception otherwise.
+     *
+     * @param string $site_env
+     *
+     * @throws \Pantheon\Terminus\Exceptions\TerminusException
+     */
+    public function requireSiteIsNotFrozen(string $site_env): void
+    {
+        if ($this->getSite($site_env)->isFrozen()) {
             throw new TerminusException(
                 'This site is frozen. Its test and live environments and many commands will be '
                 . 'unavailable while it remains frozen.'
             );
         }
-
-        return [$site, $env];
     }
 }

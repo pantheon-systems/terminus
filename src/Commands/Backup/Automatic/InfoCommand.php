@@ -18,7 +18,6 @@ class InfoCommand extends TerminusCommand implements SiteAwareInterface
     /**
      * Displays the hour when daily backups are created and the day of the week when weekly backups are created.
      *
-     *
      * @authorize
      *
      * @command backup:automatic:info
@@ -28,17 +27,19 @@ class InfoCommand extends TerminusCommand implements SiteAwareInterface
      *     weekly_backup_day: Weekly Backup Day
      *     expiry: Weekly Backup Expiry
      * @default-string-field weekly_backup_day
-     * @return PropertyList
-     *
      * @param string $site_env Site & environment in the format `site-name.env`
      *
      * @usage <site>.<env> Displays the day when <site>'s <env> environment's weekly backup is created.
      * @usage <site>.<env> --format=table Displays the hour of <site>'s <env> environment's daily backups (retained for one week), day on which its weekly backups (retained for one month) are made, and how long it is kept for.
+     *
+     * @return PropertyList
+     *
+     * @throws \Pantheon\Terminus\Exceptions\TerminusException
+     * @throws \Pantheon\Terminus\Exceptions\TerminusNotFoundException
      */
     public function getSchedule($site_env)
     {
-        list(, $env) = $this->getSiteEnv($site_env);
-        $schedule = $env->getBackups()->getBackupSchedule();
+        $schedule = $this->getEnv($site_env)->getBackups()->getBackupSchedule();
         if (is_null($schedule['daily_backup_hour'])) {
             $this->log()->notice('Backups are not currently scheduled to be run.');
         }
