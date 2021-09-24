@@ -31,7 +31,6 @@ class SiteCommand extends TerminusCommand implements SiteAwareInterface
      * @usage <site_name> <url> Imports the site archive at <url> to <site_name>.
      *
      * @throws \Pantheon\Terminus\Exceptions\TerminusException
-     * @throws \Pantheon\Terminus\Exceptions\TerminusNotFoundException
      */
     public function import($site_name, $url)
     {

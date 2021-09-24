@@ -29,7 +29,6 @@ class RemoveCommand extends TerminusCommand implements SiteAwareInterface
      * @usage <site>.<env> Disables HTTPS and removes the SSL certificate from <site>'s <env> environment.
      *
      * @throws \Pantheon\Terminus\Exceptions\TerminusException
-     * @throws \Pantheon\Terminus\Exceptions\TerminusNotFoundException
      */
     public function remove($site_env)
     {

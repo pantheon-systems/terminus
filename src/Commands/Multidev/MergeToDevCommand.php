@@ -33,7 +33,6 @@ class MergeToDevCommand extends TerminusCommand implements SiteAwareInterface
      * @usage <site>.<multidev> --updatedb Merges code commits from <site>'s <multidev> environment into the Dev environment and runs update.php afterwards.
      *
      * @throws \Pantheon\Terminus\Exceptions\TerminusException
-     * @throws \Pantheon\Terminus\Exceptions\TerminusNotFoundException
      */
     public function mergeToDev($site_env, $options = ['updatedb' => false,])
     {

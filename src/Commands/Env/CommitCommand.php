@@ -34,7 +34,6 @@ class CommitCommand extends TerminusCommand implements SiteAwareInterface
      * @usage <site>.<env> --message=<message> Commits code changes to <site>'s <env> environment with the message <message>.
      *
      * @throws \Pantheon\Terminus\Exceptions\TerminusException
-     * @throws \Pantheon\Terminus\Exceptions\TerminusNotFoundException
      */
     public function commit($site_env, $options = ['message' => 'Terminus commit.', 'force' => false])
     {

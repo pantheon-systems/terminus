@@ -27,7 +27,6 @@ class DisableCommand extends TerminusCommand implements SiteAwareInterface
      * @usage <site>.<env> Disables the regular backup schedule for <site>'s <env> environment.
      *
      * @throws \Pantheon\Terminus\Exceptions\TerminusException
-     * @throws \Pantheon\Terminus\Exceptions\TerminusNotFoundException
      */
     public function disableSchedule($site_env)
     {

@@ -33,7 +33,6 @@ class DeleteCommand extends TerminusCommand implements SiteAwareInterface
      * @usage <site>.<multidev> --delete-branch Deletes <site>'s <multidev> Multidev environment and deletes its associated Git branch.
      *
      * @throws \Pantheon\Terminus\Exceptions\TerminusException
-     * @throws \Pantheon\Terminus\Exceptions\TerminusNotFoundException
      */
     public function deleteMultidev($site_env, $options = ['delete-branch' => false,])
     {

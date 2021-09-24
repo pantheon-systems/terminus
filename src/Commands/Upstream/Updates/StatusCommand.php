@@ -21,7 +21,6 @@ class StatusCommand extends UpdatesCommand
      * @usage <site>.<env> Displays either "outdated" if <site>'s <env> environment has upstream updates or "current" if not.
      *
      * @throws \Pantheon\Terminus\Exceptions\TerminusException
-     * @throws \Pantheon\Terminus\Exceptions\TerminusNotFoundException
      */
     public function status($site_env)
     {

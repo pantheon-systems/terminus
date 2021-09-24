@@ -29,7 +29,6 @@ class RemoveCommand extends TerminusCommand implements SiteAwareInterface
      *
      * @usage <site>.<env> <domain_name> Disassociates <domain_name> from <site>'s <env> environment.
      *
-     * @throws \Pantheon\Terminus\Exceptions\TerminusNotFoundException
      * @throws \Pantheon\Terminus\Exceptions\TerminusException
      */
     public function remove($site_env, $domain)

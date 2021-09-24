@@ -36,7 +36,6 @@ class CodeLogCommand extends TerminusCommand implements SiteAwareInterface
      * @usage <site>.<env> Displays the code log for <site>'s <env> environment.
      *
      * @throws \Pantheon\Terminus\Exceptions\TerminusException
-     * @throws \Pantheon\Terminus\Exceptions\TerminusNotFoundException
      */
     public function codeLog($site_env)
     {

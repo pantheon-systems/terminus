@@ -30,7 +30,6 @@ class RemoveCommand extends TerminusCommand implements SiteAwareInterface
      * @usage <site>.<env> Un-designates the primary domain of <site>'s <env> environment.
      *
      * @throws \Pantheon\Terminus\Exceptions\TerminusException
-     * @throws \Pantheon\Terminus\Exceptions\TerminusNotFoundException
      */
     public function remove($site_env)
     {
@@ -40,8 +39,8 @@ class RemoveCommand extends TerminusCommand implements SiteAwareInterface
         $this->log()->notice(
             'Primary domain has been removed from {site}.{env}',
             [
-                'site' => $this->getSite($site_env)->getNme(),
-                'env' => $env->geName(),
+                'site' => $this->getSite($site_env)->getName(),
+                'env' => $env->getName(),
             ]
         );
     }

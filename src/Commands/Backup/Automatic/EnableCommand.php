@@ -33,7 +33,6 @@ class EnableCommand extends TerminusCommand implements SiteAwareInterface
      * @usage <site>.<env> --keep-for=<days> Enables automatic daily backups of <site>'s <env> environment that are retained for one week and weekly backups on <day> that are retained for <days>.
      *
      * @throws \Pantheon\Terminus\Exceptions\TerminusException
-     * @throws \Pantheon\Terminus\Exceptions\TerminusNotFoundException
      */
     public function enableSchedule($site_env, $options = ['day' => null, 'keep-for' => null,])
     {

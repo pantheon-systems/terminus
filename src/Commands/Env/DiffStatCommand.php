@@ -33,7 +33,6 @@ class DiffStatCommand extends TerminusCommand implements SiteAwareInterface
      * @usage <site>.<env> Displays a diff of uncommitted code changes on <site>'s <env> environment.
      *
      * @throws \Pantheon\Terminus\Exceptions\TerminusException
-     * @throws \Pantheon\Terminus\Exceptions\TerminusNotFoundException
      */
     public function diffstat($site_env)
     {

@@ -32,7 +32,6 @@ class ListCommand extends UpdatesCommand
      * @usage <site>.<env> Displays a list of new code commits available from the upstream for <site>'s <env> environment.
      *
      * @throws \Pantheon\Terminus\Exceptions\TerminusException
-     * @throws \Pantheon\Terminus\Exceptions\TerminusNotFoundException
      */
     public function listUpstreamUpdates($site_env)
     {

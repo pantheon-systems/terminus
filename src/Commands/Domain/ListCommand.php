@@ -38,7 +38,6 @@ class ListCommand extends TerminusCommand implements SiteAwareInterface
      *
      * @usage <site>.<env> Displays domains associated with <site>'s <env> environment.
      *
-     * @throws \Pantheon\Terminus\Exceptions\TerminusNotFoundException
      * @throws \Pantheon\Terminus\Exceptions\TerminusException
      */
     public function listDomains($site_env)

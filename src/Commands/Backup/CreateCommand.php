@@ -32,7 +32,6 @@ class CreateCommand extends BackupCommand
      * @usage <site>.<env> --keep-for=<days> Creates a backup of <site>'s <env> environment's <element> and retains it for <days> days.
      *
      * @throws \Pantheon\Terminus\Exceptions\TerminusException
-     * @throws \Pantheon\Terminus\Exceptions\TerminusNotFoundException
      */
     public function create($site_env, $options = ['element' => 'all', 'keep-for' => null,])
     {

@@ -37,7 +37,6 @@ class InfoCommand extends TerminusCommand implements SiteAwareInterface
      * @usage <site>.<env> Displays HTTPS configuration for <site>'s <env> environment.
      *
      * @throws \Pantheon\Terminus\Exceptions\TerminusException
-     * @throws \Pantheon\Terminus\Exceptions\TerminusNotFoundException
      */
     public function info($site_env)
     {

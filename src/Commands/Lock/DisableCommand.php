@@ -28,7 +28,6 @@ class DisableCommand extends TerminusCommand implements SiteAwareInterface
      * @usage <site>.<env> Disables HTTP basic authentication on <site>'s <env> environment.
      *
      * @throws \Pantheon\Terminus\Exceptions\TerminusException
-     * @throws \Pantheon\Terminus\Exceptions\TerminusNotFoundException
      */
     public function disable($site_env)
     {

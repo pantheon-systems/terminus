@@ -38,7 +38,6 @@ class CreateCommand extends TerminusCommand implements SiteAwareInterface
      * @usage <site>.<env> <multidev> --no-files Creates the <multidev> environment without files from the <env> environment.
      *
      * @throws \Pantheon\Terminus\Exceptions\TerminusException
-     * @throws \Pantheon\Terminus\Exceptions\TerminusNotFoundException
      */
     public function create(
         string $site_env,

@@ -35,7 +35,6 @@ class InfoCommand extends TerminusCommand implements SiteAwareInterface
      * @return PropertyList
      *
      * @throws \Pantheon\Terminus\Exceptions\TerminusException
-     * @throws \Pantheon\Terminus\Exceptions\TerminusNotFoundException
      */
     public function getSchedule($site_env)
     {

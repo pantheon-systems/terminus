@@ -39,7 +39,6 @@ class ListCommand extends BackupCommand
      * @usage <site>.<env> --element=<element> Lists all <element> backups made of <site>'s <env> environment.
      *
      * @throws \Pantheon\Terminus\Exceptions\TerminusException
-     * @throws \Pantheon\Terminus\Exceptions\TerminusNotFoundException
      */
     public function listBackups($site_env, array $options = ['element' => 'all',])
     {

@@ -38,7 +38,6 @@ class ViewCommand extends TerminusCommand implements SiteAwareInterface
      * @usage <site>.<env> Opens browser to <site>'s <env> environment on the Pantheon Dashboard.
      *
      * @throws \Pantheon\Terminus\Exceptions\TerminusException
-     * @throws \Pantheon\Terminus\Exceptions\TerminusNotFoundException
      */
     public function view($site_env = null, array $options = ['print' => false])
     {
@@ -60,7 +59,6 @@ class ViewCommand extends TerminusCommand implements SiteAwareInterface
      * @return string
      *
      * @throws \Pantheon\Terminus\Exceptions\TerminusException
-     * @throws \Pantheon\Terminus\Exceptions\TerminusNotFoundException
      */
     private function getDashboardUrl(?string $site_env): string
     {

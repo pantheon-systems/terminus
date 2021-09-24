@@ -55,7 +55,6 @@ class InfoCommand extends TerminusCommand implements SiteAwareInterface
      * @usage <site>.<env> --fields='git_*' Displays connection information fields related to Git for <site>'s <env> environment.
      *
      * @throws \Pantheon\Terminus\Exceptions\TerminusException
-     * @throws \Pantheon\Terminus\Exceptions\TerminusNotFoundException
      */
     public function connectionInfo($site_env)
     {

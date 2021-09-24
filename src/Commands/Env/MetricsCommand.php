@@ -56,7 +56,6 @@ class MetricsCommand extends TerminusCommand implements SiteAwareInterface
      * @return \Consolidation\OutputFormatters\StructuredData\RowsOfFieldsWithMetadata
      *
      * @throws \Pantheon\Terminus\Exceptions\TerminusException
-     * @throws \Pantheon\Terminus\Exceptions\TerminusNotFoundException
      */
     public function metrics(
         $site_env,

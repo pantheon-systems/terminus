@@ -29,7 +29,6 @@ class FilesCommand extends TerminusCommand implements SiteAwareInterface
      * @usage <site>.<env> <archive_url> Imports the files in the archive at <archive_url> to <site>'s <env> environment.
      *
      * @throws \Pantheon\Terminus\Exceptions\TerminusException
-     * @throws \Pantheon\Terminus\Exceptions\TerminusNotFoundException
      */
     public function import($site_env, $url)
     {

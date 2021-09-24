@@ -31,7 +31,6 @@ class EnableCommand extends TerminusCommand implements SiteAwareInterface
      * @usage <site>.<env> <username> <password> Enables HTTP basic authentication on <site>'s <env> environment with the username <username> and the password <password>.
      *
      * @throws \Pantheon\Terminus\Exceptions\TerminusException
-     * @throws \Pantheon\Terminus\Exceptions\TerminusNotFoundException
      */
     public function enable($site_env, $username, $password)
     {

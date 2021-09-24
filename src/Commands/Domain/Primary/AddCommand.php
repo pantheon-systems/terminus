@@ -35,7 +35,6 @@ class AddCommand extends TerminusCommand implements SiteAwareInterface
      * @usage <site>.<env> <domain> Designates <domain> as the primary domain of <site>'s <env> environment.
      *
      * @throws \Pantheon\Terminus\Exceptions\TerminusException
-     * @throws \Pantheon\Terminus\Exceptions\TerminusNotFoundException
      */
     public function add($site_env, $domain)
     {
@@ -65,7 +64,6 @@ class AddCommand extends TerminusCommand implements SiteAwareInterface
      * @hook interact domain:primary:add
      *
      * @throws \Pantheon\Terminus\Exceptions\TerminusException
-     * @throws \Pantheon\Terminus\Exceptions\TerminusNotFoundException
      */
     public function interact(InputInterface $input, OutputInterface $output, AnnotationData $annotationData)
     {

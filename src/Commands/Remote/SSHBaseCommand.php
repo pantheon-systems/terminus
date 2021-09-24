@@ -45,7 +45,6 @@ abstract class SSHBaseCommand extends TerminusCommand implements SiteAwareInterf
      * @param string $site_env The site/env to retrieve in <site>.<env> format
      *
      * @throws \Pantheon\Terminus\Exceptions\TerminusException
-     * @throws \Pantheon\Terminus\Exceptions\TerminusNotFoundException
      */
     protected function prepareEnvironment($site_env)
     {

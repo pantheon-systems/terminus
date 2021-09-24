@@ -62,39 +62,42 @@ trait SiteAwareTrait
      * Returns the environment by `site-name.env`.
      *
      * @param string $site_env
+     * @param string|null $default_env
      *
      * @return \Pantheon\Terminus\Models\Environment
      *
      * @throws \Pantheon\Terminus\Exceptions\TerminusException
-     * @throws \Pantheon\Terminus\Exceptions\TerminusNotFoundException
      */
-    public function getEnv(string $site_env): TerminusModel
+    public function getEnv(string $site_env, ?string $default_env = null): TerminusModel
     {
-        if (false === strpos($site_env, '.')) {
+        if (null === $default_env && false === strpos($site_env, '.')) {
             throw new TerminusException('The environment argument must be given as <site_name>.<environment>');
         }
 
         $site_env_parts = explode('.', $site_env);
         $site_id = $site_env_parts[0];
-        $env_id = $site_env_parts[1];
+        $env_id = $site_env_parts[1] ?? $default_env;
 
         return $this->sites()->get($site_id)->getEnvironments()->get($env_id);
     }
 
     /**
+     * Returns the environment if provided in a form of `site-name.env`.
+     *
      * @param string $site_env
+     * @param string|null $default_env
+     *
      * @return TerminusModel|null
      *
-     * @throws \Pantheon\Terminus\Exceptions\TerminusException
-     * @throws \Pantheon\Terminus\Exceptions\TerminusNotFoundException
+     * @throws TerminusException
      */
-    public function getOptionalEnv(string $site_env): ?TerminusModel
+    public function getOptionalEnv(string $site_env, ?string $default_env = null): ?TerminusModel
     {
-        if (false === strpos($site_env, '.')) {
+        if (null === $default_env && false === strpos($site_env, '.')) {
             return null;
         }
 
-        return $this->getEnv($site_env);
+        return $this->getEnv($site_env, $default_env);
     }
 
     /**
@@ -112,5 +115,85 @@ trait SiteAwareTrait
                 . 'unavailable while it remains frozen.'
             );
         }
+    }
+
+    /**
+     * Get the site and environment by `site-name.env`.
+     *
+     * @deprecated
+     *   Use $this->getOptionalEnv($site_env).
+     *
+     * @param string $site_env
+     *   The site/environment id in the form [<site>[.<env>]].
+     *
+     * @return array
+     *   The site and environment in an array, if provided; may return [null, null].
+     */
+    public function getOptionalSiteEnv(string $site_env): array
+    {
+        try {
+            $site = $this->getSite($site_env);
+        } catch (TerminusException $e) {
+            return [null, null];
+        }
+
+        try {
+            $env = $this->getEnv($site_env);
+        } catch (TerminusException $e) {
+            return [$site, null];
+        }
+
+        return [$site, $env];
+    }
+
+    /**
+     * Get the site and environment by `site-name.env`.
+     *
+     * @deprecated
+     *   Use $this->getSite($site_env) and $this->getEnv($site_env).
+     *
+     * @param string $site_env
+     *   The site/environment id in the form <site>[.<env>].
+     * @param string|null $default_env
+     *   The default environment to use if none is specified.
+     *
+     * @return array
+     *   The site and environment in an array.
+     *
+     * @throws \Pantheon\Terminus\Exceptions\TerminusException
+     */
+    public function getSiteEnv(string $site_env, ?string $default_env = null): array
+    {
+        return [
+            $this->getSite($site_env),
+            $this->getOptionalEnv($site_env, $default_env),
+        ];
+    }
+
+    /**
+     * Get the site and environment by `site-name.env`, provided the site is not frozen.
+     *
+     * @deprecated
+     *   Use $this->requireSiteIsNotFrozen($site_env) in conjunction with $this->getSite($site_env) and/or
+     *   $this->getEnv($site_env)/$this->getOptionalEnv($site_env).
+     *
+     * @param string $site_env
+     *   The site/environment id in the form <site>[.<env>].
+     * @param string|null $default_env
+     *   The default environment to use if none is specified.
+     *
+     * @return array
+     *   The site and environment in an array.
+     *
+     * @throws \Pantheon\Terminus\Exceptions\TerminusException
+     */
+    public function getUnfrozenSiteEnv(string $site_env, ?string $default_env = null): array
+    {
+        $this->requireSiteIsNotFrozen($site_env);
+
+        return [
+            $this->getSite($site_env),
+            $this->getOptionalEnv($site_env, $default_env),
+        ];
     }
 }

@@ -28,7 +28,6 @@ class AddCommand extends TerminusCommand implements SiteAwareInterface
      * @usage <site>.<env> <domain_name> Associates <domain_name> with <site>'s <env> environment.
      *
      * @throws \Pantheon\Terminus\Exceptions\TerminusException
-     * @throws \Pantheon\Terminus\Exceptions\TerminusNotFoundException
      */
     public function add($site_env, $domain)
     {

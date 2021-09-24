@@ -36,7 +36,6 @@ class InfoCommand extends TerminusCommand implements SiteAwareInterface
      * @return \Consolidation\OutputFormatters\StructuredData\PropertyList
      *
      * @throws \Pantheon\Terminus\Exceptions\TerminusException
-     * @throws \Pantheon\Terminus\Exceptions\TerminusNotFoundException
      */
     public function info($site_env)
     {

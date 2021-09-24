@@ -36,7 +36,6 @@ class SetCommand extends TerminusCommand implements SiteAwareInterface
      * @usage <site>.<env> <cert> <key> --intermediate-certificate=<int_cert_file> Enables HTTPS for <site>'s <env> environment using the SSL certificate at <cert_file>, private key at <key_file> and intermediate certificate(s) at <int_cert_file>.
      *
      * @throws \Pantheon\Terminus\Exceptions\TerminusException
-     * @throws \Pantheon\Terminus\Exceptions\TerminusNotFoundException
      */
     public function set($site_env, $certificate, $private_key, $options = ['intermediate-certificate' => null,])
     {
