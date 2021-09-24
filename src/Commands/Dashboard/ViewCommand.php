@@ -27,8 +27,8 @@ class ViewCommand extends TerminusCommand implements SiteAwareInterface
      * @option string $site_env Site & environment in the format `site-name.env`
      * @option boolean $print Print URL only
      *
-     * @param null $site_env
-     * @param false[] $options
+     * @param string|null $site_env
+     * @param array $options
      *
      * @return string|null
      *
@@ -40,21 +40,38 @@ class ViewCommand extends TerminusCommand implements SiteAwareInterface
      * @throws \Pantheon\Terminus\Exceptions\TerminusException
      * @throws \Pantheon\Terminus\Exceptions\TerminusNotFoundException
      */
-    public function view($site_env = null, $options = ['print' => false,])
+    public function view($site_env = null, array $options = ['print' => false])
     {
-        if (!$site_env) {
-            $url = $this->session()->getUser()->dashboardUrl();
-        } elseif ($env = $this->getOptionalEnv($site_env)) {
-            $url = $env->dashboardUrl();
-        } else {
-            $url = $this->getSite($site_env)->dashboardUrl();
-        }
-
         if ($options['print']) {
-            return $url;
+            return $this->getDashboardUrl($site_env);
         }
-        $this->getContainer()->get(LocalMachineHelper::class)->openUrl($url);
+        $this->getContainer()
+            ->get(LocalMachineHelper::class)
+            ->openUrl($this->getDashboardUrl($site_env));
 
         return null;
+    }
+
+    /**
+     * Returns the dashboard URL.
+     *
+     * @param string|null $site_env
+     *
+     * @return string
+     *
+     * @throws \Pantheon\Terminus\Exceptions\TerminusException
+     * @throws \Pantheon\Terminus\Exceptions\TerminusNotFoundException
+     */
+    private function getDashboardUrl(?string $site_env): string
+    {
+        if (null === $site_env) {
+            return $this->session()->getUser()->dashboardUrl();
+        }
+
+        if ($this->getOptionalEnv($site_env)) {
+            return $this->getOptionalEnv($site_env)->dashboardUrl();
+        }
+
+        return $this->getSite($site_env)->dashboardUrl();
     }
 }
