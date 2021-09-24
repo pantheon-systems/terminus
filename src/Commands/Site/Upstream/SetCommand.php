@@ -23,7 +23,6 @@ class SetCommand extends SiteCommand
      *
      * @param string $site_name Site name
      * @param string $upstream_id Upstream name or UUID
-     * @throws \Pantheon\Terminus\Exceptions\TerminusNotFoundException
      *
      * @usage <site> <upstream_id> Updates <site>'s upstream to <upstream_id>.
      */

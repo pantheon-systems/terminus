@@ -176,15 +176,17 @@ class Environment extends TerminusModel implements ContainerAwareInterface, Site
     }
 
     /**
-     * Commits changes to code
+     * Commits changes to code.
      *
-     * @param string $commit Should be the commit message to use if committing
+     * @param string|null $commit Should be the commit message to use if committing
      *   on server changes
-     * @return array Response data
+     *
+     * @return \Pantheon\Terminus\Models\Workflow
+     *
+     * @throws \Pantheon\Terminus\Exceptions\TerminusException
      */
-    public function commitChanges($commit = null)
+    public function commitChanges(?string $commit = null): Workflow
     {
-        $nickname = \uniqid(__FUNCTION__ . "-");
         $local = $this->getContainer()->get(LocalMachineHelper::class);
 
         $git_email_result = $local->exec('git config user.email');
@@ -594,7 +596,7 @@ class Environment extends TerminusModel implements ContainerAwareInterface, Site
         $domain = "codeserver.dev.{$site->id}.drush.in";
         $port = '2222';
         $url = "ssh://$username@$domain:$port/~/repository.git";
-        $command = trim("git clone $url {$site->get('name')}");
+        $command = trim("git clone $url {$site->getName()}");
         return [
             'username' => $username,
             'host' => $domain,

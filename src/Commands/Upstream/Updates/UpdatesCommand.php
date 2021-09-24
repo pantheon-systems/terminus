@@ -8,7 +8,8 @@ use Pantheon\Terminus\Site\SiteAwareTrait;
 use Pantheon\Terminus\Exceptions\TerminusException;
 
 /**
- * Class UpdatesCommand
+ * Class UpdatesCommand.
+ *
  * @package Pantheon\Terminus\Commands\Upstream\Updates
  */
 abstract class UpdatesCommand extends TerminusCommand implements SiteAwareInterface
@@ -18,9 +19,11 @@ abstract class UpdatesCommand extends TerminusCommand implements SiteAwareInterf
     /**
      * Return the upstream for the given site
      *
-     * @param Site $site
+     * @param \Pantheon\Terminus\Models\Environment $env
+     *
      * @return object The upstream information
-     * @throws TerminusException
+     *
+     * @throws \Pantheon\Terminus\Exceptions\TerminusException
      */
     protected function getUpstreamUpdates($env)
     {
@@ -33,9 +36,11 @@ abstract class UpdatesCommand extends TerminusCommand implements SiteAwareInterf
     /**
      * Get the list of upstream updates for a site
      *
-     * @param Site $site
+     * @param \Pantheon\Terminus\Models\Environment $env
+     *
      * @return array The list of updates
-     * @throws TerminusException
+     *
+     * @throws \Pantheon\Terminus\Exceptions\TerminusException
      */
     protected function getUpstreamUpdatesLog($env)
     {
@@ -46,9 +51,9 @@ abstract class UpdatesCommand extends TerminusCommand implements SiteAwareInterf
     /**
      * Get the list of composer dependency updates for a site environment
      *
-     * @param Environment $env
+     * @param \Pantheon\Terminus\Models\Environment $env
+     *
      * @return array The list of updates
-     * @throws TerminusException
      */
     protected function getComposerUpdatesLog($env)
     {

@@ -32,12 +32,13 @@ class ApplyCommand extends UpdatesCommand
      */
     public function applyUpstreamUpdates($site_env, $options = ['updatedb' => false, 'accept-upstream' => false,])
     {
-        list($site, $env) = $this->getSiteEnv($site_env, 'dev');
+        $site = $this->getSite($site_env);
+        $env = $this->getEnv($site_env);
 
-        if (in_array($env->id, ['test', 'live',])) {
+        if (in_array($env->getName(), ['test', 'live'])) {
             throw new TerminusException(
                 'Upstream updates cannot be applied to the {env} environment',
-                ['env' => $env->id,]
+                ['env' => $env->getName()]
             );
         }
 
@@ -55,13 +56,13 @@ class ApplyCommand extends UpdatesCommand
                 '{prefix} to the {env} environment of {site_id}...',
                 [
                     'prefix' => $prefix,
-                    'env' => $env->id,
-                    'site_id' => $site->get('name'),
+                    'env' => $env->getName(),
+                    'site_id' => $site->getName(),
                 ]
             );
             $workflow = $env->applyUpstreamUpdates(
-                isset($options['updatedb']) ? $options['updatedb'] : false,
-                isset($options['accept-upstream']) ? $options['accept-upstream'] : false
+                $options['updatedb'] ?? false,
+                $options['accept-upstream'] ?? false
             );
             $this->processWorkflow($workflow);
             $this->log()->notice($workflow->getMessage());

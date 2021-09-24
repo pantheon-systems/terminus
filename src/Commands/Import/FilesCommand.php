@@ -8,7 +8,8 @@ use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 
 /**
- * Class FilesCommand
+ * Class FilesCommand.
+ *
  * @package Pantheon\Terminus\Commands\Import
  */
 class FilesCommand extends TerminusCommand implements SiteAwareInterface
@@ -25,22 +26,26 @@ class FilesCommand extends TerminusCommand implements SiteAwareInterface
      *
      * @param string $site_env Site & environment in the format `site-name.env`
      * @param string $url Publicly accessible URL of the file archive
-     *
      * @usage <site>.<env> <archive_url> Imports the files in the archive at <archive_url> to <site>'s <env> environment.
+     *
+     * @throws \Pantheon\Terminus\Exceptions\TerminusException
      */
     public function import($site_env, $url)
     {
-        list($site, $env) = $this->getSiteEnv($site_env);
+        $site = $this->getSite($site_env);
+        $env = $this->getEnv($site_env);
 
-        $tr = ['site' => $site->getName(), 'env' => $env->getName()];
-        if (!$this->confirm('Are you sure you overwrite the files for {env} on {site}?', $tr)) {
+        if (!$this->confirm(
+            'Are you sure you overwrite the files for {env} on {site}?',
+            ['site' => $site->getName(), 'env' => $env->getName()]
+        )) {
             return;
         }
 
         $this->processWorkflow($env->importFiles($url));
         $this->log()->notice(
             'Imported files to {site}.{env}.',
-            ['site' => $site->get('name'), 'env' => $env->id,]
+            ['site' => $site->getName(), 'env' => $env->getName()]
         );
     }
 }

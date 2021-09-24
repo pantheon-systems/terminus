@@ -9,7 +9,8 @@ use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 
 /**
- * Class InfoCommand
+ * Class InfoCommand.
+ *
  * @package Pantheon\Terminus\Commands\Lock
  */
 class InfoCommand extends TerminusCommand implements SiteAwareInterface
@@ -28,15 +29,16 @@ class InfoCommand extends TerminusCommand implements SiteAwareInterface
      *     locked: Locked?
      *     username: Username
      *     password: Password
-     * @return PropertyList
-     *
      * @param string $site_env Site & environment in the format `site-name.env`
      *
      * @usage <site>.<env> Displays HTTP basic authentication status and configuration for <site>'s <env> environment.
+     *
+     * @return \Consolidation\OutputFormatters\StructuredData\PropertyList
+     *
+     * @throws \Pantheon\Terminus\Exceptions\TerminusException
      */
     public function info($site_env)
     {
-        list(, $env) = $this->getSiteEnv($site_env);
-        return $this->getPropertyList($env->getLock());
+        return $this->getPropertyList($this->getEnv($site_env)->getLock());
     }
 }

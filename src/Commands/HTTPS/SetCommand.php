@@ -8,7 +8,8 @@ use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 
 /**
- * Class SetCommand
+ * Class SetCommand.
+ *
  * @package Pantheon\Terminus\Commands\HTTPS
  */
 class SetCommand extends TerminusCommand implements SiteAwareInterface
@@ -27,14 +28,17 @@ class SetCommand extends TerminusCommand implements SiteAwareInterface
      * @param string $site_env Site & environment in the format `site-name.env`
      * @param string $certificate File containing the SSL certificate
      * @param string $private_key File containing the private key
+     * @param null[] $options
+     *
      * @option string $intermediate-certificate File containing the CA intermediate certificate(s)
      *
      * @usage <site>.<env> <cert_file> <key_file> Enables HTTPS for <site>'s <env> environment using the SSL certificate at <cert_file> and private key at <key_file>.
      * @usage <site>.<env> <cert> <key> --intermediate-certificate=<int_cert_file> Enables HTTPS for <site>'s <env> environment using the SSL certificate at <cert_file>, private key at <key_file> and intermediate certificate(s) at <int_cert_file>.
+     *
+     * @throws \Pantheon\Terminus\Exceptions\TerminusException
      */
     public function set($site_env, $certificate, $private_key, $options = ['intermediate-certificate' => null,])
     {
-        list(, $env) = $this->getSiteEnv($site_env);
         $key = [
             'cert' => file_exists($certificate) ? trim(file_get_contents($certificate)) : $certificate,
             'key' => file_exists($private_key) ? trim(file_get_contents($private_key)) : $private_key,
@@ -48,7 +52,7 @@ class SetCommand extends TerminusCommand implements SiteAwareInterface
         }
 
         // Set the key for the environment.
-        $workflow = $env->setHttpsCertificate($key);
+        $workflow = $this->getEnv($site_env)->setHttpsCertificate($key);
 
         // Wait for the workflow to complete.
         $this->log()->notice('SSL certificate updated. Converging loadbalancer.');

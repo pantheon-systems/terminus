@@ -3,19 +3,22 @@
 namespace Pantheon\Terminus\Commands\Backup;
 
 use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
+use Pantheon\Terminus\Models\Backup;
 
 abstract class SingleBackupCommand extends BackupCommand
 {
-
     /**
      * @param $site_env
      * @param array $options
+     *
      * @return Backup
-     * @throws TerminusNotFoundException
+     *
+     * @throws \Pantheon\Terminus\Exceptions\TerminusNotFoundException
+     * @throws \Pantheon\Terminus\Exceptions\TerminusException
      */
-    protected function getBackup($site_env, array $options = ['file' => null, 'element' => 'all',])
+    protected function getBackup($site_env, array $options = ['file' => null, 'element' => 'all',]): Backup
     {
-        list($site, $env) = $this->getSiteEnv($site_env);
+        $env = $this->getEnv($site_env);
 
         if (isset($options['file']) && !is_null($file_name = $options['file'])) {
             $backup = $env->getBackups()->getBackupByFileName($file_name);
@@ -25,7 +28,10 @@ abstract class SingleBackupCommand extends BackupCommand
             if (empty($backups)) {
                 throw new TerminusNotFoundException(
                     'No backups available. Create one with `terminus backup:create {site}.{env}`',
-                    ['site' => $site->get('name'), 'env' => $env->id,]
+                    [
+                        'site' => $this->getSite($site_env)->getName(),
+                        'env' => $env->getName(),
+                    ]
                 );
             }
             $backup = array_shift($backups);

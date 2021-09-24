@@ -89,7 +89,7 @@ class Workflows extends APICollection implements SessionAwareInterface
      *   - params: associative array of parameters for the request
      * @return Workflow $model
      */
-    public function create($type, array $options = [])
+    public function create($type, array $options = []): Workflow
     {
 
         $params = $options['params'] ?? [];

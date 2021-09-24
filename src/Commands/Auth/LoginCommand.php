@@ -36,8 +36,7 @@ class LoginCommand extends TerminusCommand
      * @usage Logs in a user with a previously saved machine token.
      * @usage --email=<email> Logs in a user with a previously saved machine token belonging to <email>.
      *
-     * @throws \Pantheon\Terminus\Exceptions\TerminusNotFoundException
-     * @throws TerminusException
+     * @throws \Pantheon\Terminus\Exceptions\TerminusException
      */
     public function logIn(array $options = ['machine-token' => null, 'email' => null,]): void
     {

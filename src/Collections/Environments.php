@@ -3,9 +3,11 @@
 namespace Pantheon\Terminus\Collections;
 
 use Pantheon\Terminus\Models\Environment;
+use Pantheon\Terminus\Models\Workflow;
 
 /**
- * Class Environments
+ * Class Environments.
+ *
  * @package Pantheon\Terminus\Collections
  */
 class Environments extends SiteOwnedCollection
@@ -28,9 +30,12 @@ class Environments extends SiteOwnedCollection
      * @param array $options
      *     bool no-db Do not copy database from the source environment
      *     bool no-files Do not copy files from the source environment
-     * @return Workflow
+     *
+     * @return \Pantheon\Terminus\Models\Workflow
+     *
+     * @throws \Pantheon\Terminus\Exceptions\TerminusException
      */
-    public function create($target_env_id, Environment $source_env, array $options = [])
+    public function create($target_env_id, Environment $source_env, array $options = []): Workflow
     {
         $params = [
             'clone_database' => ['from_environment' => $source_env->id,],
@@ -44,7 +49,7 @@ class Environments extends SiteOwnedCollection
             unset($params['clone_files']);
         }
 
-        $workflow = $this->getSite()->getWorkflows()->create(
+        return $this->getSite()->getWorkflows()->create(
             'create_cloud_development_environment',
             [
                 'params' => [
@@ -53,7 +58,6 @@ class Environments extends SiteOwnedCollection
                 ],
             ]
         );
-        return $workflow;
     }
 
     /**

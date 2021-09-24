@@ -8,7 +8,8 @@ use Pantheon\Terminus\Site\SiteAwareTrait;
 use Pantheon\Terminus\Exceptions\TerminusException;
 
 /**
- * Class WakeCommand
+ * Class WakeCommand.
+ *
  * @package Pantheon\Terminus\Commands\Env
  */
 class WakeCommand extends TerminusCommand implements SiteAwareInterface
@@ -31,17 +32,18 @@ class WakeCommand extends TerminusCommand implements SiteAwareInterface
      */
     public function wake($site_env)
     {
-        list(, $env) = $this->getUnfrozenSiteEnv($site_env);
-        $data = $env->wake();
+        $this->requireSiteIsNotFrozen($site_env);
+        $env = $this->getEnv($site_env);
+        $wakeStatus = $env->wake();
 
         // @TODO: Move the exceptions up the chain to the `wake` function. (One env is ported over).
-        if (empty($data['success'])) {
-            throw new TerminusException('Could not reach {target}', $data);
+        if (empty($wakeStatus['success'])) {
+            throw new TerminusException('Could not reach {target}', $wakeStatus);
         }
-        if (empty($data['styx'])) {
+        if (empty($wakeStatus['styx'])) {
             throw new TerminusException('Pantheon headers missing, which is not quite right.');
         }
 
-        $this->log()->notice('OK >> {target} responded', $data);
+        $this->log()->notice('OK >> {target} responded', $wakeStatus);
     }
 }

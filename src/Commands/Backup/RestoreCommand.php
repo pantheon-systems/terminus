@@ -31,11 +31,15 @@ class RestoreCommand extends SingleBackupCommand
      */
     public function restoreBackup($site_env, array $options = ['file' => null, 'element' => 'all',])
     {
-        list($site, $env) = $this->getSiteEnv($site_env);
+        $site = $this->getSite($site_env);
+        $env = $this->getEnv($site_env);
+
         $backup = $this->getBackup($site_env, $options);
 
-        $tr = ['site' => $site->getName(), 'env' => $env->getName()];
-        if (!$this->confirm('Are you sure you want to restore to {env} on {site}?', $tr)) {
+        if (!$this->confirm(
+            'Are you sure you want to restore to {env} on {site}?',
+            ['site' => $site->getName(), 'env' => $env->getName()]
+        )) {
             return;
         }
 

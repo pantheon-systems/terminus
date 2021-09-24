@@ -9,7 +9,8 @@ use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 
 /**
- * Class InfoCommand
+ * Class InfoCommand.
+ *
  * @package Pantheon\Terminus\Commands\Env
  */
 class InfoCommand extends TerminusCommand implements SiteAwareInterface
@@ -33,15 +34,18 @@ class InfoCommand extends TerminusCommand implements SiteAwareInterface
      *     connection_mode: Connection Mode
      *     php_version: PHP Version
      *     drush_version: Drush Version
-     * @return PropertyList
-     *
      * @param string $site_env Site & environment in the format `site-name.env`
      *
+     * @return \Consolidation\OutputFormatters\StructuredData\PropertyList
+     *
      * @usage <site>.<env> Displays status and configuration for <site>'s <env> environment.
+     *
+     * @throws \Pantheon\Terminus\Exceptions\TerminusException
      */
     public function info($site_env)
     {
-        list(, $env) = $this->getUnfrozenSiteEnv($site_env);
-        return $this->getPropertyList($env);
+        $this->requireSiteIsNotFrozen($site_env);
+
+        return $this->getPropertyList($this->getEnv($site_env));
     }
 }

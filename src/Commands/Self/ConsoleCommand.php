@@ -7,7 +7,8 @@ use Pantheon\Terminus\Site\SiteAwareTrait;
 use Pantheon\Terminus\Commands\TerminusCommand;
 
 /**
- * Class ConsoleCommand
+ * Class ConsoleCommand.
+ *
  * @package Pantheon\Terminus\Commands\Self
  */
 class ConsoleCommand extends TerminusCommand implements SiteAwareInterface
@@ -25,10 +26,14 @@ class ConsoleCommand extends TerminusCommand implements SiteAwareInterface
      * @usage Opens an interactive PHP console within Terminus.
      * @usage <site> Opens an interactive PHP console within Terminus and loads <site> as $site.
      * @usage <site>.<env> Opens an interactive PHP console within Terminus and loads <site> and its <env> environment as $site and $env.
+     *
+     * @throws \Pantheon\Terminus\Exceptions\TerminusException
      */
     public function console($site_env = null)
     {
-        list($site, $env) = $this->getOptionalSiteEnv($site_env, null);
+        $site = $site_env ?? $this->getSite($site_env);
+        $env = $site_env ?? $this->getOptionalEnv($site_env);
+
         eval(\Psy\sh());
     }
 }

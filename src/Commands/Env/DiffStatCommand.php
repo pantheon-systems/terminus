@@ -8,7 +8,8 @@ use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 
 /**
- * Class DiffStatCommand
+ * Class DiffStatCommand.
+ *
  * @package Pantheon\Terminus\Commands\Env
  */
 class DiffStatCommand extends TerminusCommand implements SiteAwareInterface
@@ -22,18 +23,22 @@ class DiffStatCommand extends TerminusCommand implements SiteAwareInterface
      *
      * @param string $site_env Site & development environment in the format `site-name.env`
      *
+     * @return \Consolidation\OutputFormatters\StructuredData\RowsOfFields
+     *
      * @field-labels
      *     file: File
      *     status: Status
      *     deletions: Deletions
      *     additions: Additions
-     * @return RowsOfFields
-     *
      * @usage <site>.<env> Displays a diff of uncommitted code changes on <site>'s <env> environment.
+     *
+     * @throws \Pantheon\Terminus\Exceptions\TerminusException
      */
     public function diffstat($site_env)
     {
-        list(, $env) = $this->getUnfrozenSiteEnv($site_env);
+        $this->requireSiteIsNotFrozen($site_env);
+        $env = $this->getEnv($site_env);
+
         $diff = (array)$env->diffstat();
         $data = [];
         if (empty($diff)) {

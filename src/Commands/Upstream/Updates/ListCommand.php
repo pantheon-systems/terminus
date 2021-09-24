@@ -5,7 +5,8 @@ namespace Pantheon\Terminus\Commands\Upstream\Updates;
 use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
 
 /**
- * Class ListCommand
+ * Class ListCommand.
+ *
  * @package Pantheon\Terminus\Commands\Upstream\Updates
  */
 class ListCommand extends UpdatesCommand
@@ -24,19 +25,21 @@ class ListCommand extends UpdatesCommand
      *     datetime: Timestamp
      *     message: Message
      *     author: Author
-     * @return RowsOfFields
-     *
      * @param string $site_env Site & development environment
      *
+     * @return \Consolidation\OutputFormatters\StructuredData\RowsOfFields
+     *
      * @usage <site>.<env> Displays a list of new code commits available from the upstream for <site>'s <env> environment.
+     *
+     * @throws \Pantheon\Terminus\Exceptions\TerminusException
      */
     public function listUpstreamUpdates($site_env)
     {
-        list(, $env) = $this->getSiteEnv($site_env, 'dev');
+        $env = $this->getEnv($site_env);
 
-        $data = [];
+        $upstreamUpdatesLog = [];
         foreach ($this->getUpstreamUpdatesLog($env) as $commit) {
-            $data[] = [
+            $upstreamUpdatesLog[] = [
                 'hash' => $commit->hash,
                 'datetime' => $commit->datetime,
                 'message' => $commit->message,
@@ -45,7 +48,7 @@ class ListCommand extends UpdatesCommand
         }
 
         usort(
-            $data,
+            $upstreamUpdatesLog,
             function ($a, $b) {
                 if (strtotime($a['datetime']) === strtotime($b['datetime'])) {
                     return 0;
@@ -54,11 +57,11 @@ class ListCommand extends UpdatesCommand
             }
         );
 
-        if (empty($data)) {
+        if (empty($upstreamUpdatesLog)) {
             $this->log()->warning('There are no available updates for this site.');
         }
 
         // Return the output data.
-        return new RowsOfFields($data);
+        return new RowsOfFields($upstreamUpdatesLog);
     }
 }

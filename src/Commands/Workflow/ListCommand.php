@@ -47,7 +47,7 @@ class ListCommand extends TerminusCommand implements SiteAwareInterface
             $site->getWorkflows()->setPaging(false)->fetch(),
             [
                 'message' => 'No workflows have been run on {site}.',
-                'message_options' => ['site' => $site->get('name'),],
+                'message_options' => ['site' => $site->getName()],
             ]
         );
     }

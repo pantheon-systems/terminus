@@ -132,7 +132,7 @@ abstract class TerminusCollection implements ContainerAwareInterface, RequestAwa
      * @return TerminusModel $this->models[$id]
      * @throws TerminusNotFoundException
      */
-    public function get($id): ?TerminusModel
+    public function get($id): TerminusModel
     {
         foreach ($this->all() as $member) {
             if (in_array($id, $member->getReferences())) {

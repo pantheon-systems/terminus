@@ -8,7 +8,8 @@ use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 
 /**
- * Class CommitCommand
+ * Class CommitCommand.
+ *
  * @package Pantheon\Terminus\Commands\Env
  */
 class CommitCommand extends TerminusCommand implements SiteAwareInterface
@@ -25,15 +26,19 @@ class CommitCommand extends TerminusCommand implements SiteAwareInterface
      * @command env:commit
      *
      * @param string $site_env Site & environment in the format `site-name.env`
+     * @param array $options
      * @option string $message Commit message
      * @option boolean $force Force a commit even if there doesn't seem to be anything to commit. This can lead to an empty commit.
      *
      * @usage <site>.<env> Commits code changes to <site>'s <env> environment with the default message.
      * @usage <site>.<env> --message=<message> Commits code changes to <site>'s <env> environment with the message <message>.
+     *
+     * @throws \Pantheon\Terminus\Exceptions\TerminusException
      */
     public function commit($site_env, $options = ['message' => 'Terminus commit.', 'force' => false])
     {
-        list(, $env) = $this->getUnfrozenSiteEnv($site_env, 'dev');
+        $this->requireSiteIsNotFrozen($site_env);
+        $env = $this->getEnv($site_env);
 
         if (empty($options['force'])) {
             $change_count = count((array)$env->diffstat());

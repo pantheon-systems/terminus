@@ -32,6 +32,6 @@ class CompleteCommand extends TerminusCommand implements SiteAwareInterface
     {
         $site = $this->sites->get($site_name);
         $this->processWorkflow($site->completeMigration());
-        $this->log()->notice('The import of {site} has been marked as complete.', ['site' => $site->get('name'),]);
+        $this->log()->notice('The import of {site} has been marked as complete.', ['site' => $site->getName()]);
     }
 }

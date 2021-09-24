@@ -6,7 +6,7 @@ use Pantheon\Terminus\Tests\Traits\TerminusTestTrait;
 use PHPUnit\Framework\TestCase;
 
 /**
- * Class DashboardCommandsTest
+ * Class DashboardCommandsTest.
  *
  * @package Pantheon\Terminus\Tests\Functional
  */
@@ -21,17 +21,18 @@ class DashboardCommandsTest extends TestCase
      * @group dashboard
      * @group short
      */
-    public function testDashboardUrl()
+    public function testDashboardViewCommand()
     {
-        $response = $this->terminus("dashboard --print");
-        $this->assertNotNull($response);
-        $this->assertIsString($response);
-        $this->assertGreaterThan(0, strlen($response));
-        $siteName = $this->getSiteName();
-        $env = getenv('TERMINUS_ENV');
-        $response = $this->terminus("dashboard {$siteName}.{$env} --print");
-        $this->assertNotNull($response);
-        $this->assertIsString($response);
-        $this->assertGreaterThan(0, strlen($response));
+        $dashboardUrl = $this->terminus(sprintf('dashboard %s --print', $this->getSiteEnv()));
+        $this->assertIsString($dashboardUrl);
+        $this->assertNotEmpty($dashboardUrl);
+
+        $dashboardUrl = $this->terminus(sprintf('dashboard %s --print', $this->getSiteName()));
+        $this->assertIsString($dashboardUrl);
+        $this->assertNotEmpty($dashboardUrl);
+
+        $dashboardUrl = $this->terminus('dashboard --print');
+        $this->assertIsString($dashboardUrl);
+        $this->assertNotEmpty($dashboardUrl);
     }
 }

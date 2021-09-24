@@ -8,7 +8,8 @@ use Pantheon\Terminus\Site\SiteAwareTrait;
 use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
 
 /**
- * Class CodeLogCommand
+ * Class CodeLogCommand.
+ *
  * @package Pantheon\Terminus\Commands\Env
  */
 class CodeLogCommand extends TerminusCommand implements SiteAwareInterface
@@ -28,15 +29,18 @@ class CodeLogCommand extends TerminusCommand implements SiteAwareInterface
      *     labels: Labels
      *     hash: Commit ID
      *     message: Message
-     * @return RowsOfFields
-     *
      * @param string $site_env Site & environment in the format `site-name.env`
      *
+     * @return \Consolidation\OutputFormatters\StructuredData\RowsOfFields
+     *
      * @usage <site>.<env> Displays the code log for <site>'s <env> environment.
+     *
+     * @throws \Pantheon\Terminus\Exceptions\TerminusException
      */
     public function codeLog($site_env)
     {
-        list(, $env) = $this->getUnfrozenSiteEnv($site_env, 'dev');
-        return new RowsOfFields($env->getCommits()->serialize());
+        $this->requireSiteIsNotFrozen($site_env);
+
+        return new RowsOfFields($this->getEnv($site_env)->getCommits()->serialize());
     }
 }

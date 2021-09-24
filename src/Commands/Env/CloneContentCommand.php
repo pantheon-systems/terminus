@@ -66,7 +66,9 @@ class CloneContentCommand extends TerminusCommand implements SiteAwareInterface
             throw new TerminusException('You cannot specify both --db-only and --files-only');
         }
 
-        list($site, $this->source_env) = $this->getUnfrozenSiteEnv($site_env);
+        $this->requireSiteIsNotFrozen($site_env);
+        $site = $this->getSite($site_env);
+        $this->source_env = $this->getEnv($site_env);
         $this->target_env = $site->getEnvironments()->get($target_env);
 
         if ($this->source_env->id === $target_env) {
