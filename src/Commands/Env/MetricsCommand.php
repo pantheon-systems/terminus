@@ -65,7 +65,8 @@ class MetricsCommand extends TerminusCommand implements SiteAwareInterface
             'datapoints' => 'auto'
         ]
     ) {
-        if ($env = $this->getOptionalEnv($site_env)) {
+        $env = $this->getOptionalEnv($site_env);
+        if (null !== $env) {
             $metrics = $env->getEnvironmentMetrics()
                 ->setPeriod($options['period'])
                 ->setDatapoints($this->selectDatapoints($options['datapoints'], $options['period']))
