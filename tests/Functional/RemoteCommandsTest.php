@@ -40,16 +40,28 @@ class RemoteCommandsTest extends TestCase
     {
         $commandPrefix = sprintf('drush %s', $this->getSiteEnv());
 
-        $command = sprintf('%s -- %s', $commandPrefix, 'version');
-        $drushVersion = $this->terminusJsonResponse($command);
+        $drushVersionCommand = sprintf('%s -- %s', $commandPrefix, 'version');
+        $drushVersion = $this->terminusJsonResponse($drushVersionCommand);
         $this->assertIsString($drushVersion);
         $this->assertIsInt(preg_match('(^\d{1,2})', $drushVersion, $matches));
         $this->assertGreaterThanOrEqual(8, $matches[0]);
 
-        $command = sprintf('%s -- %s', $commandPrefix, 'status');
-        $drushStatus = $this->terminusJsonResponse($command);
+        $drushStatusCommand = sprintf('%s -- %s', $commandPrefix, 'status');
+        $drushStatus = $this->terminusJsonResponse($drushStatusCommand);
         $this->assertIsArray($drushStatus);
         $this->assertTrue(isset($drushStatus['drush-version']));
         $this->assertEquals($drushStatus['drush-version'], $drushVersion);
+
+        $drushSqlCliCommand = sprintf('%s -- %s', $commandPrefix, 'sql:cli');
+        $drushSqlCliResult = $this->terminusPipeInput(
+            $drushSqlCliCommand,
+            'echo "select uuid from users where uid=1;"'
+        );
+
+        $this->assertEquals(
+            1,
+            preg_match('/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/', $drushSqlCliResult),
+            'The "drush sql:cli" execution result should contain a valid v4 UUID.'
+        );
     }
 }
