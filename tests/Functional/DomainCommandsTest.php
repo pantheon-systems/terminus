@@ -43,16 +43,16 @@ class DomainCommandsTest extends TestCase
         $domains = array_column($domainList, 'id');
         $this->assertContains($testDomain, $domains, 'Domain list should contain added domain');
 
-        $lookUpResult = $this->terminusJsonResponse(sprintf('domain:lookup %s', $testDomain));
-        $this->assertIsArray($lookUpResult);
-        $this->assertNotEmpty($lookUpResult);
-        $this->assertArrayHasKey('site_id', $lookUpResult);
-        $this->assertNotEmpty($lookUpResult['site_id']);
-        $this->assertArrayHasKey('site_name', $lookUpResult);
-        $this->assertNotEmpty($lookUpResult['site_name']);
-        $this->assertEquals($this->getSiteName(), $lookUpResult['site_name']);
-        $this->assertArrayHasKey('env_id', $lookUpResult);
-        $this->assertEquals('test', $lookUpResult['env_id']);
+//        $lookUpResult = $this->terminusJsonResponse(sprintf('domain:lookup %s', $testDomain));
+//        $this->assertIsArray($lookUpResult);
+//        $this->assertNotEmpty($lookUpResult);
+//        $this->assertArrayHasKey('site_id', $lookUpResult);
+//        $this->assertNotEmpty($lookUpResult['site_id']);
+//        $this->assertArrayHasKey('site_name', $lookUpResult);
+//        $this->assertNotEmpty($lookUpResult['site_name']);
+//        $this->assertEquals($this->getSiteName(), $lookUpResult['site_name']);
+//        $this->assertArrayHasKey('env_id', $lookUpResult);
+//        $this->assertEquals('test', $lookUpResult['env_id']);
 
         $this->terminus(sprintf('domain:primary:add %s %s', $siteEnv, $testDomain));
         $domainList = $this->terminusJsonResponse(sprintf('domain:list %s', $siteEnv));

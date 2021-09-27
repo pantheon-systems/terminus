@@ -21,13 +21,6 @@ class ImportCommandsTest extends TestCase
     private $client;
 
     /**
-     * The name of the site to archive.
-     *
-     * @var string
-     */
-    private $archivedSiteName;
-
-    /**
      * The name of the site to import from the archive.
      *
      * @var string
@@ -47,10 +40,6 @@ class ImportCommandsTest extends TestCase
      */
     protected function tearDown(): void
     {
-        if (isset($this->archivedSiteName)) {
-            $this->terminus(sprintf('site:delete %s', $this->archivedSiteName), [], false);
-        }
-
         if (isset($this->importedSiteName)) {
             $this->terminus(sprintf('site:delete %s', $this->importedSiteName), [], false);
         }
@@ -90,6 +79,10 @@ class ImportCommandsTest extends TestCase
      * @test
      * @covers \Pantheon\Terminus\Commands\Import\SiteCommand
      *
+     * Run composer command `composer run test:create-site-archive` to generate the test site archive site and file
+     * if not exist.
+     * @see \Pantheon\Terminus\Scripts\CreateTestSiteArchive
+     *
      * @group import
      * @group long
      *
@@ -98,70 +91,8 @@ class ImportCommandsTest extends TestCase
      */
     public function testImportSiteCommand()
     {
-        $uniqueId = uniqid();
-
-        // Create a site to archive.
-        $this->archivedSiteName = sprintf('site-archive-d7-%s', $uniqueId);
-        $this->terminus(
-            sprintf(
-                'site:create %s %s drupal7 --org=%s',
-                $this->archivedSiteName,
-                $this->archivedSiteName,
-                $this->getOrg()
-            )
-        );
-        sleep(60);
-        $archivedSiteInfo = $this->terminusJsonResponse(sprintf('site:info %s', $this->archivedSiteName));
-        $this->assertIsArray($archivedSiteInfo);
-        $this->assertNotEmpty($archivedSiteInfo);
-
-        // Install the Drupal7 on the site to archive.
-        $this->terminus(sprintf('drush %s.dev -- site-install pantheon', $this->archivedSiteName));
-        $archivedSiteFrontPageUrl = sprintf('https://dev-%s.pantheonsite.io', $this->archivedSiteName);
-        $this->assertEquals(
-            200,
-            $this->client->head($archivedSiteFrontPageUrl)->getStatusCode(),
-            sprintf(
-                'An HTTP request (%s) to the installed site should return HTTP status code 200.',
-                $archivedSiteFrontPageUrl
-            ),
-        );
-
-        // Upload a test file to the site to archive.
-        $testFileName = $this->uploadTestFileToSite(
-            sprintf('%s.dev', $this->archivedSiteName),
-            'files',
-        );
-        $archivedSiteTestFileUrl = sprintf(
-            'https://dev-%s.pantheonsite.io/sites/default/files/%s',
-            $this->archivedSiteName,
-            $testFileName
-        );
-        $this->assertEquals(
-            200,
-            $this->client->head($archivedSiteTestFileUrl)->getStatusCode(),
-            sprintf('The test file should be available by URL %s.', $archivedSiteTestFileUrl)
-        );
-
-        // Create the site archive file.
-        $siteArchiveFileName = 'site-archive-d7.tar.gz';
-        $this->terminus(
-            sprintf('drush %s.dev -- archive-dump', $this->archivedSiteName),
-            [sprintf('--destination=/files/%s', $siteArchiveFileName)]
-        );
-        $siteArchiveUrl = sprintf(
-            'https://dev-%s.pantheonsite.io/sites/default/files/%s',
-            $this->archivedSiteName,
-            $siteArchiveFileName,
-        );
-        $this->assertEquals(
-            200,
-            $this->client->head($siteArchiveUrl)->getStatusCode(),
-            sprintf('The site archive file should be available by URL %s.', $siteArchiveUrl)
-        );
-
         // Create a site to import from the archive.
-        $this->importedSiteName = sprintf('site-import-d7-%s', $uniqueId);
+        $this->importedSiteName = uniqid('site-import-d7-');
         $this->terminus(
             sprintf(
                 'site:create %s %s drupal7 --org=%s',
@@ -176,7 +107,13 @@ class ImportCommandsTest extends TestCase
         $this->assertNotEmpty($importedSiteInfo);
 
         // Import the site from the archive file.
-        $this->terminus(sprintf('import:site %s %s', $this->importedSiteName, $siteArchiveUrl));
+        $this->terminus(
+            sprintf(
+                'import:site %s %s',
+                $this->importedSiteName,
+                'https://dev-site-archive-d7.pantheonsite.io/sites/default/files/site-archive-d7.tar.gz'
+            )
+        );
         sleep(60);
 
         // Verify that the code and the database have been imported.
@@ -189,7 +126,7 @@ class ImportCommandsTest extends TestCase
             $this->client->head($importedSiteFrontPageUrl)->getStatusCode(),
             sprintf(
                 'An HTTP request (%s) to the imported site should return HTTP status code 200.',
-                $archivedSiteFrontPageUrl
+                $importedSiteFrontPageUrl
             ),
         );
 
@@ -197,7 +134,7 @@ class ImportCommandsTest extends TestCase
         $importedSiteTestFileUrl = sprintf(
             'https://dev-%s.pantheonsite.io/sites/default/files/%s',
             $this->importedSiteName,
-            $testFileName
+            'terminus-functional-test-file-site-archive.txt'
         );
         $this->assertEquals(
             200,
