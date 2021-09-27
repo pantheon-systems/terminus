@@ -62,7 +62,8 @@
   "autoload-dev": {
     "psr-4": {
       "Pantheon\\Terminus\\Tests\\Functional\\": "tests/Functional/",
-      "Pantheon\\Terminus\\FeatureTests\\": "tests/features/bootstrap/"
+      "Pantheon\\Terminus\\FeatureTests\\": "tests/features/bootstrap/",
+      "Pantheon\\Terminus\\Scripts\\": "scripts/"
     },
     "classmap": [
       "scripts/UpdateClassLists.php"
@@ -136,6 +137,9 @@
     ],
     "test:group": [
       "vendor/bin/phpunit -c ./phpunit.xml --debug --do-not-cache-result --verbose --group"
+    ],
+    "test:create-site-archive": [
+      "Pantheon\\Terminus\\Scripts\\CreateTestSiteArchive::do"
     ],
     "coverage": [
       "vendor/bin/robo coverage ./docs/TestCoverage.md"

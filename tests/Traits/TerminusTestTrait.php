@@ -149,7 +149,7 @@ trait TerminusTestTrait
      *
      * @return string
      */
-    protected function getOrg(): string
+    protected static function getOrg(): string
     {
         return getenv('TERMINUS_ORG');
     }
