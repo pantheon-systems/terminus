@@ -9,13 +9,13 @@ use Pantheon\Terminus\Models\Environment;
 use Pantheon\Terminus\Models\Site;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
-use Symfony\Component\Console\Output\ConsoleOutputInterface;
 use Symfony\Component\Process\Process;
-use Symfony\Component\Process\ProcessUtils;
 
 /**
- * Class SSHBaseCommand
- * Base class for Terminus commands that deal with sending SSH commands
+ * Class SSHBaseCommand.
+ *
+ * Base class for Terminus commands that deal with sending SSH commands.
+ *
  * @package Pantheon\Terminus\Commands\Remote
  */
 abstract class SSHBaseCommand extends TerminusCommand implements SiteAwareInterface
@@ -57,7 +57,7 @@ abstract class SSHBaseCommand extends TerminusCommand implements SiteAwareInterf
      * may be displayed when a program is executed. If allowed, a progress
      * bar will be used in tty mode.
      *
-     * @param type|bool $allowed
+     * @param bool $allowed
      * @return $this
      */
     protected function setProgressAllowed($allowed = true)
@@ -67,11 +67,11 @@ abstract class SSHBaseCommand extends TerminusCommand implements SiteAwareInterf
     }
 
     /**
-     * Execute the command remotely
+     * Executes the command remotely.
      *
      * @param array $command_args
-     * @return string
-     * @throws TerminusProcessException
+     *
+     * @throws \Pantheon\Terminus\Exceptions\TerminusProcessException
      */
     protected function executeCommand(array $command_args)
     {
@@ -102,10 +102,11 @@ abstract class SSHBaseCommand extends TerminusCommand implements SiteAwareInterf
     protected function sendCommandViaSsh($command)
     {
         $ssh_command = $this->getConnectionString() . ' ' . escapeshellarg($command);
-        $this->logger->debug("shell command: {command}", [ 'command' => $command ]);
+        $this->logger->debug('shell command: {command}', [ 'command' => $command ]);
         if ($this->getConfig()->get('test_mode')) {
             return $this->divertForTestMode($ssh_command);
         }
+
         return $this->getContainer()->get(LocalMachineHelper::class)->execute(
             $ssh_command,
             $this->getOutputCallback(),
@@ -114,24 +115,24 @@ abstract class SSHBaseCommand extends TerminusCommand implements SiteAwareInterf
     }
 
     /**
-     * Validates that the environment's connection mode is appropriately set
+     * Validates that the environment's connection mode is appropriately set.
      *
-     * @param Environment $environment
+     * @param \Pantheon\Terminus\Models\Environment $environment
      */
-    protected function validateEnvironment($environment)
+    protected function validateEnvironment(Environment $environment)
     {
-        // Only warn in dev / multidev
+        // Only warn in dev / multidev.
         if ($environment->isDevelopment()) {
             $this->validateConnectionMode($environment->get('connection_mode'));
         }
     }
 
     /**
-     * Validates that the environment is using the correct connection mode
+     * Validates that the environment is using the correct connection mode.
      *
      * @param string $mode
      */
-    protected function validateConnectionMode($mode)
+    protected function validateConnectionMode(string $mode)
     {
         if ((!$this->getConfig()->get('hide_git_mode_warning')) && ($mode == 'git')) {
             $this->log()->warning(
@@ -142,32 +143,39 @@ abstract class SSHBaseCommand extends TerminusCommand implements SiteAwareInterf
     }
 
     /**
-     * Outputs a message if Terminus is in test mode and uses it to mock the command's response
+     * Outputs a message if Terminus is in test mode and uses it to mock the command's response.
      *
-     * @string $ssh_command
-     * @return string[] $response Elements as follow:
-     *         string output    The output from the command run
-     *         string exit_code The status code returned by the command run
+     * @param string $ssh_command
+     *
+     * @return string[]
+     *  Elements are as follows:
+     *    string output    The output from the command run
+     *    string exit_code The status code returned by the command run
      */
-    private function divertForTestMode($ssh_command)
+    private function divertForTestMode(string $ssh_command)
     {
-        $output = "Terminus is in test mode. SSH commands will not be sent over the wire. "
-            . PHP_EOL . "SSH Command: ${ssh_command}";
+        $output = sprintf(
+            'Terminus is in test mode. SSH commands will not be sent over the wire.%sSSH Command: %s',
+            PHP_EOL,
+            $ssh_command
+        );
         $container = $this->getContainer();
         if ($container->has('output')) {
             $container->get('output')->write($output);
         }
         return [
             'output' => $output,
-            'exit_code' => 0
+            'exit_code' => 0,
         ];
     }
 
     /**
-     * Escape the command-line args
+     * Escapes the command-line args.
      *
-     * @param string[] $args All of the arguments to escape
-     * @param string[]
+     * @param string[] $args
+     *   All the arguments to escape.
+     *
+     * @return array
      */
     private function escapeArguments($args)
     {
@@ -180,9 +188,11 @@ abstract class SSHBaseCommand extends TerminusCommand implements SiteAwareInterf
     }
 
     /**
-     * Escape one command-line arg
+     * Escapes one command-line arg.
      *
-     * @param string $arg The argument to escape
+     * @param string $arg
+     *   The argument to escape.
+     *
      * @return string
      */
     private function escapeArgument($arg)
@@ -195,9 +205,10 @@ abstract class SSHBaseCommand extends TerminusCommand implements SiteAwareInterf
     }
 
     /**
-     * Return the first item of the $command_args that is not an option.
+     * Returns the first item of the $command_args that is not an option.
      *
      * @param array $command_args
+     *
      * @return string
      */
     private function firstArguments($command_args)
@@ -214,31 +225,29 @@ abstract class SSHBaseCommand extends TerminusCommand implements SiteAwareInterf
     }
 
     /**
-     * @param boolean $usesTty
+     * Returns the output callback for the process.
+     *
      * @return \Closure
      */
     private function getOutputCallback()
     {
-        if ($this->getContainer()->get(LocalMachineHelper::class)->useTty() === false) {
-            $output = $this->output();
-            $stderr = $this->stderr();
+        $output = $this->output();
+        $stderr = $this->stderr();
 
-            return function ($type, $buffer) use ($output, $stderr) {
-                if (Process::ERR === $type) {
-                    $stderr->write($buffer);
-                } else {
-                    $output->write($buffer);
-                }
-            };
-        }
-        return function ($type, $buffer) {
+        return function ($type, $buffer) use ($output, $stderr) {
+            if (Process::ERR === $type) {
+                $stderr->write($buffer);
+            } else {
+                $output->write($buffer);
+            }
         };
     }
 
     /**
-     * Gets the command-line args
+     * Returns the command-line args.
      *
      * @param string[] $command_args
+     *
      * @return string
      */
     private function getCommandLine($command_args)
@@ -248,11 +257,12 @@ abstract class SSHBaseCommand extends TerminusCommand implements SiteAwareInterf
     }
 
     /**
-     * Return a summary of the command that does not include the
+     * Returns a summary of the command that does not include the
      * arguments. This avoids potential information disclosure in
      * CI scripts.
      *
      * @param array $command_args
+     *
      * @return string
      */
     private function getCommandSummary($command_args)
@@ -261,7 +271,10 @@ abstract class SSHBaseCommand extends TerminusCommand implements SiteAwareInterf
     }
 
     /**
-     * @return string SSH connection string
+     * Returns the connection string.
+     *
+     * @return string
+     *   SSH connection string.
      */
     private function getConnectionString()
     {
