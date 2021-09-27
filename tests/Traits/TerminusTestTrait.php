@@ -14,13 +14,19 @@ trait TerminusTestTrait
      *
      * @param string $command
      *   The command to run.
+     * @param string|null $pipeInput
+     *   The pipe input.
      *
      * @return array
      *   The execution's stdout [0], exit code [1] and stderr [2].
      */
-    protected static function callTerminus(string $command): array
+    protected static function callTerminus(string $command, ?string $pipeInput = null): array
     {
         $procCommand = sprintf('%s %s', TERMINUS_BIN_FILE, $command);
+        if (null !== $pipeInput) {
+            $procCommand = sprintf('%s | %s', $pipeInput, $procCommand);
+        }
+
         $process = proc_open(
             $procCommand,
             [
@@ -68,6 +74,24 @@ trait TerminusTestTrait
         if (true === $assertExitCode) {
             $this->assertEquals(0, $exitCode, $error);
         }
+
+        return $output;
+    }
+
+    /**
+     * Run a terminus command with the pipe input.
+     *
+     * @param string $command
+     *   The command to run.
+     * @param string $pipeInput
+     *   The pipe input.
+     */
+    protected function terminusPipeInput(string $command, string $pipeInput)
+    {
+        $command = sprintf('%s --yes', $command);
+
+        [$output, $status] = static::callTerminus($command, $pipeInput);
+        $this->assertEquals(0, $status, $output);
 
         return $output;
     }
