@@ -137,6 +137,7 @@ class EnvCommandsTest extends TestCase
                 sprintf('Add test file %s', $fileName)
             )
         );
+        sleep(60);
 
         // Check the diff - no diff is expected.
         $this->assertTerminusCommandResultEqualsInAttempts(function () use ($siteEnv) {
