@@ -15,6 +15,21 @@ class SiteCommandsTest extends TestCase
     use TerminusTestTrait;
 
     /**
+     * @var string
+     */
+    private $mockSiteName;
+
+    /**
+     * @inheritdoc
+     */
+    protected function tearDown(): void
+    {
+        if (isset($this->mockSiteName)) {
+            $this->terminus(sprintf('site:delete %s', $this->mockSiteName), [], false);
+        }
+    }
+
+    /**
      * @test
      * @covers \Pantheon\Terminus\Commands\Site\ListCommand
      *
@@ -58,22 +73,19 @@ class SiteCommandsTest extends TestCase
      */
     public function testSiteCreateInfoCommands()
     {
-        $siteName = uniqid('site-create-');
+        $this->mockSiteName = uniqid('site-create-');
         $command = sprintf(
             'site:create %s %s drupal9 --org=%s',
-            $siteName,
-            $siteName,
+            $this->mockSiteName,
+            $this->mockSiteName,
             $this->getOrg()
         );
         $this->terminus($command);
 
-        $siteInfo = $this->terminusJsonResponse(sprintf('site:info %s', $siteName));
+        $siteInfo = $this->terminusJsonResponse(sprintf('site:info %s', $this->mockSiteName));
         $this->assertNotEmpty($siteInfo);
         $this->assertIsArray($siteInfo);
         $this->assertArrayHasKey('organization', $siteInfo);
         $this->assertEquals($this->getOrg(), $siteInfo['organization']);
-
-        // Skip the exit code assertion since `site:delete` workflow returns 500 statuses.
-        $this->terminus(sprintf('site:delete %s', $siteName), [], false);
     }
 }

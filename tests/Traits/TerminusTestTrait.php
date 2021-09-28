@@ -3,7 +3,7 @@
 namespace Pantheon\Terminus\Tests\Traits;
 
 /**
- * Trait TerminusTestTrait
+ * Trait TerminusTestTrait.
  *
  * @package Pantheon\Terminus\Tests\Traits
  */
@@ -12,22 +12,38 @@ trait TerminusTestTrait
     /**
      * Run a terminus command.
      *
-     * @param string $command The command to run
+     * @param string $command
+     *   The command to run.
      *
      * @return array
-     *   The execution's output and status.
+     *   The execution's stdout [0], exit code [1] and stderr [2].
      */
     protected static function callTerminus(string $command): array
     {
-        $project_dir = dirname(__DIR__, 2);
-        exec(
-            sprintf("%s/%s %s", $project_dir, TERMINUS_BIN_FILE, $command),
-            $output,
-            $status
+        $procCommand = sprintf('%s %s', TERMINUS_BIN_FILE, $command);
+        $process = proc_open(
+            $procCommand,
+            [
+                1 => ['pipe', 'w'],
+                2 => ['pipe', 'w'],
+            ],
+            $pipes,
+            dirname(__DIR__, 2)
         );
-        $output = implode("\n", $output);
 
-        return [$output, $status];
+        if (!is_resource($process)) {
+            return ['', 1, sprintf('Failed executing command "%s"', $procCommand)];
+        }
+
+        $stdout = trim(stream_get_contents($pipes[1]));
+        fclose($pipes[1]);
+
+        $stderr = trim(stream_get_contents($pipes[2]));
+        fclose($pipes[2]);
+
+        $exitCode = proc_close($process);
+
+        return [$stdout, $exitCode, $stderr];
     }
 
     /**
@@ -42,15 +58,15 @@ trait TerminusTestTrait
      */
     protected function terminus(string $command, array $suffixParts = [], bool $assertExitCode = true): ?string
     {
-        if ($suffixParts > 0) {
+        if (count($suffixParts) > 0) {
             $command = sprintf('%s --yes %s', $command, implode(' ', $suffixParts));
         } else {
             $command = sprintf('%s --yes', $command);
         }
 
-        [$output, $status] = static::callTerminus($command);
+        [$output, $exitCode, $error] = static::callTerminus($command);
         if (true === $assertExitCode) {
-            $this->assertEquals(0, $status, $output);
+            $this->assertEquals(0, $exitCode, $error);
         }
 
         return $output;
@@ -133,7 +149,7 @@ trait TerminusTestTrait
      *
      * @return string
      */
-    protected function getOrg(): string
+    protected static function getOrg(): string
     {
         return getenv('TERMINUS_ORG');
     }
@@ -273,5 +289,63 @@ trait TerminusTestTrait
     protected function getLocalTestSiteDir(): string
     {
         return implode(DIRECTORY_SEPARATOR, [$_SERVER['HOME'], 'pantheon-local-copies', self::getSiteName()]);
+    }
+
+    /**
+     * Generates and uploads a test file to the site.
+     *
+     * @param string $siteEnv
+     * @param string $filePath
+     *
+     * @return string
+     *   The name of the test file.
+     */
+    protected function uploadTestFileToSite(string $siteEnv, string $filePath): string
+    {
+        if (!extension_loaded('ssh2')) {
+            $this->markTestSkipped(
+                'PECL SSH2 extension for PHP is required.'
+            );
+        }
+
+        // Get SFTP connection information.
+        $siteInfo = $this->terminusJsonResponse(
+            sprintf('connection:info %s --fields=sftp_username,sftp_host', $siteEnv)
+        );
+        $this->assertNotEmpty($siteInfo);
+        $this->assertTrue(
+            isset($siteInfo['sftp_username'], $siteInfo['sftp_host']),
+            'SFTP connection info should contain "sftp_username" and "sftp_host" values.'
+        );
+
+        // Upload a test file to the server.
+        $session = ssh2_connect(
+            $siteInfo['sftp_host'],
+            2222
+        );
+        $this->assertTrue(
+            ssh2_auth_agent($session, $siteInfo['sftp_username']),
+            'Failed to authenticate over SSH using the ssh agent'
+        );
+        $sftp = ssh2_sftp($session);
+        $this->assertNotFalse($sftp);
+
+        $uniqueId = md5(mt_rand());
+        $fileName = sprintf('terminus-functional-test-file-%s.txt', $uniqueId);
+        $stream = fopen(
+            sprintf('ssh2.sftp://%d/%s/%s', intval($sftp), $filePath, $fileName),
+            'w'
+        );
+        $this->assertNotFalse($stream, 'Failed to open a test file for writing');
+        $this->assertNotFalse(
+            fwrite(
+                $stream,
+                sprintf('This is a test file (%s) to use in Terminus functional testing assertions.', $uniqueId)
+            ),
+            'Failed to write a test file'
+        );
+        fclose($stream);
+
+        return $fileName;
     }
 }

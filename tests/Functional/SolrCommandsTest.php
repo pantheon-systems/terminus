@@ -6,7 +6,7 @@ use Pantheon\Terminus\Tests\Traits\TerminusTestTrait;
 use PHPUnit\Framework\TestCase;
 
 /**
- * Class SolrCommandsTest
+ * Class SolrCommandsTest.
  *
  * @package Pantheon\Terminus\Tests\Functional
  */
@@ -21,9 +21,9 @@ class SolrCommandsTest extends TestCase
      * @group solr
      * @group long
      */
-    public function testSolrEnable()
+    public function testSolrEnableCommand()
     {
-        $this->terminus("solr:enable {$this->getSiteName()}");
+        $this->terminus(sprintf('solr:enable %s', $this->getSiteName()));
     }
 
     /**
@@ -33,8 +33,8 @@ class SolrCommandsTest extends TestCase
      * @group solr
      * @group long
      */
-    public function testSolrDisable()
+    public function testSolrDisableCommand()
     {
-        $this->terminus("solr:disable {$this->getSiteName()}");
+        $this->terminus(sprintf('solr:disable %s', $this->getSiteName()));
     }
 }

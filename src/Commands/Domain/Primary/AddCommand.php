@@ -67,7 +67,7 @@ class AddCommand extends TerminusCommand implements SiteAwareInterface
      */
     public function interact(InputInterface $input, OutputInterface $output, AnnotationData $annotationData)
     {
-        if (!$input->getArgument('domain')) {
+        if ($input->getArgument('domain')) {
             return;
         }
 

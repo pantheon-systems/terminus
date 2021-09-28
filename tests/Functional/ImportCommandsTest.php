@@ -2,6 +2,7 @@
 
 namespace Pantheon\Terminus\Tests\Functional;
 
+use GuzzleHttp\Client;
 use Pantheon\Terminus\Tests\Traits\TerminusTestTrait;
 use PHPUnit\Framework\TestCase;
 
@@ -13,6 +14,36 @@ use PHPUnit\Framework\TestCase;
 class ImportCommandsTest extends TestCase
 {
     use TerminusTestTrait;
+
+    /**
+     * @var Client
+     */
+    private $client;
+
+    /**
+     * The name of the site to import from the archive.
+     *
+     * @var string
+     */
+    private $importedSiteName;
+
+    /**
+     * @inheritdoc
+     */
+    protected function setUp(): void
+    {
+        $this->client = new Client();
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected function tearDown(): void
+    {
+        if (isset($this->importedSiteName)) {
+            $this->terminus(sprintf('site:delete %s', $this->importedSiteName), [], false);
+        }
+    }
 
     /**
      * @test
@@ -48,12 +79,68 @@ class ImportCommandsTest extends TestCase
      * @test
      * @covers \Pantheon\Terminus\Commands\Import\SiteCommand
      *
+     * Run composer command `composer run test:create-site-archive` to generate the test site archive site and file
+     * if not exist.
+     * @see \Pantheon\Terminus\Scripts\CreateTestSiteArchive
+     *
      * @group import
-     * @group todo
+     * @group long
+     *
+     * @throws \Exception
+     * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    public function testImportSite()
+    public function testImportSiteCommand()
     {
-        $this->fail('Not implemented. Requirement: a Drupal-based test site to create a site archive via Drush.');
+        // Create a site to import from the archive.
+        $this->importedSiteName = uniqid('site-import-d7-');
+        $this->terminus(
+            sprintf(
+                'site:create %s %s drupal7 --org=%s',
+                $this->importedSiteName,
+                $this->importedSiteName,
+                $this->getOrg()
+            )
+        );
+        sleep(60);
+        $importedSiteInfo = $this->terminusJsonResponse(sprintf('site:info %s', $this->importedSiteName));
+        $this->assertIsArray($importedSiteInfo);
+        $this->assertNotEmpty($importedSiteInfo);
+
+        // Import the site from the archive file.
+        $this->terminus(
+            sprintf(
+                'import:site %s %s',
+                $this->importedSiteName,
+                'https://dev-site-archive-d7.pantheonsite.io/sites/default/files/site-archive-d7.tar.gz'
+            )
+        );
+        sleep(60);
+
+        // Verify that the code and the database have been imported.
+        $importedSiteFrontPageUrl = sprintf(
+            'https://dev-%s.pantheonsite.io',
+            $this->importedSiteName,
+        );
+        $this->assertEquals(
+            200,
+            $this->client->head($importedSiteFrontPageUrl)->getStatusCode(),
+            sprintf(
+                'An HTTP request (%s) to the imported site should return HTTP status code 200.',
+                $importedSiteFrontPageUrl
+            ),
+        );
+
+        // Verify that the test file has been imported.
+        $importedSiteTestFileUrl = sprintf(
+            'https://dev-%s.pantheonsite.io/sites/default/files/%s',
+            $this->importedSiteName,
+            'terminus-functional-test-file-site-archive.txt'
+        );
+        $this->assertEquals(
+            200,
+            $this->client->head($importedSiteTestFileUrl)->getStatusCode(),
+            sprintf('The test file should be available by URL %s.', $importedSiteTestFileUrl)
+        );
     }
 
     /**
