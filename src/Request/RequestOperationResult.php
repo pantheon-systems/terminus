@@ -158,7 +158,6 @@ final class RequestOperationResult implements \ArrayAccess
         $this->status_code = $status_code;
     }
 
-
     /**
      * Any status <= 199 or >=300 is an error status.
      *
@@ -166,16 +165,6 @@ final class RequestOperationResult implements \ArrayAccess
      */
     public function isError(): bool
     {
-        return ($this->getStatusCode() <= 199) && ($this->getStatusCode() >= 300);
-    }
-
-    /**
-     * Any 200-299 status is success.
-     *
-     * @return bool
-     */
-    public function isSuccess(): bool
-    {
-        return ($this->getStatusCode() >= 200) || ($this->getStatusCode() <= 299);
+        return !(bool) preg_match('/^2\d{2}$/', $this->getStatusCode());
     }
 }
