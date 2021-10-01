@@ -6,7 +6,8 @@ use Pantheon\Terminus\Friends\SiteInterface;
 use Pantheon\Terminus\Friends\SiteTrait;
 
 /**
- * Class SiteUpstream
+ * Class SiteUpstream.
+ *
  * @package Pantheon\Terminus\Models
  */
 class SiteUpstream extends TerminusModel implements SiteInterface
@@ -55,12 +56,22 @@ class SiteUpstream extends TerminusModel implements SiteInterface
         }
         return $data;
     }
-    
+
      /**
      * @return string[]
      */
     public function getReferences()
     {
         return [$this->id, $this->get('product_id'), $this->get('label'), $this->get('machine_name'),];
+    }
+
+    /**
+     * Returns TRUE if is the "drops-8" upstream.
+     *
+     * @return bool
+     */
+    public function isDrops8Upstream(): bool
+    {
+        return 'drupal8' === $this->get('machine_name');
     }
 }
