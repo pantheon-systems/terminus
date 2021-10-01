@@ -31,7 +31,8 @@ class CreateCommand extends SiteCommand
      * @usage <site> <label> <upstream> Creates a new site named <site>, human-readably labeled <label>, using code from <upstream>.
      * @usage <site> <label> <upstream> --org=<org> Creates a new site named <site>, human-readably labeled <label>, using code from <upstream>, associated with <organization>.
      *
-     * @throws TerminusException
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @throws \Pantheon\Terminus\Exceptions\TerminusException
      */
 
     public function create($site_name, $label, $upstream_id, $options = ['org' => null, 'region' => null,])
