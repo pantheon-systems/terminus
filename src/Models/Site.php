@@ -235,6 +235,46 @@ class Site extends TerminusModel implements ContainerAwareInterface, Organizatio
     }
 
     /**
+     * Returns the site framework machine name.
+     *
+     * @return string
+     */
+    public function getFramework(): ?string
+    {
+        return $this->get('framework');
+    }
+
+    /**
+     * Returns TRUE if the site framework is Drupal 8.
+     *
+     * @return bool
+     */
+    public function isDrupal8Framework(): bool
+    {
+        return 'drupal8' === $this->getFramework();
+    }
+
+    /**
+     * Returns TRUE if the site framework is Drupal 7.
+     *
+     * @return bool
+     */
+    public function isDrupal7Framework(): bool
+    {
+        return 'drupal' === $this->getFramework();
+    }
+
+    /**
+     * Returns TRUE if the site framework is WordPress.
+     *
+     * @return bool
+     */
+    public function isWordpressFramework(): bool
+    {
+        return 'wordpress' === $this->getFramework();
+    }
+
+    /**
      * @return NewRelic
      */
     public function getNewRelic()
