@@ -381,9 +381,11 @@ class Site extends TerminusModel implements ContainerAwareInterface, Organizatio
     }
 
     /**
-     * @return Upstream
+     * Returns the Upstream.
+     *
+     * @return \Pantheon\Terminus\Models\SiteUpstream
      */
-    public function getUpstream()
+    public function getUpstream(): SiteUpstream
     {
         $upstream_data = (object)array_merge((array)$this->get('upstream'), (array)$this->get('product'));
         if (empty((array)$upstream_data)
