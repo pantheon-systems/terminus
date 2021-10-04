@@ -205,6 +205,7 @@ class Terminus implements
         $container->add(\Pantheon\Terminus\Models\SavedToken::class);
         $container->add(\Pantheon\Terminus\Models\Site::class);
         $container->add(\Pantheon\Terminus\Models\SiteAuthorization::class);
+        $container->add(\Pantheon\Terminus\Models\SiteFramework::class);
         $container->add(\Pantheon\Terminus\Models\SiteOrganizationMembership::class);
         $container->add(\Pantheon\Terminus\Models\SiteUpstream::class);
         $container->add(\Pantheon\Terminus\Models\SiteUserMembership::class);

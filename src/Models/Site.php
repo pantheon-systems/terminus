@@ -235,43 +235,20 @@ class Site extends TerminusModel implements ContainerAwareInterface, Organizatio
     }
 
     /**
-     * Returns the site framework machine name.
+     * Returns the site framework.
      *
-     * @return string
+     * @return \Pantheon\Terminus\Models\SiteFramework
      */
-    public function getFramework(): ?string
+    public function getFramework(): SiteFramework
     {
-        return $this->get('framework');
-    }
+        if (empty($this->framework)) {
+            $nickname = \uniqid(__FUNCTION__ . "-");
+            $this->getContainer()->add($nickname, SiteFramework::class)
+                ->addArgument((object) ['framework' => $this->get('framework')]);
+            $this->framework = $this->getContainer()->get($nickname);
+        }
 
-    /**
-     * Returns TRUE if the site framework is Drupal 8.
-     *
-     * @return bool
-     */
-    public function isDrupal8Framework(): bool
-    {
-        return 'drupal8' === $this->getFramework();
-    }
-
-    /**
-     * Returns TRUE if the site framework is Drupal 7.
-     *
-     * @return bool
-     */
-    public function isDrupal7Framework(): bool
-    {
-        return 'drupal' === $this->getFramework();
-    }
-
-    /**
-     * Returns TRUE if the site framework is WordPress.
-     *
-     * @return bool
-     */
-    public function isWordpressFramework(): bool
-    {
-        return 'wordpress' === $this->getFramework();
+        return $this->framework;
     }
 
     /**
