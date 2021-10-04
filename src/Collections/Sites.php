@@ -215,33 +215,49 @@ class Sites extends APICollection implements SessionAwareInterface
     /**
      * Determines whether a given site name is taken or not.
      *
-     * @param string $name Name of the site to look up
+     * @param string $name
+     *   Name of the site to look up.
+     *
      * @return boolean
+     *
+     * @throws \Pantheon\Terminus\Exceptions\TerminusException
+     * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    public function nameIsTaken($name) : bool
+    public function nameIsTaken(string $name): bool
     {
-        return (bool) $this->findUUIDByName($name) ?? false;
+        try {
+            $this->getUuidByName($name);
+
+            return true;
+        } catch (TerminusNotFoundException $e) {
+            return false;
+        }
     }
 
     /**
      * Looks up a site's UUID by its name.
      *
-     * @param string $name Name of the site to look up
+     * @param string $name
+     *   Name of the site to look up.
+     *
      * @return string
+     *
+     * @throws \Pantheon\Terminus\Exceptions\TerminusException
+     * @throws \Pantheon\Terminus\Exceptions\TerminusNotFoundException
+     * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    protected function findUUIDByName($name): ?string
+    protected function getUuidByName(string $name): string
     {
-
         $response = $this->request()->request(
             'site-names/' . $name,
             ['method' => 'get',]
         );
 
-        if ($response->isError()) {
+        if ($response->isError() || !isset($response->getData()->id)) {
             throw new TerminusNotFoundException($response->getData());
         }
 
-        return $response->getData()->id ?? null;
+        return $response->getData()->id;
     }
 
     /**
@@ -257,7 +273,7 @@ class Sites extends APICollection implements SessionAwareInterface
         if ($this->isUUID($id)) {
             return $id;
         }
-        return $this->findUUIDByName($id);
+        return $this->getUuidByName($id);
     }
 
     /**
