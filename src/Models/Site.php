@@ -513,12 +513,17 @@ class Site extends TerminusModel implements ContainerAwareInterface, Organizatio
     }
 
     /**
+     * Returns the path to the site local copy directory.
+     *
+     * @param string|null $siteDirName
+     *
      * @return string
-     * @throws \Pantheon\Terminus\Exceptions\TerminusException
+     *
+     * @throws TerminusException
      */
-    public function getLocalCopyDir(): string
+    public function getLocalCopyDir(?string $siteDirName = null): string
     {
-        return $this->getLocalCopiesSiteDir($this->getName());
+        return $this->getLocalCopiesSiteDir($siteDirName ?? $this->getName());
     }
 
     public function __toString()
