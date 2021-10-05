@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ceb7436d8a1dfcc22736dc77fe80faed",
+    "content-hash": "5ceb602c90d940189ba5cb01df7d7166",
     "packages": [
         {
             "name": "composer/ca-bundle",
@@ -902,19 +902,20 @@
         },
         {
             "name": "consolidation/self-update",
-            "version": "1.2.0",
+            "version": "dev-cms-259-invalid-version-name",
             "source": {
                 "type": "git",
                 "url": "https://github.com/consolidation/self-update.git",
-                "reference": "dba6b2c0708f20fa3ba8008a2353b637578849b4"
+                "reference": "3adf83e4b792d1d5a17681e6713ff01549ba3cc0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/consolidation/self-update/zipball/dba6b2c0708f20fa3ba8008a2353b637578849b4",
-                "reference": "dba6b2c0708f20fa3ba8008a2353b637578849b4",
+                "url": "https://api.github.com/repos/consolidation/self-update/zipball/3adf83e4b792d1d5a17681e6713ff01549ba3cc0",
+                "reference": "3adf83e4b792d1d5a17681e6713ff01549ba3cc0",
                 "shasum": ""
             },
             "require": {
+                "composer/semver": "^3.2",
                 "php": ">=5.5.0",
                 "symfony/console": "^2.8|^3|^4|^5",
                 "symfony/filesystem": "^2.5|^3|^4|^5"
@@ -925,7 +926,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "1.x-dev"
+                    "dev-main": "2.x-dev"
                 }
             },
             "autoload": {
@@ -950,9 +951,9 @@
             "description": "Provides a self:update command for Symfony Console applications.",
             "support": {
                 "issues": "https://github.com/consolidation/self-update/issues",
-                "source": "https://github.com/consolidation/self-update/tree/1.2.0"
+                "source": "https://github.com/consolidation/self-update/tree/cms-259-invalid-version-name"
             },
-            "time": "2020-04-13T02:49:20+00:00"
+            "time": "2021-10-05T21:57:24+00:00"
         },
         {
             "name": "consolidation/site-alias",
@@ -6998,9 +6999,18 @@
             "time": "2021-03-09T10:59:23+00:00"
         }
     ],
-    "aliases": [],
+    "aliases": [
+        {
+            "package": "consolidation/self-update",
+            "version": "dev-cms-259-invalid-version-name",
+            "alias": "1.3.0",
+            "alias_normalized": "1.3.0.0"
+        }
+    ],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {
+        "consolidation/self-update": 20
+    },
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
@@ -7013,5 +7023,5 @@
     "platform-overrides": {
         "php": "7.4"
     },
-    "plugin-api-version": "2.0.0"
+    "plugin-api-version": "2.1.0"
 }
