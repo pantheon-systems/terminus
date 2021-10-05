@@ -15,16 +15,16 @@ trait CommandExecutorTrait
     /**
      * Executes the command.
      *
-     * @param string $formatString
-     * @param array $replacementValues
+     * @param string $command
+     * @param array $replacements
      *
      * @return array
      *
      * @throws \Pantheon\Terminus\Exceptions\TerminusException
      */
-    public function execute(string $formatString, array $replacementValues = []): array
+    public function execute(string $command, array $replacements = []): array
     {
-        $commandToExecute = vsprintf($formatString, $replacementValues);
+        $commandToExecute = vsprintf($command, $replacements);
         $process = proc_open(
             $commandToExecute,
             [
