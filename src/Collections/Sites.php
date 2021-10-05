@@ -221,7 +221,7 @@ class Sites extends APICollection implements SessionAwareInterface
                 ->addArguments(
                     [
                         (object)['id' => $uuid],
-                        ['id' => $uuid, 'collection' => $this]
+                        ['id' => $uuid, 'collection' => $this],
                     ]
                 );
             $site = $this->getContainer()->get($nickname);

@@ -4,7 +4,6 @@
 namespace Pantheon\Terminus\Helpers\Traits;
 
 use Pantheon\Terminus\Exceptions\TerminusException;
-use Psr\Log\LoggerAwareTrait;
 
 /**
  * Trait CommandExecutorTrait.
@@ -13,8 +12,6 @@ use Psr\Log\LoggerAwareTrait;
  */
 trait CommandExecutorTrait
 {
-    use LoggerAwareTrait;
-
     /**
      * Executes the command.
      *
@@ -28,8 +25,6 @@ trait CommandExecutorTrait
     public function execute(string $formatString, array $replacementValues = []): array
     {
         $commandToExecute = vsprintf($formatString, $replacementValues);
-        $this->logger->debug('Executing command: {command}', ['command' => $commandToExecute]);
-
         $process = proc_open(
             $commandToExecute,
             [

@@ -4,8 +4,8 @@ namespace Pantheon\Terminus\Commands\Local;
 
 use Pantheon\Terminus\Commands\TerminusCommand;
 use Pantheon\Terminus\Config\ConfigAwareTrait;
-use Pantheon\Terminus\Exceptions\TerminusException;
-use Pantheon\Terminus\Helpers\Traits\CommandExecutorTrait;
+use Pantheon\Terminus\Exceptions\TerminusAlreadyExistsException;
+use Pantheon\Terminus\Helpers\LocalMachineHelper;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 use Robo\Contract\ConfigAwareInterface;
@@ -19,7 +19,6 @@ class CloneCommand extends TerminusCommand implements SiteAwareInterface, Config
 {
     use SiteAwareTrait;
     use ConfigAwareTrait;
-    use CommandExecutorTrait;
 
     /**
      * CLone a copy of the site code into $HOME/pantheon-local-copies
@@ -46,26 +45,18 @@ class CloneCommand extends TerminusCommand implements SiteAwareInterface, Config
         $site = $this->getSite($site_id);
         $env = $site->getEnvironments()->get('dev');
 
-        $localCopyDir = $site->getLocalCopyDir($options['site_dir'] ?? null);
         $gitUrl = $env->connectionInfo()['git_url'] ?? null;
-        if (null === $gitUrl) {
-            throw new TerminusException('Failed to get connection Git URL');
+        $localCopyDir = $site->getLocalCopyDir($options['site_dir'] ?? null);
+
+        try {
+            /** @var \Pantheon\Terminus\Helpers\LocalMachineHelper $localMachineHelper */
+            $localMachineHelper = $this->getContainer()->get(LocalMachineHelper::class);
+            $localMachineHelper->cloneGitRepository($gitUrl, $localCopyDir, $options['override'] ?? false);
+        } catch (TerminusAlreadyExistsException $e) {
+            $this->logger->notice(
+                sprintf('The local copy of the site %s already exists in %s', $site->getName(), $localCopyDir)
+            );
         }
-
-        $override = $options['override'] ?? false;
-        if (is_dir($localCopyDir . DIRECTORY_SEPARATOR . '.git')) {
-            if (!$override) {
-                $this->logger->notice(
-                    sprintf('The local copy of the site %s already exists in %s', $site->getName(), $localCopyDir)
-                );
-
-                return $localCopyDir;
-            }
-
-            $this->execute('rm -rf %s', [$localCopyDir]);
-        }
-
-        $this->execute('git clone %s %s', [$gitUrl, $localCopyDir]);
 
         return $localCopyDir;
     }
