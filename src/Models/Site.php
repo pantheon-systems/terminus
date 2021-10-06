@@ -16,6 +16,7 @@ use Pantheon\Terminus\Collections\SiteOrganizationMemberships;
 use Pantheon\Terminus\Collections\SiteUserMemberships;
 use Pantheon\Terminus\Collections\Workflows;
 use Pantheon\Terminus\Exceptions\TerminusException;
+use Pantheon\Terminus\Helpers\Utility\SiteFramework;
 
 /**
  * Class Site
@@ -237,15 +238,12 @@ class Site extends TerminusModel implements ContainerAwareInterface, Organizatio
     /**
      * Returns the site framework.
      *
-     * @return \Pantheon\Terminus\Models\SiteFramework
+     * @return \Pantheon\Terminus\Helpers\Utility\SiteFramework
      */
     public function getFramework(): SiteFramework
     {
-        if (empty($this->framework)) {
-            $nickname = \uniqid(__FUNCTION__ . "-");
-            $this->getContainer()->add($nickname, SiteFramework::class)
-                ->addArgument((object) ['framework' => $this->get('framework')]);
-            $this->framework = $this->getContainer()->get($nickname);
+        if (!isset($this->framework)) {
+            $this->framework = new SiteFramework($this->get('framework'));
         }
 
         return $this->framework;
