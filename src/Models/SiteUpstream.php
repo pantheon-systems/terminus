@@ -64,14 +64,4 @@ class SiteUpstream extends TerminusModel implements SiteInterface
     {
         return [$this->id, $this->get('product_id'), $this->get('label'), $this->get('machine_name'),];
     }
-
-    /**
-     * Returns TRUE if is the "drops-8" upstream.
-     *
-     * @return bool
-     */
-    public function isDrops8Upstream(): bool
-    {
-        return 'drupal8' === $this->get('machine_name');
-    }
 }
