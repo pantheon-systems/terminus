@@ -5,12 +5,14 @@ namespace Pantheon\Terminus\Collections;
 use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
 use Pantheon\Terminus\Models\Site;
 use Pantheon\Terminus\Models\TerminusModel;
+use Pantheon\Terminus\Models\Workflow;
 use Pantheon\Terminus\Session\SessionAwareInterface;
 use Pantheon\Terminus\Session\SessionAwareTrait;
 use Pantheon\Terminus\Exceptions\TerminusException;
 
 /**
- * Class Sites
+ * Class Sites.
+ *
  * @package Pantheon\Terminus\Collections
  */
 class Sites extends APICollection implements SessionAwareInterface
@@ -25,13 +27,17 @@ class Sites extends APICollection implements SessionAwareInterface
     protected $collected_class = Site::class;
 
     /**
-     * Creates a new site
+     * Creates a new site.
      *
-     * @param string[] $params Options for the new site, elements as follow:
-     *   string label The site's human-friendly name
-     *   string site_name The site's name
-     *   string organization_id Organization to which this site belongs' UUID
+     * @param string[] $params
+     *   Options for the new site, elements as follows:
+     *     string label The site's human-friendly name
+     *     string site_name The site's name
+     *     string organization_id Organization to which this site belongs' UUID
+     *
      * @return \Pantheon\Terminus\Models\Workflow
+     *
+     * @throws \Pantheon\Terminus\Exceptions\TerminusException
      */
     public function create($params = []): \Pantheon\Terminus\Models\Workflow
     {
@@ -39,27 +45,33 @@ class Sites extends APICollection implements SessionAwareInterface
     }
 
     /**
-     * Creates a new site for migration
+     * Creates a new site for migration.
      *
-     * @param string[] $params Options for the new site, elements as follow:
-     *   string label The site's human-friendly name
-     *   string site_name The site's name
-     *   string organization_id Organization to which this site belongs' UUID
-     *   string type Workflow type for imports
+     * @param string[] $params
+     *   Options for the new site, elements as follows:
+     *     string label The site's human-friendly name
+     *     string site_name The site's name
+     *     string organization_id Organization to which this site belongs' UUID
+     *     string type Workflow type for imports
+     *
      * @return \Pantheon\Terminus\Models\Workflow
+     *
+     * @throws \Pantheon\Terminus\Exceptions\TerminusException
      */
-    public function createForMigration($params = []): \Pantheon\Terminus\Models\Workflow
+    public function createForMigration($params = []): Workflow
     {
         return $this->getUser()->getWorkflows()->create('create_site_for_migration', compact('params'));
     }
 
     /**
-     * Fetches model data from API and instantiates its model instances
+     * Fetches model data from API and instantiates its model instances.
      *
-     * @param array $arg_options Options to change the requests made. Elements as follow:
-     *        string  org_id    UUID of the organization to retrieve sites for
-     *        boolean team_only True to only retrieve team sites
-     * @return Sites
+     * @param array $arg_options
+     *   Options to change the requests made. Elements as follows:
+     *     string  org_id    UUID of the organization to retrieve sites for
+     *     boolean team_only True to only retrieve team sites
+     *
+     * @return \Pantheon\Terminus\Collections\Sites
      */
     public function fetch(array $arg_options = [])
     {
@@ -83,6 +95,7 @@ class Sites extends APICollection implements SessionAwareInterface
             }
             if (is_array($memberships)) {
                 foreach ($memberships as $membership) {
+                    /** @var $membership \Pantheon\Terminus\Models\UserOrganizationMembership */
                     if ($membership->get('role') != 'unprivileged') {
                         $sites[] = $membership->getOrganization()->getSites();
                     }
@@ -106,10 +119,12 @@ class Sites extends APICollection implements SessionAwareInterface
     }
 
     /**
-     * Filters the members of this collection by their names
+     * Filters the members of this collection by their names.
      *
-     * @param string $regex Non-delimited PHP regex to filter site names by
-     * @return Sites
+     * @param string $regex
+     *   Non-delimited PHP regex to filter site names by
+     *
+     * @return \Pantheon\Terminus\Collections\Sites
      */
     public function filterByName($regex = '(.*)')
     {
@@ -117,10 +132,12 @@ class Sites extends APICollection implements SessionAwareInterface
     }
 
     /**
-     * Filters an array of sites by the plan name
+     * Filters an array of sites by the plan name.
      *
-     * @param string $plan_name Name of the plan to filter by
-     * @return Sites
+     * @param string $plan_name
+     *   Name of the plan to filter by.
+     *
+     * @return \Pantheon\Terminus\Collections\Sites
      */
     public function filterByPlanName($plan_name)
     {
@@ -131,10 +148,12 @@ class Sites extends APICollection implements SessionAwareInterface
     }
 
     /**
-     * Filters an array of sites by whether the user is an organizational member
+     * Filters an array of sites by whether the user is an organizational member.
      *
-     * @param string $owner_uuid UUID of the owning user to filter by
-     * @return Sites
+     * @param string $owner_uuid
+     *   UUID of the owning user to filter by.
+     *
+     * @return \Pantheon\Terminus\Collections\Sites
      */
     public function filterByOwner($owner_uuid)
     {
@@ -144,10 +163,12 @@ class Sites extends APICollection implements SessionAwareInterface
     }
 
     /**
-     * Filters sites list by tag
+     * Filters sites list by tag.
      *
-     * @param string $tag A tag to filter by
-     * @return Sites
+     * @param string $tag
+     *   A tag to filter by.
+     *
+     * @return \Pantheon\Terminus\Collections\Sites
      */
     public function filterByTag($tag)
     {
@@ -157,10 +178,12 @@ class Sites extends APICollection implements SessionAwareInterface
     }
 
     /**
-     * Filters sites list by upstream
+     * Filters sites list by upstream.
      *
-     * @param string $upstream_id An upstream to filter by
-     * @return Sites
+     * @param string $upstream_id
+     *   An upstream to filter by.
+     *
+     * @return \Pantheon\Terminus\Collections\Sites
      */
     public function filterByUpstream($upstream_id)
     {
@@ -171,37 +194,41 @@ class Sites extends APICollection implements SessionAwareInterface
     }
 
     /**
-     * Retrieves the site of the given UUID or name
+     * Retrieves the site of the given UUID or name.
      *
      * If the site list has already been fetched then this function will search for the site in the fetched list.
      * If no sites have been fetched yet then it will query the API. Use caution when calling this function after
      * a manual fetch as it may be just searching a subset of the user's sites.
      *
-     * @param string $id UUID or name of desired site
-     * @return Site
-     * @throws TerminusException
+     * @param string $id
+     *   UUID or name of desired site.
+     *
+     * @return \Pantheon\Terminus\Models\Site
+     *
+     * @throws \Pantheon\Terminus\Exceptions\TerminusException
+     * @throws \GuzzleHttp\Exception\GuzzleException
      */
     public function get($id): TerminusModel
     {
         try {
-            $uuid = $this->findUUIDByNameOrUUID($id);
-            $site = $this->models[$uuid] ?? null;
-            if (!$site instanceof Site) {
-                $nickname = 'site-' . $uuid;
-                $this->getContainer()->add($nickname, $this->collected_class)
-                    ->addArguments(
-                        [
-                            (object)['id' => $uuid],
-                            ['id' => $uuid, 'collection' => $this]
-                        ]
-                    );
-                $site = $this->getContainer()->get($nickname);
-                $site->fetch();
-                if (!$site->valid()) {
-                    throw new TerminusException("Site is not valid!");
-                }
-                $this->models[$uuid] = $site;
+            $uuid = $this->getUuid($id);
+            if (isset($this->models[$uuid])) {
+                return $this->models[$uuid];
             }
+
+            $nickname = 'site-' . $uuid;
+            $this->getContainer()->add($nickname, $this->collected_class)
+                ->addArguments(
+                    [
+                        (object)['id' => $uuid],
+                        ['id' => $uuid, 'collection' => $this],
+                    ]
+                );
+            $site = $this->getContainer()->get($nickname);
+            $site->fetch();
+            $this->models[$uuid] = $site;
+
+            return $this->models[$uuid];
         } catch (\Exception $e) {
             throw new TerminusException(
                 'Could not locate a site your user may access identified by {id}.',
@@ -209,7 +236,6 @@ class Sites extends APICollection implements SessionAwareInterface
                 1
             );
         }
-        return $site;
     }
 
     /**
@@ -261,33 +287,40 @@ class Sites extends APICollection implements SessionAwareInterface
     }
 
     /**
-     * Looks up a site's UUID by its name.
+     * Returns the site UUID.
      *
-     * @param string $id Name of the site to look up
+     * @param string $site_id
+     *   The site name or UUID.
      * @return string
+     *   The site UUID.
+     *
+     * @throws \Pantheon\Terminus\Exceptions\TerminusException
+     * @throws \Pantheon\Terminus\Exceptions\TerminusNotFoundException
+     * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    protected function findUUIDByNameOrUUID($id): ?string
+    protected function getUuid(string $site_id): ?string
     {
-        // If it LOOKS like a uuid, then we assume it is. Since a user is unlikely to name a site with this exact
-        // pattern this is a reasonably good test.
-        if ($this->isUUID($id)) {
-            return $id;
+        if (!$this->isValidUuid($site_id)) {
+            return $this->getUuidByName($site_id);
         }
-        return $this->getUuidByName($id);
+
+        $response = $this->request()->request(sprintf('sites/%s', $site_id), ['method' => 'get']);
+        if ($response->isError()) {
+            throw new TerminusNotFoundException($response->getData());
+        }
+
+        return $site_id;
     }
 
     /**
-     * Determine if the given string looks like a valid uuid.
+     * Returns TRUE if the string is a valid UUID value.
      *
-     * This is not an exact test for uuids but it matches the general pattern:
-     *  xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
-     * where x is any hexidecimal character. This is close enough for our purposes.
+     * @param string $uuid
      *
-     * @param $id
      * @return bool
      */
-    protected function isUUID($id): bool
+    protected function isValidUuid(string $uuid): bool
     {
-        return preg_match('/[a-f0-9]{8}-([a-f0-9]{4}-){3}[a-f0-9]{12}/', strtolower($id));
+        return preg_match('/[a-f0-9]{8}-([a-f0-9]{4}-){3}[a-f0-9]{12}/', strtolower($uuid));
     }
 }

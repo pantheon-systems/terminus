@@ -3,89 +3,51 @@
 
 namespace Pantheon\Terminus\Helpers\Traits;
 
-use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
-use Psr\Log\LoggerAwareTrait;
+use Pantheon\Terminus\Exceptions\TerminusException;
 
 /**
- * Trait CommandExecutorTrait
+ * Trait CommandExecutorTrait.
  *
- * @package D9ify\Traits
+ * @package Pantheon\Terminus\Helpers\Traits
  */
 trait CommandExecutorTrait
 {
-    use LoggerAwareTrait;
-
     /**
-     * @var array
-     */
-    protected array $execResult = [];
-    /**
-     * @var int
-     */
-    protected int $lastStatus = 0;
-
-    /**
-     * @param string $formatString
-     * @param array $replacementValues
+     * Executes the command.
+     *
+     * @param string $command
+     * @param array $replacements
+     *
      * @return array
+     *
+     * @throws \Pantheon\Terminus\Exceptions\TerminusException
      */
-    public function execute(string $formatString, array $replacementValues = []): array
+    public function execute(string $command, array $replacements = []): array
     {
-        $commandToExecute = vsprintf($formatString, $replacementValues);
-        $this->logger->debug(
-            "executing command: {command}" . PHP_EOL,
-            ["command" => $commandToExecute]
-        );
-        exec(
+        $commandToExecute = vsprintf($command, $replacements);
+        $process = proc_open(
             $commandToExecute,
-            $result,
-            $this->lastStatus
+            [
+                1 => ['pipe', 'w'],
+                2 => ['pipe', 'w'],
+            ],
+            $pipes
         );
-        if ($this->lastStatus !== 0 && !$this->commandExists($commandToExecute)) {
-            throw new TerminusNotFoundException(
-                sprintf(
-                    "The following command returned an error because of an uninstalled executable dependency: %s",
-                    $commandToExecute
-                )
+
+        $stdout = trim(stream_get_contents($pipes[1]));
+        fclose($pipes[1]);
+
+        $stderr = trim(stream_get_contents($pipes[2]));
+        fclose($pipes[2]);
+
+        $exitCode = proc_close($process);
+
+        if (0 !== $exitCode) {
+            throw new TerminusException(
+                sprintf('Command execution exited with code %d. Error: "%s"', $exitCode, $stderr)
             );
         }
-        $this->execResult += $result;
-        return $result;
-    }
 
-    /**
-     * @return array
-     */
-    public function getExecResult(): array
-    {
-        return $this->execResult;
-    }
-
-    /**
-     * @return int
-     */
-    public function getLastStatus(): int
-    {
-        return $this->lastStatus;
-    }
-
-    /**
-     * Remove exec result.
-     */
-    public function clearExecResult(): void
-    {
-        $this->execResult = [];
-    }
-
-    /**
-     * @param string $commandToExecute
-     *
-     * @return bool
-     */
-    protected function commandExists(string $commandToExecute): bool
-    {
-        [$executable] = explode(" ", $commandToExecute);
-        exec(sprintf("which %s", $executable), $result);
-        return strpos("not found", $result) === false;
+        return [$stdout, $exitCode, $stderr];
     }
 }

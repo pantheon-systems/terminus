@@ -5,7 +5,9 @@ namespace Pantheon\Terminus\Helpers;
 use League\Container\ContainerAwareInterface;
 use League\Container\ContainerAwareTrait;
 use Pantheon\Terminus\Config\ConfigAwareTrait;
+use Pantheon\Terminus\Exceptions\TerminusAlreadyExistsException;
 use Pantheon\Terminus\Exceptions\TerminusException;
+use Pantheon\Terminus\Helpers\Traits\CommandExecutorTrait;
 use Pantheon\Terminus\ProgressBars\ProcessProgressBar;
 use Robo\Common\IO;
 use Robo\Contract\ConfigAwareInterface;
@@ -26,6 +28,9 @@ class LocalMachineHelper implements ConfigAwareInterface, ContainerAwareInterfac
     use ConfigAwareTrait;
     use ContainerAwareTrait;
     use IO;
+    use CommandExecutorTrait {
+        execute as executeUnbuffered;
+    }
 
     /**
      * Executes the given command on the local machine and return the exit code and output.
@@ -176,5 +181,30 @@ class LocalMachineHelper implements ConfigAwareInterface, ContainerAwareInterfac
         $process->setTimeout($config->get('timeout'));
 
         return $process;
+    }
+
+    /**
+     * Clones the Git repository.
+     *
+     * @param string $gitUrl
+     * @param string $path
+     * @param bool $overrideIfExists
+     *
+     * @throws \Pantheon\Terminus\Exceptions\TerminusAlreadyExistsException
+     * @throws \Pantheon\Terminus\Exceptions\TerminusException
+     */
+    public function cloneGitRepository(string $gitUrl, string $path, bool $overrideIfExists = false)
+    {
+        if (is_dir($path . DIRECTORY_SEPARATOR . '.git')) {
+            if (!$overrideIfExists) {
+                throw new TerminusAlreadyExistsException(sprintf('The repository already exists in %s', $path));
+            }
+
+            if ('' !== trim($path, DIRECTORY_SEPARATOR . ' ')) {
+                $this->executeUnbuffered('rm -rf "%s"', [$path]);
+            }
+        }
+
+        $this->executeUnbuffered('git clone %s %s', [$gitUrl, $path]);
     }
 }

@@ -16,6 +16,7 @@ use Pantheon\Terminus\Collections\SiteOrganizationMemberships;
 use Pantheon\Terminus\Collections\SiteUserMemberships;
 use Pantheon\Terminus\Collections\Workflows;
 use Pantheon\Terminus\Exceptions\TerminusException;
+use Pantheon\Terminus\Helpers\Utility\SiteFramework;
 
 /**
  * Class Site
@@ -235,6 +236,20 @@ class Site extends TerminusModel implements ContainerAwareInterface, Organizatio
     }
 
     /**
+     * Returns the site framework.
+     *
+     * @return \Pantheon\Terminus\Helpers\Utility\SiteFramework
+     */
+    public function getFramework(): SiteFramework
+    {
+        if (!isset($this->framework)) {
+            $this->framework = new SiteFramework($this->get('framework'));
+        }
+
+        return $this->framework;
+    }
+
+    /**
      * @return NewRelic
      */
     public function getNewRelic()
@@ -341,9 +356,11 @@ class Site extends TerminusModel implements ContainerAwareInterface, Organizatio
     }
 
     /**
-     * @return Upstream
+     * Returns the Upstream.
+     *
+     * @return \Pantheon\Terminus\Models\SiteUpstream
      */
-    public function getUpstream()
+    public function getUpstream(): SiteUpstream
     {
         $upstream_data = (object)array_merge((array)$this->get('upstream'), (array)$this->get('product'));
         if (empty((array)$upstream_data)
@@ -494,12 +511,17 @@ class Site extends TerminusModel implements ContainerAwareInterface, Organizatio
     }
 
     /**
+     * Returns the path to the site local copy directory.
+     *
+     * @param string|null $siteDirName
+     *
      * @return string
-     * @throws \Pantheon\Terminus\Exceptions\TerminusException
+     *
+     * @throws TerminusException
      */
-    public function getLocalCopyDir(): string
+    public function getLocalCopyDir(?string $siteDirName = null): string
     {
-        return $this->getLocalCopiesSiteDir($this->getName());
+        return $this->getLocalCopiesSiteDir($siteDirName ?? $this->getName());
     }
 
     public function __toString()

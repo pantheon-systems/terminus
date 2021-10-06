@@ -6,7 +6,8 @@ use Pantheon\Terminus\Friends\SiteInterface;
 use Pantheon\Terminus\Friends\SiteTrait;
 
 /**
- * Class SiteUpstream
+ * Class SiteUpstream.
+ *
  * @package Pantheon\Terminus\Models
  */
 class SiteUpstream extends TerminusModel implements SiteInterface
@@ -55,7 +56,7 @@ class SiteUpstream extends TerminusModel implements SiteInterface
         }
         return $data;
     }
-    
+
      /**
      * @return string[]
      */
