@@ -21,7 +21,6 @@
     "consolidation/filter-via-dot-access-data": "^2.0",
     "consolidation/output-formatters": "^4",
     "consolidation/robo": "^3",
-    "consolidation/self-update": "dev-cms-259-invalid-version-name as 1.3.0",
     "consolidation/site-alias": "^3.1",
     "czproject/git-php": "^4.0",
     "guzzlehttp/guzzle": "^7.0",
