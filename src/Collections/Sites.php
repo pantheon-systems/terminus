@@ -211,7 +211,7 @@ class Sites extends APICollection implements SessionAwareInterface
     public function get($id): TerminusModel
     {
         try {
-            $uuid = $this->getUuidBySiteId($id);
+            $uuid = $this->getUuid($id);
             if (isset($this->models[$uuid])) {
                 return $this->models[$uuid];
             }
@@ -298,9 +298,9 @@ class Sites extends APICollection implements SessionAwareInterface
      * @throws \Pantheon\Terminus\Exceptions\TerminusNotFoundException
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    protected function getUuidBySiteId(string $site_id): ?string
+    protected function getUuid(string $site_id): ?string
     {
-        if (!$this->isValidUuidV4($site_id)) {
+        if (!$this->isValidUuid($site_id)) {
             return $this->getUuidByName($site_id);
         }
 
