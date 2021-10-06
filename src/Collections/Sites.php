@@ -313,14 +313,14 @@ class Sites extends APICollection implements SessionAwareInterface
     }
 
     /**
-     * Returns TRUE if the string is a valid v4 UUID value.
+     * Returns TRUE if the string is a valid UUID value.
      *
      * @param string $uuid
      *
      * @return bool
      */
-    protected function isValidUuidV4(string $uuid): bool
+    protected function isValidUuid(string $uuid): bool
     {
-        return preg_match('/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/', strtolower($uuid));
+        return preg_match('/[a-f0-9]{8}-([a-f0-9]{4}-){3}[a-f0-9]{12}/', strtolower($uuid));
     }
 }
