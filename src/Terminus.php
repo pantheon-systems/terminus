@@ -99,6 +99,8 @@ class Terminus implements
         $this->addBuiltInCommandsAndHooks();
         $this->addPluginsCommandsAndHooks();
 
+        $application->addSelfUpdateCommand('pantheon-systems/terminus');
+
         $this->setApplication($application);
         $this->runner = new RoboRunner();
         $this->runner->setContainer($container);
