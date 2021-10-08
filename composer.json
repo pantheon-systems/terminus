@@ -13,7 +13,6 @@
     "consolidation/filter-via-dot-access-data": "^1.0",
     "consolidation/output-formatters": "^3.5",
     "consolidation/robo": "^1.4.4",
-    "consolidation/self-update": "2.0 as 1.3.0",
     "guzzlehttp/guzzle": "^6.2",
     "psy/psysh": "^0.8",
     "symfony/console": "^3.3",
