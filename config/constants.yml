@@ -38,8 +38,8 @@ TERMINUS_COMMAND_CACHE_DIR:     '[[ TERMINUS_CACHE_DIR ]]/commands'
 TERMINUS_TOKENS_DIR:            '[[ TERMINUS_CACHE_DIR ]]/tokens'
 TERMINUS_ASSETS_DIR:            '[[ TERMINUS_ROOT ]]/assets'
 TERMINUS_LOCAL_COPIES:          '[[ TERMINUS_USER_HOME ]]/pantheon-local-copies'
-TERMINUS_PHAR_FILE:             '[[ TERMINUS_USER_HOME ]]/t3'
-TERMINUS_EXECUTABLE:            '[[ TERMINUS_USER_HOME ]]/bin/t3'
+TERMINUS_PHAR_FILE:             '[[ TERMINUS_USER_HOME ]]/terminus'
+TERMINUS_EXECUTABLE:            '[[ TERMINUS_USER_HOME ]]/bin/terminus'
 
 # Helpers
 TERMINUS_USER: null

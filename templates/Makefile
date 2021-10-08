@@ -1,5 +1,5 @@
 terminus:
-	touch ./t3
+	touch ./terminus
 
 install: terminus
-	install -m 0755 ./t3 /usr/local/bin
+	install -m 0755 ./terminus /usr/local/bin

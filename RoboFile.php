@@ -111,7 +111,7 @@ class RoboFile extends \Robo\Tasks
 
         $packager->setOutputPath($outputPath);
         $packager->setControl($control);
-        $packager->addMount("{$composerFilePath}/t3", '/usr/bin/t3');
+        $packager->addMount("{$composerFilePath}/terminus", '/usr/bin/terminus');
 
         //Creates folders using mount points
         $packager->run();
