@@ -83,7 +83,7 @@ class RoboFile extends \Robo\Tasks
             $composerFilePath . DIRECTORY_SEPARATOR . 'composer.json'
         );
         $outputPath = $composerFilePath . DIRECTORY_SEPARATOR . 'package';
-        $terminus_binary = "{$composerFilePath}/t3";
+        $terminus_binary = "{$composerFilePath}/terminus";
         $dpkg_installed_size = ceil(filesize($terminus_binary) / 1024);
 
         // We need the output path empty.
@@ -113,7 +113,7 @@ class RoboFile extends \Robo\Tasks
 
         $packager->setOutputPath($outputPath);
         $packager->setControl($control);
-        $packager->addMount("$terminus_binary", '/usr/bin/t3');
+        $packager->addMount($terminus_binary, '/usr/bin/terminus');
 
         //Creates folders using mount points
         $packager->run();
