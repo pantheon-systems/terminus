@@ -83,6 +83,8 @@ class RoboFile extends \Robo\Tasks
             $composerFilePath . DIRECTORY_SEPARATOR . 'composer.json'
         );
         $outputPath = $composerFilePath . DIRECTORY_SEPARATOR . 'package';
+        $terminus_binary = "{$composerFilePath}/t3";
+        $dpkg_installed_size = ceil(filesize($terminus_binary) / 1024);
 
         // We need the output path empty.
         if (is_dir($outputPath)) {
@@ -96,14 +98,15 @@ class RoboFile extends \Robo\Tasks
         // Create a config object.
         $config = $this->getConfig();
 
+
         $control = new StandardFile();
         $control
             ->setPackageName($package)
             ->setVersion($config->get('version'))
             ->setDepends(['php7.4', 'php7.4-cli', 'php7.4-xml'])
-            ->setInstalledSize(27648)
+            ->setInstalledSize($dpkg_installed_size)
             ->setArchitecture('all')
-            ->setMaintainer('Terminus 3', 'terminus3@pantheon.io')
+            ->setMaintainer('Terminus', 'terminus@pantheon.io')
             ->setProvides($package)
             ->setDescription($composerContents->getDescription());
 
@@ -111,7 +114,7 @@ class RoboFile extends \Robo\Tasks
 
         $packager->setOutputPath($outputPath);
         $packager->setControl($control);
-        $packager->addMount("{$composerFilePath}/t3", '/usr/bin/t3');
+        $packager->addMount("$terminus_binary", '/usr/bin/t3');
 
         //Creates folders using mount points
         $packager->run();
