@@ -98,7 +98,6 @@ class RoboFile extends \Robo\Tasks
         // Create a config object.
         $config = $this->getConfig();
 
-
         $control = new StandardFile();
         $control
             ->setPackageName($package)
