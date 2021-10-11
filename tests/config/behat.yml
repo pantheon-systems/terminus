@@ -21,5 +21,5 @@ default:
               machine_token_device:    'Behat Testing Token'
               machine_token_id:        'dcr_q4tFMiYiK9DfJO15'
               cache_dir:               '[[system_temp]]/.terminus/cache'
-              executable:              'bin/t3'
+              executable:              'bin/terminus'
               local_copies:            '~/pantheon-local-copies'
