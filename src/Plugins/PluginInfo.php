@@ -158,7 +158,7 @@ class PluginInfo implements ConfigAwareInterface, ContainerAwareInterface, Logge
         if (!empty($results['output'])) {
             $package_info = json_decode($results['output'], true, 10);
             if (empty($package_info)) {
-                throw new TerminusNotFoundException('Package info not found.');
+                return 'n/a';
             }
             if (!empty($package_info['latest'])) {
                 return $package_info['latest'];
