@@ -107,10 +107,10 @@ class InstallCommand extends PluginBaseCommand
             // No vendor name, add pantheon-systems as default.
             $project_name = "pantheon-systems/$project_name";
         }
-        if (!PluginInfo::checkWhetherPackagistProject($project_name, $this->getLocalMachine())) {
-            $this->log()->error(self::INVALID_PROJECT_MESSAGE, ['project' => $project_name,]);
-            return false;
-        }
+//        if (!PluginInfo::checkWhetherPackagistProject($project_name, $this->getLocalMachine())) {
+//            $this->log()->error(self::INVALID_PROJECT_MESSAGE, ['project' => $project_name,]);
+//            return false;
+//        }
 
         if ($this->isInstalled($project_name)) {
             $this->log()->notice(self::ALREADY_INSTALLED_MESSAGE, ['project' => $project_name,]);
