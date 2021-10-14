@@ -26,7 +26,7 @@ Whether you want to fix a bug or implement a new feature, the process is pretty 
 
 It doesn't matter if the code isn't perfect. The idea is to get it reviewed early and iterate on it.
 
-If you're adding a new feature, please add one or more functional tests for it in the `tests/features/` directory. See below. Also, keep the documentation up-to-date by running:
+If you're adding a new feature, please add one or more functional tests for it in the `tests/Functional/` directory. See below. Also, keep the documentation up-to-date by running:
 
   ```bash
   cd /install/location/terminus
