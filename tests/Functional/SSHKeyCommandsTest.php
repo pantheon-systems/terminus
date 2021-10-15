@@ -6,13 +6,15 @@ use Pantheon\Terminus\Tests\Traits\TerminusTestTrait;
 use PHPUnit\Framework\TestCase;
 
 /**
- * Class SSHKeyCommandsTest
+ * Class SSHKeyCommandsTest.
  *
  * @package Pantheon\Terminus\Tests\Functional
  */
 class SSHKeyCommandsTest extends TestCase
 {
     use TerminusTestTrait;
+
+    private const TEST_SSH_KEY_DESCRIPTION = 'DevUser@pantheon.io';
 
     /**
      * @test
@@ -25,28 +27,42 @@ class SSHKeyCommandsTest extends TestCase
      */
     public function testSSHKeyCommand()
     {
-        $cwd = getcwd();
-        $dummy_key_file = "$cwd/tests/config/dummy_key.pub";
+        $keysListBefore = $this->terminusJsonResponse('ssh-key:list');
 
-        // Initial list
-        $ssh_key_list = $this->terminusJsonResponse('ssh-key:list');
-        $original_id_list = array_keys($ssh_key_list);
-        $key_count = count($ssh_key_list);
-
-        // Add new key
-        $this->terminus("ssh-key:add $dummy_key_file");
-        $ssh_key_list_new = $this->terminusJsonResponse('ssh-key:list');
-
-        $this->assertGreaterThan($key_count, count($ssh_key_list_new));
-        $new_id_list = array_keys($ssh_key_list_new);
-        $new_key = array_diff($new_id_list, $original_id_list);
-        if (is_array($new_key)) {
-            $new_key = array_pop($new_key);
+        // Search for the test key and remove if exists.
+        $testKeyId = $this->getSshKeyIdByDescription($keysListBefore, self::TEST_SSH_KEY_DESCRIPTION);
+        if (null !== $testKeyId) {
+            $this->terminus(sprintf('ssh-key:remove %s', $testKeyId));
+            // Update the initial list of keys.
+            $keysListBefore = $this->terminusJsonResponse('ssh-key:list');
         }
 
-        // Remove
-        $this->terminus("ssh-key:remove $new_key");
-        $ssh_key_list_new2 = $this->terminusJsonResponse('ssh-key:list');
-        $this->assertEquals($key_count, count($ssh_key_list_new2));
+        // Add the test key.
+        $testKeyPath = sprintf('%s/tests/config/dummy_key.pub', getcwd());
+        $this->terminus(sprintf('ssh-key:add %s', $testKeyPath));
+        $keysListAfter = $this->terminusJsonResponse('ssh-key:list');
+        $this->assertEquals(count($keysListBefore) + 1, count($keysListAfter));
+        $testKeyId = $this->getSshKeyIdByDescription($keysListAfter, self::TEST_SSH_KEY_DESCRIPTION);
+        $this->assertNotNull($testKeyId);
+
+        // Remove the test key.
+        $this->terminus(sprintf('ssh-key:remove %s', $testKeyId));
+        $keysListAfter = $this->terminusJsonResponse('ssh-key:list');
+        $this->assertEquals(count($keysListBefore), count($keysListAfter));
+    }
+
+    /**
+     * Returns the SSH key ID by description.
+     *
+     * @param array $keys
+     * @param string $description
+     *
+     * @return string|null
+     */
+    private function getSshKeyIdByDescription(array $keys, string $description): ?string
+    {
+        $keysListIdToDescription = array_map(fn ($value) => $value['comment'], $keys);
+
+        return array_search($description, $keysListIdToDescription) ?: null;
     }
 }
