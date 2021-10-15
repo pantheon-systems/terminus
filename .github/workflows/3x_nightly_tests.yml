@@ -31,12 +31,12 @@ jobs:
       - name: Phar Build
         run: composer phar:build
       - name: permissions
-        run: chmod +x ./t3
-      - name: Save t3.phar as artifact
+        run: chmod +x ./terminus
+      - name: Save terminus.phar as artifact
         uses: actions/upload-artifact@v2
         with:
-          name: t3-phar
-          path: t3
+          name: terminus-phar
+          path: terminus
           if-no-files-found: error
 
   functional:
@@ -75,7 +75,7 @@ jobs:
       - name: Download terminus.phar as artifact
         uses: actions/download-artifact@v2
         with:
-          name: t3-phar
+          name: terminus-phar
       - name: Install Composer Dependencies
         run: composer install --no-interaction --prefer-dist
       - name: Functional Tests (short and long)
