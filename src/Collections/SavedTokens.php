@@ -76,15 +76,20 @@ class SavedTokens extends TerminusCollection implements ConfigAwareInterface, Da
      */
     public function getData()
     {
-        if (empty(parent::getData())) {
-            $keys = $this->getDataStore()->keys();
-
-            $tokens = [];
-            foreach ($keys as $key) {
-                $tokens[] = $this->getDataStore()->get($key);
-            }
-            $this->setData($tokens);
+        if (!empty(parent::getData())) {
+            return parent::getData();
         }
-        return parent::getData();
+
+        $keys = array_filter(
+            $this->getDataStore()->keys(),
+            fn ($keys) => preg_match('/\S+@\S+\.\S+/', $keys)
+        );
+        $tokens = array_filter(array_map(
+            fn ($key) => $this->getDataStore()->get($key),
+            $keys
+        ));
+        $this->setData($tokens);
+
+        return $tokens;
     }
 }
