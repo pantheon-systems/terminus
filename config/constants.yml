@@ -52,7 +52,7 @@ TERMINUS_COMMAND_SITE_OPTIONS_REGION: null
 
 # Package Settings
 TERMINUS_BREW_TAP:               '*** TBD ***'
-TERMINUS_BREW_PACKAGE:           '*** TBD ***'
+TERMINUS_BREW_PACKAGE:           'pantheon-systems/external/terminus'
 TERMINUS_DEBIAN_PACKAGE_INSTALL: '*** TBD ***'
 
 # Testing
