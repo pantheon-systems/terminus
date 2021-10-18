@@ -1,6 +1,11 @@
 # Change Log
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org)
 
+## 2.6.2 2021-10-18
+
+### Changed
+- Updated `self:update` command to support new options from upstream library (#2223)
+
 ## 2.6.1 - 2021-08-04
 
 ### Fixed
