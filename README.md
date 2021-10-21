@@ -119,12 +119,6 @@ Run this in your terminal client:
 cd /install/location ; composer update
 ```
 
-### Updating with [Homebrew](http://brew.sh/) (for Macs)
-Update Terminus with this command:
-```bash
-brew upgrade homebrew/php/terminus
-```
-
 ### Updating with Git
 To update with Git and use Terminus HEAD, you should update this repository and then update its dependencies via Composer.
 
