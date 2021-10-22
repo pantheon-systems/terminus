@@ -526,7 +526,7 @@ class Terminus implements
         $terminus = new static($config, $input, $output);
         if ($dependencies_warning) {
             $terminus->logger->warning(
-                "Could not load plugins because dependencies version have changed. " .
+                "Could not load plugins because Terminus was upgraded. " .
                 "Please run terminus self:plugin:reload to refresh.",
             );
         }
