@@ -149,7 +149,8 @@
       "Tooly\\ScriptHandler::installPharTools"
     ],
     "post-update-cmd": [
-      "Tooly\\ScriptHandler::installPharTools"
+      "Tooly\\ScriptHandler::installPharTools",
+      "vendor/bin/robo update:Dependenciesversion"
     ],
     "pre-commit": [
       "@code:fix",

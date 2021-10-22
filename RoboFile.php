@@ -71,6 +71,23 @@ class RoboFile extends \Robo\Tasks
     }
 
     /**
+     * Updates $terminusPluginsDependenciesVersion variable.
+     */
+    public function updateDependenciesversion()
+    {
+        $this->say('Updating terminus dependencies version.');
+        $composerFilePath = realpath(dirname(\Composer\Factory::getComposerFile()));
+        $composerLockContents = file_get_contents($composerFilePath . DIRECTORY_SEPARATOR . 'composer.lock');
+        $composerLockJson = json_decode($composerLockContents, true, 10);
+        $hash = substr($composerLockJson['content-hash'], 0, 7);
+        $binFileContents = file_get_contents('bin/terminus');
+        $newBinFileContents = preg_replace("/(terminusPluginsDependenciesVersion\s?=)(.*)/m", "$1 '${hash}';", $binFileContents);
+        if ($newBinFileContents && $newBinFileContents !== $binFileContents) {
+            file_put_contents('bin/terminus', $newBinFileContents);
+        }
+    }
+
+    /**
      * @return mixed|null
      * @throws Exception
      */
