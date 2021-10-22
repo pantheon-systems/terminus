@@ -9,6 +9,7 @@ use Pantheon\Terminus\Plugins\PluginDiscovery;
 use Pantheon\Terminus\Exceptions\TerminusException;
 use Pantheon\Terminus\Plugins\PluginInfo;
 use Composer\Semver\Semver;
+use Symfony\Component\Filesystem\Exception\IOException;
 
 /**
  * Class PluginBaseCommand
@@ -247,6 +248,7 @@ abstract class PluginBaseCommand extends TerminusCommand
                     // Finally: Update packages.
                     $results = $this->runComposerUpdate($dependencies_dir);
                     if ($results['exit_code'] === 0) {
+                        $this->cleanupOldDependenciesFolders();
                         return [
                             'plugins_dir' => $plugins_dir,
                             'dependencies_dir' => $dependencies_dir,
@@ -258,6 +260,32 @@ abstract class PluginBaseCommand extends TerminusCommand
                 'Error updating dependencies in terminus-dependencies.',
                 []
             );
+        }
+    }
+
+    /**
+     * Cleanup old dependencies folders.
+     */
+    protected function cleanupOldDependenciesFolders()
+    {
+        $dependencies_base_dir = $this->getConfig()->get('dependencies_base_dir');
+        $current_dependencies_dir = $this->getConfig()->get('terminus_dependencies_dir');
+        $pattern_start = basename($dependencies_base_dir);
+        $parent_folder = dirname($dependencies_base_dir);
+        $all_folders = scandir($parent_folder);
+        $fs = $this->getLocalMachine()->getFileSystem();
+        foreach ($all_folders as $folder) {
+            $full_path = $parent_folder . DIRECTORY_SEPARATOR . $folder;
+            if (is_dir($full_path) && strpos($folder, $pattern_start) === 0) {
+                if ($full_path !== $current_dependencies_dir) {
+                    // This folder should be deleted.
+                    try {
+                        $fs->remove($full_path);
+                    } catch (IOException $e) {
+                        $this->log()->warning('Error removing old dependencies folder: {full_path}.', compact('full_path'));
+                    }
+                }
+            }
         }
     }
 
