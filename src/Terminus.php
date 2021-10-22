@@ -512,6 +512,7 @@ class Terminus implements
         $config->extend(new YamlConfig($config->get('user_home') . '/.terminus/config.yml'));
         $config->extend(new DotEnvConfig(getcwd()));
         $config->extend(new EnvConfig());
+        $dependencies_warning = false;
         if ($dependencies_version) {
             $dependenciesBaseDir = $config->get('dependencies_base_dir');
             $terminusDependenciesDir = $dependenciesBaseDir . '-' . $dependencies_version;
@@ -519,7 +520,16 @@ class Terminus implements
             if (file_exists($terminusDependenciesDir . '/vendor/autoload.php')) {
                 include_once("$terminusDependenciesDir/vendor/autoload.php");
             }
+            else {
+                $dependencies_warning = true;
+            }
         }
-        return new static($config, $input, $output);
+        $terminus = new static($config, $input, $output);
+        if ($dependencies_warning) {
+            $terminus->logger->warning(
+                "Could not load plugins because dependencies version have changed. Please run terminus self:plugin:reload to refresh.",
+            );
+        }
+        return $terminus;
     }
 }
