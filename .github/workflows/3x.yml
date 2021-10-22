@@ -115,7 +115,7 @@ jobs:
     container:
       image: quay.io/pantheon-public/php-ci:v7.4
     if: ${{ startsWith(github.ref, 'refs/tags/')  && github.repository_owner == 'pantheon-systems' }}
-    needs: [ 'functional_tests', 'behat_tests' ]
+    needs: [ release ]
     steps:
       - name: Download repo content from artifact
         uses: actions/download-artifact@v2
