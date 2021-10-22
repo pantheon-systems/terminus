@@ -41,6 +41,7 @@ use Pantheon\Terminus\Config\DefaultsConfig;
 use Pantheon\Terminus\Config\DotEnvConfig;
 use Pantheon\Terminus\Config\EnvConfig;
 use Pantheon\Terminus\Config\YamlConfig;
+use Symfony\Component\Filesystem\Filesystem;
 
 /**
  * Class Terminus
@@ -503,6 +504,23 @@ class Terminus implements
         $this->commands = $commands;
     }
 
+    /**
+     * Determines whether Terminus is supposed to have plugins or not without loading them.
+     */
+    public function hasPlugins()
+    {
+        $plugins_dir = $this->getConfig()->get('plugins_dir');
+        $fs = new Filesystem();
+        if ($fs->exists($plugins_dir . '/composer.json')) {
+            $composer_json_contents = json_decode(file_get_contents($plugins_dir . '/composer.json'), true, 10);
+            if (!empty($composer_json_contents['require']) && count($composer_json_contents['require'])) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     public static function factory($dependencies_version = null): Terminus
     {
         $input = new ArgvInput($_SERVER['argv']);
@@ -512,7 +530,7 @@ class Terminus implements
         $config->extend(new YamlConfig($config->get('user_home') . '/.terminus/config.yml'));
         $config->extend(new DotEnvConfig(getcwd()));
         $config->extend(new EnvConfig());
-        $dependencies_warning = false;
+        $dependencies_folder_absent = false;
         if ($dependencies_version) {
             $dependenciesBaseDir = $config->get('dependencies_base_dir');
             $terminusDependenciesDir = $dependenciesBaseDir . '-' . $dependencies_version;
@@ -520,11 +538,11 @@ class Terminus implements
             if (file_exists($terminusDependenciesDir . '/vendor/autoload.php')) {
                 include_once("$terminusDependenciesDir/vendor/autoload.php");
             } else {
-                $dependencies_warning = true;
+                $dependencies_folder_absent = true;
             }
         }
         $terminus = new static($config, $input, $output);
-        if ($dependencies_warning) {
+        if ($dependencies_folder_absent && $terminus->hasPlugins()) {
             $terminus->logger->warning(
                 "Could not load plugins because Terminus was upgraded. " .
                 "Please run terminus self:plugin:reload to refresh.",
