@@ -147,10 +147,12 @@ jobs:
         repository:
           - 'terminus/debian/buster'
           - 'terminus/debian/bullseye'
+          - 'terminus/debian/bookworm'
           - 'terminus/ubuntu/bionic'
           - 'terminus/ubuntu/focal'
           - 'terminus/ubuntu/groovy'
           - 'terminus/ubuntu/hirsute'
+          - 'terminus/ubuntu/impish'
     if: ${{ startsWith(github.ref, 'refs/tags/')  && github.repository_owner == 'pantheon-systems' }}
     needs: [ 'package_linux' ]
     steps:
