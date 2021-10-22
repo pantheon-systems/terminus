@@ -282,7 +282,10 @@ abstract class PluginBaseCommand extends TerminusCommand
                     try {
                         $fs->remove($full_path);
                     } catch (IOException $e) {
-                        $this->log()->warning('Error removing old dependencies folder: {full_path}.', compact('full_path'));
+                        $this->log()->warning(
+                            'Error removing old dependencies folder: {full_path}.',
+                            compact('full_path')
+                        );
                     }
                 }
             }

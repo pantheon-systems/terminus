@@ -519,15 +519,15 @@ class Terminus implements
             $config->set('terminus_dependencies_dir', $terminusDependenciesDir);
             if (file_exists($terminusDependenciesDir . '/vendor/autoload.php')) {
                 include_once("$terminusDependenciesDir/vendor/autoload.php");
-            }
-            else {
+            } else {
                 $dependencies_warning = true;
             }
         }
         $terminus = new static($config, $input, $output);
         if ($dependencies_warning) {
             $terminus->logger->warning(
-                "Could not load plugins because dependencies version have changed. Please run terminus self:plugin:reload to refresh.",
+                "Could not load plugins because dependencies version have changed. " .
+                "Please run terminus self:plugin:reload to refresh.",
             );
         }
         return $terminus;
