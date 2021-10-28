@@ -77,36 +77,6 @@ class Environment extends TerminusModel implements ContainerAwareInterface, Site
     }
 
     /**
-     * Gives cacheserver connection info for this environment
-     *
-     * @return array
-     */
-    public function cacheserverConnectionInfo()
-    {
-        $cacheserver_binding = array_filter((array)$this->getBindings()->getByType('cacheserver'));
-        if (!empty($cacheserver_binding)) {
-            do {
-                $cache_binding = array_shift($cacheserver_binding);
-            } while (!is_null($cache_binding) && $cache_binding->get('environment') != $this->id);
-
-            $password = $cache_binding->get('password');
-            $domain = $cache_binding->get('host');
-            $port = $cache_binding->get('port');
-            $username = $cache_binding->getUsername();
-            $url = "redis://$username:$password@$domain:$port";
-            $command = "redis-cli -h $domain -p $port -a $password";
-            return [
-                'password' => $password,
-                'host' => $domain,
-                'port' => $port,
-                'url' => $url,
-                'command' => $command,
-            ];
-        }
-        return [];
-    }
-
-    /**
      * Changes connection mode
      *
      * @param string $value Connection mode, "git" or "sftp"
@@ -250,6 +220,97 @@ class Environment extends TerminusModel implements ContainerAwareInterface, Site
     }
 
     /**
+     * Returns cacheserver connection info for this environment.
+     *
+     * @return array
+     */
+    public function cacheserverConnectionInfo()
+    {
+        $cacheServerBindings = $this->getBindings()->getByType('cacheserver');
+        if (empty($cacheServerBindings)) {
+            return [];
+        }
+
+        $cacheServerBinding = $this->getBinding($cacheServerBindings);
+        if (null === $cacheServerBinding) {
+            return [];
+        }
+
+        $password = $cacheServerBinding->get('password');
+        $domain = $cacheServerBinding->get('host');
+        $port = $cacheServerBinding->get('port');
+        $username = $cacheServerBinding->getUsername();
+        $url = "redis://$username:$password@$domain:$port";
+        $command = "redis-cli -h $domain -p $port -a $password";
+
+        return [
+            'password' => $password,
+            'host' => $domain,
+            'port' => $port,
+            'url' => $url,
+            'command' => $command,
+        ];
+    }
+
+    /**
+     * Gives database connection info for this environment
+     *
+     * @return array
+     */
+    public function databaseConnectionInfo()
+    {
+        $dbServerBindings = $this->getBindings()->getByType('dbserver');
+        if (empty($dbServerBindings)) {
+            return [];
+        }
+
+        $dbServerBinding = $this->getBinding($dbServerBindings);
+        if (null === $dbServerBinding) {
+            return [];
+        }
+
+        $password = $dbServerBinding->get('password');
+        $domain = "dbserver.{$this->id}.{$this->getSite()->id}.drush.in";
+        $port = $dbServerBinding->get('port');
+        $username = $dbServerBinding->getUsername();
+        $database = 'pantheon';
+        $url = "mysql://$username:$password@$domain:$port/$database";
+        $command = "mysql -u $username -p$password -h $domain -P $port $database";
+
+        return [
+            'host' => $domain,
+            'username' => $username,
+            'password' => $password,
+            'port' => $port,
+            'database' => $database,
+            'url' => $url,
+            'command' => $command,
+        ];
+    }
+
+    /**
+     * Returns the binding for the current environment from the list of bindings.
+     *
+     * @param array $bindings
+     *
+     * @return \Pantheon\Terminus\Models\Binding|null
+     */
+    private function getBinding(array $bindings): ?Binding
+    {
+        foreach ($bindings as $binding) {
+            if (!$binding instanceof Binding) {
+                continue;
+            }
+
+            if ($binding->get('environment') === $this->id) {
+                return $binding;
+            }
+        }
+
+        return null;
+    }
+
+    /**
      * Counts the number of deployable commits
      *
      * @return int
@@ -279,39 +340,6 @@ class Environment extends TerminusModel implements ContainerAwareInterface, Site
     public function dashboardUrl()
     {
         return "{$this->getSite()->dashboardUrl()}#{$this->id}";
-    }
-
-    /**
-     * Gives database connection info for this environment
-     *
-     * @return array
-     */
-    public function databaseConnectionInfo()
-    {
-        $dbserver_binding = array_filter((array)$this->getBindings()->getByType('dbserver'));
-        if (!empty($dbserver_binding)) {
-            do {
-                $db_binding = array_shift($dbserver_binding);
-            } while ($db_binding->get('environment') != $this->id);
-
-            $password = $db_binding->get('password');
-            $domain = "dbserver.{$this->id}.{$this->getSite()->id}.drush.in";
-            $port = $db_binding->get('port');
-            $username = $db_binding->getUsername();
-            $database = 'pantheon';
-            $url = "mysql://$username:$password@$domain:$port/$database";
-            $command = "mysql -u $username -p$password -h $domain -P $port $database";
-            return [
-                'host' => $domain,
-                'username' => $username,
-                'password' => $password,
-                'port' => $port,
-                'database' => $database,
-                'url' => $url,
-                'command' => $command,
-            ];
-        }
-        return [];
     }
 
     /**
