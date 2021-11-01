@@ -276,18 +276,22 @@ abstract class PluginBaseCommand extends TerminusCommand
         $fs = $this->getLocalMachine()->getFileSystem();
         foreach ($all_folders as $folder) {
             $full_path = $parent_folder . DIRECTORY_SEPARATOR . $folder;
-            if (is_dir($full_path) && strpos($folder, $pattern_start) === 0) {
-                if ($full_path !== $current_dependencies_dir) {
-                    // This folder should be deleted.
-                    try {
-                        $fs->remove($full_path);
-                    } catch (IOException $e) {
-                        $this->log()->warning(
-                            'Error removing old dependencies folder: {full_path}.',
-                            compact('full_path')
-                        );
-                    }
-                }
+            if (!is_dir($full_path)
+                || strpos($folder, $pattern_start) !== 0
+                || $full_path === $current_dependencies_dir) {
+                continue;
+            }
+            // Delete folder if:
+            // - it's a folder
+            // - the folder name starts with $pattern_start
+            // - it's not the current dependencies folder.
+            try {
+                $fs->remove($full_path);
+            } catch (IOException $e) {
+                $this->log()->warning(
+                    'Error removing old dependencies folder: {full_path}.',
+                    compact('full_path')
+                );
             }
         }
     }

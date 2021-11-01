@@ -509,16 +509,15 @@ class Terminus implements
      */
     public function hasPlugins(): bool
     {
-        $plugins_dir = $this->getConfig()->get('plugins_dir');
-        $fs = new Filesystem();
-        if ($fs->exists($plugins_dir . '/composer.json')) {
-            $composer_json_contents = json_decode(file_get_contents($plugins_dir . '/composer.json'), true);
-            if (!empty($composer_json_contents['require']) && count($composer_json_contents['require'])) {
-                return true;
-            }
+        $pluginsDir = $this->getConfig()->get('plugins_dir');
+        if (!(new Filesystem())->exists($pluginsDir . DIRECTORY_SEPARATOR . 'composer.json')) {
+            return false;
         }
 
-        return false;
+        $composerJsonContents = json_decode(file_get_contents($pluginsDir . DIRECTORY_SEPARATOR . 'composer.json'));
+        $dependencies = $composerJsonContents['require'] ?? [];
+
+        return count($dependencies) > 0;
     }
 
     public static function factory($dependencies_version = null): Terminus
