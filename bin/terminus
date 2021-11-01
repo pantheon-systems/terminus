@@ -9,8 +9,9 @@
  *   - Exits with a status code
  */
 
-// Increase this number to force terminus dependencies to be reloaded.
-$terminusPluginsDependenciesVersion = '1';
+// This variable is automatically managed via updateDependenciesversion() in /RoboFile.php,
+// which is run after every call to composer update.
+$terminusPluginsDependenciesVersion = '2512c16';
 
 // Cannot use $_SERVER superglobal since that's empty during phpunit testing
 // getenv('HOME') isn't set on Windows and generates a Notice.
