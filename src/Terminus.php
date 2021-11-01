@@ -507,12 +507,12 @@ class Terminus implements
     /**
      * Determines whether Terminus is supposed to have plugins or not without loading them.
      */
-    public function hasPlugins()
+    public function hasPlugins(): bool
     {
         $plugins_dir = $this->getConfig()->get('plugins_dir');
         $fs = new Filesystem();
         if ($fs->exists($plugins_dir . '/composer.json')) {
-            $composer_json_contents = json_decode(file_get_contents($plugins_dir . '/composer.json'), true, 10);
+            $composer_json_contents = json_decode(file_get_contents($plugins_dir . '/composer.json'), true);
             if (!empty($composer_json_contents['require']) && count($composer_json_contents['require'])) {
                 return true;
             }
@@ -544,8 +544,8 @@ class Terminus implements
         $terminus = new static($config, $input, $output);
         if ($dependencies_folder_absent && $terminus->hasPlugins()) {
             $terminus->logger->warning(
-                "Could not load plugins because Terminus was upgraded. " .
-                "Please run terminus self:plugin:reload to refresh.",
+                'Could not load plugins because Terminus was upgraded. ' .
+                'Please run terminus self:plugin:reload to refresh.',
             );
         }
         return $terminus;
