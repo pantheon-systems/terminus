@@ -514,7 +514,10 @@ class Terminus implements
             return false;
         }
 
-        $composerJsonContents = json_decode(file_get_contents($pluginsDir . DIRECTORY_SEPARATOR . 'composer.json'), true);
+        $composerJsonContents = json_decode(
+            file_get_contents($pluginsDir . DIRECTORY_SEPARATOR . 'composer.json'),
+            true
+        );
         $dependencies = $composerJsonContents['require'] ?? [];
 
         return count($dependencies) > 0;
