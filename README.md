@@ -55,7 +55,7 @@ There are several ways to install Terminus, depending on your use case:
 1. Make the Terminus file exectable. The example below assumes the same installation path as above:
 
     ```bash
-    chmod +X ~/bin/terminus
+    chmod +x ~/bin/terminus
     ```
 
 **Note:** Your installation directory must be in or added to your `$PATH` environment variable in order to call `terminus` from any working directory.
