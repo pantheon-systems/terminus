@@ -207,4 +207,32 @@ class LocalMachineHelper implements ConfigAwareInterface, ContainerAwareInterfac
 
         $this->executeUnbuffered('git clone %s %s', [$gitUrl, $path]);
     }
+
+    /**
+     * Opens the given URL in a browser on the local machine.
+     *
+     * @param $url The URL to be opened
+     * @throws \Pantheon\Terminus\Exceptions\TerminusException
+     */
+    public function openUrl($url)
+    {
+        $cmd = '';
+        switch (php_uname('s')) {
+            case 'Linux':
+                $cmd = 'xdg-open';
+                break;
+            case 'Darwin':
+                $cmd = 'open';
+                break;
+            case 'Windows NT':
+                $cmd = 'start';
+                break;
+        }
+        if (!$cmd) {
+            throw new TerminusException('Terminus is unable to open a browser on this OS.');
+        }
+        $command = sprintf('%s %s', $cmd, $url);
+
+        $this->getProcess($command)->run();
+    }
 }
