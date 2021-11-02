@@ -280,7 +280,6 @@ class Terminus implements
             'Pantheon\\Terminus\\Commands\\Branch\\ListCommand',
             'Pantheon\\Terminus\\Commands\\Connection\\InfoCommand',
             'Pantheon\\Terminus\\Commands\\Connection\\SetCommand',
-            'Pantheon\\Terminus\\Commands\\D9ify\\ProcessCommand',
             'Pantheon\\Terminus\\Commands\\Dashboard\\ViewCommand',
             'Pantheon\\Terminus\\Commands\\Domain\\AddCommand',
             'Pantheon\\Terminus\\Commands\\Domain\\DNSCommand',

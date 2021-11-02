@@ -11,9 +11,7 @@ use JsonSchema\Validator;
 use Rogervila\ArrayDiffMultidimensional;
 
 /**
- * Class ComposerFile
- *
- * @package D9ify\Site
+ * Class ComposerFile.
  */
 class ComposerFile extends JsonFile
 {

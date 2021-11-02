@@ -5,9 +5,7 @@ namespace Pantheon\Terminus\Helpers\Composer;
 use Composer\Semver\Comparator;
 
 /**
- * Class Requirement
- *
- * @package D9ify\Composer
+ * Class Requirement.
  */
 class Requirement
 {
