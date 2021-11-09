@@ -76,6 +76,12 @@ class Environment extends TerminusModel implements ContainerAwareInterface, Site
         return $this->getWorkflows()->create('apply_upstream_updates', compact('params'));
     }
 
+    public function fixUpstreamUpdates()
+    {
+        $params = ['converge' => true, 'build_steps' => ['artifact_install' => true]];
+        return $this->getWorkflows()->create('sync_code_with_build', compact('params'));
+    }
+
     /**
      * Changes connection mode
      *

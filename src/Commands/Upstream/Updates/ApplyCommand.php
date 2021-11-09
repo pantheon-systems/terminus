@@ -14,6 +14,23 @@ class ApplyCommand extends UpdatesCommand
     use WorkflowProcessingTrait;
 
     /**
+     * @authorize
+     *
+     * @command upstream:updates:fix
+     *
+     * Fix problems caused when an upstream update turns on build_step: true
+     */
+    public function fixUpstreamUpdates($site_env)
+    {
+        $site = $this->getSite($site_env);
+        $env = $this->getEnv($site_env);
+
+        $workflow = $env->fixUpstreamUpdates();
+        $this->processWorkflow($workflow);
+        $this->log()->notice($workflow->getMessage());
+    }
+
+    /**
      * Applies upstream updates to a site development environment.
      *
      * @authorize
