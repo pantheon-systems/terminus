@@ -58,7 +58,12 @@ brew install {{ brew_package }}
 
 ### Ubuntu / WinWSL+Ubuntu:
 
-`{{ debian_package_install | raw }}`
+```
+# Setup repository
+curl -s https://packagecloud.io/install/repositories/{{ debian_apt_repo }}/script.deb.sh | bash
+# Install package
+{{ debian_package_install | raw }}
+```
 
 ### Other installation methods
 
