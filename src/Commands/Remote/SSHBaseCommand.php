@@ -307,7 +307,7 @@ abstract class SSHBaseCommand extends TerminusCommand implements SiteAwareInterf
         $nameserver = gethostbyname($alternateNameserver);
         $r = new \Net_DNS2_Resolver(array('nameservers' => [$nameserver]));
         $result = $r->query($host, 'A');
-        foreach($result->answer as $index => $o) {
+        foreach ($result->answer as $index => $o) {
             return $o->address;
         }
 
