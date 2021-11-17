@@ -283,7 +283,34 @@ abstract class SSHBaseCommand extends TerminusCommand implements SiteAwareInterf
 
         return vsprintf(
             '%s -T %s@%s -p %s -o "StrictHostKeyChecking=no" -o "AddressFamily inet"',
-            [$command, $sftp['username'], $sftp['host'], $sftp['port'],]
+            [$command, $sftp['username'], $this->lookupHostViaAlternateNameserver($sftp['host']), $sftp['port'],]
         );
+    }
+
+    /**
+     * Uses an alternate name server, if selected, to look up the provided hostname.
+     * Set nameserver via environment variable TERMINUS_ALTERNATE_NAMESERVER.
+     * Allows 'terminus drush' and 'terminus wp' to work on a sandbox.
+     *
+     * @param string $host Hostname to look up, e.g. 'appserver.dev.91275f92-eeae-4cea-89a5-9d0593dff16c.drush.in'
+     *
+     * @return string
+     */
+    private function lookupHostViaAlternateNameserver($host)
+    {
+        $alternateNameserver = $this->getConfig()->get('alternate_nameserver');
+        if (!$alternateNameserver || !class_exists('\Net_DNS2_Resolver')) {
+            return $host;
+        }
+
+        // Net_DNS2 requires an IP address for the nameserver; look up the IP from the name.
+        $nameserver = gethostbyname($alternateNameserver);
+        $r = new \Net_DNS2_Resolver(array('nameservers' => [$nameserver]));
+        $result = $r->query($host, 'A');
+        foreach($result->answer as $index => $o) {
+            return $o->address;
+        }
+
+        return $host;
     }
 }
