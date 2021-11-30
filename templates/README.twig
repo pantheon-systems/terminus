@@ -1,9 +1,5 @@
 # terminus : Pantheon's Command-Line Interface
 
-## ***COTRIBUTING***
-
-We need help with testing. Take a look in `tests/Functional` and any test that's just `$this->fail("figure out how to test");` and feel free to file a pull request against that.
-
 ## Status
 
 [![Commit Build](https://github.com/pantheon-systems/terminus/actions/workflows/ci.yml/badge.svg?branch=v3.0)](https://github.com/pantheon-systems/terminus/actions/workflows/ci.yml)
@@ -24,7 +20,7 @@ Our documentation is kept in the Terminus Manual, located here: https://pantheon
 | Operating System       | Version    |
 |------------------------|------------|
 | MacOS                  | 10.14+     |
-| Ubuntu                 | Latest LTR |
+| Ubuntu                 | Latest LTS |
 | Windows + WSL + Ubuntu | TBD        |
 
 ### Package Manager
@@ -35,13 +31,13 @@ Our documentation is kept in the Terminus Manual, located here: https://pantheon
 
 #### Required Packages
 
-These packages will install when you install Terminus.
+These packages are required to take full advantage of Terminus.
 
-- [Composer 2](https://getcomposer.org)
+- [Composer 2](https://getcomposer.org) (Needed for the plugin manager component)
 
 - [PHP](https://www.php.net) (v7.4+)
 
-- [Git](https://help.github.com/articles/set-up-git/)
+- [Git](https://help.github.com/articles/set-up-git/) (May be needed for the plugin manager component)
 
 #### Recommended Packages
 
@@ -54,12 +50,16 @@ These packages will install when you install Terminus.
 
 ### Mac OS:
 
-`> brew tap {{ brew_tap }}`
+Terminus is published as a package under pantheon-systems/external. To install it, you should run:
 
-`> brew install {{ brew_package }}`
+```
+brew install {{ brew_package }}
+```
 
 ### Ubuntu / WinWSL+Ubuntu:
 
 `{{ debian_package_install | raw }}`
 
-{%  include 'coverage.twig' %}
+### Other installation methods
+
+Refer to the [Terminus manual](https://pantheon.io/docs/terminus/install#install-terminus) for other installation methods.

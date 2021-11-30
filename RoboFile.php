@@ -71,6 +71,23 @@ class RoboFile extends \Robo\Tasks
     }
 
     /**
+     * Updates $terminusPluginsDependenciesVersion variable.
+     */
+    public function updateDependenciesversion()
+    {
+        $this->say('Updating terminus dependencies version.');
+        $composerFilePath = realpath(dirname(\Composer\Factory::getComposerFile()));
+        $composerLockContents = file_get_contents($composerFilePath . DIRECTORY_SEPARATOR . 'composer.lock');
+        $composerLockJson = json_decode($composerLockContents, true, 10);
+        $hash = substr($composerLockJson['content-hash'], 0, 7);
+        $binFileContents = file_get_contents('bin/terminus');
+        $newBinFileContents = preg_replace("/(terminusPluginsDependenciesVersion\s?=)(.*)/m", "$1 '${hash}';", $binFileContents);
+        if ($newBinFileContents && $newBinFileContents !== $binFileContents) {
+            file_put_contents('bin/terminus', $newBinFileContents);
+        }
+    }
+
+    /**
      * @return mixed|null
      * @throws Exception
      */
@@ -83,6 +100,8 @@ class RoboFile extends \Robo\Tasks
             $composerFilePath . DIRECTORY_SEPARATOR . 'composer.json'
         );
         $outputPath = $composerFilePath . DIRECTORY_SEPARATOR . 'package';
+        $terminus_binary = "{$composerFilePath}/terminus";
+        $dpkg_installed_size = ceil(filesize($terminus_binary) / 1024);
 
         // We need the output path empty.
         if (is_dir($outputPath)) {
@@ -101,9 +120,9 @@ class RoboFile extends \Robo\Tasks
             ->setPackageName($package)
             ->setVersion($config->get('version'))
             ->setDepends(['php7.4', 'php7.4-cli', 'php7.4-xml'])
-            ->setInstalledSize(27648)
+            ->setInstalledSize($dpkg_installed_size)
             ->setArchitecture('all')
-            ->setMaintainer('Terminus 3', 'terminus3@pantheon.io')
+            ->setMaintainer('Terminus', 'terminus@pantheon.io')
             ->setProvides($package)
             ->setDescription($composerContents->getDescription());
 
@@ -111,7 +130,7 @@ class RoboFile extends \Robo\Tasks
 
         $packager->setOutputPath($outputPath);
         $packager->setControl($control);
-        $packager->addMount("{$composerFilePath}/t3", '/usr/bin/t3');
+        $packager->addMount($terminus_binary, '/usr/bin/terminus');
 
         //Creates folders using mount points
         $packager->run();

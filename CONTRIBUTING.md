@@ -32,7 +32,7 @@ Whether you want to fix a bug or implement a new feature, the process is pretty 
 
 It doesn't matter if the code isn't perfect. The idea is to get it reviewed early and iterate on it.
 
-If you're adding a new feature, please add one or more functional tests for it in the `tests/features/` directory. See below. Also, keep the documentation up-to-date by running:
+If you're adding a new feature, please add one or more functional tests for it in the `tests/Functional/` directory. See below. Also, keep the documentation up-to-date by running:
 
   ```bash
   cd /install/location/terminus
@@ -54,70 +54,23 @@ The PHP code beautifier can automatically fix a number of style issues. Run it v
 Running and Writing Tests
 -------------------------
 
-There are two types of automated tests:
+Terminus uses functional tests implemented using [PHPUnit](http://phpunit.de/)
 
-* unit tests, implemented using [PHPUnit](http://phpunit.de/)
-* functional tests, implemented using [Behat](http://behat.org)
+The tests can be run via:
 
-Both the unit and functional tests can be run together via:
-
-`composer test`
-
-### Unit Tests
-
-The unit test files are in the `tests/unit-tests` directory.
-
-To run the unit tests for Terminus 0.x, simply execute:
-
-  `vendor/bin/phpunit`
-  
-The Terminus 1.x unit tests can be run via:
-
-  ```bash
-  cd /install/location/terminus
-  composer phpunit
-  ```
-
+`composer test:functional`
 
 ### Functional Tests
 
-The functional test files are in the `tests/features` directory. Any test which touches the backed is mocked with [VCR](http://php-vcr.github.io).
+The functional test files are in the `tests/Functional` directory.
 
-#### Running existing tests
-
-To run the entire test suite for Terminus 0.x:
-
-  `vendor/bin/behat --config tests/config/behat.yml`
-
-Or to test a single feature:
-
-  `vendor/bin/behat --config tests/config/behat.yml tests/features/core.feature`
-
-The functional test files for the new version of Terminus are in the `tests/active-features` directory. The complete behat suite for Terminus 1.x can be run via:
+The Terminus 3.x functional tests can be run via:
 
   ```bash
   cd /install/location/terminus
-  composer behat
+  composer test:functional
   ```
 
-More information can be found by running `vendor/bin/behat --help`.
-
-#### Recording new tests
-
-To record a new test, configure the `parameters` section of the file [tests/config/behat.yml](tests/config/behat.yml) as follows:
-```
-parameters:
-  user_id:                 '[[YOUR-USER-ID-HERE]]'
-  username:                '[[YOUR-EMAIL-ADDRESS-HERE]]'
-  host:                    'terminus.pantheon.io:443'
-  vcr_mode:                'new_episodes'
-  machine_token:           '[[YOUR-MACHINE-TOKEN-HERE]]'
-```
-Then, run a single test as described above. VCR will then call the backend and record the results received in the specified .yml file. This is done for any Behat scenario labeled `@vcr filename.yml`. Pick a filename appropriate for the test.
-
-Once the VCR .yml file has been saved, you may restore your behat.yml configuration file to its previous state (at a minimum, set `vcr_mode` back to `none`). Subsequent test runs will pull data from the VCR .yml file to satisfy future web requests.
-
-You may need to add yourself to the [team of the behat-tests site](https://admin.dashboard.pantheon.io/sites/e885f5fe-6644-4df6-a292-68b2b57c33ad#dev/code) (Pantheon employees) or use a different test site. Once you have captured the events you would like to record, hand-sanitize them of any sensitive information such as machine tokens and bearer authorization headers.
 
 Versioning
 ----------

@@ -4,11 +4,11 @@ namespace Pantheon\Terminus\Commands\Self\Plugin;
 
 use Consolidation\AnnotatedCommand\CommandData;
 use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
-use Pantheon\Terminus\Exceptions\TerminusException;
 use Pantheon\Terminus\Plugins\PluginInfo;
 
 /**
  * Installs a Terminus plugin using Composer.
+ *
  * @package Pantheon\Terminus\Commands\Self\Plugin
  */
 class InstallCommand extends PluginBaseCommand
@@ -23,16 +23,19 @@ class InstallCommand extends PluginBaseCommand
      * @command self:plugin:install
      * @aliases self:plugin:add
      *
-     * @param array $projects A list of one or more plugin projects to install. Projects may include version constraints.
+     * @param array $projects
+     *   A list of one or more plugin projects to install. Projects may include version constraints.
      *
      * @usage <project 1> [project 2] ...
+     *
+     * @throws \Pantheon\Terminus\Exceptions\TerminusException
      */
     public function install(array $projects)
     {
         $projects = $this->convertPathProjects($projects);
-        foreach ($projects as $project_name => $instalation_path) {
-            if ($this->validateProject($project_name)) {
-                $results = $this->doInstallation($project_name, $instalation_path);
+        foreach ($projects as $projectName => $installationPath) {
+            if ($this->validateProject($projectName, $installationPath)) {
+                $results = $this->doInstallation($projectName, $installationPath);
                 // TODO Improve messaging
                 $this->log()->notice($results['output']);
             }
@@ -41,8 +44,12 @@ class InstallCommand extends PluginBaseCommand
 
     /**
      * Check for minimum plugin command requirements.
+     *
      * @hook validate self:plugin:install
+     *
      * @param CommandData $commandData
+     *
+     * @throws \Pantheon\Terminus\Exceptions\TerminusNotFoundException
      */
     public function validate(CommandData $commandData)
     {
@@ -55,68 +62,99 @@ class InstallCommand extends PluginBaseCommand
 
     /**
      * Convert given projects into an array indexed by project name and path (if exists) as value.
+     *
+     * @param array $projects
+     *
+     * @return array
+     *  - key is project name;
+     *  - value is path toa local installation (if exists). Otherwise - NULL.
+     *
+     * @throws \Pantheon\Terminus\Exceptions\TerminusException
      */
-    protected function convertPathProjects($projects)
+    protected function convertPathProjects(array $projects): array
     {
-        $resultList = [];
+        $convertedProjects = [];
 
-        foreach ($projects as $project_or_path) {
-            if (!$this->hasProjectAtPath($project_or_path)) {
-                // No project was found, presume the parameter is a project and it has no path
-                $resultList[$project_or_path] = '';
+        foreach ($projects as $projectNameOrPath) {
+            if (!$this->hasProjectAtPath($projectNameOrPath)) {
+                // No project was found, presume the parameter is a project, and it has no path.
+                $convertedProjects[$this->getComposerProjectName($projectNameOrPath)] = null;
             } else {
-                $project_name = $this->getProjectNameFromPath($project_or_path);
-                // A project name was found at the path, so record the name and its path
-                $resultList[$project_name] = $project_or_path;
+                $projectName = $this->getProjectNameFromPath($projectNameOrPath);
+                // A project name was found at the path, so record the name and its path.
+                $convertedProjects[$this->getComposerProjectName($projectName)] = $projectNameOrPath;
             }
         }
 
-        return $resultList;
+        return $convertedProjects;
     }
 
     /**
      * Determines whether the given path contains a composer project.
      */
-    protected function hasProjectAtPath($project_or_path)
+    protected function hasProjectAtPath($projectNameOrPath): bool
     {
         // If the specified path does not exist or does not have a composer.json file, presume it is a project.
-        $composerJson = $project_or_path . '/composer.json';
-        return is_dir($project_or_path) && file_exists($composerJson);
+        $composerJson = $projectNameOrPath . DIRECTORY_SEPARATOR . 'composer.json';
+
+        return is_dir($projectNameOrPath) && file_exists($composerJson);
     }
 
     /**
-     * @param string $project_name Name of project to be installed
-     * @param string $instalation_path If not empty, install as a path repository
-     * @return array Results from the install command
-     */
-    private function doInstallation($project_name, $instalation_path = '')
-    {
-        return $this->installProject($project_name, $instalation_path);
-    }
-
-    /**
-     * Validate given project is valid. If project name does not include vendor, prefix it with pantheon-systems.
+     * Installs the plugin.
      *
-     * @param string $project_name
+     * @param string $projectName
+     *   Name of project to be installed.
+     * @param string|null $installationPath
+     *   If not NULL, install as a path repository.
+     *
+     * @return array
+     *   Results from the "install" command.
+     */
+    private function doInstallation(string $projectName, ?string $installationPath)
+    {
+        return $this->installProject($projectName, $installationPath);
+    }
+
+    /**
+     * Validate given project is valid.
+     *
+     * @param string $projectName
+     * @param string|null $installationPath
+     *
      * @return bool
      */
-    private function validateProject(&$project_name)
+    private function validateProject(string $projectName, ?string $installationPath): bool
     {
-        $parts = explode('/', $project_name);
-        if (count($parts) === 1) {
-            // No vendor name, add pantheon-systems as default.
-            $project_name = "pantheon-systems/$project_name";
-        }
-        if (!PluginInfo::checkWhetherPackagistProject($project_name, $this->getLocalMachine())) {
-            $this->log()->error(self::INVALID_PROJECT_MESSAGE, ['project' => $project_name,]);
+        if (null === $installationPath
+            && !PluginInfo::checkWhetherPackagistProject($projectName, $this->getLocalMachine())
+        ) {
+            $this->log()->error(self::INVALID_PROJECT_MESSAGE, ['project' => $projectName,]);
             return false;
         }
 
-        if ($this->isInstalled($project_name)) {
-            $this->log()->notice(self::ALREADY_INSTALLED_MESSAGE, ['project' => $project_name,]);
+        if ($this->isInstalled($projectName)) {
+            $this->log()->notice(self::ALREADY_INSTALLED_MESSAGE, ['project' => $projectName,]);
             return false;
         }
 
         return true;
+    }
+
+    /**
+     * Returns the project name.
+     *
+     * @param string $project
+     *
+     * @return string
+     */
+    private function getComposerProjectName(string $project)
+    {
+        $parts = explode('/', $project);
+        if (1 === count($parts)) {
+            return sprintf('pantheon-systems/%s', $project);
+        }
+
+        return $project;
     }
 }

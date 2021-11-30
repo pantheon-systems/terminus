@@ -14,15 +14,6 @@ use Pantheon\Terminus\Models\TerminusModel;
 class LoginCommand extends TerminusCommand
 {
 
-    public static $HELP_TEXT = [
-        "*******************************************************************************",
-        "* THIS IS AN EARLY VERSION OF TERMINUS 3.0. NOT ALL THE COMMANDS ARE WORKING  *",
-        "* AND IT'S NOT 100% COMPATIBLE WITH PHP 8 BUT WE'RE GETTING THERE.            *",
-        "* If you find a bug you think needs to be addressed, please add the bug to    *",
-        "* terminus issue queue: https://github.com/pantheon-systems/terminus/issues   *",
-        "*******************************************************************************",
-    ];
-
     /**
      * Logs in a user to Pantheon.
      *
@@ -72,7 +63,7 @@ class LoginCommand extends TerminusCommand
                 $this->processLogIn($token);
                 break;
             default:
-                throw new TerminusException(
+                $this->log()->notice(
                     "Tokens were saved for the following email addresses:\n{tokens}\nYou may log in via `terminus"
                     . " auth:login --email=<email>`, or you may visit the dashboard to generate a machine"
                     . " token:\n{url}",
@@ -91,12 +82,6 @@ class LoginCommand extends TerminusCommand
         /** @var $token \Pantheon\Terminus\Models\SavedToken */
         $token->logIn();
         $this->log()->notice('Logged in via machine token.');
-
-        if (static::$HELP_TEXT) {
-            $this->log()->notice(
-                PHP_EOL . join(PHP_EOL, static::$HELP_TEXT)
-            );
-        }
     }
 
     /**

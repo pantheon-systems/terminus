@@ -1,14 +1,12 @@
 <?php
 
-
 namespace Pantheon\Terminus\Helpers\Utility;
 
 use Composer\IO\BufferIO;
 use Composer\IO\IOInterface;
 
 /**
- * Class JsonFile
- * @package D9ify\Utility
+ * Class JsonFile.
  */
 class JsonFile extends \SplFileObject
 {

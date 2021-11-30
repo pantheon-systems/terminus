@@ -48,7 +48,7 @@ if (empty($token)) {
     }
 }
 
-const TERMINUS_BIN_FILE = './t3';
+const TERMINUS_BIN_FILE = './terminus';
 chmod(TERMINUS_BIN_FILE, 0700);
 
 if ($token) {

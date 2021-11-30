@@ -41,7 +41,7 @@
     "kint-php/kint": "^3.3",
     "pcov/clobber": "^2.0",
     "php-coveralls/php-coveralls": "^2.4",
-    "php-vcr/php-vcr": "^1.4",
+    "php-vcr/php-vcr": "~1.5.2",
     "phpunit/php-code-coverage": "^9.2",
     "phpunit/phpcov": "^8.2",
     "phpunit/phpunit": "^9",
@@ -70,23 +70,20 @@
     ]
   },
   "bin": [
-    "bin/t3"
+    "bin/terminus"
   ],
   "scripts": {
     "build": "@phar:build",
     "test": "@test:functional",
     "phar:build": [
-      "rm -Rf ./t3",
+      "rm -Rf ./terminus",
       "vendor/bin/phar-composer.phar build .",
-      "mv terminus.phar t3",
-      "chmod +x t3"
+      "mv terminus.phar terminus",
+      "chmod +x terminus"
     ],
     "phar:install": [
-      "rm -rf /usr/local/bin/t3 || true",
-      "mv ./t3 /usr/local/bin/t3"
-    ],
-    "phar:compat": [
-      "ln -s /usr/local/bin/t3 /usr/local/bin/terminus"
+      "rm -rf /usr/local/bin/terminus || true",
+      "mv ./terminus /usr/local/bin/terminus"
     ],
     "phar:update": [
       "@phar:build",
@@ -113,7 +110,7 @@
     "code:new-command": [
       "rm -Rf ~/.terminus/cache/commands || true",
       "@update-class-lists",
-      "bin/t3 self:clear-cache"
+      "bin/terminus self:clear-cache"
     ],
     "code:setup-precommit": [
       "bash scripts/setup-precommit.sh"
@@ -152,7 +149,8 @@
       "Tooly\\ScriptHandler::installPharTools"
     ],
     "post-update-cmd": [
-      "Tooly\\ScriptHandler::installPharTools"
+      "Tooly\\ScriptHandler::installPharTools",
+      "vendor/bin/robo update:Dependenciesversion"
     ],
     "pre-commit": [
       "@code:fix",

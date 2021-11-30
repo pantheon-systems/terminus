@@ -71,7 +71,7 @@ class Session implements ContainerAwareInterface, ConfigAwareInterface, DataStor
         $user_id = $this->get('user_id');
         if (empty($user_id)) {
             throw new TerminusException(
-                "No user ID. Please login via t3 auth:login"
+                "No user ID. Please login via terminus auth:login"
             );
         }
         $nickname = \uniqid(__METHOD__ . "-");
@@ -81,7 +81,7 @@ class Session implements ContainerAwareInterface, ConfigAwareInterface, DataStor
         $user = $this->getContainer()->get($nickname);
         if (!$user instanceof User) {
             throw new TerminusException(
-                "No User ID. Please ling via t3 auth:login"
+                "No User ID. Please ling via terminus auth:login"
             );
         }
         return $user;
