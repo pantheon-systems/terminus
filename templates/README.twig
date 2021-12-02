@@ -59,10 +59,13 @@ brew install {{ brew_package }}
 ### Ubuntu / WinWSL+Ubuntu:
 
 ```
-# Setup repository
-curl -s https://packagecloud.io/install/repositories/{{ debian_apt_repo }}/script.deb.sh | bash
-# Install package
-{{ debian_package_install | raw }}
+git clone https://github.com/pantheon-systems/terminus \
+    && cd terminus \
+    && git checkout 3.x \
+    && composer install \
+    && composer phar:build \
+    && composer phar:install \
+    && rm -Rf /tmp/terminus
 ```
 
 ### Other installation methods
