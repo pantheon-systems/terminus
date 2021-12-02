@@ -296,7 +296,7 @@ abstract class SSHBaseCommand extends TerminusCommand implements SiteAwareInterf
      *
      * @return string
      */
-    private function lookupHostViaAlternateNameserver($host)
+    private function lookupHostViaAlternateNameserver(string $host): string
     {
         $alternateNameserver = $this->getConfig()->get('alternate_nameserver');
         if (!$alternateNameserver || !class_exists('\Net_DNS2_Resolver')) {
