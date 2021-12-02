@@ -29,7 +29,7 @@ $control = new \wdm\debian\control\StandardFile();
 $control
     ->setPackageName($package)
     ->setVersion($config->get('version'))
-    ->setDepends(["php7.4", "php7.4-cli"])
+    ->setDepends(["php", "php-cli"])
     ->setInstalledSize(27648)
     ->setArchitecture('noarch')
     ->setMaintainer("Terminus 3", "terminus3@pantheon.io")
