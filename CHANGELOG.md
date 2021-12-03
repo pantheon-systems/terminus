@@ -1,6 +1,11 @@
 # Change Log
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org)
 
+## 2.6.3 2021-12-03
+- Fix fatal error in Environment::cacheserverConnectionInfo() (#2242) (#2245)
+- Fix CODEOWNERS formatting. (#2241)
+- Update README.md - `chmod +X` to `chmod +x`  (#2247)
+
 ## 2.6.2 2021-10-18
 
 ### Changed
