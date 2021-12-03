@@ -77,7 +77,7 @@
     "test": "@test:functional",
     "phar:build": [
       "rm -Rf ./terminus",
-      "vendor/bin/phar-composer.phar build .",
+      "php -d phar.readonly=Off vendor/bin/phar-composer.phar build .",
       "mv terminus.phar terminus",
       "chmod +x terminus"
     ],
