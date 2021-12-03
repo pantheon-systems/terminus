@@ -1,6 +1,33 @@
 # Change Log
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org)
 
+## 3.0.0-rc1 - 2021-12-03
+
+### Changed
+- Update auth:login command so that to not produce a false negative on successful login (#2231)
+- Update CODEOWNERS per 2.x branch (#2243)
+- Update composer dependencies version variable in post-update script (#2239)
+- Update phar builder and package dependencies (#2255)
+- Show dependencies warning if folder does not exist (#2239)
+- Implement cleanupOldDependenciesFolders function after running dependencies update (#2239)
+- Update terminusPluginsDependenciesVersion var comment (#2239)
+- Update warning message text (#2239)
+- Print warning only if terminus has plugins (#2239)
+- Improve hasPlugins, factory, and cleanupOldDependenciesFolders functions (#2239)
+- Return json_decode as array (#2239)
+- Restore openUrl function from LocalMachineHelper (#2248)
+- Draft debian linux packaging (#2255, #2238)
+
+### Removed
+- Remove code related to D9ify (#2246)
+
+### Fixed
+- Fix SavedTokens::getData() on auth:login (#2231)
+- Fix failing SSHKeyCommandsTest (#2231)
+- Fix fatal error in Environment::cacheserverConnectionInfo() (#2242)
+- Fix issue with Phar builder as well as DEB dependencies (#2255)
+- Fix coding standards (#2239)
+
 ## 3.0.0-beta1 - 2021-10-28
 
 ### Added
