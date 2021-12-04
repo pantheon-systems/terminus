@@ -292,7 +292,7 @@ class Environment extends TerminusModel implements ContainerAwareInterface, Site
      *
      * @return \Pantheon\Terminus\Models\Binding|null
      */
-    private function getBinding(array $bindings): ?Binding
+    private function getBinding(array $bindings)
     {
         foreach ($bindings as $binding) {
             if (!$binding instanceof Binding) {

@@ -48,7 +48,7 @@
       "cbf": "phpcbf --standard=tests/config/linting_ruleset.xml tests/unit_tests/* bin/terminus src/*",
       "clover": "phpunit -c tests/config/phpunit.xml.dist --coverage-clover tests/logs/clover.xml",
       "coveralls": "php vendor/bin/php-coveralls -v -c tests/config/coveralls.yml",
-      "cs": "phpcs --standard=tests/config/linting_ruleset.xml tests/unit_tests bin/terminus src",
+      "cs": "phpcs --standard=tests/config/linting_ruleset.xml --exclude=Generic.Files.LineLength tests/unit_tests bin/terminus src",
       "docs": "php scripts/make-docs.php",
       "lint": "@cs",
       "phpunit": "SHELL_INTERACTIVE=true phpunit --colors=always  -c tests/config/phpunit.xml.dist --debug",
