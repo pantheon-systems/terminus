@@ -74,8 +74,6 @@ class WorkflowCommandsTest extends TestCase
         $this->assertNotEmpty($operations);
 
         $testOperation = array_pop($operations);
-        echo "\ntestOperation: \n";
-        print_r($testOperation);
         $this->assertIsArray($testOperation);
         $this->assertNotEmpty($testOperation);
         $this->assertArrayHasKey('type', $testOperation);
@@ -89,8 +87,6 @@ class WorkflowCommandsTest extends TestCase
         $logs = $this->terminus(
             sprintf('workflow:info:logs %s --id=%s', $this->getSiteName(), $workflow['id'])
         );
-        echo "\nLogs: \n";
-        print_r($logs);
         $this->assertIsString($logs);
         $this->assertNotEmpty($logs);
 
