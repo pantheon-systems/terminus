@@ -31,8 +31,12 @@ if (empty($home) && !empty($_SERVER['HOMEDRIVE']) && !empty($_SERVER['HOMEPATH']
 }
 
 $pharPath = \Phar::running(true);
-if (version_compare(PHP_VERSION, '7.4.0', '<=') === true) {
-    throw new \PharIo\Version\InvalidVersionException("Sorry, but you need to upgrade PHP to version 7.4 or greater.");
+if (version_compare(PHP_VERSION, '7.4.0', '<') === true || version_compare(PHP_VERSION, '8.1.0', '>=') === true) {
+    echo "\n";
+    echo 'Sorry, your PHP version (' . PHP_VERSION . ') is not supported.' . "\n";
+    echo 'For PHP versions prior to 7.4, downgrade to terminus 2.x.  PHP 8.1 support is Coming Soon™.' . "\n";
+    echo "\n";
+    exit(1);
 }
 
 if ($pharPath) {
