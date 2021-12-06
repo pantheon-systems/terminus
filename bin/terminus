@@ -12,7 +12,7 @@
 // Version compatibility check and messaging
 if (version_compare(PHP_VERSION, '7.4.0', '<') === true) {
     echo "\n";
-    echo 'Sorry, your PHP version (' . PHP_VERSION . ') is not supported.' . "\n";
+    echo 'Sorry, your PHP version (' . PHP_VERSION . ') is no longer supported.' . "\n";
     echo 'Upgrade to PHP 7.4 or newer to use Terminus 3. For PHP versions prior to 7.4, downgrade to Terminus 2.x.'; echo "\n\n";
     exit(1);
 } elseif (version_compare(PHP_VERSION, '8.1.0', '>=') === true) {
@@ -20,7 +20,11 @@ if (version_compare(PHP_VERSION, '7.4.0', '<') === true) {
     echo 'PHP 8.1+ is not supported by this version of Terminus.' . "\n";
     echo 'Check for new versions at https://github.com/pantheon-systems/terminus/releases' . "\n";
     echo "\n";
-    sleep(1);  // Pause for 1 second before the wall of deprecation messages strikes
+    if (!getenv('TERMINUS_ALLOW_UNSUPPORTED_NEWER_PHP')) {
+        echo 'Set environment variable TERMINUS_ALLOW_UNSUPPORTED_NEWER_PHP to try continuing anyway.' . "\n";
+        echo "Stopping.\n\n";
+        exit(1);
+    }
 }
 
 // This variable is automatically managed via updateDependenciesversion() in /RoboFile.php,
