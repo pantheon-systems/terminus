@@ -9,6 +9,20 @@
  *   - Exits with a status code
  */
 
+// Version compatibility check and messaging
+if (version_compare(PHP_VERSION, '7.4.0', '<') === true) {
+    echo "\n";
+    echo 'Sorry, your PHP version (' . PHP_VERSION . ') is not supported.' . "\n";
+    echo 'Upgrade to PHP 7.4 or newer to use Terminus 3. For PHP versions prior to 7.4, downgrade to terminus 2.x.'; echo "\n\n";
+    exit(1);
+} elseif (version_compare(PHP_VERSION, '8.1.0', '>=') === true) {
+    echo "\n";
+    echo 'PHP 8.1+ is not supported by this version of Terminus.' . "\n";
+    echo 'Check for new versions at https://github.com/pantheon-systems/terminus/releases' . "\n";
+    echo "\n";
+    sleep(1);  // Pause for 1 second before the wall of deprecation messages strikes
+}
+
 // This variable is automatically managed via updateDependenciesversion() in /RoboFile.php,
 // which is run after every call to composer update.
 $terminusPluginsDependenciesVersion = '2512c16';
@@ -31,14 +45,6 @@ if (empty($home) && !empty($_SERVER['HOMEDRIVE']) && !empty($_SERVER['HOMEPATH']
 }
 
 $pharPath = \Phar::running(true);
-if (version_compare(PHP_VERSION, '7.4.0', '<') === true || version_compare(PHP_VERSION, '8.1.0', '>=') === true) {
-    echo "\n";
-    echo 'Sorry, your PHP version (' . PHP_VERSION . ') is not supported.' . "\n";
-    echo 'For PHP versions prior to 7.4, downgrade to terminus 2.x.  PHP 8.1 support is Coming Soon™.' . "\n";
-    echo "\n";
-    exit(1);
-}
-
 if ($pharPath) {
     include_once("$pharPath/vendor/autoload.php");
 } elseif (file_exists($path = __DIR__ . '/../vendor/autoload.php')
