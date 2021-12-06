@@ -1,7 +1,18 @@
 # Change Log
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org)
 
-## 3.0.0-rc1 - 2021-12-03
+## 3.0.0 - 2021-12-06
+
+### Added
+- Look up host for 'terminus drush' / 'terminus wp' commands via an alternate nameserver, if selected (#2253)
+- Typehint param and return value in lookupHostViaAlternateNameserver (#2253)
+- Symfony Library updates (5.x)
+- Adds plugin manager, contributed by [Ed Reel](https://github.com/uberhacker) (#2054)
+    - New command `self:plugin:install` to install Terminus plugins.
+    - New command `self:plugin:list` to list installed Terminus plugins.
+    - New command `self:plugin:search` to locate Terminus plugins to install.
+    - New command `self:plugin:uninstall` to uninstall Terminus plugins.
+    - New command `self:plugin:update` to update already-installed Terminus plugins.
 
 ### Changed
 - Update auth:login command so that to not produce a false negative on successful login (#2231)
@@ -17,6 +28,7 @@ All notable changes to this project will be documented in this file. This projec
 - Return json_decode as array (#2239)
 - Restore openUrl function from LocalMachineHelper (#2248)
 - Draft debian linux packaging (#2255, #2238)
+- Update version compatibility check and messaging (#2267)
 
 ### Removed
 - Remove code related to D9ify (#2246)
@@ -27,18 +39,6 @@ All notable changes to this project will be documented in this file. This projec
 - Fix fatal error in Environment::cacheserverConnectionInfo() (#2242)
 - Fix issue with Phar builder as well as DEB dependencies (#2255)
 - Fix coding standards (#2239)
-
-## 3.0.0-beta1 - 2021-10-28
-
-### Added
-- D9ify command (see docs)
-- Symfony Library updates (5.x)
-- Adds plugin manager, contributed by [Ed Reel](https://github.com/uberhacker) (#2054)
-    - New command `self:plugin:install` to install Terminus plugins.
-    - New command `self:plugin:list` to list installed Terminus plugins.
-    - New command `self:plugin:search` to locate Terminus plugins to install.
-    - New command `self:plugin:uninstall` to uninstall Terminus plugins.
-    - New command `self:plugin:update` to update already-installed Terminus plugins.
 
 ## 2.6.0 - 2021-06-04
 
