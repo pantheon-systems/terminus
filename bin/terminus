@@ -13,7 +13,7 @@
 if (version_compare(PHP_VERSION, '7.4.0', '<') === true) {
     echo "\n";
     echo 'Sorry, your PHP version (' . PHP_VERSION . ') is not supported.' . "\n";
-    echo 'Upgrade to PHP 7.4 or newer to use Terminus 3. For PHP versions prior to 7.4, downgrade to terminus 2.x.'; echo "\n\n";
+    echo 'Upgrade to PHP 7.4 or newer to use Terminus 3. For PHP versions prior to 7.4, downgrade to Terminus 2.x.'; echo "\n\n";
     exit(1);
 } elseif (version_compare(PHP_VERSION, '8.1.0', '>=') === true) {
     echo "\n";
