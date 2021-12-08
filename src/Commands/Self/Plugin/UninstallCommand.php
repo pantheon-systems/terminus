@@ -27,7 +27,7 @@ class UninstallCommand extends PluginBaseCommand
      * Remove one or more Terminus plugins.
      *
      * @command self:plugin:uninstall
-     * @aliases self:plugin:remove self:plugin:rm self:plugin:delete
+     * @aliases self:plugin:remove self:plugin:rm self:plugin:delete plugin:uninstall plugin:remove plugin:rm plugin:delete
      *
      * @param array $projects A list of one or more installed projects or plugins to remove
      *

@@ -16,7 +16,7 @@ class ReloadCommand extends PluginBaseCommand
      * Reload Terminus plugins.
      *
      * @command self:plugin:reload
-     * @aliases self:plugin:refresh
+     * @aliases self:plugin:refresh plugin:reload plugin:refresh
      *
      */
     public function reload()

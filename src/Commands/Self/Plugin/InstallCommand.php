@@ -21,7 +21,7 @@ class InstallCommand extends PluginBaseCommand
      * Install one or more Terminus plugins.
      *
      * @command self:plugin:install
-     * @aliases self:plugin:add
+     * @aliases self:plugin:add plugin:install plugin:add
      *
      * @param array $projects
      *   A list of one or more plugin projects to install. Projects may include version constraints.

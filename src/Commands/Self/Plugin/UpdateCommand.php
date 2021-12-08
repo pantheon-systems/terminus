@@ -26,7 +26,7 @@ class UpdateCommand extends PluginBaseCommand
      * Update one or more Terminus plugins.
      *
      * @command self:plugin:update
-     * @aliases self:plugin:upgrade self:plugin:up
+     * @aliases self:plugin:upgrade plugin:up plugin:update plugin:upgrade
      *
      * @param array $projects A list of one or more installed plugins to update
      *

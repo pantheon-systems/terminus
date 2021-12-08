@@ -9,16 +9,10 @@ Run `terminus self:info` to confirm you are [running the latest version](https:/
 Setting Up
 ----------
 
-Fork this repo then open a terminal session and execute the following:
-
-```bash
-$ cd /path/to/pantheon/projects (ex. ~/projects/pantheon)
-$ git clone -b 3.x git@github.com:myorg/terminus.git (replace myorg with your forked GitHub account)
-$ cd terminus
-$ composer install
-$ sudo ln -s $(pwd)/bin/t3 /usr/local/bin/t3 (replace /usr/local/bin with your preferred location, if desired)
-$ t3 -V (should return the version)
-```
+1. Clone this Git repository on your local machine.
+2. Install [Composer](https://getcomposer.org/) if you don't already have it.
+3. Run `composer install` to fetch all the dependencies.
+4. Run `./bin/terminus --help` to test that everything was installed properly.
 
 Submitting Patches
 ------------------
