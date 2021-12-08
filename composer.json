@@ -76,14 +76,13 @@
     "build": "@phar:build",
     "test": "@test:functional",
     "phar:build": [
-      "rm -Rf ./terminus",
+      "rm -Rf ./terminus.phar",
       "php -d phar.readonly=Off vendor/bin/phar-composer.phar build .",
-      "mv terminus.phar terminus",
-      "chmod +x terminus"
+      "chmod +x terminus.phar"
     ],
     "phar:install": [
       "rm -rf /usr/local/bin/terminus || true",
-      "mv ./terminus /usr/local/bin/terminus"
+      "mv ./terminus.phar /usr/local/bin/terminus"
     ],
     "phar:update": [
       "@phar:build",

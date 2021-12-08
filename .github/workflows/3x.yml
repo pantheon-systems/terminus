@@ -22,12 +22,12 @@ jobs:
       - name: Phar Build
         run: composer phar:build
       - name: permissions
-        run: chmod +x ./terminus
+        run: chmod +x ./terminus.phar
       - name: Save terminus.phar as artifact
         uses: actions/upload-artifact@v2
         with:
           name: terminus-phar
-          path: terminus
+          path: terminus.phar
           if-no-files-found: error
 
   functional:
@@ -90,7 +90,7 @@ jobs:
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
-          files: terminus
+          files: terminus.phar
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -128,7 +128,7 @@ jobs:
       - name: Full Composer Install
         run: composer install
       - name: Prepare needed folder and fix permissions
-        run: mkdir -p ~/.terminus/cache/tokens && chmod +x ./terminus
+        run: mkdir -p ~/.terminus/cache/tokens && mv ./terminus.phar ./terminus && chmod +x ./terminus
       - name: Passegers, gather ye packages
         run: composer bundle:linux
       - name: Save terminus deb as artifact
