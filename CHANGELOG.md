@@ -1,6 +1,9 @@
 # Change Log
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org)
 
+## 2.6.4 2021-12-06
+- Fix Terminus for PHP 5.5, 5.6, and 7.0 (#2264)
+
 ## 2.6.3 2021-12-03
 - Fix fatal error in Environment::cacheserverConnectionInfo() (#2242) (#2245)
 - Fix CODEOWNERS formatting. (#2241)
