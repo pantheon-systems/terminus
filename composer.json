@@ -78,7 +78,6 @@
     "phar:build": [
       "rm -Rf ./terminus",
       "php -d phar.readonly=Off vendor/bin/phar-composer.phar build .",
-      "mv terminus.phar terminus",
       "chmod +x terminus"
     ],
     "phar:install": [
