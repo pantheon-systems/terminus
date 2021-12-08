@@ -1,7 +1,7 @@
 # Change Log
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org)
 
-## 3.0.0 - 2021-12-06
+## 3.0.0 - 2021-12-08
 
 ### Added
 - Look up host for 'terminus drush' / 'terminus wp' commands via an alternate nameserver, if selected (#2253)
