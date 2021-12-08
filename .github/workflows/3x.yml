@@ -128,7 +128,7 @@ jobs:
       - name: Full Composer Install
         run: composer install
       - name: Prepare needed folder and fix permissions
-        run: mkdir -p ~/.terminus/cache/tokens && chmod +x ./terminus.phar
+        run: mkdir -p ~/.terminus/cache/tokens && mv ./terminus.phar ./terminus && chmod +x ./terminus
       - name: Passegers, gather ye packages
         run: composer bundle:linux
       - name: Save terminus deb as artifact
