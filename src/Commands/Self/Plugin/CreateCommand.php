@@ -21,7 +21,7 @@ class CreateCommand extends PluginBaseCommand
      * Create a new terminus plugin.
      *
      * @command self:plugin:create
-     * @aliases self:plugin:new
+     * @aliases self:plugin:new plugin:create plugin:new
      *
      * @param string $path Path where the plugin will be created.
      * @option project-name Namme of the project to be created (vendor/project-name).

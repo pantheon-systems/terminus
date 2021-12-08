@@ -17,7 +17,7 @@ class ListCommand extends PluginBaseCommand
      * List all installed Terminus plugins.
      *
      * @command self:plugin:list
-     * @aliases self:plugins
+     * @aliases self:plugins plugin:list plugin:show plugins
      *
      * @field-labels
      *   name: Name
