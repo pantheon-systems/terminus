@@ -37,7 +37,7 @@ jobs:
     strategy:
       matrix:
         operating-system: [ 'macos-latest' ]
-        php-versions: [ '8.0' ]
+        php-versions: [ '8.0', '8.1' ]
       max-parallel: 1
     env:
       TERMINUS_TOKEN: ${{ secrets.TERMINUS_TOKEN }}
@@ -67,6 +67,8 @@ jobs:
         run: composer install --no-interaction --prefer-dist
       - name: Functional Tests (short)
         run: composer test:short
+      - name: Functional Tests (long)
+        run: composer test:long
       - name: Coverage Report
         run: composer coverage
       - name: Save coverage as artifact
