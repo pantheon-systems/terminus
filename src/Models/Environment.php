@@ -900,11 +900,12 @@ class Environment extends TerminusModel implements ContainerAwareInterface, Site
         $domains = array_filter(
             $this->getDomains()->all(),
             function ($domain) {
-                return !empty($domain->get('dns_zone_name'));
+                $domain_type = $domain->get('type');
+                return (!empty($domain_type) && "platform" == $domain_type);
             }
         );
         $domain = array_pop($domains);
-        $response = $this->request()->request("http://{$domain->id}/pantheon_healthcheck");
+        $response = $this->request()->request("https://{$domain->id}/pantheon_healthcheck");
         return [
             'success' => ($response['status_code'] === 200),
             'styx' => $response['headers']['X-Pantheon-Styx-Hostname'],
