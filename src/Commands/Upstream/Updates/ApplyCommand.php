@@ -20,7 +20,7 @@ class ApplyCommand extends UpdatesCommand
      *
      * @command upstream:updates:apply
      *
-     * @param string $site_env Site & development environment
+     * @param string $site_env Site & environment. Env defaults to dev if not specified.
      * @option boolean $updatedb Run update.php after update (Drupal only)
      * @option boolean $accept-upstream Attempt to automatically resolve conflicts in favor of the upstream
      *
@@ -32,8 +32,7 @@ class ApplyCommand extends UpdatesCommand
      */
     public function applyUpstreamUpdates($site_env, $options = ['updatedb' => false, 'accept-upstream' => false,])
     {
-        $site = $this->getSite($site_env);
-        $env = $this->getEnv($site_env);
+        list($site, $env) = $this->getSiteEnv($site_env, 'dev');
 
         if (in_array($env->getName(), ['test', 'live'])) {
             throw new TerminusException(
