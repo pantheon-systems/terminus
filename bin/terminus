@@ -19,7 +19,7 @@ if (version_compare(PHP_VERSION, '7.4.0', '<') === true) {
     echo 'Upgrade to PHP 7.4 or newer to use Terminus 3. For PHP versions prior to 7.4, downgrade to Terminus 2.x.'; echo "\n\n";
     exit(1);
 } elseif (version_compare(PHP_VERSION, '8.1.0', '>=') === true) {
-    // Prevent outputting deprecation messages produced by vendors.
+    // Prevent outputting PHP deprecation messages produced by vendors.
     error_reporting(error_reporting() & ~E_DEPRECATED);
 }
 
