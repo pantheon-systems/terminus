@@ -1,10 +1,18 @@
 # Change Log
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org)
 
-## 3.0.2-dev
+## 3.0.2 - 2021-12-17
+
+### Added
+- Add aliases for Terminus plugin commands (#2274)
+- Add PHP 8.1 support (#2284)
+
+### Changed
+- Allow upstream:updates:apply to default to dev environment if no environment explicitly provided (#2282)
 
 ### Fixed
 - Change env:wake to use https on the platform domain (#2283)
+- Minor fixup to help output of dashboard:view and self:console (#2277)
 
 ## 3.0.1 - 2021-12-08
 
