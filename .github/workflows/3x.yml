@@ -3,6 +3,12 @@ on:
   push:
   schedule:
     - cron: '0 0 * * *'
+  workflow_dispatch:
+    inputs:
+      functional_tests_all:
+        description: Run all functional tests
+        required: true
+        default: '1'
 jobs:
   # Checkout in separate job because docker image is alpine based and checkout action doesn't work.
   checkout_build:
@@ -72,7 +78,7 @@ jobs:
         if: ${{ github.event_name == 'push' }}
         run: composer test:short
       - name: Functional Tests (long)
-        if: ${{ github.event_name == 'schedule' }}
+        if: ${{ github.event_name == 'schedule' || github.event.inputs.functional_tests_all == '1' }}
         run: composer test:long
       - name: Coverage Report
         run: composer coverage
