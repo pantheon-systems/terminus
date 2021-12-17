@@ -16,6 +16,7 @@ class InstallCommand extends PluginBaseCommand
     const ALREADY_INSTALLED_MESSAGE = '{project} is already installed.';
     const INVALID_PROJECT_MESSAGE = '{project} is not a valid Packagist project.';
     const USAGE_MESSAGE = 'terminus self:plugin:<install|add> <Packagist project 1> [Packagist project 2] ...';
+    const NO_PLUGINS = 'No Terminus 2 plugins installed.';
 
     /**
      * Install one or more Terminus plugins.
@@ -39,6 +40,32 @@ class InstallCommand extends PluginBaseCommand
                 // TODO Improve messaging
                 $this->log()->notice($results['output']);
             }
+        }
+    }
+
+    /**
+     * Import Terminus 2 plugins.
+     *
+     * @command self:plugin:import
+     * @aliases self:plugin:sync plugin:import plugin:sync
+     *
+     * @throws \Pantheon\Terminus\Exceptions\TerminusException
+     */
+    public function import()
+    {
+        $plugins_dir = getenv('HOME') . '/.terminus/plugins';
+        if (file_exists($plugins_dir) && is_dir($plugins_dir)) {
+            $plugin_dirs = glob($plugins_dir . '/*', GLOB_ONLYDIR);
+            if (!empty($plugin_dirs)) {
+                foreach ($plugin_dirs as $dir) {
+                    $project = $this->getProjectNameFromPath($dir);
+                    $this->install([$project]);
+                }
+            } else {
+               $this->log()->notice(self::NO_PLUGINS);
+            }
+        } else {
+            $this->log()->notice(self::NO_PLUGINS);
         }
     }
 
