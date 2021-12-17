@@ -1,7 +1,7 @@
 # Change Log
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org)
 
-## 2.6.5-dev
+## 2.6.5 2021-12-17
 - Change env:wake to use https on the platform domain (#2287)
 
 ## 2.6.4 2021-12-06
