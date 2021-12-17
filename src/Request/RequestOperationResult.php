@@ -65,36 +65,33 @@ final class RequestOperationResult implements \ArrayAccess
     }
 
     /**
-     * @param mixed $offset
-     * @return bool
+     * @inheritdoc
      */
-    public function offsetExists($offset)
+    public function offsetExists(mixed $offset): bool
     {
         return isset($this->{$offset});
     }
 
     /**
-     * @param mixed $offset
-     * @return mixed|null
+     * @inheritdoc
      */
-    public function offsetGet($offset)
+    public function offsetGet(mixed $offset): mixed
     {
         return $this->{$offset} ?? null;
     }
 
     /**
-     * @param mixed $offset
-     * @param mixed $value
+     * @inheritdoc
      */
-    public function offsetSet($offset, $value)
+    public function offsetSet(mixed $offset, mixed $value): void
     {
         $this->{$offset} = $value;
     }
 
     /**
-     * @param mixed $offset
+     * @inheritdoc
      */
-    public function offsetUnset($offset)
+    public function offsetUnset(mixed $offset): void
     {
         unset($this->{$offset});
     }
