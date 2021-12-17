@@ -106,7 +106,7 @@ abstract class TerminusModel implements ConfigAwareInterface, RequestAwareInterf
      */
     public function getUrl()
     {
-        return str_replace('{id}', $this->id, $this->url);
+        return str_replace('{id}', $this->id ?? '', $this->url);
     }
 
     /**
