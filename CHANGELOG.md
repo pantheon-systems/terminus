@@ -1,6 +1,9 @@
 # Change Log
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org)
 
+## 2.6.5-dev
+- Change env:wake to use https on the platform domain (#2286)
+
 ## 2.6.4 2021-12-06
 - Fix Terminus for PHP 5.5, 5.6, and 7.0 (#2264)
 
