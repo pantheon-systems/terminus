@@ -29,7 +29,7 @@ class LocalMachineHelper implements ConfigAwareInterface, ContainerAwareInterfac
     use ContainerAwareTrait;
     use IO;
     use CommandExecutorTrait {
-        execute as executeUnbuffered;
+        CommandExecutorTrait::execute as executeUnbuffered;
     }
 
     /**
