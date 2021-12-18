@@ -151,7 +151,7 @@ class PluginInfo implements ConfigAwareInterface, ContainerAwareInterface, Logge
     {
         $command = str_replace(
             '{package}',
-            $this->getName() ?? '',
+            $this->getName(),
             self::GET_LATEST_AVAILABLE_VERSION
         );
         $results = $this->runCommand($command);
@@ -223,7 +223,7 @@ class PluginInfo implements ConfigAwareInterface, ContainerAwareInterface, Logge
         // Search for the Packagist project.
         $command = str_replace(
             '{project}',
-            $project_name ?? '',
+            $project_name,
             self::VALIDATION_COMMAND
         );
         $results = $local_machine_helper->exec($command);
