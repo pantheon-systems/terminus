@@ -1,6 +1,11 @@
 # Change Log
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org)
 
+## 3.0.3 - 2021-12-17
+
+### Fixed
+- PHP 7.4 regressions (#2292)
+
 ## 3.0.2 - 2021-12-17
 
 ### Added
