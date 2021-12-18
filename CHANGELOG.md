@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file. This projec
 ## 3.0.3 - 2021-12-17
 
 ### Fixed
-- PHP 7.4 regressions (#2292)
+- Fix PHP 7.4 regressions and revert PHP 8.1 support. PHP 8.1 support will be restored in a future release (#2292)
 
 ## 3.0.2 - 2021-12-17
 
