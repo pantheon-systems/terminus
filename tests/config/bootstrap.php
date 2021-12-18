@@ -63,11 +63,7 @@ if ($token) {
 
 if (!getenv('TERMINUS_TESTING_RUNTIME_ENV')) {
     // Create a testing runtime multidev environment.
-    $sitename = (new class {
-        use TerminusTestTrait;
-
-    })::getSiteName();
-
+    $sitename = TerminusTestTrait::getSiteName();
     $multidev = sprintf('test-%s', substr(uniqid(), -6, 6));
     $createMdCommand = sprintf('multidev:create %s.dev %s', $sitename, $multidev);
     exec(
@@ -80,10 +76,7 @@ if (!getenv('TERMINUS_TESTING_RUNTIME_ENV')) {
         throw new Exception(sprintf('Command "%s" exited with non-zero code (%d)', $createMdCommand, $code));
     }
 
-    (new class {
-        use TerminusTestTrait;
-
-    })::setMdEnv($multidev);
+    TerminusTestTrait::setMdEnv($multidev);
 
     register_shutdown_function(function () use ($sitename, $multidev) {
         // Delete a testing runtime multidev environment.

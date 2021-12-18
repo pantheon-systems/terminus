@@ -28,6 +28,6 @@ abstract class OrganizationOwnedCollection extends APICollection implements Orga
     public function getUrl()
     {
         // Replace the {organization_id} token with the actual organization id.
-        return str_replace('{organization_id}', $this->getOrganization()->id ?? '', parent::getUrl());
+        return str_replace('{organization_id}', $this->getOrganization()->id, parent::getUrl());
     }
 }
