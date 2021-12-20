@@ -2,18 +2,13 @@
 
 namespace Pantheon\Terminus\Tests\Functional;
 
-use Pantheon\Terminus\Tests\Traits\TerminusTestTrait;
-use PHPUnit\Framework\TestCase;
-
 /**
  * Class NewRelicCommandsTest.
  *
  * @package Pantheon\Terminus\Tests\Functional
  */
-class NewRelicCommandsTest extends TestCase
+class NewRelicCommandsTest extends TerminusTestBase
 {
-    use TerminusTestTrait;
-
     /**
      * @test
      * @covers \Pantheon\Terminus\Commands\NewRelic\EnableCommand

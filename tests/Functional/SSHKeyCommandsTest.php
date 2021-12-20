@@ -2,18 +2,13 @@
 
 namespace Pantheon\Terminus\Tests\Functional;
 
-use Pantheon\Terminus\Tests\Traits\TerminusTestTrait;
-use PHPUnit\Framework\TestCase;
-
 /**
  * Class SSHKeyCommandsTest.
  *
  * @package Pantheon\Terminus\Tests\Functional
  */
-class SSHKeyCommandsTest extends TestCase
+class SSHKeyCommandsTest extends TerminusTestBase
 {
-    use TerminusTestTrait;
-
     private const TEST_SSH_KEY_DESCRIPTION = 'DevUser@pantheon.io';
 
     /**

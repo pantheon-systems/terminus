@@ -2,18 +2,13 @@
 
 namespace Pantheon\Terminus\Tests\Functional;
 
-use Pantheon\Terminus\Tests\Traits\TerminusTestTrait;
-use PHPUnit\Framework\TestCase;
-
 /**
  * Class RemoteCommandsTest.
  *
  * @package Pantheon\Terminus\Tests\Functional
  */
-class RemoteCommandsTest extends TestCase
+class RemoteCommandsTest extends TerminusTestBase
 {
-    use TerminusTestTrait;
-
     /**
      * @inheritdoc
      *

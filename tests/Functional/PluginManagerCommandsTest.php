@@ -2,8 +2,6 @@
 
 namespace Pantheon\Terminus\Tests\Functional;
 
-use Pantheon\Terminus\Tests\Traits\TerminusTestTrait;
-use PHPUnit\Framework\TestCase;
 use Symfony\Component\Filesystem\Filesystem;
 
 /**
@@ -11,10 +9,8 @@ use Symfony\Component\Filesystem\Filesystem;
  *
  * @package Pantheon\Terminus\Tests\Functional
  */
-class PluginManagerCommandsTest extends TestCase
+class PluginManagerCommandsTest extends TerminusTestBase
 {
-    use TerminusTestTrait;
-
     protected const HELLO_COMMAND = 'hello';
     protected const PLUGIN_NAME = 'terminus-plugin-example';
     protected const PLUGIN_PACKAGE = 'pantheon-systems/terminus-plugin-example';

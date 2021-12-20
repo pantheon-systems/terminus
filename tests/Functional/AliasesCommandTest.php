@@ -3,18 +3,14 @@
 namespace Pantheon\Terminus\Tests\Functional;
 
 use Pantheon\Terminus\Config\DefaultsConfig;
-use Pantheon\Terminus\Tests\Traits\TerminusTestTrait;
-use PHPUnit\Framework\TestCase;
 
 /**
  * Class AliasesCommandTest
  *
  * @package Pantheon\Terminus\Tests\Functional
  */
-class AliasesCommandTest extends TestCase
+class AliasesCommandTest extends TerminusTestBase
 {
-    use TerminusTestTrait;
-
     /**
      * @inheritdoc
      *

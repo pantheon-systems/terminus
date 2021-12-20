@@ -98,10 +98,10 @@
       "\\Terminus\\UpdateClassLists::update"
     ],
     "code:fix": [
-      "vendor/bin/phpcbf --standard=phpcs_ruleset.xml src tests/Functional tests/unit_tests tests/Traits"
+      "vendor/bin/phpcbf --standard=phpcs_ruleset.xml src tests/Functional tests/unit_tests"
     ],
     "cs": [
-      "vendor/bin/phpcs --standard=phpcs_ruleset.xml src tests/Functional tests/unit_tests tests/Traits"
+      "vendor/bin/phpcs --standard=phpcs_ruleset.xml src tests/Functional tests/unit_tests"
     ],
     "code:lint": [
       "@cs"

@@ -2,18 +2,13 @@
 
 namespace Pantheon\Terminus\Tests\Functional;
 
-use Pantheon\Terminus\Tests\Traits\TerminusTestTrait;
-use PHPUnit\Framework\TestCase;
-
 /**
  * Class TagCommandsTest
  *
  * @package Pantheon\Terminus\Tests\Functional
  */
-class TagCommandsTest extends TestCase
+class TagCommandsTest extends TerminusTestBase
 {
-    use TerminusTestTrait;
-
     /**
      * @test
      * @covers \Pantheon\Terminus\Commands\Tag\AddCommand

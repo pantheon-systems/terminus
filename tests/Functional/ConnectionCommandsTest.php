@@ -2,18 +2,13 @@
 
 namespace Pantheon\Terminus\Tests\Functional;
 
-use Pantheon\Terminus\Tests\Traits\TerminusTestTrait;
-use PHPUnit\Framework\TestCase;
-
 /**
  * Class ConnectionCommandsTest.
  *
  * @package Pantheon\Terminus\Tests\Functional
  */
-class ConnectionCommandsTest extends TestCase
+class ConnectionCommandsTest extends TerminusTestBase
 {
-    use TerminusTestTrait;
-
     /**
      * @test
      * @covers \Pantheon\Terminus\Commands\Connection\InfoCommand
