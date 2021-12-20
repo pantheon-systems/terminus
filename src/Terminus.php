@@ -103,7 +103,11 @@ class Terminus implements
 
         // We can't use Robo\Application addSelfUpdateCommand because if plugin manager is running it won't be a phar from there.
         if (!empty(\Phar::running())) {
-            $selfUpdateCommand = new SelfUpdateCommand($application->getName(), $application->getVersion(), 'pantheon-systems/terminus');
+            $selfUpdateCommand = new SelfUpdateCommand(
+                $application->getName(),
+                $application->getVersion(),
+                'pantheon-systems/terminus'
+            );
             $application->add($selfUpdateCommand);
         }
 
