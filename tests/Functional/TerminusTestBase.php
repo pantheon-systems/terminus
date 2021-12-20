@@ -1,15 +1,17 @@
 <?php
 
-namespace Pantheon\Terminus\Tests\Traits;
+namespace Pantheon\Terminus\Tests\Functional;
+
+use PHPUnit\Framework\TestCase;
 
 use Symfony\Component\Filesystem\Filesystem;
 
 /**
- * Trait TerminusTestTrait.
+ * Class TerminusTestBase.
  *
- * @package Pantheon\Terminus\Tests\Traits
+ * @package Pantheon\Terminus\Tests\Functional
  */
-trait TerminusTestTrait
+abstract class TerminusTestBase extends TestCase
 {
     /**
      * Run a terminus command.

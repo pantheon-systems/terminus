@@ -4,7 +4,7 @@
  * Bootstrap file for functional tests.
  */
 
-use Pantheon\Terminus\Tests\Traits\TerminusTestTrait;
+use Pantheon\Terminus\Tests\Functional\TerminusTestBase;
 
 $tokens_dir = implode(DIRECTORY_SEPARATOR, [$_SERVER['HOME'], '.terminus', 'cache' , 'tokens']);
 if (!is_dir($tokens_dir)) {
@@ -63,10 +63,7 @@ if ($token) {
 
 if (!getenv('TERMINUS_TESTING_RUNTIME_ENV')) {
     // Create a testing runtime multidev environment.
-    $sitename = (new class {
-        use TerminusTestTrait;
-
-    })::getSiteName();
+    $sitename = TerminusTestBase::getSiteName();
 
     $multidev = sprintf('test-%s', substr(uniqid(), -6, 6));
     $createMdCommand = sprintf('multidev:create %s.dev %s', $sitename, $multidev);
@@ -80,10 +77,7 @@ if (!getenv('TERMINUS_TESTING_RUNTIME_ENV')) {
         throw new Exception(sprintf('Command "%s" exited with non-zero code (%d)', $createMdCommand, $code));
     }
 
-    (new class {
-        use TerminusTestTrait;
-
-    })::setMdEnv($multidev);
+    TerminusTestBase::setMdEnv($multidev);
 
     register_shutdown_function(function () use ($sitename, $multidev) {
         // Delete a testing runtime multidev environment.

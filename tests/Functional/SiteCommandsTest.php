@@ -2,18 +2,13 @@
 
 namespace Pantheon\Terminus\Tests\Functional;
 
-use Pantheon\Terminus\Tests\Traits\TerminusTestTrait;
-use PHPUnit\Framework\TestCase;
-
 /**
  * Class SiteCommandsTest.
  *
  * @package Pantheon\Terminus\Tests\Functional
  */
-class SiteCommandsTest extends TestCase
+class SiteCommandsTest extends TerminusTestBase
 {
-    use TerminusTestTrait;
-
     /**
      * @var string
      */

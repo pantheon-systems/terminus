@@ -2,9 +2,6 @@
 
 namespace Pantheon\Terminus\Tests\Functional;
 
-use Pantheon\Terminus\Tests\Traits\TerminusTestTrait;
-use PHPUnit\Framework\TestCase;
-
 /**
  * Class ConnectionCommandsTest.
  *
@@ -15,10 +12,8 @@ use PHPUnit\Framework\TestCase;
  * @covers \Pantheon\Terminus\Commands\Multidev\DeleteCommand
  *   Indirectly by deleting a testing runtime multidev env in /tests/config/bootstrap.php
  */
-class MultiDevTest extends TestCase
+class MultiDevTest extends TerminusTestBase
 {
-    use TerminusTestTrait;
-
     /**
      * @test
      * @covers \Pantheon\Terminus\Commands\Multidev\ListCommand
