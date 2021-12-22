@@ -3,6 +3,7 @@
 namespace Pantheon\Terminus\Tests\Functional;
 
 use Pantheon\Terminus\Tests\Traits\TerminusTestTrait;
+use Pantheon\Terminus\Tests\Traits\TerminusUtilsTrait;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Filesystem\Filesystem;
 
@@ -14,6 +15,7 @@ use Symfony\Component\Filesystem\Filesystem;
 class PluginManagerCommandsTest extends TestCase
 {
     use TerminusTestTrait;
+    use TerminusUtilsTrait;
 
     protected const HELLO_COMMAND = 'hello';
     protected const PLUGIN_NAME = 'terminus-plugin-example';
@@ -151,27 +153,4 @@ class PluginManagerCommandsTest extends TestCase
         $this->assertEmpty($pluginList, 'Plugins list should be empty.');
     }
 
-    /**
-     * Asserts the command exists.
-     *
-     * @param string $commandName
-     *   The command name to assert.
-     */
-    protected function assertCommandExists(string $commandName)
-    {
-        $commandList = $this->terminus('list');
-        $this->assertStringContainsString($commandName, $commandList);
-    }
-
-    /**
-     * Asserts the command does not exist.
-     *
-     * @param string $commandName
-     *   The command name to assert.
-     */
-    protected function assertCommandDoesNotExist(string $commandName)
-    {
-        $commandList = $this->terminus('list');
-        $this->assertStringNotContainsString($commandName, $commandList);
-    }
 }
