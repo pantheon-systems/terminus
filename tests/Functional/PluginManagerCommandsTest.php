@@ -152,5 +152,4 @@ class PluginManagerCommandsTest extends TestCase
         $this->assertIsArray($pluginList);
         $this->assertEmpty($pluginList, 'Plugins list should be empty.');
     }
-
 }
