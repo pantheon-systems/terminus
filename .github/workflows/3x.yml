@@ -206,15 +206,4 @@ jobs:
   #     - name: Behat Tests
   #       run: composer test:behat
 
-  # # NOT CURRENTLY USED
-  # package_macos:
-  #   runs-on: macos-latest
-  #   name: Package a Homebrew release
-  #   if: ${{ startsWith(github.ref, 'refs/tags/')  && github.repository_owner == 'pantheon-systems' }}
-  #   needs: [ 'functional_tests', 'behat_tests' ]
-  #   steps:
-  #     - name: Brew Tap Terminus
-  #       run: brew install stovak/terminus/terminus
-  #     - name: Update tap with new release
-  #       run: brew bump-formula-pr --url=${{ steps.tagged.outputs.url }} --no-browse --no-audit --commit stovak/terminus/terminus
 
