@@ -43,6 +43,54 @@ class InstallCommand extends PluginBaseCommand
     }
 
     /**
+     * Migrate Terminus 2 plugins.
+     *
+     * @command self:plugin:migrate
+     * @aliases plugin:migrate
+     *
+     * @throws \Pantheon\Terminus\Exceptions\TerminusException
+     */
+    public function migrate()
+    {
+        $plugins_dir = $this->getConfig()->get('plugins2_dir');
+        if (!is_dir($plugins_dir)) {
+            $this->log()->notice('No Terminus 2 plugins to migrate.');
+            return;
+        }
+
+        $plugin_dirs = glob($plugins_dir . DIRECTORY_SEPARATOR . '*', GLOB_ONLYDIR);
+        if (!$plugin_dirs) {
+            $this->log()->notice('No Terminus 2 plugins to migrate.');
+            return;
+        }
+
+        // Get installed Terminus 3 plugins.
+        $plugins = $this->getPluginProjects();
+        $t3projects = array_filter(array_map(
+            fn($plugin) => $plugin->getName(),
+            $plugins
+        ));
+
+        // Get installed Terminus 2 plugins.
+        $t2projects = array_filter(array_map(
+            fn($dir) => $this->getProjectNameFromPath($dir),
+            $plugin_dirs
+        ));
+
+        // Get only the Terminus 2 plugins that need migrated.
+        $projects = array_diff($t2projects, $t3projects);
+
+        if (empty($projects)) {
+            $this->log()->notice('No Terminus 2 plugins to migrate.');
+            return;
+        }
+
+        $this->log()->notice('Migrating Terminus 2 plugins...');
+        $this->install($projects);
+        $this->log()->notice('Successfully migrated all Terminus 2 plugins.');
+    }
+
+    /**
      * Check for minimum plugin command requirements.
      *
      * @hook validate self:plugin:install

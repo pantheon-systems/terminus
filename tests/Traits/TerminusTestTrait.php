@@ -2,6 +2,8 @@
 
 namespace Pantheon\Terminus\Tests\Traits;
 
+use Symfony\Component\Filesystem\Filesystem;
+
 /**
  * Trait TerminusTestTrait.
  *
@@ -189,6 +191,26 @@ trait TerminusTestTrait
     }
 
     /**
+     * Returns the Terminus 2 plugin dir.
+     *
+     * @return string
+     */
+    protected function getPlugins2Dir(): string
+    {
+        return getenv('TERMINUS_PLUGINS2_DIR');
+    }
+
+    /**
+     * Returns the Terminus base dir.
+     *
+     * @return string
+     */
+    protected function getBaseDir(): string
+    {
+        return getenv('TERMINUS_BASE_DIR');
+    }
+
+    /**
      * Returns the dependencies base dir.
      *
      * @return string
@@ -371,5 +393,27 @@ trait TerminusTestTrait
         fclose($stream);
 
         return $fileName;
+    }
+
+    /**
+     * Install Terminus 2 plugins.
+     *
+     * @param array $plugins
+     * @param bool $assertExitCode
+     */
+    protected function installTerminus2Plugins(array $plugins = [], bool $assertExitCode = true): void
+    {
+        $filesystem = new Filesystem();
+        $plugins2_dir = getenv('TERMINUS_PLUGINS2_DIR');
+        if (is_dir($plugins2_dir)) {
+            $filesystem->remove($plugins2_dir);
+        }
+        $filesystem->mkdir($plugins2_dir);
+        foreach ($plugins as $plugin) {
+            exec(sprintf('composer create-project --no-dev -d %s %s', $plugins2_dir, $plugin), $output, $exitCode);
+            if (true === $assertExitCode) {
+                $this->assertEquals(0, $exitCode, implode("\n", $output));
+            }
+        }
     }
 }
