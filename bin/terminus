@@ -1,4 +1,4 @@
-#!/usr/bin/env -S php -d memory_limit=2048M
+#!/usr/bin/env php 
 <?php
 
 /**
@@ -8,6 +8,9 @@
  *   - Starts a runner instance and runs the command
  *   - Exits with a status code
  */
+
+// Set memory limit
+ini_set('memory_limit', "2048M");
 
 // Version compatibility check and messaging
 if (version_compare(PHP_VERSION, '7.4.0', '<') === true) {
