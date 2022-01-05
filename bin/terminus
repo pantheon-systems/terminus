@@ -9,7 +9,7 @@
  *   - Exits with a status code
  */
 
-// Set memory limit
+// Unset memory limit
 ini_set('memory_limit', -1);
 
 // Version compatibility check and messaging
