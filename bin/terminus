@@ -10,7 +10,7 @@
  */
 
 // Set memory limit
-ini_set('memory_limit', "2048M");
+ini_set('memory_limit', -1);
 
 // Version compatibility check and messaging
 if (version_compare(PHP_VERSION, '7.4.0', '<') === true) {
