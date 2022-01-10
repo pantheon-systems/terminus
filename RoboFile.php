@@ -31,6 +31,8 @@ class RoboFile extends \Robo\Tasks
      */
     public function __construct()
     {
+        error_reporting(error_reporting() & ~E_DEPRECATED);
+
         $this->setTerminus(Terminus::factory());
         $this->setConfig($this->terminus->getConfig());
     }
