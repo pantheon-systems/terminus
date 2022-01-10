@@ -42,6 +42,7 @@ use Pantheon\Terminus\Config\DotEnvConfig;
 use Pantheon\Terminus\Config\EnvConfig;
 use Pantheon\Terminus\Config\YamlConfig;
 use Symfony\Component\Filesystem\Filesystem;
+use SelfUpdate\SelfUpdateCommand;
 
 /**
  * Class Terminus
@@ -100,7 +101,15 @@ class Terminus implements
         $this->addBuiltInCommandsAndHooks();
         $this->addPluginsCommandsAndHooks();
 
-        $application->addSelfUpdateCommand('pantheon-systems/terminus');
+        // We can't use Robo\Application addSelfUpdateCommand because if plugin manager is running it won't be a phar from there.
+        if (!empty(\Phar::running())) {
+            $selfUpdateCommand = new SelfUpdateCommand(
+                $application->getName(),
+                $application->getVersion(),
+                'pantheon-systems/terminus'
+            );
+            $application->add($selfUpdateCommand);
+        }
 
         $this->setApplication($application);
         $this->runner = new RoboRunner();

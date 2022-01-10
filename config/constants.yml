@@ -7,7 +7,7 @@
 ---
 
 # App
-TERMINUS_VERSION: '3.0.3'
+TERMINUS_VERSION: '3.0.4-dev'
 
 # Connectivity
 TERMINUS_HOST:        'terminus.pantheon.io'
@@ -31,10 +31,12 @@ TERMINUS_MONETARY_FORMAT: '$%01.2f'
 TERMINUS_TIME_ZONE:       'UTC'
 
 # File Storage
-TERMINUS_CACHE_DIR:             '[[ TERMINUS_USER_HOME ]]/.terminus/cache'
 TERMINUS_PLUGINS_DIR_BASENAME:  'plugins-3.x'
-TERMINUS_PLUGINS_DIR:           '[[ TERMINUS_USER_HOME ]]/.terminus/[[ TERMINUS_PLUGINS_DIR_BASENAME ]]'
-TERMINUS_DEPENDENCIES_BASE_DIR: '[[ TERMINUS_USER_HOME ]]/.terminus/terminus-dependencies'
+TERMINUS_BASE_DIR:              '[[ TERMINUS_USER_HOME ]]/.terminus'
+TERMINUS_CACHE_DIR:             '[[ TERMINUS_BASE_DIR ]]/cache'
+TERMINUS_PLUGINS_DIR:           '[[ TERMINUS_BASE_DIR ]]/[[ TERMINUS_PLUGINS_DIR_BASENAME ]]'
+TERMINUS_PLUGINS2_DIR:          '[[ TERMINUS_BASE_DIR ]]/plugins'
+TERMINUS_DEPENDENCIES_BASE_DIR: '[[ TERMINUS_BASE_DIR ]]/terminus-dependencies'
 TERMINUS_COMMAND_CACHE_DIR:     '[[ TERMINUS_CACHE_DIR ]]/commands'
 TERMINUS_TOKENS_DIR:            '[[ TERMINUS_CACHE_DIR ]]/tokens'
 TERMINUS_ASSETS_DIR:            '[[ TERMINUS_ROOT ]]/assets'
@@ -71,4 +73,3 @@ TERMINUS_VCR_MODE:     null
 TERMINUS_CLIENT_OPTIONS:
   debug: false
   http_errors: false
-
