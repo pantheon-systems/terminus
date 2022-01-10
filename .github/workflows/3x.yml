@@ -2,7 +2,7 @@ name: Terminus 3.x
 on:
   push:
   schedule:
-    - cron: '0 0 * * *'
+    - cron: '0 6 * * *'
   workflow_dispatch:
     inputs:
       functional_tests_all:
