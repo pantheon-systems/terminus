@@ -19,10 +19,8 @@ if (version_compare(PHP_VERSION, '7.4.0', '<') === true) {
     exit(1);
 }
 
-if (version_compare(PHP_VERSION, '8.1.0', '>=') === true) {
-    // Prevent outputting PHP deprecation messages produced by vendors.
-    error_reporting(error_reporting() & ~E_DEPRECATED);
-}
+// Prevent outputting PHP deprecation messages produced by vendors.
+error_reporting(error_reporting() & ~E_DEPRECATED);
 
 // This variable is automatically managed via updateDependenciesversion() in /RoboFile.php,
 // which is run after every call to composer update.
