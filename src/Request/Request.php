@@ -316,8 +316,7 @@ class Request implements
                 'body' => json_encode($this->stripSensitiveInfo($debug_body), JSON_UNESCAPED_SLASHES),
             ]
         );
-        //Required objects and arrays stir benign warnings.
-        error_reporting(E_ALL ^ E_WARNING);
+
         $response = $this->getClient()->send(
             new \GuzzleHttp\Psr7\Request(
                 $method,
