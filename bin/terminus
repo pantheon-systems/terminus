@@ -19,8 +19,15 @@ if (version_compare(PHP_VERSION, '7.4.0', '<') === true) {
     exit(1);
 }
 
-// Prevent outputting PHP deprecation messages produced by vendors.
-error_reporting(error_reporting() & ~E_DEPRECATED);
+if (!getenv('TERMINUS_ALLOW_UNSUPPORTED_NEWER_PHP') && version_compare(PHP_VERSION, '8.2.0', '>=') === true) {
+    echo "\n";
+    echo 'PHP 8.2+ is not supported by this version of Terminus.' . "\n";
+    echo 'Check for new versions at https://github.com/pantheon-systems/terminus/releases' . "\n";
+    echo "\n";
+    echo 'Set environment variable TERMINUS_ALLOW_UNSUPPORTED_NEWER_PHP to try continuing anyway.' . "\n";
+    echo "Stopping.\n\n";
+    exit(1);
+}
 
 // This variable is automatically managed via updateDependenciesversion() in /RoboFile.php,
 // which is run after every call to composer update.
