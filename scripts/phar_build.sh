@@ -18,18 +18,18 @@ for EXCLUDED_FILE in "${EXCLUDED_FILES[@]}"
 do
     if [ -f "$EXCLUDED_FILE" ] || [ -d "$EXCLUDED_FILE" ]; then
          echo "Excluding '$EXCLUDED_FILE' from phar..."
-         mv "$EXCLUDED_FILE" ".$EXCLUDED_FILE"
+         mv "$EXCLUDED_FILE" ".$EXCLUDED_FILE" || true
     fi
 done
 
 echo "Building terminus.phar..."
 php -d phar.readonly=Off phar-composer.phar build .
 
-# Restore renamed files and directories.
+# Restore excluded files and dirs.
 for EXCLUDED_FILE in "${EXCLUDED_FILES[@]}"
 do
     if [ -f ".$EXCLUDED_FILE" ] || [ -d ".$EXCLUDED_FILE" ]; then
-         mv ".$EXCLUDED_FILE" "$EXCLUDED_FILE"
+         mv ".$EXCLUDED_FILE" "$EXCLUDED_FILE" || true
     fi
 done
 
