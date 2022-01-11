@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "2512c16cbecb760173440c4a292b4a9b",
+    "content-hash": "3f9a21cc7ef3333f949933edcf815493",
     "packages": [
         {
             "name": "composer/ca-bundle",
@@ -84,16 +84,16 @@
         },
         {
             "name": "composer/composer",
-            "version": "2.2.3",
+            "version": "2.2.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/composer/composer.git",
-                "reference": "3c92ba5cdc7d48b7db2dcd197e6fa0e8fa6d9f4a"
+                "reference": "8a5ad75194f901e3b39ece4bbd22cbdabc79ae8f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/composer/composer/zipball/3c92ba5cdc7d48b7db2dcd197e6fa0e8fa6d9f4a",
-                "reference": "3c92ba5cdc7d48b7db2dcd197e6fa0e8fa6d9f4a",
+                "url": "https://api.github.com/repos/composer/composer/zipball/8a5ad75194f901e3b39ece4bbd22cbdabc79ae8f",
+                "reference": "8a5ad75194f901e3b39ece4bbd22cbdabc79ae8f",
                 "shasum": ""
             },
             "require": {
@@ -163,7 +163,7 @@
             "support": {
                 "irc": "ircs://irc.libera.chat:6697/composer",
                 "issues": "https://github.com/composer/composer/issues",
-                "source": "https://github.com/composer/composer/tree/2.2.3"
+                "source": "https://github.com/composer/composer/tree/2.2.4"
             },
             "funding": [
                 {
@@ -179,7 +179,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2021-12-31T11:18:53+00:00"
+            "time": "2022-01-08T11:30:42+00:00"
         },
         {
             "name": "composer/metadata-minifier",
@@ -3638,90 +3638,6 @@
             "time": "2021-12-16T21:58:21+00:00"
         },
         {
-            "name": "tm/tooly-composer-script",
-            "version": "1.4.1",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/tommy-muehle/tooly-composer-script.git",
-                "reference": "0f2d81f1051d155702229abf1c8f7a0d8bec75c7"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/tommy-muehle/tooly-composer-script/zipball/0f2d81f1051d155702229abf1c8f7a0d8bec75c7",
-                "reference": "0f2d81f1051d155702229abf1c8f7a0d8bec75c7",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=5.6.0"
-            },
-            "require-dev": {
-                "composer/composer": "1.*",
-                "mikey179/vfsstream": "1.6.*",
-                "php-mock/php-mock-phpunit": "1.1.*",
-                "symfony/console": "^3.0"
-            },
-            "suggest": {
-                "tm/gpg-verifier": "Allows verification over GPG for PHAR tools."
-            },
-            "type": "library",
-            "extra": {
-                "tools": {
-                    "phpunit": {
-                        "url": "https://phar.phpunit.de/phpunit-5.7.27.phar"
-                    },
-                    "phpcpd": {
-                        "url": "https://phar.phpunit.de/phpcpd-2.0.4.phar"
-                    },
-                    "phpcs": {
-                        "url": "https://squizlabs.github.io/PHP_CodeSniffer/phpcs.phar",
-                        "force-replace": true
-                    },
-                    "phpmd": {
-                        "url": "http://static.phpmd.org/php/latest/phpmd.phar",
-                        "fallback-url": "https://github.com/jakzal/phpmd/releases/download/2.6.0-jakzal-2/phpmd.phar",
-                        "force-replace": true
-                    },
-                    "security-checker": {
-                        "url": "http://get.sensiolabs.org/security-checker.phar",
-                        "force-replace": true
-                    }
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Tooly\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Tommy Muehle",
-                    "email": "tommy.muehle@gmail.com",
-                    "homepage": "https://tommy-muehle.de"
-                }
-            ],
-            "description": "Simple composer script to manage phar files.",
-            "homepage": "https://github.com/tommy-muehle/tooly-composer-script",
-            "keywords": [
-                "composer",
-                "composer-phar",
-                "composer-script",
-                "phar",
-                "phar-handling",
-                "phar-management"
-            ],
-            "support": {
-                "docs": "https://github.com/tommy-muehle/tooly-composer-script/blob/master/README.md",
-                "email": "tommy.muehle@gmail.com",
-                "issues": "https://github.com/tommy-muehle/tooly-composer-script/issues",
-                "source": "https://github.com/tommy-muehle/tooly-composer-script/tree/master"
-            },
-            "time": "2019-06-24T20:52:52+00:00"
-        },
-        {
             "name": "twig/twig",
             "version": "v3.3.7",
             "source": {
@@ -4274,6 +4190,9 @@
             },
             "require": {
                 "php": "^7.1 || ^8.0"
+            },
+            "replace": {
+                "myclabs/deep-copy": "self.version"
             },
             "require-dev": {
                 "doctrine/collections": "^1.0",
@@ -7209,5 +7128,5 @@
     "platform-overrides": {
         "php": "7.4"
     },
-    "plugin-api-version": "2.2.0"
+    "plugin-api-version": "2.1.0"
 }
