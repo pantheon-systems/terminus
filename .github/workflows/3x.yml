@@ -1,5 +1,14 @@
 name: Terminus 3.x
-on: push
+on:
+  push:
+  schedule:
+    - cron: '0 6 * * *'
+  workflow_dispatch:
+    inputs:
+      functional_tests_all:
+        description: Run all functional tests
+        required: true
+        default: '1'
 jobs:
   # Checkout in separate job because docker image is alpine based and checkout action doesn't work.
   checkout_build:
@@ -37,7 +46,7 @@ jobs:
     strategy:
       matrix:
         operating-system: [ 'macos-latest' ]
-        php-versions: [ '7.4', '8.0' ]
+        php-versions: [ '7.4', '8.1' ]
       max-parallel: 1
     env:
       TERMINUS_TOKEN: ${{ secrets.TERMINUS_TOKEN }}
@@ -66,7 +75,11 @@ jobs:
       - name: Install Composer Dependencies
         run: composer install --no-interaction --prefer-dist
       - name: Functional Tests (short)
+        if: ${{ github.event_name == 'push' }}
         run: composer test:short
+      - name: Functional Tests (long)
+        if: ${{ github.event_name == 'schedule' || github.event.inputs.functional_tests_all == '1' }}
+        run: composer test:long
       - name: Coverage Report
         run: composer coverage
       - name: Save coverage as artifact

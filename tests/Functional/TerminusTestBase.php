@@ -1,15 +1,17 @@
 <?php
 
-namespace Pantheon\Terminus\Tests\Traits;
+namespace Pantheon\Terminus\Tests\Functional;
+
+use PHPUnit\Framework\TestCase;
 
 use Symfony\Component\Filesystem\Filesystem;
 
 /**
- * Trait TerminusTestTrait.
+ * Class TerminusTestBase.
  *
- * @package Pantheon\Terminus\Tests\Traits
+ * @package Pantheon\Terminus\Tests\Functional
  */
-trait TerminusTestTrait
+abstract class TerminusTestBase extends TestCase
 {
     /**
      * Run a terminus command.
@@ -415,5 +417,29 @@ trait TerminusTestTrait
                 $this->assertEquals(0, $exitCode, implode("\n", $output));
             }
         }
+    }
+
+    /**
+     * Asserts the command exists.
+     *
+     * @param string $commandName
+     *   The command name to assert.
+     */
+    protected function assertCommandExists(string $commandName)
+    {
+        $commandList = $this->terminus('list');
+        $this->assertStringContainsString($commandName, $commandList);
+    }
+
+    /**
+     * Asserts the command does not exist.
+     *
+     * @param string $commandName
+     *   The command name to assert.
+     */
+    protected function assertCommandDoesNotExist(string $commandName)
+    {
+        $commandList = $this->terminus('list');
+        $this->assertStringNotContainsString($commandName, $commandList);
     }
 }

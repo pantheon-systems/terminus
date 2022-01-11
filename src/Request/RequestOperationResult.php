@@ -68,6 +68,7 @@ final class RequestOperationResult implements \ArrayAccess
      * @param mixed $offset
      * @return bool
      */
+    #[\ReturnTypeWillChange]
     public function offsetExists($offset)
     {
         return isset($this->{$offset});
@@ -77,6 +78,7 @@ final class RequestOperationResult implements \ArrayAccess
      * @param mixed $offset
      * @return mixed|null
      */
+    #[\ReturnTypeWillChange]
     public function offsetGet($offset)
     {
         return $this->{$offset} ?? null;
@@ -86,6 +88,7 @@ final class RequestOperationResult implements \ArrayAccess
      * @param mixed $offset
      * @param mixed $value
      */
+    #[\ReturnTypeWillChange]
     public function offsetSet($offset, $value)
     {
         $this->{$offset} = $value;
@@ -94,6 +97,7 @@ final class RequestOperationResult implements \ArrayAccess
     /**
      * @param mixed $offset
      */
+    #[\ReturnTypeWillChange]
     public function offsetUnset($offset)
     {
         unset($this->{$offset});

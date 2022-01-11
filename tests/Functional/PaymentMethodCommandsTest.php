@@ -2,14 +2,12 @@
 
 namespace Pantheon\Terminus\Tests\Functional;
 
-use PHPUnit\Framework\TestCase;
-
 /**
  * Class PaymentMethodCommandsTest
  *
  * @package Pantheon\Terminus\Tests\Functional
  */
-class PaymentMethodCommandsTest extends TestCase
+class PaymentMethodCommandsTest extends TerminusTestBase
 {
     /**
      * @test

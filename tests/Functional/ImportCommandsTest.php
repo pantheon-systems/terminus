@@ -3,18 +3,14 @@
 namespace Pantheon\Terminus\Tests\Functional;
 
 use GuzzleHttp\Client;
-use Pantheon\Terminus\Tests\Traits\TerminusTestTrait;
-use PHPUnit\Framework\TestCase;
 
 /**
  * Class ImportCommandsTest.
  *
  * @package Pantheon\Terminus\Tests\Functional
  */
-class ImportCommandsTest extends TestCase
+class ImportCommandsTest extends TerminusTestBase
 {
-    use TerminusTestTrait;
-
     /**
      * @var Client
      */

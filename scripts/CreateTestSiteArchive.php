@@ -7,17 +7,15 @@ putenv('TERMINUS_TESTING_RUNTIME_ENV=dev');
 require_once 'tests/config/bootstrap.php';
 
 use Composer\Script\Event;
-use Pantheon\Terminus\Tests\Traits\TerminusTestTrait;
+use Pantheon\Terminus\Tests\Functional\TerminusTestBase;
 
 /**
  * Class CreateTestSiteArchive.
  *
  * @see \Pantheon\Terminus\Tests\Functional\ImportCommandsTest::testImportSiteCommand()
  */
-class CreateTestSiteArchive
+class CreateTestSiteArchive extends TerminusTestBase
 {
-    use TerminusTestTrait;
-
     private const SITE_NAME = 'site-archive-d7';
     private const TEST_FILE_NAME = 'terminus-functional-test-file-site-archive.txt';
     private const SITE_ARCHIVE_FILE_NAME = 'site-archive-d7.tar.gz';

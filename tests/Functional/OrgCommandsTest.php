@@ -2,13 +2,8 @@
 
 namespace Pantheon\Terminus\Tests\Functional;
 
-use Pantheon\Terminus\Tests\Traits\TerminusTestTrait;
-use PHPUnit\Framework\TestCase;
-
-class OrgCommandsTest extends TestCase
+class OrgCommandsTest extends TerminusTestBase
 {
-    use TerminusTestTrait;
-
     /**
      * @test
      * @covers \Pantheon\Terminus\Commands\Org\ListCommand

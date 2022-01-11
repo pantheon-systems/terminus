@@ -2,18 +2,13 @@
 
 namespace Pantheon\Terminus\Tests\Functional;
 
-use Pantheon\Terminus\Tests\Traits\TerminusTestTrait;
-use PHPUnit\Framework\TestCase;
-
 /**
  * Class UpstreamCommandsTest.
  *
  * @package Pantheon\Terminus\Tests\Functional
  */
-class UpstreamCommandsTest extends TestCase
+class UpstreamCommandsTest extends TerminusTestBase
 {
-    use TerminusTestTrait;
-
     /**
      * Test UpstreamListCommand
      *

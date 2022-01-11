@@ -29,7 +29,7 @@ class LocalMachineHelper implements ConfigAwareInterface, ContainerAwareInterfac
     use ContainerAwareTrait;
     use IO;
     use CommandExecutorTrait {
-        execute as executeUnbuffered;
+        CommandExecutorTrait::execute as executeUnbuffered;
     }
 
     /**
@@ -165,7 +165,7 @@ class LocalMachineHelper implements ConfigAwareInterface, ContainerAwareInterfac
     protected function fixFilename($filename)
     {
         $config = $this->getConfig();
-        return $config->fixDirectorySeparators(str_replace('~', $config->get('user_home'), $filename));
+        return $config->fixDirectorySeparators(str_replace('~', $config->get('user_home') ?? '', $filename));
     }
 
     /**

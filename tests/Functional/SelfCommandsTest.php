@@ -2,20 +2,13 @@
 
 namespace Pantheon\Terminus\Tests\Functional;
 
-use Pantheon\Terminus\Tests\Traits\TerminusTestTrait;
-use Pantheon\Terminus\Tests\Traits\TerminusUtilsTrait;
-use PHPUnit\Framework\TestCase;
-
 /**
  * Class SelfCommandsTest.
  *
  * @package Pantheon\Terminus\Tests\Functional
  */
-class SelfCommandsTest extends TestCase
+class SelfCommandsTest extends TerminusTestBase
 {
-    use TerminusTestTrait;
-    use TerminusUtilsTrait;
-
     protected const SELF_UPDATE_COMMAND = 'self:update';
 
     /**
