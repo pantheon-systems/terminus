@@ -31,7 +31,6 @@
     "symfony/finder": "^5",
     "symfony/process": "^5",
     "symfony/yaml": "^5",
-    "tm/tooly-composer-script": "^1.4",
     "twig/twig": "^3.3"
   },
   "require-dev": {
@@ -144,11 +143,7 @@
       "vendor/bin/robo doc ./README.md",
       "git add README.md"
     ],
-    "post-install-cmd": [
-      "Tooly\\ScriptHandler::installPharTools"
-    ],
     "post-update-cmd": [
-      "Tooly\\ScriptHandler::installPharTools",
       "vendor/bin/robo update:Dependenciesversion"
     ],
     "pre-commit": [
@@ -170,12 +165,6 @@
     "kint": {
       "disable-helpers": true,
       "depth-limit": 3
-    },
-    "tools": {
-      "phar-composer": {
-        "url": "https://clue.engineering/phar-composer-latest.phar",
-        "dev-only": true
-      }
     }
   }
 }
