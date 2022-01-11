@@ -75,14 +75,7 @@
     "build": "@phar:build",
     "test": "@test:functional",
     "phar:build": [
-      "rm -Rf ./terminus.phar",
-      "composer install --no-dev",
-      "curl -o phar-composer.phar -L https://clue.engineering/phar-composer-latest.phar",
-      "mv tests .tests",
-      "php -d phar.readonly=Off phar-composer.phar build .",
-      "mv .tests tests",
-      "rm phar-composer.phar",
-      "chmod +x terminus.phar"
+      "./scripts/phar_build.sh"
     ],
     "phar:install": [
       "rm -rf /usr/local/bin/terminus || true",
