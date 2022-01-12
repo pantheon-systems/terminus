@@ -26,7 +26,7 @@ rm -Rf ./terminus.phar
 echo "Building terminus.phar..."
 php -d phar.readonly=Off phar-composer.phar build .
 
-# Restore excluded files and dirs.
+# Restore excluded files and directories.
 for EXCLUDED_FILE in "${EXCLUDED_FILES[@]}"
 do
     if [ -f ".$EXCLUDED_FILE" ] || [ -d ".$EXCLUDED_FILE" ]; then
