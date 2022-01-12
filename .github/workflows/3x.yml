@@ -52,6 +52,10 @@ jobs:
       TERMINUS_TOKEN: ${{ secrets.TERMINUS_TOKEN }}
       TERMINUS_SITE: ${{ secrets.TERMINUS_SITE }}
       TERMINUS_ORG: ${{ secrets.TERMINUS_ORG }}
+      TERMINUS_BASE_DIR: ${{ secrets.TERMINUS_BASE_DIR }}
+      TERMINUS_PLUGINS_DIR: ${{ secrets.TERMINUS_PLUGINS_DIR }}
+      TERMINUS_PLUGINS2_DIR: ${{ secrets.TERMINUS_PLUGINS2_DIR }}
+      TERMINUS_DEPENDENCIES_BASE_DIR: ${{ secrets.TERMINUS_DEPENDENCIES_BASE_DIR }}
     needs: [ checkout_build ]
     steps:
       - name: Install SSH key

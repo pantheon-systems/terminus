@@ -406,7 +406,7 @@ abstract class TerminusTestBase extends TestCase
     protected function installTerminus2Plugins(array $plugins = [], bool $assertExitCode = true): void
     {
         $filesystem = new Filesystem();
-        $plugins2_dir = getenv('TERMINUS_PLUGINS2_DIR');
+        $plugins2_dir = $this->getPlugins2Dir();
         if (is_dir($plugins2_dir)) {
             $filesystem->remove($plugins2_dir);
         }

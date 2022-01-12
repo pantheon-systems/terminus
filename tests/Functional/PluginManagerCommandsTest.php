@@ -107,7 +107,7 @@ class PluginManagerCommandsTest extends TerminusTestBase
         $this->assertCommandExists('self:plugin:migrate');
         $this->installTerminus2Plugins($testPluginPackages);
         $this->terminusWithStderrRedirected('self:plugin:migrate');
-        $pluginList = $this->terminusWithStderrRedirected('self:plugin:list');
+        $pluginList = $this->terminusWithStderrRedirected('self:plugin:list --format=json');
         foreach (self::TEST_PLUGIN_NAMES as $plugin) {
             $this->assertStringContainsString(
                 $plugin,
@@ -153,7 +153,7 @@ class PluginManagerCommandsTest extends TerminusTestBase
     protected function assertPluginExists(string $pluginName)
     {
         $this->assertNotEmpty($pluginName);
-        $pluginList = $this->terminusWithStderrRedirected('self:plugin:list');
+        $pluginList = $this->terminusWithStderrRedirected('self:plugin:list --format=json');
         $this->assertIsString($pluginList);
         $this->assertNotEmpty($pluginList);
         $this->assertStringContainsString(
@@ -168,7 +168,7 @@ class PluginManagerCommandsTest extends TerminusTestBase
      */
     protected function assertNoPlugins()
     {
-        $pluginList = $this->terminusJsonResponse('self:plugin:list');
+        $pluginList = $this->terminusJsonResponse('self:plugin:list --format=json');
         $this->assertIsArray($pluginList);
         $this->assertEmpty($pluginList, 'Plugins list should be empty.');
     }
