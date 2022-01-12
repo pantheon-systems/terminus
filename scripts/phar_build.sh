@@ -1,7 +1,5 @@
 #!/bin/bash
 
-rm -Rf ./terminus.phar
-
 echo "Installing composer dependencies with --no-dev..."
 composer install --no-dev
 
@@ -21,6 +19,9 @@ do
          mv "$EXCLUDED_FILE" ".$EXCLUDED_FILE" || true
     fi
 done
+
+echo "Deleting terminus.phar file..."
+rm -Rf ./terminus.phar
 
 echo "Building terminus.phar..."
 php -d phar.readonly=Off phar-composer.phar build .
