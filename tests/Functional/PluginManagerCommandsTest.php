@@ -145,6 +145,25 @@ class PluginManagerCommandsTest extends TerminusTestBase
     }
 
     /**
+     * Install Terminus 2 plugins.
+     *
+     * @param array $plugins
+     */
+    protected function installTerminus2Plugins(array $plugins): void
+    {
+        $filesystem = new Filesystem();
+        $plugins2_dir = $this->getPlugins2Dir();
+        if (is_dir($plugins2_dir)) {
+            $filesystem->remove($plugins2_dir);
+        }
+        $filesystem->mkdir($plugins2_dir);
+        foreach ($plugins as $plugin) {
+            exec(sprintf('composer create-project --no-dev -d %s %s', $plugins2_dir, $plugin), $output, $exitCode);
+            $this->assertEquals(0, $exitCode, implode("\n", $output));
+        }
+    }
+
+    /**
      * Asserts the plugin exists.
      *
      * @param string $pluginName
