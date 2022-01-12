@@ -16,7 +16,7 @@ for EXCLUDED_FILE in "${EXCLUDED_FILES[@]}"
 do
     if [ -f "$EXCLUDED_FILE" ] || [ -d "$EXCLUDED_FILE" ]; then
          echo "Excluding '$EXCLUDED_FILE' from phar..."
-         mv "$EXCLUDED_FILE" ".$EXCLUDED_FILE" || true
+         mv "$EXCLUDED_FILE" ".$EXCLUDED_FILE"
     fi
 done
 
@@ -30,7 +30,7 @@ php -d phar.readonly=Off phar-composer.phar build .
 for EXCLUDED_FILE in "${EXCLUDED_FILES[@]}"
 do
     if [ -f ".$EXCLUDED_FILE" ] || [ -d ".$EXCLUDED_FILE" ]; then
-         mv ".$EXCLUDED_FILE" "$EXCLUDED_FILE" || true
+         mv ".$EXCLUDED_FILE" "$EXCLUDED_FILE"
     fi
 done
 
