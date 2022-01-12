@@ -8,7 +8,7 @@ curl -o phar-composer.phar -L https://clue.engineering/phar-composer-latest.phar
 
 EXCLUDED_FILES=()
 if [[ ! -z "${TERMINUS_ON_PHAR_BUILD_EXCLUDE_FILES}" ]]; then
-  IFS=', ' read -r -a EXCLUDED_FILES <<< "$TERMINUS_ON_PHAR_BUILD_EXCLUDE_FILES"
+    IFS=',' read -r -a EXCLUDED_FILES <<< "$TERMINUS_ON_PHAR_BUILD_EXCLUDE_FILES"
 fi
 
 # Exclude files and directories by prefixing them with the dot character (phar-composer excludes them from the final phar archive).
@@ -40,8 +40,8 @@ rm phar-composer.phar
 chmod +x terminus.phar
 
 if [[ ! -z "${TERMINUS_ON_PHAR_COMPLETE_REINSTALL_COMPOSER_WITH_DEV}" ]]; then
-  echo "Reinstalling composer dependencies with --dev..."
-  composer install --dev
+    echo "Reinstalling composer dependencies with --dev..."
+    composer install --dev
 fi
 
 echo "terminus.phar file has been created successfully!"
