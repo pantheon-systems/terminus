@@ -5,10 +5,10 @@ on:
     - cron: '0 6 * * *'
   workflow_dispatch:
     inputs:
-      functional_tests_all:
-        description: Run all functional tests
+      functional_tests_group:
+        description: Run arbitrary functional tests group by name or all (short and long) tests (default)
         required: true
-        default: '1'
+        default: all
 jobs:
   # Checkout in separate job because docker image is alpine based and checkout action doesn't work.
   checkout_build:
@@ -79,11 +79,14 @@ jobs:
       - name: Install Composer Dependencies
         run: composer install --no-interaction --prefer-dist
       - name: Functional Tests (short)
-        if: ${{ github.event_name == 'push' }}
+        if: ${{ github.event_name == 'push' || github.event_name == 'schedule' || github.event.inputs.functional_tests_group == 'all' }}
         run: composer test:short
       - name: Functional Tests (long)
-        if: ${{ github.event_name == 'schedule' || github.event.inputs.functional_tests_all == '1' }}
+        if: ${{ github.event_name == 'schedule' || github.event.inputs.functional_tests_group == 'all' }}
         run: composer test:long
+      - name: Functional Tests (arbitrary group)
+        if: ${{ github.event.inputs.functional_tests_group != '' && github.event.inputs.functional_tests_group != 'all' }}
+        run: composer test:group -- ${{ github.event.inputs.functional_tests_group }}
       - name: Coverage Report
         run: composer coverage
       - name: Save coverage as artifact
