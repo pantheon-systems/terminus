@@ -30,8 +30,9 @@ jobs:
         run: composer code:lint
       - name: Phar Build
         run: |
-          composer global require humbug/box
-          export PATH=~/.config/composer/vendor/bin:$PATH
+          mkdir $HOME/box
+          composer require humbug/box --working-dir=$HOME/box
+          export PATH=~/box/vendor/bin:$PATH
           composer phar:build
       - name: Save terminus.phar as artifact
         uses: actions/upload-artifact@v2
