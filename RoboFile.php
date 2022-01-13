@@ -205,4 +205,14 @@ class RoboFile extends \Robo\Tasks
     {
         $this->terminus = $terminus;
     }
+
+    /**
+     * Returns the absolute path to the project.
+     *
+     * @return string
+     */
+    private function getProjectPath(): string
+    {
+        return dirname(__FILE__);
+    }
 }
