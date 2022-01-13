@@ -2,10 +2,8 @@
 
 namespace Pantheon\Terminus\Commands\Self\Plugin;
 
-use Composer\Semver\Comparator;
 use Consolidation\AnnotatedCommand\CommandData;
 use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
-use Pantheon\Terminus\Plugins\PluginInfo;
 use Pantheon\Terminus\Exceptions\TerminusException;
 
 /**
