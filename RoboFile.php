@@ -93,8 +93,10 @@ class RoboFile extends \Robo\Tasks
     public function bundleLinux()
     {
         $this->say('Building DEBIAN/UBUNTU package.');
+        // @todo: fix
         $composerFilePath = realpath(dirname(\Composer\Factory::getComposerFile()));
 
+        // @todo: fix
         $composerContents = new ComposerFile(
             $composerFilePath . DIRECTORY_SEPARATOR . 'composer.json'
         );

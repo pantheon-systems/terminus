@@ -6,6 +6,7 @@ namespace Pantheon\Terminus\Scripts;
 putenv('TERMINUS_TESTING_RUNTIME_ENV=dev');
 require_once 'tests/config/bootstrap.php';
 
+// @todo: fix
 use Composer\Script\Event;
 use Pantheon\Terminus\Tests\Functional\TerminusTestBase;
 

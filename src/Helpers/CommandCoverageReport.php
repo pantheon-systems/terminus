@@ -196,6 +196,7 @@ class CommandCoverageReport implements ConfigAwareInterface, IOAwareInterface
      */
     public static function getRootDir()
     {
+        // @todo: fix
         return realpath(dirname(\Composer\Factory::getComposerFile()));
     }
 
