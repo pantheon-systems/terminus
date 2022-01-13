@@ -1,0 +1,12 @@
+{
+  "alias": "terminus.phar",
+  "directories": [
+    "assets",
+    "bin",
+    "config",
+    "src",
+    "templates",
+    "vendor"
+  ],
+  "output": "terminus.phar"
+}
