@@ -5,10 +5,10 @@ on:
     - cron: '0 6 * * *'
   workflow_dispatch:
     inputs:
-      functional_tests_all:
-        description: Run all functional tests
+      functional_tests_group:
+        description: Run arbitrary functional tests group by name or all (short and long) tests (default)
         required: true
-        default: '1'
+        default: all
 jobs:
   # Checkout in separate job because docker image is alpine based and checkout action doesn't work.
   checkout_build:
@@ -29,9 +29,11 @@ jobs:
       - name: Validate Code
         run: composer code:lint
       - name: Phar Build
-        run: composer phar:build
-      - name: permissions
-        run: chmod +x ./terminus.phar
+        run: |
+          mkdir $HOME/box
+          composer require humbug/box --working-dir=$HOME/box
+          export PATH=~/box/vendor/bin:$PATH
+          composer phar:build
       - name: Save terminus.phar as artifact
         uses: actions/upload-artifact@v2
         with:
@@ -52,6 +54,10 @@ jobs:
       TERMINUS_TOKEN: ${{ secrets.TERMINUS_TOKEN }}
       TERMINUS_SITE: ${{ secrets.TERMINUS_SITE }}
       TERMINUS_ORG: ${{ secrets.TERMINUS_ORG }}
+      TERMINUS_BASE_DIR: ${{ secrets.TERMINUS_BASE_DIR }}
+      TERMINUS_PLUGINS_DIR: ${{ secrets.TERMINUS_PLUGINS_DIR }}
+      TERMINUS_PLUGINS2_DIR: ${{ secrets.TERMINUS_PLUGINS2_DIR }}
+      TERMINUS_DEPENDENCIES_BASE_DIR: ${{ secrets.TERMINUS_DEPENDENCIES_BASE_DIR }}
     needs: [ checkout_build ]
     steps:
       - name: Install SSH key
@@ -75,11 +81,14 @@ jobs:
       - name: Install Composer Dependencies
         run: composer install --no-interaction --prefer-dist
       - name: Functional Tests (short)
-        if: ${{ github.event_name == 'push' }}
+        if: ${{ github.event_name == 'push' || github.event_name == 'schedule' || github.event.inputs.functional_tests_group == 'all' }}
         run: composer test:short
       - name: Functional Tests (long)
-        if: ${{ github.event_name == 'schedule' || github.event.inputs.functional_tests_all == '1' }}
+        if: ${{ github.event_name == 'schedule' || github.event.inputs.functional_tests_group == 'all' }}
         run: composer test:long
+      - name: Functional Tests (arbitrary group)
+        if: ${{ github.event.inputs.functional_tests_group != '' && github.event.inputs.functional_tests_group != 'all' }}
+        run: composer test:group -- ${{ github.event.inputs.functional_tests_group }}
       - name: Coverage Report
         run: composer coverage
       - name: Save coverage as artifact

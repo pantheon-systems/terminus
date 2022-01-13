@@ -4,8 +4,6 @@ namespace Pantheon\Terminus\Tests\Functional;
 
 use PHPUnit\Framework\TestCase;
 
-use Symfony\Component\Filesystem\Filesystem;
-
 /**
  * Class TerminusTestBase.
  *
@@ -395,28 +393,6 @@ abstract class TerminusTestBase extends TestCase
         fclose($stream);
 
         return $fileName;
-    }
-
-    /**
-     * Install Terminus 2 plugins.
-     *
-     * @param array $plugins
-     * @param bool $assertExitCode
-     */
-    protected function installTerminus2Plugins(array $plugins = [], bool $assertExitCode = true): void
-    {
-        $filesystem = new Filesystem();
-        $plugins2_dir = getenv('TERMINUS_PLUGINS2_DIR');
-        if (is_dir($plugins2_dir)) {
-            $filesystem->remove($plugins2_dir);
-        }
-        $filesystem->mkdir($plugins2_dir);
-        foreach ($plugins as $plugin) {
-            exec(sprintf('composer create-project --no-dev -d %s %s', $plugins2_dir, $plugin), $output, $exitCode);
-            if (true === $assertExitCode) {
-                $this->assertEquals(0, $exitCode, implode("\n", $output));
-            }
-        }
     }
 
     /**
