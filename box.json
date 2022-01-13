@@ -1,5 +1,6 @@
 {
   "alias": "terminus.phar",
+  "check-requirements": false,
   "directories": [
     "assets",
     "bin",
