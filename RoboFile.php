@@ -76,7 +76,7 @@ class RoboFile extends \Robo\Tasks
     public function updateDependenciesversion()
     {
         $this->say('Updating terminus dependencies version.');
-        $composerLockContents = file_get_contents(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'composer.lock');
+        $composerLockContents = file_get_contents($this->getProjectPath() . DIRECTORY_SEPARATOR . 'composer.lock');
         $composerLockJson = json_decode($composerLockContents, true, 10);
         $hash = substr($composerLockJson['content-hash'], 0, 7);
         $binFileContents = file_get_contents('bin/terminus');
@@ -93,26 +93,23 @@ class RoboFile extends \Robo\Tasks
     public function bundleLinux()
     {
         $this->say('Building DEBIAN/UBUNTU package.');
-        // @todo: fix
-        $composerFilePath = realpath(dirname(\Composer\Factory::getComposerFile()));
 
-        // @todo: fix
-        $composerContents = new ComposerFile(
-            $composerFilePath . DIRECTORY_SEPARATOR . 'composer.json'
-        );
-        $outputPath = $composerFilePath . DIRECTORY_SEPARATOR . 'package';
-        $terminus_binary = "{$composerFilePath}/terminus";
+        $terminus_binary = sprintf('%s/terminus', $this->getProjectPath());
         $dpkg_installed_size = ceil(filesize($terminus_binary) / 1024);
 
+        $outputPath = $this->getProjectPath() . DIRECTORY_SEPARATOR . 'package';
         // We need the output path empty.
         if (is_dir($outputPath)) {
             exec(sprintf('rm -Rf %s', $outputPath));
             mkdir($outputPath);
         }
 
-        $name = $composerContents->getName();
+        $composerJson = json_decode(
+            file_get_contents($this->getProjectPath() . DIRECTORY_SEPARATOR . 'composer.json'),
+            true
+        );
 
-        [$vendor, $package] = explode('/', $name);
+        [$vendor, $package] = explode('/', $composerJson['name']);
         // Create a config object.
         $config = $this->getConfig();
 
@@ -125,7 +122,7 @@ class RoboFile extends \Robo\Tasks
             ->setArchitecture('all')
             ->setMaintainer('Terminus', 'terminus@pantheon.io')
             ->setProvides($package)
-            ->setDescription($composerContents->getDescription());
+            ->setDescription($composerJson['description']);
 
         $packager = new \wdm\debian\Packager();
 
