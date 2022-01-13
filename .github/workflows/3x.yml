@@ -29,9 +29,10 @@ jobs:
       - name: Validate Code
         run: composer code:lint
       - name: Phar Build
-        run: composer phar:build
-      - name: permissions
-        run: chmod +x ./terminus.phar
+        run: |
+          composer global require humbug/box
+          export PATH=~/.config/composer/vendor/bin:$PATH
+          composer phar:build
       - name: Save terminus.phar as artifact
         uses: actions/upload-artifact@v2
         with:
