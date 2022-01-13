@@ -76,8 +76,7 @@ class RoboFile extends \Robo\Tasks
     public function updateDependenciesversion()
     {
         $this->say('Updating terminus dependencies version.');
-        $composerFilePath = realpath(dirname(\Composer\Factory::getComposerFile()));
-        $composerLockContents = file_get_contents($composerFilePath . DIRECTORY_SEPARATOR . 'composer.lock');
+        $composerLockContents = file_get_contents(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'composer.lock');
         $composerLockJson = json_decode($composerLockContents, true, 10);
         $hash = substr($composerLockJson['content-hash'], 0, 7);
         $binFileContents = file_get_contents('bin/terminus');
