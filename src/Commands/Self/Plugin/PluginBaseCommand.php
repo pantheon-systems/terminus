@@ -452,8 +452,8 @@ abstract class PluginBaseCommand extends TerminusCommand
                     $results = $this->runCommand($command);
                     if ($results['exit_code'] !== 0) {
                         throw new TerminusException(
-                            'Error configuring path repository in ' . basename($dir),
-                            []
+                            'Error configuring path repository in {path}.',
+                            ['path' => basename($dir)]
                         );
                     }
                 }
@@ -467,16 +467,13 @@ abstract class PluginBaseCommand extends TerminusCommand
             $results = $this->runCommand($command);
             if ($results['exit_code'] !== 0) {
                 throw new TerminusException(
-                    'Error requiring package in terminus-plugins.',
-                    []
+                    'Error requiring package in terminus-plugins: {stderr}',
+                    ['stderr' => $results['stderr']]
                 );
             }
             $results = $this->runComposerUpdate($dependencies_dir, $project_name_without_version);
             if ($results['exit_code'] !== 0) {
-                throw new TerminusException(
-                    'Error running composer update in terminus-dependencies.',
-                    []
-                );
+                throw new TerminusException('Error running composer update in terminus-dependencies.');
             }
             $this->replaceFolder($plugins_dir, $original_plugins_dir);
             $this->replaceFolder($dependencies_dir, $original_dependencies_dir);
