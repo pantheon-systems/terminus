@@ -61,23 +61,27 @@ class RoboFile extends Tasks
     }
 
     /**
-     * Updates $terminusPluginsDependenciesVersion variable.
+     * Updates $terminusPluginsDependenciesVersion variable in bin/terminus.
      */
     public function updateDependenciesversion()
     {
-        $this->say('Updating terminus dependencies version.');
-        $composerLockContents = file_get_contents($this->getProjectPath() . DIRECTORY_SEPARATOR . 'composer.lock');
-        $composerLockJson = json_decode($composerLockContents, true, 10);
-        $hash = substr($composerLockJson['content-hash'], 0, 7);
-        $binFileContents = file_get_contents('bin/terminus');
+        $this->say('Checking Terminus plugins dependencies version...');
+        $hash = substr(sha1_file($this->getProjectPath() . DIRECTORY_SEPARATOR . 'composer.lock'), 0, 10);
+        $binFileContents = file_get_contents(
+            $this->getProjectPath() . DIRECTORY_SEPARATOR . 'bin' . DIRECTORY_SEPARATOR . 'terminus'
+        );
         $newBinFileContents = preg_replace(
-            "/(terminusPluginsDependenciesVersion\s?=)(.*)/m",
-            "$1 '$hash';",
+            '/(terminusPluginsDependenciesVersion\s=\s\')(.+)(\';)/',
+            "\${1}$hash\${3}",
             $binFileContents
         );
         if ($newBinFileContents && $newBinFileContents !== $binFileContents) {
-            file_put_contents('bin/terminus', $newBinFileContents);
+            file_put_contents('bin' . DIRECTORY_SEPARATOR . 'terminus', $newBinFileContents);
+            $this->say('Terminus plugins dependencies version has been updated.');
+            return;
         }
+
+        $this->say('Terminus plugins dependencies version remains unchanged.');
     }
 
     /**
