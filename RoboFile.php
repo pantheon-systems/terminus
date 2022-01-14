@@ -93,7 +93,7 @@ class RoboFile extends Tasks
     {
         $this->say('Building DEBIAN/UBUNTU package.');
 
-        $terminus_binary = sprintf('%s/terminus', $this->getProjectPath());
+        $terminus_binary = $this->getProjectPath() . DIRECTORY_SEPARATOR . 'terminus';
         $dpkg_installed_size = ceil(filesize($terminus_binary) / 1024);
 
         $outputPath = $this->getProjectPath() . DIRECTORY_SEPARATOR . 'package';
@@ -127,7 +127,10 @@ class RoboFile extends Tasks
 
         $packager->setOutputPath($outputPath);
         $packager->setControl($control);
-        $packager->addMount($terminus_binary, '/usr/bin/terminus');
+        $packager->addMount(
+            $terminus_binary,
+            DIRECTORY_SEPARATOR . 'usr' . DIRECTORY_SEPARATOR . 'bin' . DIRECTORY_SEPARATOR . 'terminus'
+        );
 
         // Creates folders using mount points.
         $packager->run();
