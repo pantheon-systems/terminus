@@ -3,7 +3,6 @@
 namespace Pantheon\Terminus\Commands\Self\Plugin;
 
 use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
-use Composer\Semver\Semver;
 use Pantheon\Terminus\Plugins\PluginInfo;
 
 /**

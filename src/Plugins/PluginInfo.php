@@ -7,7 +7,6 @@ use League\Container\ContainerAwareInterface;
 use League\Container\ContainerAwareTrait;
 use Pantheon\Terminus\Config\ConfigAwareTrait;
 use Pantheon\Terminus\Exceptions\TerminusException;
-use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
 use Pantheon\Terminus\Helpers\LocalMachineHelper;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;

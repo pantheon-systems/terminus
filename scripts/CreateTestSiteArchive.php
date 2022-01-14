@@ -6,7 +6,6 @@ namespace Pantheon\Terminus\Scripts;
 putenv('TERMINUS_TESTING_RUNTIME_ENV=dev');
 require_once 'tests/config/bootstrap.php';
 
-use Composer\Script\Event;
 use Pantheon\Terminus\Tests\Functional\TerminusTestBase;
 
 /**
@@ -24,11 +23,11 @@ class CreateTestSiteArchive extends TerminusTestBase
      * Creates the test Drupal7 site containing a site archive file.
      *
      * The site archive URL: https://dev-site-archive-d7.pantheonsite.io/sites/default/files/site-archive-d7.tar.gz
-     * Run composer command `composer run test:create-site-archive` to generate the test site archive site and the file.
+     * Run composer command `composer test:create-site-archive` to generate the test site archive site and the file.
      *
      * @throws \JsonException
      */
-    public static function do(Event $event)
+    public static function do()
     {
         // Create the site.
         self::callTerminus(
@@ -67,6 +66,7 @@ class CreateTestSiteArchive extends TerminusTestBase
             self::SITE_NAME,
             self::SITE_ARCHIVE_FILE_NAME,
         );
-        $event->getIO()->write($siteArchiveFileUrl);
+
+        print $siteArchiveFileUrl;
     }
 }

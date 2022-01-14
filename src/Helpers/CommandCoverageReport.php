@@ -5,7 +5,6 @@ namespace Pantheon\Terminus\Helpers;
 
 use Consolidation\AnnotatedCommand\AnnotatedCommandFactory;
 use Consolidation\AnnotatedCommand\CommandFileDiscovery;
-use Consolidation\AnnotatedCommand\Output\OutputAwareInterface;
 use Consolidation\AnnotatedCommand\Parser\CommandInfo;
 use Consolidation\Config\ConfigInterface;
 use Pantheon\Terminus\Config\ConfigAwareTrait;
@@ -13,14 +12,11 @@ use Pantheon\Terminus\Config\DefaultsConfig;
 use Pantheon\Terminus\Config\DotEnvConfig;
 use Pantheon\Terminus\Config\EnvConfig;
 use Pantheon\Terminus\Config\YamlConfig;
-use PhpParser\Node\Stmt\Static_;
 use Robo\Common\IO;
-use Robo\Common\OutputAwareTrait;
 use Robo\Contract\ConfigAwareInterface;
 use Robo\Contract\IOAwareInterface;
 use Robo\Symfony\ConsoleIO;
 use Symfony\Component\Console\Input\ArgvInput;
-use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\Console\Output\OutputInterface;
 use Twig\Environment;
@@ -192,11 +188,11 @@ class CommandCoverageReport implements ConfigAwareInterface, IOAwareInterface
     }
 
     /**
-     * @return false|string
+     * @return string
      */
     public static function getRootDir()
     {
-        return realpath(dirname(\Composer\Factory::getComposerFile()));
+        return dirname(__FILE__, 3);
     }
 
     /**
