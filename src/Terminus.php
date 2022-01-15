@@ -155,7 +155,6 @@ class Terminus implements
             ->invokeMethod('setSession', ['session']);
 
         // Saved tokens
-        print "DI filestore for token_store, tokens_dir is " . $this->getConfig()->get('tokens_dir') . "\n";
         $token_store = new FileStore($this->getConfig()->get('tokens_dir'));
         $container->inflector(SavedTokens::class)
             ->invokeMethod('setDataStore', [$token_store]);

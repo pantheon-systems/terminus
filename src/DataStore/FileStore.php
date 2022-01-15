@@ -129,7 +129,6 @@ class FileStore extends \DirectoryIterator implements DataStoreInterface
      */
     public function keys()
     {
-        print ">>> get keys from " . $this->fileStorePath() . "\n";
         $toReturn = array_diff(scandir($this->fileStorePath()), ['..', '.']);
         return array_values($toReturn);
     }
