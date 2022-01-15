@@ -11,6 +11,7 @@ use Pantheon\Terminus\Exceptions\TerminusException;
  */
 class FileStore extends \DirectoryIterator implements DataStoreInterface
 {
+    protected $fileStoreDirectory;
 
     /**
      * Creates FileStore instance.
@@ -19,10 +20,16 @@ class FileStore extends \DirectoryIterator implements DataStoreInterface
      */
     public function __construct(string $directory)
     {
+        $this->fileStoreDirectory = $directory;
         if (!is_dir($directory)) {
             mkdir($directory, 0755, true);
         }
         parent::__construct($directory);
+    }
+
+    public function fileStorePath()
+    {
+        return $this->fileStoreDirectory;
     }
 
     /**
@@ -35,7 +42,7 @@ class FileStore extends \DirectoryIterator implements DataStoreInterface
      */
     public function get($key)
     {
-        $tokenFilename = $this->getRealPath() . DIRECTORY_SEPARATOR . $this->cleanKey($key);
+        $tokenFilename = $this->fileStorePath() . DIRECTORY_SEPARATOR . $this->cleanKey($key);
         if (file_exists($tokenFilename) && is_file($tokenFilename)) {
             try {
                 $toReturn = json_decode(
@@ -80,7 +87,7 @@ class FileStore extends \DirectoryIterator implements DataStoreInterface
      */
     public function set($key, $data)
     {
-        $path = $this->getRealPath() . DIRECTORY_SEPARATOR . $this->cleanKey($key);
+        $path = $this->fileStorePath() . DIRECTORY_SEPARATOR . $this->cleanKey($key);
         // Prevent categories group+other from reading, writing or executing
         // any files written to the FileStore, for security/privacy.
         // e.g. tokens are cached and could be read by other user accounts
@@ -100,7 +107,7 @@ class FileStore extends \DirectoryIterator implements DataStoreInterface
      */
     public function has($key)
     {
-        return file_exists($this->getRealPath() . DIRECTORY_SEPARATOR . $this->cleanKey($key));
+        return file_exists($this->fileStorePath() . DIRECTORY_SEPARATOR . $this->cleanKey($key));
     }
 
     /**
@@ -122,8 +129,8 @@ class FileStore extends \DirectoryIterator implements DataStoreInterface
      */
     public function keys()
     {
-	print ">>> get keys from " . $this->getRealPath() . "\n";
-        $toReturn = array_diff(scandir($this->getRealPath()), ['..', '.']);
+        print ">>> get keys from " . $this->fileStorePath() . "\n";
+        $toReturn = array_diff(scandir($this->fileStorePath()), ['..', '.']);
         return array_values($toReturn);
     }
 
@@ -136,7 +143,7 @@ class FileStore extends \DirectoryIterator implements DataStoreInterface
      */
     public function remove($key)
     {
-        $path = $this->getRealPath() . "/" . $key;
+        $path = $this->fileStorePath() . "/" . $key;
         if (file_exists($path)) {
             unlink($path);
         }
