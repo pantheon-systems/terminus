@@ -98,10 +98,7 @@ class UpdateCommand extends PluginBaseCommand
                     $messages[] = $results['stderr'];
                 }
                 if ($results['exit_code'] !== 0) {
-                    throw new TerminusException(
-                        'Error updating packages in terminus-depedencies.',
-                        []
-                    );
+                    throw new TerminusException('Error updating packages in terminus-depedencies.');
                 }
 
                 $this->replaceFolder($plugins_dir, $original_plugins_dir);
