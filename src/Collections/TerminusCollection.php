@@ -144,8 +144,7 @@ abstract class TerminusCollection implements ContainerAwareInterface, RequestAwa
         $particle = in_array(substr($pretty_name, 0, 1), ['a', 'e', 'i', 'o', 'u',]) ? 'an' : 'a';
         throw new TerminusNotFoundException(
             "Could not find $particle {model} identified by {id}.",
-            ['model' => $pretty_name, 'id' => $id,],
-            1
+            ['model' => $pretty_name, 'id' => $id,]
         );
     }
 
