@@ -293,7 +293,7 @@ class Sites extends APICollection implements SessionAwareInterface
      *
      * @param string $site_id
      *   The site name or UUID.
-     * @return string
+     * @return string|null
      *   The site UUID.
      *
      * @throws \Pantheon\Terminus\Exceptions\TerminusException
