@@ -22,8 +22,10 @@ abstract class APICollection extends TerminusCollection
     protected $url;
 
     /**
-     *
      * @return array
+     *
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @throws \Pantheon\Terminus\Exceptions\TerminusException
      */
     public function getData()
     {
@@ -78,9 +80,12 @@ abstract class APICollection extends TerminusCollection
     }
 
     /**
-     * Retrieves the collection data from the API via a cURL request
+     * Retrieves the collection data from the API.
      *
      * @return array
+     *
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @throws \Pantheon\Terminus\Exceptions\TerminusException
      */
     protected function requestData()
     {
@@ -89,9 +94,14 @@ abstract class APICollection extends TerminusCollection
 
     /**
      * Make a request at a specific URL
+     *
      * @param string $url address to fetch
      * @param array $args request arguments (@see APICollection::getFetchArgs())
+     *
      * @return array
+     *
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @throws \Pantheon\Terminus\Exceptions\TerminusException
      */
     protected function requestDataAtUrl($url, $args = [])
     {
