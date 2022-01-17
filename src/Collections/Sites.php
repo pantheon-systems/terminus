@@ -2,6 +2,7 @@
 
 namespace Pantheon\Terminus\Collections;
 
+use Exception;
 use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
 use Pantheon\Terminus\Models\Site;
 use Pantheon\Terminus\Models\TerminusModel;
@@ -205,8 +206,10 @@ class Sites extends APICollection implements SessionAwareInterface
      *
      * @return \Pantheon\Terminus\Models\Site
      *
-     * @throws \Pantheon\Terminus\Exceptions\TerminusException
      * @throws \GuzzleHttp\Exception\GuzzleException
+     * @throws \Pantheon\Terminus\Exceptions\TerminusException
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
      */
     public function get($id): TerminusModel
     {
@@ -229,11 +232,10 @@ class Sites extends APICollection implements SessionAwareInterface
             $this->models[$uuid] = $site;
 
             return $this->models[$uuid];
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             throw new TerminusException(
-                'Could not locate a site your user may access identified by {id}.',
-                compact('id'),
-                1
+                'Could not locate a site your user may access identified by {id}: {error_message}',
+                ['id' => $id, 'error_message' => $e->getMessage()],
             );
         }
     }
