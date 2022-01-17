@@ -161,6 +161,23 @@ abstract class TerminusTestBase extends TestCase
     }
 
     /**
+     * Asserts terminus command execution succeeds in multiple attempts.
+     *
+     * @param string $command
+     *   The command to execute.
+     * @param int $attempts
+     *   The maximum number of attempts.
+     */
+    protected function assertTerminusCommandSucceedsInAttempts(string $command, int $attempts = 3): void
+    {
+        $this->assertTerminusCommandResultEqualsInAttempts(
+            fn() => static::callTerminus(sprintf('%s --yes', $command))[1],
+            0,
+            $attempts
+        );
+    }
+
+    /**
      * Returns the site name.
      *
      * @return string
