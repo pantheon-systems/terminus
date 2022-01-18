@@ -18,7 +18,7 @@ class RedisCommandsTest extends TerminusTestBase
      */
     public function testRedisEnable()
     {
-        $this->terminus("redis:enable {$this->getSiteName()}");
+        $this->assertTerminusCommandSucceedsInAttempts(sprintf('redis:enable %s', $this->getSiteName()));
     }
 
     /**
@@ -30,6 +30,6 @@ class RedisCommandsTest extends TerminusTestBase
      */
     public function testRedisDisable()
     {
-        $this->terminus("redis:disable {$this->getSiteName()}");
+        $this->assertTerminusCommandSucceedsInAttempts(sprintf('redis:disable %s', $this->getSiteName()));
     }
 }
