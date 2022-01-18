@@ -1,6 +1,24 @@
 # Change Log
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org)
 
+## 3.0.4 - 2022-01-18
+
+### Added
+- Added self:plugin:migrate command (#2299)
+- Add php 8.1 support (#2295)
+
+### Changed
+- Set memory limit with ini_set() rather than /usr/bin/env -S (#2303)
+- Optimize Terminus phar build (#2307)
+- Do not require composer/composer as a direct dependency of Terminus (#2308)
+- Avoid dependency on ext-curl in Terminus (#2310)
+- Improve error verbosity in `Sites::get()` (#2311)
+- Retry API request on "Connection refused" and "Operation timed out" errors (#2313)
+
+### Fixed
+- self:update command should now work when plugins have been installed (#2297)
+- Fix filestore scandir problem (#2309)
+
 ## 3.0.3 - 2021-12-17
 
 ### Fixed
