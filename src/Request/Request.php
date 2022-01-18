@@ -5,7 +5,7 @@ namespace Pantheon\Terminus\Request;
 use GuzzleHttp\Client;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\GuzzleException;
-use GuzzleHttp\Handler\CurlHandler;
+use GuzzleHttp\Handler\StreamHandler;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Middleware;
 use GuzzleHttp\Psr7\Request as GuzzleRequest;
@@ -73,8 +73,10 @@ class Request implements
      * @param bool $overwrite
      *   Overwrite the target file if already exists.
      *
-     * @throws TerminusException
      * @throws \GuzzleHttp\Exception\GuzzleException
+     * @throws \Pantheon\Terminus\Exceptions\TerminusException
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
      */
     public function download($url, $target, bool $overwrite = false)
     {
@@ -107,10 +109,9 @@ class Request implements
     {
         if (!isset($this->client)) {
             $config = $this->getConfig();
-            $stack = HandlerStack::create(new CurlHandler());
-            $stack->push(Middleware::retry(
-                $this->createRetryDecider()
-            ));
+            $stack = HandlerStack::create(new StreamHandler());
+            $stack->push(Middleware::retry($this->createRetryDecider()));
+
             $params = $config->get('client_options') + [
                     'base_uri' => ($base_uri === null) ? $this->getBaseURI() : $base_uri,
                     RequestOptions::VERIFY => (boolean) $config->get('verify_host_cert', true),
