@@ -18,7 +18,7 @@ class SolrCommandsTest extends TerminusTestBase
      */
     public function testSolrEnableCommand()
     {
-        $this->terminus(sprintf('solr:enable %s', $this->getSiteName()));
+        $this->assertTerminusCommandSucceedsInAttempts(sprintf('solr:enable %s', $this->getSiteName()));
     }
 
     /**
@@ -30,6 +30,6 @@ class SolrCommandsTest extends TerminusTestBase
      */
     public function testSolrDisableCommand()
     {
-        $this->terminus(sprintf('solr:disable %s', $this->getSiteName()));
+        $this->assertTerminusCommandSucceedsInAttempts(sprintf('solr:disable %s', $this->getSiteName()));
     }
 }
