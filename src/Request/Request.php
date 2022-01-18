@@ -140,6 +140,11 @@ class Request implements
         $config = $this->getConfig();
         $maxRetries = $config->get('http_max_retries', 5);
         $logger = $this->logger;
+        $logWarning = function (string $message) use ($logger) {
+            if ($this->output()->isVerbose()) {
+                $logger->warning($message);
+            }
+        };
 
         return function (
             $retry,
@@ -148,61 +153,47 @@ class Request implements
             ?Exception $exception = null
         ) use (
             $maxRetries,
-            $logger
+            $logWarning
         ) {
-            if (null !== $exception) {
-                if ($exception instanceof ConnectException) {
-                    // Retry on connection-related exceptions such as "Connection refused" and "Operation timed out".
-                    $logger->warning(sprintf(
-                        'Retrying %s %s %s out of %s (reason: %s)',
-                        $request->getMethod(),
-                        $request->getUri(),
-                        $retry,
-                        $maxRetries,
-                        $exception->getMessage()
-                    ));
-
-                    return true;
-                }
-
-                throw new TerminusException(
-                    'HTTPS request has failed with error "{error}".',
-                    ['error' => $exception->getMessage()]
-                );
-            }
-
-            $responseStatusCode = $response->getStatusCode();
-            if (preg_match('/[2,4]0\d/', $responseStatusCode)) {
-                // Do not retry on 20x and 40x responses.
-                return false;
-            }
-
-            if (0 === $retry) {
-                if ($this->output()->isVerbose()) {
-                    $logger->warning(sprintf(
-                        'HTTP request %s %s has failed with the status code %s',
-                        $request->getMethod(),
-                        $request->getUri(),
-                        $responseStatusCode
-                    ));
-                }
-
-                return true;
-            }
-
-            if ($this->output()->isVerbose()) {
-                $logger->warning(sprintf(
-                    'Retrying %s %s %s out of %s (status code: %s)',
+            $logWarningOnRetry = fn (string $reason) => 0 === $retry
+                ? $logWarning(sprintf(
+                    'HTTP request %s %s has failed: %s',
+                    $request->getMethod(),
+                    $request->getUri(),
+                    $reason
+                ))
+                : $logWarning(sprintf(
+                    'Retrying %s %s %s out of %s (reason: %s)',
                     $request->getMethod(),
                     $request->getUri(),
                     $retry,
                     $maxRetries,
-                    $responseStatusCode
+                    $reason
                 ));
-            }
 
-            if ($retry !== $maxRetries) {
-                return true;
+            if ($exception instanceof ConnectException) {
+                // Retry on connection-related exceptions such as "Connection refused" and "Operation timed out".
+                if ($retry !== $maxRetries) {
+                    $logWarningOnRetry($exception->getMessage());
+
+                    return true;
+                }
+            } elseif (null !== $exception) {
+                throw new TerminusException(
+                    'HTTPS request has failed with error "{error}".',
+                    ['error' => $exception->getMessage()]
+                );
+            } else {
+                if (preg_match('/[2,4]0\d/', $response->getStatusCode())) {
+                    // Do not retry on 20x and 40x responses.
+                    return false;
+                }
+
+                if ($retry !== $maxRetries) {
+                    $logWarningOnRetry(sprintf('status code - %s', $response->getStatusCode()));
+
+                    return true;
+                }
             }
 
             throw new TerminusException(
