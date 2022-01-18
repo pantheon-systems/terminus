@@ -2,14 +2,14 @@
 
 namespace Pantheon\Terminus\Request;
 
+use Exception;
 use GuzzleHttp\Client;
 use GuzzleHttp\ClientInterface;
+use GuzzleHttp\Exception\ConnectException;
 use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Handler\StreamHandler;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Middleware;
-use GuzzleHttp\Psr7\Request as GuzzleRequest;
-use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\RequestOptions;
 use League\Container\ContainerAwareInterface;
 use League\Container\ContainerAwareTrait;
@@ -18,12 +18,13 @@ use Pantheon\Terminus\Exceptions\TerminusException;
 use Pantheon\Terminus\Helpers\LocalMachineHelper;
 use Pantheon\Terminus\Session\SessionAwareInterface;
 use Pantheon\Terminus\Session\SessionAwareTrait;
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ResponseInterface;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 use Robo\Common\IO;
 use Robo\Contract\ConfigAwareInterface;
 use Robo\Contract\IOAwareInterface;
-use Throwable;
 
 /**
  * Class Request.
@@ -138,55 +139,60 @@ class Request implements
         $config = $this->getConfig();
         $maxRetries = $config->get('http_max_retries', 5);
         $logger = $this->logger;
+        $logWarning = function (string $message) use ($logger) {
+            if ($this->output()->isVerbose()) {
+                $logger->warning($message);
+            }
+        };
 
         return function (
             $retry,
-            GuzzleRequest $request,
-            ?Response $response,
-            ?Throwable $t
+            RequestInterface $request,
+            ?ResponseInterface $response = null,
+            ?Exception $exception = null
         ) use (
             $maxRetries,
-            $logger
+            $logWarning
         ) {
-            if (null !== $t) {
-                throw new TerminusException(
-                    'HTTPS request has failed with error "{error}".',
-                    ['error' => $t->getMessage()]
-                );
-            }
-
-            $responseStatusCode = $response->getStatusCode();
-            if (preg_match('/[2,4]0\d/', $responseStatusCode)) {
-                // Do not retry on 20x and 40x responses.
-                return false;
-            }
-
-            if (0 === $retry) {
-                if ($this->output()->isVerbose()) {
-                    $logger->warning(sprintf(
-                        'HTTP request %s %s has failed with the status code %s',
-                        $request->getMethod(),
-                        $request->getUri(),
-                        $responseStatusCode
-                    ));
-                }
-
-                return true;
-            }
-
-            if ($this->output()->isVerbose()) {
-                $logger->warning(sprintf(
-                    'Retrying %s %s %s out of %s (status code: %s)',
+            $logWarningOnRetry = fn (string $reason) => 0 === $retry
+                ? $logWarning(sprintf(
+                    'HTTP request %s %s has failed: %s',
+                    $request->getMethod(),
+                    $request->getUri(),
+                    $reason
+                ))
+                : $logWarning(sprintf(
+                    'Retrying %s %s %s out of %s (reason: %s)',
                     $request->getMethod(),
                     $request->getUri(),
                     $retry,
                     $maxRetries,
-                    $responseStatusCode
+                    $reason
                 ));
-            }
 
-            if ($retry !== $maxRetries) {
-                return true;
+            if ($exception instanceof ConnectException) {
+                // Retry on connection-related exceptions such as "Connection refused" and "Operation timed out".
+                if ($retry !== $maxRetries) {
+                    $logWarningOnRetry($exception->getMessage());
+
+                    return true;
+                }
+            } elseif (null !== $exception) {
+                throw new TerminusException(
+                    'HTTPS request has failed with error "{error}".',
+                    ['error' => $exception->getMessage()]
+                );
+            } else {
+                if (preg_match('/[2,4]0\d/', $response->getStatusCode())) {
+                    // Do not retry on 20x and 40x responses.
+                    return false;
+                }
+
+                if ($retry !== $maxRetries) {
+                    $logWarningOnRetry(sprintf('status code - %s', $response->getStatusCode()));
+
+                    return true;
+                }
             }
 
             throw new TerminusException(
