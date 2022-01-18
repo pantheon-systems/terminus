@@ -7,7 +7,7 @@ use GuzzleHttp\Client;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\ConnectException;
 use GuzzleHttp\Exception\GuzzleException;
-use GuzzleHttp\Handler\CurlHandler;
+use GuzzleHttp\Handler\StreamHandler;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Middleware;
 use GuzzleHttp\RequestOptions;
@@ -110,10 +110,9 @@ class Request implements
     {
         if (!isset($this->client)) {
             $config = $this->getConfig();
-            $stack = HandlerStack::create(new CurlHandler());
-            $stack->push(Middleware::retry(
-                $this->createRetryDecider()
-            ));
+            $stack = HandlerStack::create(new StreamHandler());
+            $stack->push(Middleware::retry($this->createRetryDecider()));
+
             $params = $config->get('client_options') + [
                     'base_uri' => ($base_uri === null) ? $this->getBaseURI() : $base_uri,
                     RequestOptions::VERIFY => (boolean) $config->get('verify_host_cert', true),
