@@ -2,14 +2,14 @@
 
 namespace Pantheon\Terminus\Request;
 
+use Exception;
 use GuzzleHttp\Client;
 use GuzzleHttp\ClientInterface;
+use GuzzleHttp\Exception\ConnectException;
 use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Handler\CurlHandler;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Middleware;
-use GuzzleHttp\Psr7\Request as GuzzleRequest;
-use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\RequestOptions;
 use League\Container\ContainerAwareInterface;
 use League\Container\ContainerAwareTrait;
@@ -18,12 +18,13 @@ use Pantheon\Terminus\Exceptions\TerminusException;
 use Pantheon\Terminus\Helpers\LocalMachineHelper;
 use Pantheon\Terminus\Session\SessionAwareInterface;
 use Pantheon\Terminus\Session\SessionAwareTrait;
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ResponseInterface;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 use Robo\Common\IO;
 use Robo\Contract\ConfigAwareInterface;
 use Robo\Contract\IOAwareInterface;
-use Throwable;
 
 /**
  * Class Request.
@@ -73,8 +74,10 @@ class Request implements
      * @param bool $overwrite
      *   Overwrite the target file if already exists.
      *
-     * @throws TerminusException
      * @throws \GuzzleHttp\Exception\GuzzleException
+     * @throws \Pantheon\Terminus\Exceptions\TerminusException
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
      */
     public function download($url, $target, bool $overwrite = false)
     {
@@ -140,17 +143,31 @@ class Request implements
 
         return function (
             $retry,
-            GuzzleRequest $request,
-            ?Response $response,
-            ?Throwable $t
+            RequestInterface $request,
+            ?ResponseInterface $response = null,
+            ?Exception $exception = null
         ) use (
             $maxRetries,
             $logger
         ) {
-            if (null !== $t) {
+            if (null !== $exception) {
+                if ($exception instanceof ConnectException) {
+                    // Retry on connection-related exceptions such as "Connection refused" and "Operation timed out".
+                    $logger->warning(sprintf(
+                        'Retrying %s %s %s out of %s (reason: %s)',
+                        $request->getMethod(),
+                        $request->getUri(),
+                        $retry,
+                        $maxRetries,
+                        $exception->getMessage()
+                    ));
+
+                    return true;
+                }
+
                 throw new TerminusException(
                     'HTTPS request has failed with error "{error}".',
-                    ['error' => $t->getMessage()]
+                    ['error' => $exception->getMessage()]
                 );
             }
 
