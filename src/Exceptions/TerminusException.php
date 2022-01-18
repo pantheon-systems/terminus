@@ -19,11 +19,11 @@ class TerminusException extends \Exception
     private $raw_message;
 
   /**
-   * Object constructor. Sets context array as replacements property
+   * Object constructor. Sets context array as replacements property.
    *
-   * @param string $message      Message to send when throwing the exception
-   * @param array  $replacements Context array to interpolate into message
-   * @param int    $code         Exit code
+   * @param string $message      Message to send when throwing the exception.
+   * @param array  $replacements Context array to interpolate into message.
+   * @param int    $code         The Exception code.
    */
     public function __construct(
         $message = null,

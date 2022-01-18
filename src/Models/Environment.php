@@ -786,8 +786,7 @@ class Environment extends TerminusModel implements ContainerAwareInterface, Site
         if (!$this->isMultidev()) {
             throw new TerminusException(
                 'The {env} environment is not a multidev environment',
-                ['env' => $this->id],
-                1
+                ['env' => $this->id]
             );
         }
         $default_params = ['updatedb' => false,];

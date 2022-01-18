@@ -82,19 +82,13 @@ class UninstallCommand extends PluginBaseCommand
             );
             $results = $this->runCommand($command);
             if ($results['exit_code'] !== 0) {
-                throw new TerminusException(
-                    'Error removing package in terminus-dependencies.',
-                    []
-                );
+                throw new TerminusException('Error removing package in terminus-dependencies.');
             }
 
             // Then, Update terminus-dependencies composer.
             $results = $this->runComposerUpdate($dependencies_dir);
             if ($results['exit_code'] !== 0) {
-                throw new TerminusException(
-                    'Error running composer update in terminus-dependencies.',
-                    []
-                );
+                throw new TerminusException('Error running composer update in terminus-dependencies.');
             }
 
             // Cleanup path repositories if they exist.
@@ -106,10 +100,7 @@ class UninstallCommand extends PluginBaseCommand
                 );
                 $results = $this->runCommand($command);
                 if ($results['exit_code'] !== 0) {
-                    throw new TerminusException(
-                        'Error removing path repository in ' . basename($dir),
-                        []
-                    );
+                    throw new TerminusException('Error removing path repository in ' . basename($dir));
                 }
             }
 

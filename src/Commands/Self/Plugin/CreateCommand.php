@@ -73,10 +73,7 @@ class CreateCommand extends PluginBaseCommand
             );
             $results = $this->runCommand($command);
             if ($results['exit_code'] !== 0) {
-                throw new TerminusException(
-                    'Error creating plugin project.',
-                    []
-                );
+                throw new TerminusException('Error creating plugin project.');
             }
             $this->renameProject($realpath, $project_name);
             $project_name = $this->getProjectNameFromPath($realpath) . ':@dev';
