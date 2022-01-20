@@ -3,20 +3,22 @@
 namespace Pantheon\Terminus\Friends;
 
 /**
- * Class SitesTrait
+ * Class SitesTrait.
+ *
  * @package Pantheon\Terminus\Friends
  */
 trait SitesTrait
 {
     /**
-     * Returns all sites belonging to this model
+     * Returns all sites belonging to this model.
      *
-     * @return Site[]
+     * @return \Pantheon\Terminus\Models\Site[]
      */
-    public function getSites()
+    public function getSites(): array
     {
         $sites = [];
         foreach ($this->getSiteMemberships()->all() as $membership) {
+            /** @var \Pantheon\Terminus\Models\SiteOrganizationMembership|\Pantheon\Terminus\Models\SiteUserMembership $membership */
             $site = $membership->getSite();
             $sites[$site->id] = $site;
         }
