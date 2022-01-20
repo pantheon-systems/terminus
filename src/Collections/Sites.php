@@ -5,6 +5,7 @@ namespace Pantheon\Terminus\Collections;
 use Exception;
 use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
 use Pantheon\Terminus\Models\Site;
+use Pantheon\Terminus\Models\SiteOrganizationMembership;
 use Pantheon\Terminus\Models\TerminusModel;
 use Pantheon\Terminus\Models\Workflow;
 use Pantheon\Terminus\Session\SessionAwareInterface;
@@ -97,7 +98,7 @@ class Sites extends APICollection implements SessionAwareInterface
             if (is_array($memberships)) {
                 foreach ($memberships as $membership) {
                     /** @var $membership \Pantheon\Terminus\Models\UserOrganizationMembership */
-                    if ($membership->get('role') != 'unprivileged') {
+                    if ($membership->get('role') !== SiteOrganizationMembership::ROLE_UNPRIVILEGED) {
                         $sites[] = $membership->getOrganization()->getSites();
                     }
                 }
