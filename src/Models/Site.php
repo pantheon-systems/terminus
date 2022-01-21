@@ -448,6 +448,7 @@ class Site extends TerminusModel implements ContainerAwareInterface, Organizatio
             'region' => $this->get('preferred_zone_label'),
             'frozen' => $this->isFrozen(),
             'last_frozen_at' => $this->get('last_frozen_at'),
+            'tags' => '',
         ];
         if (isset($this->tags)) {
             $data['tags'] = implode(',', $this->tags->ids());
