@@ -111,7 +111,7 @@ class Sites extends APICollection implements SessionAwareInterface
 
                 $sites[$id]->tags->models = array_merge(
                     $sites[$id]->tags->models ?? [],
-                    $site->tags->models
+                    $site->tags->models ?? [],
                 );
             }
         }
