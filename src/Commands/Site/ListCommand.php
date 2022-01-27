@@ -9,6 +9,9 @@ class ListCommand extends SiteCommand
 {
     use StructuredListTrait;
 
+    private const OPTION_OWNER_ME = 'me';
+    private const OPTION_ORG_ALL = 'all';
+
     /**
      * Displays the list of sites accessible to the currently logged-in user.
      *
@@ -30,7 +33,13 @@ class ListCommand extends SiteCommand
      *     frozen: Is Frozen?
      *     last_frozen_at: Date frozen
      * @default-fields name,id,plan_name,framework,region,owner,created,memberships,frozen
+     *
+     * @param array $options
+     *
      * @return RowsOfFields
+     *
+     * @throws \Pantheon\Terminus\Exceptions\TerminusException
+     * @throws \Pantheon\Terminus\Exceptions\TerminusNotFoundException
      *
      * @option name DEPRECATED Name filter
      * @option org DEPRECATED Organization filter; "all" or an organization's name, label, or ID
@@ -51,7 +60,7 @@ class ListCommand extends SiteCommand
      */
     public function index($options = [
         'name' => null,
-        'org' => 'all',
+        'org' => self::OPTION_ORG_ALL,
         'owner' => null,
         'plan' => null,
         'team' => false,
@@ -61,27 +70,31 @@ class ListCommand extends SiteCommand
         $user = $this->session()->getUser();
         $this->sites()->fetch(
             [
-                'org_id' => (isset($options['org']) && ($options['org'] !== 'all'))
+                'org_id' => self::OPTION_ORG_ALL !== $options['org']
                     ? $user->getOrganizationMemberships()->get($options['org'])->getOrganization()->id
                     : null,
-                'team_only' => isset($options['team']) ? $options['team'] : false,
+                'team_only' => $options['team'],
             ]
         );
 
-        if (isset($options['name']) && !is_null($name = $options['name'])) {
-            $this->sites->filterByName($name);
+        if (null !== $options['name']) {
+            $this->sites->filterByName($options['name']);
         }
-        if (isset($options['plan']) && !is_null($plan = $options['plan'])) {
-            $this->sites->filterByPlanName($plan);
+        if (null !== $options['plan']) {
+            $this->sites->filterByPlanName($options['plan']);
         }
-        if (!is_null($upstream = $options['upstream'])) {
-            $this->sites->filterByUpstream($upstream);
+        if (null !== $options['upstream']) {
+            $this->sites->filterByUpstream($options['upstream']);
         }
-        if (isset($options['owner']) && !is_null($owner = $options['owner'])) {
-            if ($owner == 'me') {
-                $owner = $user->id;
-            }
-            $this->sites->filterByOwner($owner);
+
+        switch ($options['owner']) {
+            case null:
+                break;
+            case self::OPTION_OWNER_ME:
+                $this->sites->filterByOwner($user->id);
+                break;
+            default:
+                $this->sites->filterByOwner($options['owner']);
         }
 
         return $this->getRowsOfFields($this->sites);

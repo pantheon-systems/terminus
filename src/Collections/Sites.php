@@ -5,6 +5,7 @@ namespace Pantheon\Terminus\Collections;
 use Exception;
 use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
 use Pantheon\Terminus\Models\Site;
+use Pantheon\Terminus\Models\SiteOrganizationMembership;
 use Pantheon\Terminus\Models\TerminusModel;
 use Pantheon\Terminus\Models\Workflow;
 use Pantheon\Terminus\Session\SessionAwareInterface;
@@ -67,54 +68,53 @@ class Sites extends APICollection implements SessionAwareInterface
     /**
      * Fetches model data from API and instantiates its model instances.
      *
-     * @param array $arg_options
+     * @param array $options
      *   Options to change the requests made. Elements as follows:
      *     string  org_id    UUID of the organization to retrieve sites for
      *     boolean team_only True to only retrieve team sites
      *
      * @return \Pantheon\Terminus\Collections\Sites
      */
-    public function fetch(array $arg_options = [])
+    public function fetch(array $options = []): Sites
     {
-        $default_options = [
+        $defaultOptions = [
             'org_id' => null,
             'team_only' => false,
         ];
-        $options = array_merge($default_options, $arg_options);
+        $options = array_merge($defaultOptions, $options);
+        $sites = &$this->models;
+        $sites = null === $options['org_id'] ? $this->getUser()->getSites() : [];
 
-        $sites = [];
-        if (is_null($options['org_id'])) {
-            $sites[] = $this->getUser()->getSites();
+        if ($options['team_only']) {
+            return $this;
         }
 
-        if (!$options['team_only']) {
-            $memberships = $this->getUser()->getOrganizationMemberships()->fetch()->all();
-            if (!is_null($org_id = $options['org_id'])) {
-                $memberships = array_filter($memberships, function ($membership) use ($org_id) {
-                    return $membership->id == $org_id;
-                });
-            }
-            if (is_array($memberships)) {
-                foreach ($memberships as $membership) {
-                    /** @var $membership \Pantheon\Terminus\Models\UserOrganizationMembership */
-                    if ($membership->get('role') != 'unprivileged') {
-                        $sites[] = $membership->getOrganization()->getSites();
-                    }
+        $orgMemberships = array_filter(
+            $this->getUser()->getOrganizationMemberships()->fetch()->all(),
+            fn ($orgMembership) => (null === $options['org_id'] || $orgMembership->id === $options['org_id'])
+                && $orgMembership->get('role') !== SiteOrganizationMembership::ROLE_UNPRIVILEGED
+        );
+
+        /** @var \Pantheon\Terminus\Models\SiteOrganizationMembership $orgMembership */
+        foreach ($orgMemberships as $orgMembership) {
+            foreach ($orgMembership->getOrganization()->getSites() as $id => $site) {
+                if (!isset($sites[$id])) {
+                    $sites[$id] = $site;
+                    continue;
                 }
-            }
-        }
 
-        $merged_sites = [];
-        foreach ($sites as $site_group) {
-            foreach ($site_group as $site) {
-                if (!isset($merged_sites[$site->id])) {
-                    $merged_sites[$site->id] = $site;
-                } else {
-                    $merged_sites[$site->id]->memberships[] = $site->memberships[0];
+                $sites[$id]->memberships[] = $site->memberships[0];
+                if (!isset($sites[$id]->tags)) {
+                    $sites[$id]->tags = $site->tags;
+                    continue;
                 }
+
+                $sites[$id]->tags->models = array_merge(
+                    $sites[$id]->tags->models ?? [],
+                    $site->tags->models ?? [],
+                );
             }
         }
-        $this->models = $merged_sites;
 
         return $this;
     }

@@ -292,6 +292,16 @@ abstract class TerminusTestBase extends TestCase
     }
 
     /**
+     * Returns the test user email address.
+     *
+     * @return string
+     */
+    protected function getUserEmail(): string
+    {
+        return getenv('TERMINUS_USER');
+    }
+
+    /**
      * Returns TRUE for a CI environment.
      *
      * @return bool
