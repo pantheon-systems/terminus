@@ -88,7 +88,13 @@ class Terminus implements
         $options = $application->getDefinition()->getOptions();
         $application->getDefinition()
             ->addOption(
-                new InputOption('--define', '-D', InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY, 'Define a configuration item value.', [])
+                new InputOption(
+                    '--define',
+                    '-D',
+                    InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY,
+                    'Define a configuration item value.',
+                    []
+                )
             );
 
         $container = new Container();
