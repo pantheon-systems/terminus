@@ -21,6 +21,11 @@ class SiteOrganizationMembership extends TerminusModel implements
 
     const PRETTY_NAME = 'site-organization membership';
 
+    const ROLE_ADMIN = 'admin';
+    const ROLE_DEVELOPER = 'developer';
+    const ROLE_TEAM_MEMBER = 'team_member';
+    const ROLE_UNPRIVILEGED = 'unprivileged';
+
     /**
      * Remove membership of organization
      *

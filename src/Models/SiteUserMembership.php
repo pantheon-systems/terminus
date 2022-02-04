@@ -21,6 +21,9 @@ class SiteUserMembership extends TerminusModel implements ContainerAwareInterfac
 
     const PRETTY_NAME = 'site-user membership';
 
+    const ROLE_DEVELOPER = 'developer';
+    const ROLE_TEAM_MEMBER = 'team_member';
+
     /**
      * Remove membership, either org or user
      *
