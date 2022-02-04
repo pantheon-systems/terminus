@@ -85,6 +85,13 @@ class Terminus implements
         $this->setInput($input);
         $this->setOutput($output);
         $application = new Application('Terminus', $config->get('version'));
+        $options = $application->getDefinition()->getOptions();
+        if (isset($options['verbose'])) {
+            $originalVerboseOption = $options['verbose'];
+            $description = 'Increase the verbosity of messages: 1 for normal output (-v), 2 for more verbose output (-vv), and 3 for debug (-vvv)';
+            $options['verbose'] = new InputOption($originalVerboseOption->getName(), $originalVerboseOption->getShortcut(), InputOption::VALUE_NONE, $description);
+            $application->getDefinition()->setOptions($options);
+        }
         $container = new Container();
         Robo::configureContainer(
             $container,
