@@ -175,6 +175,16 @@ class Workflow extends TerminusModel implements ContainerAwareInterface, Session
     }
 
     /**
+     * Sets the object which owns this workflow
+     *
+     * @param $owner The object that owns this workflow
+     */
+    public function setOwnerObject($owner)
+    {
+        $this->owner = $owner;
+    }
+
+    /**
      * Returns the status of this workflow
      *
      * @return string

@@ -1,6 +1,9 @@
 # Change Log
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org)
 
+## 2.6.6-dev
+- Fix bug where `site:delete` command always fails (#2323)
+
 ## 2.6.5 2021-12-17
 - Change env:wake to use https on the platform domain (#2287)
 
