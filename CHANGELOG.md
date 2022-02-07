@@ -3,6 +3,7 @@ All notable changes to this project will be documented in this file. This projec
 
 ## 3.0.5-dev
 - Fix bug where `site:delete` command always fails (#2324)
+- Add GitHub Pull Request Template and move Issue Template (#2325)
 
 ## 3.0.4 - 2022-01-18
 
