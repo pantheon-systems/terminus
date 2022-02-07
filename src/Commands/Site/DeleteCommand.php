@@ -32,6 +32,10 @@ class DeleteCommand extends SiteCommand
         }
 
         $workflow = $site->delete();
+
+        // We need to query the user workflows API to watch the delete_site workflow, since the site object won't exist anymore
+        $workflow->setOwnerObject($this->session()->getUser());
+
         try {
             $this->processWorkflow($workflow);
             $message = $workflow->getMessage();
