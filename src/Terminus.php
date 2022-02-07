@@ -30,7 +30,7 @@ use Robo\Contract\ConfigAwareInterface;
 use Robo\Contract\IOAwareInterface;
 use Robo\Robo;
 use Robo\Runner as RoboRunner;
-use Robo\Application;
+use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Input\ArgvInput;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -85,6 +85,18 @@ class Terminus implements
         $this->setInput($input);
         $this->setOutput($output);
         $application = new Application('Terminus', $config->get('version'));
+        $options = $application->getDefinition()->getOptions();
+        $application->getDefinition()
+            ->addOption(
+                new InputOption(
+                    '--define',
+                    '-D',
+                    InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY,
+                    'Define a configuration item value.',
+                    []
+                )
+            );
+
         $container = new Container();
         Robo::configureContainer(
             $container,
