@@ -120,6 +120,7 @@ class Terminus implements
                 $application->getVersion(),
                 'pantheon-systems/terminus'
             );
+            $selfUpdateCommand->ignorePharRunningCheck();
             $application->add($selfUpdateCommand);
         }
 
