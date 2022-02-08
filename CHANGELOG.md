@@ -1,8 +1,20 @@
 # Change Log
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org)
 
-## 3.0.5-dev
+## 3.0.5 - 2022-02-08
+
+### Added
+- Added the `--element` usage for `backup:create` (#2317)
+- Add GitHub Pull Request Template and move Issue Template (#2325)
+
+### Changed
+- Replace git:// urls with https:// urls (#2319)
+
+### Fixed
+- Fix bug where `site:list` was unable to properly filter by tags when part of site team (#2316)
+- Fix bug where `--simulate` option was being ignored (#2321)
 - Fix bug where `site:delete` command always fails (#2324)
+- Fix bug where `self:update` reports it only works with the phar version of Terminus (#2328)
 
 ## 3.0.4 - 2022-01-18
 
