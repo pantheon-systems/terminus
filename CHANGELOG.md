@@ -1,6 +1,8 @@
 # Change Log
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org)
 
+## 2.6.7-dev
+
 ## 2.6.6 2022-02-07
 - Replace git:// urls with https:// urls (#2318)
 - Fix bug where `site:delete` command always fails (#2323)
