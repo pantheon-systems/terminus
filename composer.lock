@@ -517,16 +517,16 @@
         },
         {
             "name": "consolidation/self-update",
-            "version": "2.0.3",
+            "version": "2.0.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/consolidation/self-update.git",
-                "reference": "117dcc9494dc970a6ae307103c41d654e6253bc4"
+                "reference": "48d3bfac6d37b10c8ddae6e366ea79db5594d918"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/consolidation/self-update/zipball/117dcc9494dc970a6ae307103c41d654e6253bc4",
-                "reference": "117dcc9494dc970a6ae307103c41d654e6253bc4",
+                "url": "https://api.github.com/repos/consolidation/self-update/zipball/48d3bfac6d37b10c8ddae6e366ea79db5594d918",
+                "reference": "48d3bfac6d37b10c8ddae6e366ea79db5594d918",
                 "shasum": ""
             },
             "require": {
@@ -566,9 +566,9 @@
             "description": "Provides a self:update command for Symfony Console applications.",
             "support": {
                 "issues": "https://github.com/consolidation/self-update/issues",
-                "source": "https://github.com/consolidation/self-update/tree/2.0.3"
+                "source": "https://github.com/consolidation/self-update/tree/2.0.4"
             },
-            "time": "2021-12-30T19:08:32+00:00"
+            "time": "2022-02-08T16:22:44+00:00"
         },
         {
             "name": "consolidation/site-alias",
