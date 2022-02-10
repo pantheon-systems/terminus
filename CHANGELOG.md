@@ -3,6 +3,9 @@ All notable changes to this project will be documented in this file. This projec
 
 ## 3.0.6-dev
 
+### Fixed
+- Fix bug where `self:console` was not working because psy/psysh was a dev dependency.
+
 ## 3.0.5 - 2022-02-08
 
 ### Added
