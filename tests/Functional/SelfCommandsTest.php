@@ -26,7 +26,9 @@ class SelfCommandsTest extends TerminusTestBase
         $this->assertEquals('No update available', $output);
 
         // Test that the command works when plugins are installed.
-        $pluginList = $this->terminusWithStderrRedirected('self:plugin:install pantheon-systems/terminus-plugin-example');
+        $pluginList = $this->terminusWithStderrRedirected(
+            'self:plugin:install pantheon-systems/terminus-plugin-example'
+        );
         $this->assertStringContainsString(
             'Installed pantheon-systems/terminus-plugin-example',
             $pluginList,
