@@ -25,6 +25,7 @@
     "czproject/git-php": "^4.0",
     "guzzlehttp/guzzle": "^7.0",
     "justinrainbow/json-schema": "^5.2",
+    "league/container": "^3.4",
     "monolog/monolog": "^2.2",
     "psy/psysh": "^0.10.8",
     "rogervila/array-diff-multidimensional": "^2.0",
