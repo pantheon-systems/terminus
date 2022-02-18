@@ -42,7 +42,7 @@ class UpstreamStatus extends TerminusModel implements EnvironmentInterface
      */
     public function getStatus()
     {
-        return $this->hasUpdates() ? 'outdated' : 'current';
+        return $this->hasUpdates() || $this->hasComposerUpdates() ? 'outdated' : 'current';
     }
 
     /**
@@ -84,6 +84,17 @@ class UpstreamStatus extends TerminusModel implements EnvironmentInterface
     public function hasCode()
     {
         return $this->getUpdates()->has_code;
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasComposerUpdates()
+    {
+        $composerUpdates = $this->getComposerUpdates();
+        return !empty($composerUpdates->added_dependencies) ||
+            !empty($composerUpdates->updated_dependencies) ||
+            !empty($composerUpdates->removed_dependencies);
     }
 
     /**
