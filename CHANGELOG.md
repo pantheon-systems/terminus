@@ -1,10 +1,14 @@
 # Change Log
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org)
 
-## 3.0.6-dev
+## 3.0.6 - 2022-02-18
+
+### Changed
+- Make upstream status report on composer updates (#2338)
 
 ### Fixed
-- Fix bug where `self:console` was not working because psy/psysh was a dev dependency.
+- Fix bug where `self:console` was not working because psy/psysh was a dev dependency. (#2332)
+- Pin to league/container ^3 to avoid fatal errors (#2337)
 
 ## 3.0.5 - 2022-02-08
 
