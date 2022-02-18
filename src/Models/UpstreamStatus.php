@@ -87,9 +87,11 @@ class UpstreamStatus extends TerminusModel implements EnvironmentInterface
     }
 
     /**
+     * Determines whether there are any composer updates to be applied.
+     *
      * @return bool
      */
-    public function hasComposerUpdates()
+    public function hasComposerUpdates(): bool
     {
         $composerUpdates = $this->getComposerUpdates();
         return !empty($composerUpdates->added_dependencies) ||
