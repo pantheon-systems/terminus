@@ -120,7 +120,7 @@ class EnvCommandsTest extends TerminusTestBase
                 'additions' => '1',
             ],
         ];
-        $this->assertTerminusCommandResultEqualsInAttempts(function () use ($siteEnv) {
+        $this->assertCallbackResultEqualsInAttempts(function () use ($siteEnv) {
             return $this->terminusJsonResponse(sprintf('env:diffstat %s', $siteEnv));
         }, $expectedDiff);
 
@@ -135,7 +135,7 @@ class EnvCommandsTest extends TerminusTestBase
         sleep(60);
 
         // Check the diff - no diff is expected.
-        $this->assertTerminusCommandResultEqualsInAttempts(function () use ($siteEnv) {
+        $this->assertCallbackResultEqualsInAttempts(function () use ($siteEnv) {
             return $this->terminusJsonResponse(sprintf('env:diffstat %s', $siteEnv));
         }, []);
     }

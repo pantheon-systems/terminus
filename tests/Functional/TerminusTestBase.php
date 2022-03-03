@@ -130,18 +130,18 @@ abstract class TerminusTestBase extends TestCase
     }
 
     /**
-     * Asserts terminus command execution result is equal to the expected in multiple attempts.
+     * Asserts the callback result is equal to the expected value in multiple attempts.
      *
      * @param callable $callable
-     *   The callable which provides the actual terminus command execution result.
+     *   The callable to return an actual value.
      * @param mixed $expected
-     *   The expected result.
+     *   The expected value.
      * @param int $attempts
      *   The maximum number of attempts.
      * @param int $intervalSeconds
      *   The interval between attempts in seconds.
      */
-    protected function assertTerminusCommandResultEqualsInAttempts(
+    protected function assertCallbackResultEqualsInAttempts(
         callable $callable,
         $expected,
         int $attempts = 24,
@@ -170,7 +170,7 @@ abstract class TerminusTestBase extends TestCase
      */
     protected function assertTerminusCommandSucceedsInAttempts(string $command, int $attempts = 3): void
     {
-        $this->assertTerminusCommandResultEqualsInAttempts(
+        $this->assertCallbackResultEqualsInAttempts(
             fn() => static::callTerminus(sprintf('%s --yes', $command))[1],
             0,
             $attempts

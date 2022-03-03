@@ -70,7 +70,7 @@ class BackupCommandsTest extends TerminusTestBase
         $siteEnv = $this->getSiteEnv();
 
         $this->terminus(sprintf('backup:automatic:disable %s', $siteEnv));
-        $this->assertTerminusCommandResultEqualsInAttempts(function () use ($siteEnv) {
+        $this->assertCallbackResultEqualsInAttempts(function () use ($siteEnv) {
             return $this->terminusJsonResponse(sprintf('backup:automatic:info %s', $siteEnv));
         }, [
             'daily_backup_hour' => null,
@@ -79,7 +79,7 @@ class BackupCommandsTest extends TerminusTestBase
         ]);
 
         $this->terminus(sprintf('backup:automatic:enable %s', $siteEnv));
-        $this->assertTerminusCommandResultEqualsInAttempts(function () use ($siteEnv) {
+        $this->assertCallbackResultEqualsInAttempts(function () use ($siteEnv) {
             // Count non-empty elements in the result which is expected to be exactly 3
             // ("daily_backup_hour", "weekly_backup_day" and "expiry").
             return count(array_filter($this->terminusJsonResponse(sprintf('backup:automatic:info %s', $siteEnv))));
