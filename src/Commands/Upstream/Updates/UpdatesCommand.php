@@ -57,8 +57,10 @@ abstract class UpdatesCommand extends TerminusCommand implements SiteAwareInterf
      */
     protected function checkUpstreamUpdates($env)
     {
-        $workflow = $env->getWorkflows()->create('check_upstream_updates');
-        $this->processWorkflow($workflow);
+        if ($env->isBuildStepEnabled()) {
+            $workflow = $env->getWorkflows()->create('check_upstream_updates');
+            $this->processWorkflow($workflow);
+        }
     }
 
     /**

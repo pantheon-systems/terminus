@@ -25,9 +25,7 @@ class StatusCommand extends UpdatesCommand
     public function status($site_env)
     {
         $environment = $this->getEnv($site_env);
-        if ($environment->isBuildStepEnabled()) {
-          $this->checkUpstreamUpdates($environment);
-        }
+        $this->checkUpstreamUpdates($environment);
         return $environment->getUpstreamStatus()->getStatus();
     }
 }
