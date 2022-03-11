@@ -6,6 +6,7 @@ use Pantheon\Terminus\Commands\TerminusCommand;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 use Pantheon\Terminus\Exceptions\TerminusException;
+use Pantheon\Terminus\Commands\WorkflowProcessingTrait;
 
 /**
  * Class UpdatesCommand.
@@ -15,6 +16,7 @@ use Pantheon\Terminus\Exceptions\TerminusException;
 abstract class UpdatesCommand extends TerminusCommand implements SiteAwareInterface
 {
     use SiteAwareTrait;
+    use WorkflowProcessingTrait;
 
     /**
      * Return the upstream for the given site
@@ -46,6 +48,17 @@ abstract class UpdatesCommand extends TerminusCommand implements SiteAwareInterf
     {
         $updates = $this->getUpstreamUpdates($env);
         return property_exists($updates, 'update_log') ? (array)$updates->update_log : [];
+    }
+
+    /**
+     * Check upstream updates for given environment.
+     *
+     * @param \Pantheon\Terminus\Models\Environment $env.
+     */
+    protected function checkUpstreamUpdates($env)
+    {
+        $workflow = $env->getWorkflows()->create('check_upstream_updates');
+        $this->processWorkflow($workflow);
     }
 
     /**

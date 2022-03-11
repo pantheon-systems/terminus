@@ -63,7 +63,7 @@ class UpstreamStatus extends TerminusModel implements EnvironmentInterface
     }
 
     /**
-     * Retrives composer dependecy updates
+     * Retrives composer dependency updates
      *
      * @return object
      */
