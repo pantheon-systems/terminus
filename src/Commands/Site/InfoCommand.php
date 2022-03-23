@@ -70,7 +70,8 @@ class InfoCommand extends SiteCommand
     /**
      * Get a user friendly framework name.
      */
-    protected function getFrameworkFriendlyName(string $framework): string {
+    protected function getFrameworkFriendlyName(string $framework): string
+    {
         switch ($framework) {
             case 'drupal':
                 return 'Drupal 6 or 7';
