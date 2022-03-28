@@ -89,6 +89,11 @@ class SiteCommandsTest extends TerminusTestBase
         $this->assertArrayHasKey('organization', $siteInfo);
         $this->assertEquals($this->getOrg(), $siteInfo['organization']);
         $this->assertArrayHasKey('framework', $siteInfo);
-        $this->assertEquals('Drupal 8 or later', $siteInfo['framework']);
+        // Format json prints raw value.
+        $this->assertEquals('drupal8', $siteInfo['framework']);
+
+        // Format table prints processed value.
+        $siteInfoTable = $this->terminus(sprintf('site:info %s', $this->mockSiteName));
+        $this->assertStringContainsString('Drupal 8 or later', $siteInfoTable);
     }
 }
