@@ -88,5 +88,7 @@ class SiteCommandsTest extends TerminusTestBase
         $this->assertIsArray($siteInfo);
         $this->assertArrayHasKey('organization', $siteInfo);
         $this->assertEquals($this->getOrg(), $siteInfo['organization']);
+        $this->assertArrayHasKey('framework', $siteInfo);
+        $this->assertEquals('Drupal 8 or later', $siteInfo['framework']);
     }
 }
