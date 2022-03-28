@@ -5,6 +5,7 @@ namespace Pantheon\Terminus\Commands\Site;
 use Consolidation\OutputFormatters\StructuredData\PropertyList;
 use Pantheon\Terminus\Commands\StructuredListTrait;
 use Pantheon\Terminus\Models\TerminusModel;
+use Consolidation\OutputFormatters\StructuredData\AbstractStructuredList;
 
 /**
  * Class InfoCommand
@@ -54,31 +55,36 @@ class InfoCommand extends SiteCommand
      */
     public function getPropertyList(TerminusModel $model)
     {
-        $data = $model->serialize();
-        if ($this->input()->getOption('format') === 'table') {
-            // Manipulate framework to make it more user-friendly.
-            if (isset($data['framework'])) {
-                $data['framework'] = $this->getFrameworkFriendlyName($data['framework']);
-            }
-        }
-        $list = new PropertyList($data);
+        $list = new PropertyList($model->serialize());
         $list = $this->addBooleanRenderer($list);
         $list = $this->addDatetimeRenderer($list, $model::$date_attributes);
+        $list = $this->addFrameworkRenderer($list);
         return $list;
     }
 
     /**
-     * Get a user friendly framework name.
+     * Adds a renderer function to the structured list to format framework when rendering
+     *
+     * @param AbstractStructuredList $table
+     * @return RowsOfFields
      */
-    protected function getFrameworkFriendlyName(string $framework): string
+    private function addFrameworkRenderer(AbstractStructuredList $list)
     {
-        switch ($framework) {
-            case 'drupal':
-                return 'Drupal 6 or 7';
-            case 'drupal8':
-                return 'Drupal 8 or later';
-            default:
-                return $framework;
-        }
+        $list->addRendererFunction(
+            function ($key, $cell_data) {
+                if (!is_numeric($key) && $key === 'framework') {
+                    switch ($cell_data) {
+                        case 'drupal':
+                            return 'Drupal 6 or 7';
+                        case 'drupal8':
+                            return 'Drupal 8 or later';
+                        default:
+                            return $cell_data;
+                    }
+                }
+                return $cell_data;
+            }
+        );
+        return $list;
     }
 }
