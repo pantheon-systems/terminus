@@ -1,7 +1,15 @@
 # Change Log
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org)
 
-## 3.0.7-dev
+## 3.0.7 - 2022-03-29
+
+### Changed
+- Change alias for local:commitAndPush to lcp to avoid aliases conflict (#2341)
+- Make framework value more human friendly for site:info command (#2351)
+
+### Fixed
+- Check upstream updates before getting upstream status to get composer updates info (#2349)
+- Fix bug that didn't allow merging a multidev env with only numbers in the name (#2350)
 
 ## 3.0.6 - 2022-02-18
 
