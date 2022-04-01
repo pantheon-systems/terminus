@@ -110,9 +110,9 @@ class Environment extends TerminusModel implements ContainerAwareInterface, Site
      *
      * @return Workflow
      */
-    public function clearCache()
+    public function clearCache(array $options = [])
     {
-        return $this->getWorkflows()->create('clear_cache', ['params' => ['framework_cache' => true,],]);
+        return $this->getWorkflows()->create('clear_cache', ['params' => $options,]);
     }
 
     /**
