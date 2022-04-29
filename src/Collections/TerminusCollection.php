@@ -178,6 +178,40 @@ abstract class TerminusCollection implements ContainerAwareInterface, RequestAwa
     }
 
     /**
+     * Determines whether the models contain any object provided a list of IDs
+     *
+     * @param array $ids UUIDs of object to seek
+     * @return boolean True if object is found, false if it is not
+     */
+    public function containsAny($ids)
+    {
+        $ids = array_flip($ids);
+        return !is_null($models = $this->all()) && !empty(array_intersect_key($ids, $models));
+    }
+
+    /**
+     * Determines whether the models contain all objects provided a list of IDs
+     *
+     * @param array $ids UUIDs of object to seek
+     * @return boolean True if object is found, false if it is not
+     */
+    public function containsAll($ids)
+    {
+        $ids = array_flip($ids);
+        return !is_null($models = $this->all()) && empty(array_diff(array_keys($ids), array_keys($models)));
+    }
+
+    /**
+     * Determines whether the models contain no objects.
+     *
+     * @return boolean False if object is found, True if it is not
+     */
+    public function containsNone()
+    {
+        return !is_null($models = $this->all()) && empty($models);
+    }
+
+    /**
      * List Model IDs
      *
      * @return string[] Array of all model IDs
@@ -218,5 +252,19 @@ abstract class TerminusCollection implements ContainerAwareInterface, RequestAwa
     public function setData(array $data = [])
     {
         $this->data = $data;
+    }
+
+    /**
+     * Convert comma-separated string into an array.
+     * @param string $input
+     * @return array
+     */
+    public function splitString(string $input = "")
+    {
+        /**
+         * array_map to trim each item
+         * array_filter to always return an array, even if empty
+         */
+        return array_filter(array_map('trim', explode(',', $input)));
     }
 }

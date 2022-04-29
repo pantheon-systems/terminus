@@ -164,17 +164,30 @@ class Sites extends APICollection implements SessionAwareInterface
     }
 
     /**
-     * Filters sites list by tag.
+     * Filters sites list by tags separated by a comma (ANY).
      *
      * @param string $tag
-     *   A tag to filter by.
+     *   Comma-separated list of tags to filter by.
      *
      * @return \Pantheon\Terminus\Collections\Sites
      */
     public function filterByTag($tag)
     {
         return $this->filter(function ($site) use ($tag) {
-            return $site->tags->has($tag);
+            return (empty($tag)) ? $site->tags->containsNone() : $site->tags->containsAny($this->splitString($tag));
+        });
+    }
+
+    /**
+     * Filters sites list by tags separated by a comma (ALL).
+     *
+     * @param string $tags Comma-separated list of tags to filter by
+     * @return Sites
+     */
+    public function filterByTags($tags)
+    {
+        return $this->filter(function ($site) use ($tags) {
+            return (empty($tags)) ? $site->tags->containsNone() : $site->tags->containsAll($this->splitString($tags));
         });
     }
 

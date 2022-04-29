@@ -44,10 +44,11 @@ class ListCommand extends TerminusCommand implements SiteAwareInterface
      *
      * @usage <organization> Displays the list of sites associated with <organization>.
      * @usage <organization> --plan=<plan> Displays the list of sites associated with <organization> having the plan named <plan>.
-     * @usage <organization> --tag=<tag> Displays the list of sites associated with <organization> that have the <tag> tag.
+     * @usage <organization> --tag=<tag> Displays the list of sites associated with <organization> that have ANY <tag> tag.
+     * @usage <organization> --tags=<tags> Displays the list of sites associated with <organization> that have ALL <tags> tags.
      * @usage <organization> --upstream=<upstream> Displays the list of sites associated with <organization> with the upstream having UUID <upstream>.
      */
-    public function listSites($organization, $options = ['plan' => null, 'tag' => null, 'upstream' => null,])
+    public function listSites($organization, $options = ['plan' => null, 'tag' => null, 'tags' => null, 'upstream' => null,])
     {
         $org = $this->session()->getUser()->getOrganizationMemberships()->get($organization)->getOrganization();
         $this->sites->fetch(['org_id' => $org->id,]);
@@ -56,6 +57,9 @@ class ListCommand extends TerminusCommand implements SiteAwareInterface
         }
         if (!is_null($tag = $options['tag'])) {
             $this->sites->filterByTag($tag);
+        }
+        if (!is_null($tags = $options['tags'])) {
+            $this->sites->filterByTags($tags);
         }
         if (!is_null($upstream = $options['upstream'])) {
             $this->sites->filterByUpstream($upstream);
