@@ -229,7 +229,7 @@ abstract class SSHBaseCommand extends TerminusCommand implements SiteAwareInterf
      *
      * @return \Closure
      */
-    private function getOutputCallback()
+    protected function getOutputCallback()
     {
         $output = $this->output();
         $stderr = $this->stderr();

@@ -22,6 +22,8 @@ use Pantheon\Terminus\Request\RequestAwareInterface;
 use Pantheon\Terminus\Session\Session;
 use Pantheon\Terminus\Session\SessionAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareInterface;
+use Pantheon\Terminus\SecretsApi\SecretsApi;
+use Pantheon\Terminus\SecretsApi\SecretsApiAwareInterface;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 use Robo\Common\IO;
@@ -185,6 +187,11 @@ class Terminus implements
         $container->add(PluginDiscovery::class);
         $container->add(PluginInfo::class);
 
+        // Secrets API.
+        $container->share('secrets', SecretsApi::class);
+        $container->inflector(SecretsApiAwareInterface::class)
+          ->invokeMethod('setSecretsApi', ['secrets']);
+
         $container->share('sites', Sites::class);
         $container->inflector(SiteAwareInterface::class)
             ->invokeMethod('setSites', ['sites']);
@@ -302,6 +309,7 @@ class Terminus implements
             'Pantheon\\Terminus\\Commands\\Branch\\ListCommand',
             'Pantheon\\Terminus\\Commands\\Connection\\InfoCommand',
             'Pantheon\\Terminus\\Commands\\Connection\\SetCommand',
+            'Pantheon\\Terminus\\Commands\\CustomerSecrets\\CustomerSecretsListCommand',
             'Pantheon\\Terminus\\Commands\\Dashboard\\ViewCommand',
             'Pantheon\\Terminus\\Commands\\Domain\\AddCommand',
             'Pantheon\\Terminus\\Commands\\Domain\\DNSCommand',

@@ -37,10 +37,26 @@ trait StructuredListTrait
     public function getRowsOfFields(TerminusCollection $collection, array $options = [])
     {
         $data = $collection->serialize();
+        $model_name = $collection->getCollectedClass();
+        $model = new $model_name();
+        $date_attributes = $model::$date_attributes;
+        return $this->prepareTableFromData($data, $collection::PRETTY_NAME, $options, $date_attributes);
+    }
+
+    /**
+     * @param array $data Data already serialized (i.e. not a TerminusCollection)
+     * @param array $options Elements as follow
+     *        string $message Message to emit if the collection is empty.
+     *        array $message_options Values to interpolate into the error message.
+     *        function $sort A function to sort the data using
+     * @return RowsOfFields Returns a RowsOfFields-type object with applied filters
+     */
+    protected function prepareTableFromData(array $data, string $collection_name, array $option = [], $date_attributes = [])
+    {
         if (count($data) === 0) {
             $message = isset($options['message'])
                 ? $options['message']
-                : 'You have no ' . $collection::PRETTY_NAME . '.';
+                : 'You have no ' . $collection_name . '.';
             $options = isset($options['message_options']) ? $options['message_options'] : [];
             $this->log()->warning($message, $options);
         }
@@ -50,12 +66,23 @@ trait StructuredListTrait
         }
 
         $table = new RowsOfFields($data);
-        $model_name = $collection->getCollectedClass();
-        $model = new $model_name();
-        $date_attributes = $model::$date_attributes;
         $table = $this->addBooleanRenderer($table);
         $table = $this->addDatetimeRenderer($table, $date_attributes);
         return $table;
+    }
+
+    /**
+     * @param array $data Data already serialized (i.e. not a TerminusCollection)
+     * @param string $items_name Name of the collections in the data
+     * @param array $options Elements as follow
+     *        string $message Message to emit if the collection is empty.
+     *        array $message_options Values to interpolate into the error message.
+     *        function $sort A function to sort the data using
+     * @return RowsOfFields Returns a RowsOfFields-type object with applied filters
+     */
+    public function getRowsOfFieldsFromSerializedData(array $data, string $items_name, array $options = [])
+    {
+        return $this->prepareTableFromData($data, $items_name, $options);
     }
 
     /**
