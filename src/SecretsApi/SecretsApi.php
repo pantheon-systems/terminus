@@ -9,11 +9,13 @@ class SecretsApi {
      *
      * @param string $site_id
      *   Site id to get secrets for.
+     * @param bool $debug
+     *   Whether to return the secrets in debug mode.
      *
      * @return array
      *   Secrets for given site.
      */
-    public function listSecrets($site_id): array
+    public function listSecrets(string $site_id, bool $debug = false): array
     {
         return [
             [

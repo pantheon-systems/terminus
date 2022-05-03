@@ -48,7 +48,7 @@ class CustomerSecretsListCommand extends CustomerSecretsBaseCommand implements S
     public function listSecrets($site_id, array $options = ['debug' => false,])
     {
         if ($this->getSite($site_id)) {
-            $secrets = $this->secretsApi->listSecrets($site_id);
+            $secrets = $this->secretsApi->listSecrets($site_id, $options['debug']);
 
             return $this->getRowsOfFieldsFromSerializedData($secrets, 'customer secrets');
         }
