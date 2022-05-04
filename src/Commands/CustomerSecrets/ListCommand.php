@@ -12,12 +12,12 @@ use Pantheon\Terminus\Site\SiteAwareInterface;
 use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
 
 /**
- * Class CustomerSecretsListCommand
+ * Class ListCommand
  * List secrets for a given site.
  *
  * @package Pantheon\Terminus\Commands\CustomerSecrets
  */
-class CustomerSecretsListCommand extends CustomerSecretsBaseCommand implements SiteAwareInterface
+class ListCommand extends CustomerSecretsBaseCommand implements SiteAwareInterface
 {
     use StructuredListTrait;
     use SiteAwareTrait;
