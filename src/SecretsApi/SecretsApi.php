@@ -6,6 +6,11 @@ class SecretsApi
 {
 
     /**
+     * Used only for testing purposes. May be removed later.
+     */
+    protected $secrets = [];
+
+    /**
      * List secrets for a given site.
      *
      * @param string $site_id
@@ -18,6 +23,12 @@ class SecretsApi
      */
     public function listSecrets(string $site_id, bool $debug = false): array
     {
+        if (getenv('TERMINUS_TESTING_RUNTIME_ENV')) {
+            if (file_exists('/tmp/secrets.json')) {
+                $this->secrets = json_decode(file_get_contents('/tmp/secrets.json'), true);
+            }
+            return array_values($this->secrets);
+        }
         return [
             [
                 'name' => 'foo',
@@ -53,6 +64,16 @@ class SecretsApi
         array $scopes = ['integrated-composer'],
         bool $debug = false
     ): bool {
+        if (getenv('TERMINUS_TESTING_RUNTIME_ENV')) {
+            if (file_exists('/tmp/secrets.json')) {
+                $this->secrets = json_decode(file_get_contents('/tmp/secrets.json'), true);
+            }
+            $this->secrets[$name] = [
+                'name' => $name,
+                'value' => $value,
+            ];
+            file_put_contents('/tmp/secrets.json', json_encode($this->secrets));
+        }
         return true;
     }
 
@@ -71,6 +92,15 @@ class SecretsApi
      */
     public function deleteSecret(string $site_id, string $name, bool $debug = false): bool
     {
+        if (getenv('TERMINUS_TESTING_RUNTIME_ENV')) {
+            if (file_exists('/tmp/secrets.json')) {
+                $this->secrets = json_decode(file_get_contents('/tmp/secrets.json'), true);
+            }
+            if (isset($this->secrets[$name])) {
+                unset($this->secrets[$name]);
+                file_put_contents('/tmp/secrets.json', json_encode($this->secrets));
+            }
+        }
         return true;
     }
 }
