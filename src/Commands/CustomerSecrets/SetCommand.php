@@ -6,7 +6,6 @@ use Pantheon\Terminus\Commands\TerminusCommand;
 use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
 use Pantheon\Terminus\Exceptions\TerminusException;
 use Pantheon\Terminus\SecretsApi\SecretsApiAwareTrait;
-use Pantheon\Terminus\Commands\StructuredListTrait;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
@@ -19,7 +18,6 @@ use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
  */
 class SetCommand extends CustomerSecretsBaseCommand implements SiteAwareInterface
 {
-    use StructuredListTrait;
     use SiteAwareTrait;
 
     /**
