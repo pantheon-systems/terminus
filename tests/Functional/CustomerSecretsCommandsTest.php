@@ -31,7 +31,12 @@ class CustomerSecretsCommandsTest extends TerminusTestBase
         $this->assertCommandExists('customer-secrets:delete');
 
         // Set secret.
-        $this->terminus(sprintf('customer-secrets:set %s %s %s', $this->getSiteName(), self::SECRET_NAME, self::SECRET_VALUE));
+        $this->terminus(sprintf(
+            'customer-secrets:set %s %s %s',
+            $this->getSiteName(),
+            self::SECRET_NAME,
+            self::SECRET_VALUE
+        ));
 
         // List secrets.
         $secretsList = $this->terminusJsonResponse(sprintf('customer-secrets:list %s', $this->getSiteName()));
@@ -60,6 +65,5 @@ class CustomerSecretsCommandsTest extends TerminusTestBase
             }
         }
         $this->assertFalse($secretFound, 'Secret found in list after it was deleted.');
-
     }
 }
