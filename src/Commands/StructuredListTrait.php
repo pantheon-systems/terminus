@@ -39,6 +39,7 @@ trait StructuredListTrait
         $data = $collection->serialize();
         var_dump($collection->getCollectedClass());
         var_dump(get_class($collection));
+        ob_flush();
         $collection_name = $collection::PRETTY_NAME;
         $model_name = $collection->getCollectedClass();
         $model = new $model_name();
