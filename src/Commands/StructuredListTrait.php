@@ -78,14 +78,13 @@ trait StructuredListTrait
 
     /**
      * @param array $data Data already serialized (i.e. not a TerminusCollection)
-     * @param string $items_name Name of the collections in the data
      * @param array $options Elements as follow
      *        string $message Message to emit if the collection is empty.
      *        array $message_options Values to interpolate into the error message.
      *        function $sort A function to sort the data using
      * @return RowsOfFields Returns a RowsOfFields-type object with applied filters
      */
-    public function getRowsOfFieldsFromSerializedData(array $data, string $items_name, array $options = [])
+    public function getRowsOfFieldsFromSerializedData(array $data, array $options = [])
     {
         return $this->prepareTableFromData($data, $options);
     }
