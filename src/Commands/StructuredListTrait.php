@@ -37,10 +37,11 @@ trait StructuredListTrait
     public function getRowsOfFields(TerminusCollection $collection, array $options = [])
     {
         $data = $collection->serialize();
+        $collection_name = $collection::PRETTY_NAME;
         $model_name = $collection->getCollectedClass();
         $model = new $model_name();
         $date_attributes = $model::$date_attributes;
-        return $this->prepareTableFromData($data, $collection::PRETTY_NAME, $options, $date_attributes);
+        return $this->prepareTableFromData($data, $collection_name, $options, $date_attributes);
     }
 
     /**
