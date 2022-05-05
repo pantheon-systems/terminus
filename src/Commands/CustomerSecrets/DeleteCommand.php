@@ -13,46 +13,40 @@ use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
 
 /**
  * Class SetCommand
- * Set secret for a given site.
+ * Delete secret by name.
  *
  * @package Pantheon\Terminus\Commands\CustomerSecrets
  */
-class SetCommand extends CustomerSecretsBaseCommand implements SiteAwareInterface
+class DeleteCommand extends CustomerSecretsBaseCommand implements SiteAwareInterface
 {
     use StructuredListTrait;
     use SiteAwareTrait;
 
     /**
-     * Set secret for a specific site.
+     * Delete given secret for a specific site.
      *
      * @authorize
      *
-     * @command customer-secrets:set
-     * @aliases customer-secrets-set
+     * @command customer-secrets:delete
+     * @aliases customer-secrets-delete
      *
-     * @option string $type Secret type
-     * @option array $scope Secret scope
      * @option boolean $debug Run command in debug mode
      * @param string $site_id The name or UUID of a site to retrieve information on
      * @param string $name The secret name
-     * @param string $value The secret value
      * @param array $options
      *
-     * @usage <site> <name> <value> Set secret <name> with value <value>.
-     * @usage <site> <name> <value> --debug Set given secret (debug mode).
+     * @usage <site> <name> Delete given secret.
+     * @usage <site> <name> --debug Delete given secret (debug mode).
      *
      * @throws \Pantheon\Terminus\Exceptions\TerminusException
      */
-    public function setSecret($site_id, string $name, string $value, array $options = [
-        'type' => 'variable',
-        'scope' => ['integrated-composer'],
-        'debug' => false,
-    ]) {
+    public function deleteSecret($site_id, string $name, array $options = ['debug' => false])
+    {
         if ($this->getSite($site_id)) {
-            if ($this->secretsApi->setSecret($site_id, $name, $value, $options['type'], $options['scope'], $options['debug'])) {
+            if ($this->secretsApi->deleteSecret($site_id, $name, $options['debug'])) {
                 $this->log()->notice('Success');
             } else {
-                $this->log()->error('An error happened when trying to set the secret.');
+                $this->log()->error('An error happened when trying to delete the secret.');
             }
         }
     }

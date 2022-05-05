@@ -48,5 +48,23 @@ class SecretsApi {
     {
         return true;
     }
+
+    /**
+     * Delete secret for a given site.
+     *
+     * @param string $site_id
+     *   Site id to set secret for.
+     * @param string $name
+     *   Secret name.
+     * @param bool $debug
+     *   Whether to return the secrets in debug mode.
+     *
+     * @return bool
+     *   Whether saving the secret was successful or not.
+     */
+    public function deleteSecret(string $site_id, string $name, bool $debug = false): bool
+    {
+        return true;
+    }
     
 }

@@ -309,6 +309,7 @@ class Terminus implements
             'Pantheon\\Terminus\\Commands\\Branch\\ListCommand',
             'Pantheon\\Terminus\\Commands\\Connection\\InfoCommand',
             'Pantheon\\Terminus\\Commands\\Connection\\SetCommand',
+            'Pantheon\\Terminus\\Commands\\CustomerSecrets\\DeleteCommand',
             'Pantheon\\Terminus\\Commands\\CustomerSecrets\\ListCommand',
             'Pantheon\\Terminus\\Commands\\CustomerSecrets\\SetCommand',
             'Pantheon\\Terminus\\Commands\\Dashboard\\ViewCommand',
