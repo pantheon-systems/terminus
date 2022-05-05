@@ -2,7 +2,8 @@
 
 namespace Pantheon\Terminus\SecretsApi;
 
-class SecretsApi {
+class SecretsApi
+{
 
     /**
      * List secrets for a given site.
@@ -44,8 +45,14 @@ class SecretsApi {
      * @return bool
      *   Whether saving the secret was successful or not.
      */
-    public function setSecret(string $site_id, string $name, string $value, string $type = 'variable', array $scopes = ['integrated-composer'], bool $debug = false): bool
-    {
+    public function setSecret(
+        string $site_id,
+        string $name,
+        string $value,
+        string $type = 'variable',
+        array $scopes = ['integrated-composer'],
+        bool $debug = false
+    ): bool {
         return true;
     }
 
@@ -66,5 +73,4 @@ class SecretsApi {
     {
         return true;
     }
-    
 }

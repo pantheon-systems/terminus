@@ -47,9 +47,17 @@ class SetCommand extends CustomerSecretsBaseCommand implements SiteAwareInterfac
         'type' => 'variable',
         'scope' => ['integrated-composer'],
         'debug' => false,
-    ]) {
+    ])
+    {
         if ($this->getSite($site_id)) {
-            if ($this->secretsApi->setSecret($site_id, $name, $value, $options['type'], $options['scope'], $options['debug'])) {
+            if ($this->secretsApi->setSecret(
+                $site_id,
+                $name,
+                $value,
+                $options['type'],
+                $options['scope'],
+                $options['debug']
+            )) {
                 $this->log()->notice('Success');
             } else {
                 $this->log()->error('An error happened when trying to set the secret.');

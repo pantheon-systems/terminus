@@ -51,8 +51,12 @@ trait StructuredListTrait
      *        function $sort A function to sort the data using
      * @return RowsOfFields Returns a RowsOfFields-type object with applied filters
      */
-    protected function prepareTableFromData(array $data, string $collection_name, array $option = [], $date_attributes = [])
-    {
+    protected function prepareTableFromData(
+        array $data,
+        string $collection_name,
+        array $option = [],
+        $date_attributes = []
+    ) {
         if (count($data) === 0) {
             $message = isset($options['message'])
                 ? $options['message']
