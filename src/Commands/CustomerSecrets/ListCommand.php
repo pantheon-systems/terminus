@@ -49,8 +49,11 @@ class ListCommand extends CustomerSecretsBaseCommand implements SiteAwareInterfa
     {
         if ($this->getSite($site_id)) {
             $secrets = $this->secretsApi->listSecrets($site_id, $options['debug']);
+            $print_options = [
+                'message' => 'You have no Customer Secrets.'
+            ];
 
-            return $this->getRowsOfFieldsFromSerializedData($secrets, 'customer secrets');
+            return $this->getRowsOfFieldsFromSerializedData($secrets, $print_options);
         }
     }
 }

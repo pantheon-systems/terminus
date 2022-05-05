@@ -37,14 +37,13 @@ trait StructuredListTrait
     public function getRowsOfFields(TerminusCollection $collection, array $options = [])
     {
         $data = $collection->serialize();
-        var_dump($collection->getCollectedClass());
-        var_dump(get_class($collection));
-        ob_flush();
-        $collection_name = $collection::PRETTY_NAME;
+        if (!isset($options['message'])) {
+            $options['message'] = 'You have no ' . $collection::PRETTY_NAME . '.';
+        }
         $model_name = $collection->getCollectedClass();
         $model = new $model_name();
         $date_attributes = $model::$date_attributes;
-        return $this->prepareTableFromData($data, $collection_name, $options, $date_attributes);
+        return $this->prepareTableFromData($data, $options, $date_attributes);
     }
 
     /**
@@ -57,14 +56,12 @@ trait StructuredListTrait
      */
     protected function prepareTableFromData(
         array $data,
-        string $collection_name,
         array $option = [],
         $date_attributes = []
     ) {
         if (count($data) === 0) {
-            $message = isset($options['message'])
-                ? $options['message']
-                : 'You have no ' . $collection_name . '.';
+            // This fallback should really never happen, just an extra safety net.
+            $message = $options['message'] ?? 'You have no items.';
             $options = isset($options['message_options']) ? $options['message_options'] : [];
             $this->log()->warning($message, $options);
         }
@@ -90,7 +87,7 @@ trait StructuredListTrait
      */
     public function getRowsOfFieldsFromSerializedData(array $data, string $items_name, array $options = [])
     {
-        return $this->prepareTableFromData($data, $items_name, $options);
+        return $this->prepareTableFromData($data, $options);
     }
 
     /**
