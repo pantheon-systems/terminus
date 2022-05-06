@@ -364,6 +364,20 @@ abstract class PluginBaseCommand extends TerminusCommand
     }
 
     /**
+     * Create dir with random name.
+     */
+    protected function createRandomDir($prefix = 'terminus', $dir = false)
+    {
+        $fs = $this->getLocalMachine()->getFileSystem();
+        $tempfile = $fs->tempnam($dir ? $dir : sys_get_temp_dir(), $prefix ? $prefix : '');
+        if ($fs->exists($tempfile)) {
+            $fs->remove($tempfile);
+        }
+        $fs->mkdir($tempfile, 0700);
+        return $tempfile;
+    }
+
+    /**
      * Register our shutdown function if it hasn't already been registered.
      */
     protected function registerCleanupFunction($path)
