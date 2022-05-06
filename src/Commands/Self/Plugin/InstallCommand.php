@@ -156,7 +156,8 @@ class InstallCommand extends PluginBaseCommand
     /**
      * Determines if given url is a git repo or not.
      */
-    protected function isGitRepo($possibleUrl) {
+    protected function isGitRepo($possibleUrl)
+    {
         return preg_match('/^(git@|https:\/\/|git:\/\/).*\.git$/', $possibleUrl);
     }
 
