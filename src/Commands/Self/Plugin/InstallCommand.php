@@ -127,8 +127,7 @@ class InstallCommand extends PluginBaseCommand
         foreach ($projects as $projectNameOrPath) {
             if ($this->isGitRepo($projectNameOrPath)) {
                 $pluginsDir = $this->getConfig()->get('plugins_dir');
-                $urlParts = explode('/', $projectNameOrPath);
-                $folderName = end($urlParts);
+                $folderName = basename($projectNameOrPath);
                 $pluginFolderName = sprintf('%s/%s', $pluginsDir, $folderName);
                 $fs = $this->getLocalMachine()->getFileSystem();
                 if (is_dir($pluginFolderName)) {
