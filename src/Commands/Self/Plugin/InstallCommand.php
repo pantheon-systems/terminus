@@ -5,6 +5,7 @@ namespace Pantheon\Terminus\Commands\Self\Plugin;
 use Consolidation\AnnotatedCommand\CommandData;
 use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
 use Pantheon\Terminus\Plugins\PluginInfo;
+use Pantheon\Terminus\Exceptions\TerminusException;
 
 /**
  * Installs a Terminus plugin using Composer.
@@ -126,7 +127,15 @@ class InstallCommand extends PluginBaseCommand
         foreach ($projects as $projectNameOrPath) {
             if ($this->isGitRepo($projectNameOrPath)) {
                 $pluginsDir = $this->getConfig()->get('plugins_dir');
-                $pluginFolderName = $this->createRandomDir('plugin-', $pluginsDir);
+                $urlParts = explode('/', $projectNameOrPath);
+                $folderName = end($urlParts);
+                $pluginFolderName = sprintf('%s/%s', $pluginsDir, $folderName);
+                $fs = $this->getLocalMachine()->getFileSystem();
+                if (is_dir($pluginFolderName)) {
+                    // If folder exists, try removing it, and if it fails, throw an error.
+                    $fs->remove($pluginFolderName);
+                }
+                $fs->mkdir($pluginFolderName);
                 $command = sprintf('git -C %s clone %s --depth 1 .', $pluginFolderName, $projectNameOrPath);
                 $results = $this->runCommand($command);
                 if ($results['exit_code'] !== 0) {
