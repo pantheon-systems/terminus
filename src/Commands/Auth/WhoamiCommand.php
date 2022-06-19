@@ -37,7 +37,7 @@ class WhoamiCommand extends TerminusCommand
             $user = $this->session()->getUser();
             return $this->getPropertyList($user->fetch());
         } else {
-            $this->log()->notice('You are not logged in.');
+            throw new \Exception('You are not logged in.');
         }
     }
 }
