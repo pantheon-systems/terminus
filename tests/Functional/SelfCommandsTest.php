@@ -15,7 +15,7 @@ class SelfCommandsTest extends TerminusTestBase
      * @test
      *
      * @group self
-     * @group short
+     * @group long
      */
     public function testSelfUpdateCommand()
     {
