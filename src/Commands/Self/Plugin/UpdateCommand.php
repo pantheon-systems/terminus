@@ -40,7 +40,7 @@ class UpdateCommand extends PluginBaseCommand
             return;
         }
 
-        if ($projects[0] !== 'all') {
+        if ($projects && $projects[0] !== 'all') {
             $plugins = array_map(
                 function ($project) use ($logger) {
                     try {
