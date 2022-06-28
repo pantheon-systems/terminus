@@ -20,6 +20,7 @@ class ListCommand extends SiteCommand
      *
      * @field-labels
      *     name: Name
+     *     label: Label
      *     id: ID
      *     plan_name: Plan
      *     framework: Framework
