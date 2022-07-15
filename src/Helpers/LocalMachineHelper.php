@@ -189,11 +189,12 @@ class LocalMachineHelper implements ConfigAwareInterface, ContainerAwareInterfac
      * @param string $gitUrl
      * @param string $path
      * @param bool $overrideIfExists
+     * @param array $additionalOptions
      *
      * @throws \Pantheon\Terminus\Exceptions\TerminusAlreadyExistsException
      * @throws \Pantheon\Terminus\Exceptions\TerminusException
      */
-    public function cloneGitRepository(string $gitUrl, string $path, bool $overrideIfExists = false)
+    public function cloneGitRepository(string $gitUrl, string $path, bool $overrideIfExists = false, $additionalOptions = [])
     {
         if (is_dir($path . DIRECTORY_SEPARATOR . '.git')) {
             if (!$overrideIfExists) {
@@ -205,7 +206,9 @@ class LocalMachineHelper implements ConfigAwareInterface, ContainerAwareInterfac
             }
         }
 
-        $this->executeUnbuffered('git clone %s %s', [$gitUrl, $path]);
+        $additionalOptionsStr = implode(' ', $additionalOptions);
+
+        $this->executeUnbuffered('git clone %s %s %s', [$gitUrl, $path, $additionalOptionsStr]);
     }
 
     /**

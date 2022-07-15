@@ -48,10 +48,13 @@ class CloneCommand extends TerminusCommand implements SiteAwareInterface, Config
         $gitUrl = $env->connectionInfo()['git_url'] ?? null;
         $localCopyDir = $site->getLocalCopyDir($options['site_dir'] ?? null);
 
+        // @todo This value should come from somewhere else.
+        $devBranch = 'master';
+
         try {
             /** @var \Pantheon\Terminus\Helpers\LocalMachineHelper $localMachineHelper */
             $localMachineHelper = $this->getContainer()->get(LocalMachineHelper::class);
-            $localMachineHelper->cloneGitRepository($gitUrl, $localCopyDir, $options['override'] ?? false);
+            $localMachineHelper->cloneGitRepository($gitUrl, $localCopyDir, $options['override'] ?? false, [sprintf('--branch %s', $devBranch)]);
         } catch (TerminusAlreadyExistsException $e) {
             $this->logger->notice(
                 sprintf('The local copy of the site %s already exists in %s', $site->getName(), $localCopyDir)
