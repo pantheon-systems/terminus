@@ -194,8 +194,12 @@ class LocalMachineHelper implements ConfigAwareInterface, ContainerAwareInterfac
      * @throws \Pantheon\Terminus\Exceptions\TerminusAlreadyExistsException
      * @throws \Pantheon\Terminus\Exceptions\TerminusException
      */
-    public function cloneGitRepository(string $gitUrl, string $path, bool $overrideIfExists = false, $additionalOptions = [])
-    {
+    public function cloneGitRepository(
+        string $gitUrl,
+        string $path,
+        bool $overrideIfExists = false,
+        array $additionalOptions = []
+    ) {
         if (is_dir($path . DIRECTORY_SEPARATOR . '.git')) {
             if (!$overrideIfExists) {
                 throw new TerminusAlreadyExistsException(sprintf('The repository already exists in %s', $path));
