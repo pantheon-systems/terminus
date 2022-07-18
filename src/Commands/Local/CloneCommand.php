@@ -58,7 +58,7 @@ class CloneCommand extends TerminusCommand implements SiteAwareInterface, Config
                 $gitUrl,
                 $localCopyDir,
                 $options['override'] ?? false,
-                [sprintf('--branch %s', $devBranch)]
+                $devBranch
             );
         } catch (TerminusAlreadyExistsException $e) {
             $this->logger->notice(

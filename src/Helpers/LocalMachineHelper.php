@@ -189,7 +189,8 @@ class LocalMachineHelper implements ConfigAwareInterface, ContainerAwareInterfac
      * @param string $gitUrl
      * @param string $path
      * @param bool $overrideIfExists
-     * @param array $additionalOptions
+     * @param string $branch
+     *   The branch to clone. Defaults to remote HEAD pointer.
      *
      * @throws \Pantheon\Terminus\Exceptions\TerminusAlreadyExistsException
      * @throws \Pantheon\Terminus\Exceptions\TerminusException
@@ -198,7 +199,7 @@ class LocalMachineHelper implements ConfigAwareInterface, ContainerAwareInterfac
         string $gitUrl,
         string $path,
         bool $overrideIfExists = false,
-        array $additionalOptions = []
+        string $branch = ''
     ) {
         if (is_dir($path . DIRECTORY_SEPARATOR . '.git')) {
             if (!$overrideIfExists) {
@@ -210,9 +211,9 @@ class LocalMachineHelper implements ConfigAwareInterface, ContainerAwareInterfac
             }
         }
 
-        $additionalOptionsStr = implode(' ', $additionalOptions);
+        $additionalOptions = $branch ? sprintf('--branch %s', $branch) : '';
 
-        $this->executeUnbuffered('git clone %s %s %s', [$gitUrl, $path, $additionalOptionsStr]);
+        $this->executeUnbuffered('git clone %s %s %s', [$gitUrl, $path, $additionalOptions]);
     }
 
     /**
