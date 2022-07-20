@@ -189,12 +189,18 @@ class LocalMachineHelper implements ConfigAwareInterface, ContainerAwareInterfac
      * @param string $gitUrl
      * @param string $path
      * @param bool $overrideIfExists
+     * @param string $branch
+     *   The branch to clone. Defaults to remote HEAD pointer.
      *
      * @throws \Pantheon\Terminus\Exceptions\TerminusAlreadyExistsException
      * @throws \Pantheon\Terminus\Exceptions\TerminusException
      */
-    public function cloneGitRepository(string $gitUrl, string $path, bool $overrideIfExists = false)
-    {
+    public function cloneGitRepository(
+        string $gitUrl,
+        string $path,
+        bool $overrideIfExists = false,
+        string $branch = ''
+    ) {
         if (is_dir($path . DIRECTORY_SEPARATOR . '.git')) {
             if (!$overrideIfExists) {
                 throw new TerminusAlreadyExistsException(sprintf('The repository already exists in %s', $path));
@@ -205,7 +211,9 @@ class LocalMachineHelper implements ConfigAwareInterface, ContainerAwareInterfac
             }
         }
 
-        $this->executeUnbuffered('git clone %s %s', [$gitUrl, $path]);
+        $additionalOptions = $branch ? sprintf('--branch %s', $branch) : '';
+
+        $this->executeUnbuffered('git clone %s %s %s', [$gitUrl, $path, $additionalOptions]);
     }
 
     /**
