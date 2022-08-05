@@ -3,6 +3,7 @@
 namespace Pantheon\Terminus\Collections;
 
 use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
+use Pantheon\Terminus\Models\BackupSet;
 use Pantheon\Terminus\Models\Backup;
 use Pantheon\Terminus\Models\Workflow;
 
@@ -184,7 +185,7 @@ class Backups extends EnvironmentOwnedCollection
      * Filters the backups for only ones which have finished
      *
      * @param string $element Element requested (i.e. code, db, or files)
-     * @return Backup[] An array of Backup objects
+     * @return BackupSet[] An array of Backup objects
      */
     public function getFinishedBackups($element = null)
     {
@@ -196,9 +197,22 @@ class Backups extends EnvironmentOwnedCollection
         rsort($backup_ids);
         $backups = [];
         foreach ($backup_ids as $id) {
-            $backups[$id] = $finished_backups[$id];
+            $scheduled_for = $finished_backups[$id]->get('scheduled_for');
+            if (!isset($backups[$scheduled_for])) {
+                $backups[$scheduled_for] = [];
+            }
+            $backups[$scheduled_for][$id] = $finished_backups[$id];
         }
-        return $backups;
+
+        $backup_sets = [];
+        
+        foreach ($backups as $timestamp => $items) {
+            $backup_sets[] = new BackupSet((object)[
+                'timestamp' => $timestamp,
+                'items' => $items,
+            ]);
+        }
+        return $backup_sets;
     }
 
     /**

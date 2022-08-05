@@ -58,6 +58,30 @@ trait StructuredListTrait
         return $table;
     }
 
+    public function getRowsOfFieldsFromPseudocollection($collection, array $options = [])
+    {
+        $data = $collection->serialize();
+        if (count($data) === 0) {
+            $message = isset($options['message'])
+                ? $options['message']
+                : 'You have no ' . $collection::PRETTY_NAME . '.';
+            $options = isset($options['message_options']) ? $options['message_options'] : [];
+            $this->log()->warning($message, $options);
+        }
+
+        if (!empty($options['sort'])) {
+            usort($data, $options['sort']);
+        }
+
+        $table = new RowsOfFields($data);
+        //$model_name = $collection->getCollectedClass();
+        $model = $collection;
+        $date_attributes = $model::$date_attributes;
+        $table = $this->addBooleanRenderer($table);
+        $table = $this->addDatetimeRenderer($table, $date_attributes);
+        return $table;
+    }
+
     /**
      * Adds a renderer function to the RowsOfFields object to format booleans into strings
      *

@@ -36,6 +36,8 @@ class RestoreCommand extends SingleBackupCommand
 
         $backup = $this->getBackup($site_env, $options);
 
+        // @todo Extract backup from backup set.
+
         if (!$this->confirm(
             'Are you sure you want to restore to {env} on {site}?',
             ['site' => $site->getName(), 'env' => $env->getName()]

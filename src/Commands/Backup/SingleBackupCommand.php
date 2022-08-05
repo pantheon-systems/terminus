@@ -3,7 +3,7 @@
 namespace Pantheon\Terminus\Commands\Backup;
 
 use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
-use Pantheon\Terminus\Models\Backup;
+use Pantheon\Terminus\Models\BackupSet;
 
 abstract class SingleBackupCommand extends BackupCommand
 {
@@ -11,12 +11,12 @@ abstract class SingleBackupCommand extends BackupCommand
      * @param $site_env
      * @param array $options
      *
-     * @return Backup
+     * @return BackupSet
      *
      * @throws \Pantheon\Terminus\Exceptions\TerminusNotFoundException
      * @throws \Pantheon\Terminus\Exceptions\TerminusException
      */
-    protected function getBackup($site_env, array $options = ['file' => null, 'element' => 'all',]): Backup
+    protected function getBackup($site_env, array $options = ['file' => null, 'element' => 'all',]): BackupSet
     {
         $env = $this->getEnv($site_env);
 

@@ -35,6 +35,10 @@ class GetCommand extends SingleBackupCommand implements RequestAwareInterface
      */
     public function get($site_env, array $options = ['file' => null, 'element' => 'files', 'to' => null,])
     {
+        $backup_set = $this->getBackup($site_env, $options);
+        // @todo extract Url and what to do if multiple files?
+        //   What to do to print? Should I use RowsOfFields? Or just printing 3 lines?
+        //   What to do to download? Should "to" be a folder and download all fiels there? 
         $backup_url = $this->getBackup($site_env, $options)->getArchiveURL();
         if (!isset($options['to']) || is_null($save_path = $options['to'])) {
             return $backup_url;

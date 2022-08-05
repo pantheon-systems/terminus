@@ -4,6 +4,7 @@ namespace Pantheon\Terminus\Commands\Backup;
 
 use Consolidation\OutputFormatters\StructuredData\PropertyList;
 use Pantheon\Terminus\Commands\StructuredListTrait;
+use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
 
 /**
  * Class InfoCommand
@@ -39,9 +40,10 @@ class InfoCommand extends SingleBackupCommand
      */
     public function info($site_env, array $options = ['file' => null, 'element' => 'all',])
     {
-        $backup = $this->getBackup($site_env, $options);
+        // @todo rename to getBackupSet?
+        $backup_set = $this->getBackup($site_env, $options);
         // By retrieving the archive URL it will appear in the model's serialize data
-        $backup->getArchiveURL();
-        return $this->getPropertyList($backup);
+        $backup_set->getArchivesURL();
+        return $this->getRowsOfFieldsFromPseudocollection($backup_set);
     }
 }
