@@ -35,6 +35,8 @@ class GetCommand extends SingleBackupCommand implements RequestAwareInterface
      */
     public function get($site_env, array $options = ['file' => null, 'element' => 'files', 'to' => null,])
     {
+        $this->validateElement($site_env, $options['element'], false);
+
         $backup_url = $this->getBackup($site_env, $options)->getArchiveURL();
         if (!isset($options['to']) || is_null($save_path = $options['to'])) {
             return $backup_url;
