@@ -80,7 +80,8 @@ class RestoreCommand extends SingleBackupCommand
      * @param array $options
      *   Options to pass to the getBackup function.
      */
-    protected function doGetBackups(string $site_env, array $elements, array $options) {
+    protected function doGetBackups(string $site_env, array $elements, array $options)
+    {
         $backups = [];
         foreach ($elements as $element) {
             $options['element'] = $element;
@@ -101,7 +102,8 @@ class RestoreCommand extends SingleBackupCommand
      * @param string $env
      *   Environment name.
      */
-    protected function doRestoreBackups(array $backups, string $env) {
+    protected function doRestoreBackups(array $backups, string $env)
+    {
         foreach ($backups as $type => $backup) {
             $workflow = $backup->restore();
             try {

@@ -65,7 +65,9 @@ abstract class SingleBackupCommand extends BackupCommand
             $supported[] = 'all';
         }
         if (!in_array($element, $supported)) {
-            throw new TerminusException(sprintf('Element should be one of the following items: %s', implode(', ', $supported)));
+            throw new TerminusException(
+                sprintf('Element should be one of the following items: %s', implode(', ', $supported))
+            );
         }
     }
 }
