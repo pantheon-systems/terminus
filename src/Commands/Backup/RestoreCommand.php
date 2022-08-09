@@ -31,6 +31,7 @@ class RestoreCommand extends SingleBackupCommand
      */
     public function restoreBackup($site_env, array $options = ['file' => null, 'element' => 'all',])
     {
+        $this->validateElement($site_env, $options['element'], true);
         $site = $this->getSite($site_env);
         $env = $this->getEnv($site_env);
 
