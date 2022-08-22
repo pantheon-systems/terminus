@@ -1,7 +1,15 @@
 # Change Log
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org)
 
-## 3.0.8-dev
+## 3.0.8 - 2022-08-22
+
+### Changed
+- Install plugins can now be done from git url (#2362)
+
+### Fixed
+- Make sure local:clone gets the right branch (#2375)
+- Plugin update should work without args or with 'all' args (#2369)
+- Make backup:restore command work with element = all (#2381)
 
 ## 3.0.7 - 2022-03-29
 
