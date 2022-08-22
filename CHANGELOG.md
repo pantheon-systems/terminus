@@ -11,7 +11,7 @@ All notable changes to this project will be documented in this file. This projec
 ### Fixed
 - Make sure local:clone gets the right branch (#2375)
 - Plugin update should work without args or with 'all' args (#2369)
-* Make backup:restore command work with element = all (#2381)
+- Make backup:restore command work with element = all (#2381)
 
 ## 3.0.7 - 2022-03-29
 
