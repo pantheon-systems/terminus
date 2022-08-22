@@ -47,7 +47,7 @@ class CloneContentCommand extends TerminusCommand implements SiteAwareInterface
      * @throws \Pantheon\Terminus\Exceptions\TerminusException
      *
      * @usage <site>.<env> <target_env> Clones database and files from <site>'s <env> environment to <target_env> environment.
-     * @usage <site>.<env> <target_env> --cc Clones from <site>'s <env> environment to <target_env> environment and clears the database.
+     * @usage <site>.<env> <target_env> --cc Clones from <site>'s <env> environment to <target_env> environment and clears the cache.
      * @usage <site>.<env> <target_env> --db-only Clones only the database from <site>'s <env> environment to <target_env> environment.
      * @usage <site>.<env> <target_env> --files-only Clones only files from <site>'s <env> environment to <target_env> environment.
      * @usage <site>.<env> <target_env> --updatedb Clones from <site>'s <env> environment to <target_env> environment and updates the Drupal database (if applicable).
