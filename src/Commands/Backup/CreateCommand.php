@@ -29,7 +29,7 @@ class CreateCommand extends BackupCommand
      * @usage <site>.<env> Creates a backup of <site>'s <env> environment.
      * @usage <site>.<env> --element=<element> Creates a backup of <site>'s <env> environment's <element>.
      * @usage <site>.<env> --keep-for=<days> Creates a backup of <site>'s <env> environment and retains it for <days> days.
-     * @usage <site>.<env> --keep-for=<days> Creates a backup of <site>'s <env> environment's <element> and retains it for <days> days.
+     * @usage <site>.<env> --element=<element> --keep-for=<days> Creates a backup of <site>'s <env> environment's <element> and retains it for <days> days.
      *
      * @throws \Pantheon\Terminus\Exceptions\TerminusException
      */

@@ -548,7 +548,7 @@ class Environment extends TerminusModel implements ContainerAwareInterface, Site
      */
     public function getName()
     {
-        return $this->id;
+        return (string) $this->id;
     }
 
     /**

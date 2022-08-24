@@ -13,6 +13,7 @@ class PluginManagerCommandsTest extends TerminusTestBase
 {
     protected const HELLO_COMMAND = 'hello';
     protected const TEST_PLUGIN_NAME = 'terminus-plugin-example';
+    protected const TEST_PLUGIN_GIT_URL = 'https://github.com/pantheon-systems/terminus-plugin-example.git';
     protected const TEST_PLUGIN_NAMES = [
         'terminus-plugin-example',
         'terminus-composer-plugin',
@@ -103,6 +104,16 @@ class PluginManagerCommandsTest extends TerminusTestBase
         $this->assertNoPlugins();
         $this->assertCommandDoesNotExist(self::HELLO_COMMAND);
 
+        // Install plugin.
+        $pluginList = $this->terminusWithStderrRedirected(sprintf('self:plugin:install %s', self::TEST_PLUGIN_GIT_URL));
+        $this->assertStringContainsString(
+            sprintf('Installed %s', $testPluginPackage),
+            $pluginList,
+            'Terminus plugin installation failed.'
+        );
+        $this->assertPluginExists(self::TEST_PLUGIN_NAME);
+        $this->assertCommandExists(self::HELLO_COMMAND);
+
         // Migrate Terminus 2 plugins.
         $this->assertCommandExists('self:plugin:migrate');
         $this->installTerminus2Plugins($testPluginPackages);
@@ -112,7 +123,7 @@ class PluginManagerCommandsTest extends TerminusTestBase
             $this->assertStringContainsString(
                 $plugin,
                 $pluginList,
-                'Terminus plugin installation failed.'
+                'Terminus plugin migrate failed.'
             );
         }
 

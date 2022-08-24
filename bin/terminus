@@ -16,6 +16,7 @@ if (version_compare(PHP_VERSION, '7.4.0', '<') === true) {
     echo "\n";
     echo 'Sorry, your PHP version (' . PHP_VERSION . ') is no longer supported.' . "\n";
     echo 'Upgrade to PHP 7.4 or newer to use Terminus 3. For PHP versions prior to 7.4, downgrade to Terminus 2.x.'; echo "\n\n";
+    echo 'For more information, see https://pantheon.io/docs/terminus/updates#php-version-compatibility-matrix'; echo "\n\n";
     exit(1);
 }
 
@@ -31,7 +32,7 @@ if (!getenv('TERMINUS_ALLOW_UNSUPPORTED_NEWER_PHP') && version_compare(PHP_VERSI
 
 // This variable is automatically managed via updateDependenciesversion() in /RoboFile.php,
 // which is run after every call to composer update.
-$terminusPluginsDependenciesVersion = 'cdec7a1afd';
+$terminusPluginsDependenciesVersion = 'e993a57a30';
 
 // Cannot use $_SERVER superglobal since that's empty during phpunit testing
 // getenv('HOME') isn't set on Windows and generates a Notice.

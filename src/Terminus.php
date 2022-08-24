@@ -30,7 +30,7 @@ use Robo\Contract\ConfigAwareInterface;
 use Robo\Contract\IOAwareInterface;
 use Robo\Robo;
 use Robo\Runner as RoboRunner;
-use Robo\Application;
+use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Input\ArgvInput;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -92,6 +92,17 @@ class Terminus implements
             $options['verbose'] = new InputOption($originalVerboseOption->getName(), $originalVerboseOption->getShortcut(), InputOption::VALUE_NONE, $description);
             $application->getDefinition()->setOptions($options);
         }
+        $application->getDefinition()
+            ->addOption(
+                new InputOption(
+                    '--define',
+                    '-D',
+                    InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY,
+                    'Define a configuration item value.',
+                    []
+                )
+            );
+
         $container = new Container();
         Robo::configureContainer(
             $container,
@@ -115,6 +126,7 @@ class Terminus implements
                 $application->getVersion(),
                 'pantheon-systems/terminus'
             );
+            $selfUpdateCommand->ignorePharRunningCheck();
             $application->add($selfUpdateCommand);
         }
 

@@ -1,6 +1,52 @@
 # Change Log
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org)
 
+## 3.0.9-dev
+
+## 3.0.8 - 2022-08-22
+
+### Changed
+- Install plugins can now be done from git url (#2362)
+
+### Fixed
+- Make sure local:clone gets the right branch (#2375)
+- Plugin update should work without args or with 'all' args (#2369)
+- Make backup:restore command work with element = all (#2381)
+
+## 3.0.7 - 2022-03-29
+
+### Changed
+- Change alias for local:commitAndPush to lcp to avoid aliases conflict (#2341)
+- Make framework value more human friendly for site:info command (#2351)
+
+### Fixed
+- Check upstream updates before getting upstream status to get composer updates info (#2349)
+- Fix bug that didn't allow merging a multidev env with only numbers in the name (#2350)
+
+## 3.0.6 - 2022-02-18
+
+### Changed
+- Make upstream status report on composer updates (#2338)
+
+### Fixed
+- Fix bug where `self:console` was not working because psy/psysh was a dev dependency. (#2332)
+- Pin to league/container ^3 to avoid fatal errors (#2337)
+
+## 3.0.5 - 2022-02-08
+
+### Added
+- Added the `--element` usage for `backup:create` (#2317)
+- Add GitHub Pull Request Template and move Issue Template (#2325)
+
+### Changed
+- Replace git:// urls with https:// urls (#2319)
+
+### Fixed
+- Fix bug where `site:list` was unable to properly filter by tags when part of site team (#2316)
+- Fix bug where `--simulate` option was being ignored (#2321)
+- Fix bug where `site:delete` command always fails (#2324)
+- Fix bug where `self:update` reports it only works with the phar version of Terminus (#2328)
+
 ## 3.0.4 - 2022-01-18
 
 ### Added
