@@ -86,6 +86,19 @@ class Terminus implements
         $this->setOutput($output);
         $application = new Application('Terminus', $config->get('version'));
         $options = $application->getDefinition()->getOptions();
+        if (isset($options['verbose'])) {
+            $originalVerboseOption = $options['verbose'];
+            $description = <<<EOD
+Increase the verbosity of messages: 1 for normal output (-v), 2 for more verbose output (-vv), and 3 for debug (-vvv)
+EOD;
+            $options['verbose'] = new InputOption(
+                $originalVerboseOption->getName(),
+                $originalVerboseOption->getShortcut(),
+                InputOption::VALUE_NONE,
+                $description
+            );
+            $application->getDefinition()->setOptions($options);
+        }
         $application->getDefinition()
             ->addOption(
                 new InputOption(
