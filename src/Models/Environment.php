@@ -757,10 +757,8 @@ class Environment extends TerminusModel implements ContainerAwareInterface, Site
         if (!in_array($this->id, ['test', 'live',])) {
             return true;
         }
-        // One can determine whether an environment has been initialized
-        // by checking if it has code commits. Uninitialized environments do not.
-        $commits = $this->getCommits()->all();
-        return (count($commits) > 0);
+
+        return $this->settings('is_initialized');
     }
 
     /**
@@ -951,7 +949,7 @@ class Environment extends TerminusModel implements ContainerAwareInterface, Site
     private function settings($setting = null)
     {
         $path = "sites/{$this->getSite()->id}/environments/{$this->id}/settings";
-        $response = (array)$this->request()->request($path, ['method' => 'get',]);
+        $response = $this->request()->request($path, ['method' => 'get',]);
         return $response['data']->$setting;
     }
 
