@@ -76,10 +76,11 @@ class UninstallCommand extends PluginBaseCommand
 
             // First remove from terminus-plugins.
             $command = str_replace(
-                ['{dir}', '{project}',],
-                [$plugins_dir, $project_name,],
+                ['{project}'],
+                [$project_name],
                 self::UNINSTALL_COMMAND
             );
+            $command = self::populateComposerWorkingDir($command, $plugins_dir);
             $results = $this->runCommand($command);
             if ($results['exit_code'] !== 0) {
                 throw new TerminusException('Error removing package in terminus-dependencies.');
@@ -94,10 +95,11 @@ class UninstallCommand extends PluginBaseCommand
             // Cleanup path repositories if they exist.
             foreach ([$plugins_dir, $dependencies_dir] as $dir) {
                 $command = str_replace(
-                    ['{dir}', '{name}',],
-                    [$dir, $project_name,],
+                    ['{name}'],
+                    [$project_name],
                     self::REMOVE_PATH_REPO_COMMAND
                 );
+                $command = self::populateComposerWorkingDir($command, $dir);
                 $results = $this->runCommand($command);
                 if ($results['exit_code'] !== 0) {
                     throw new TerminusException('Error removing path repository in ' . basename($dir));

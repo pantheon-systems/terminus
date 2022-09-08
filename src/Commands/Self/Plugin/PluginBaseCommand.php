@@ -175,10 +175,11 @@ abstract class PluginBaseCommand extends TerminusCommand
     protected function runComposerUpdate($folder, $packages = '')
     {
         $command = str_replace(
-            ['{dir}', '{packages}',],
-            [$folder, $packages],
+            ['{packages}'],
+            [$packages],
             self::DEPENDENCIES_UPDATE_COMMAND
         );
+        $command = self::populateComposerWorkingDir($command, $folder);
         return $this->runCommand($command);
     }
 
@@ -217,10 +218,11 @@ abstract class PluginBaseCommand extends TerminusCommand
         $packages = $this->getPackagesWithVersionString($terminus_composer_lock);
         // First: Require dependencies from terminus.
         $command = str_replace(
-            ['{dir}', '{packages}',],
-            [$dependencies_dir, $packages,],
+            ['{packages}'],
+            [$packages],
             self::DEPENDENCIES_REQUIRE_COMMAND
         );
+        $command = self::populateComposerWorkingDir($command, $dependencies_dir);
         $results = $this->runCommand($command);
         if ($results['exit_code'] !== 0) {
             throw new TerminusException(
@@ -233,10 +235,11 @@ abstract class PluginBaseCommand extends TerminusCommand
         foreach ($path_repositories as $repo_name => $path) {
             $plugins_dir_basename = $this->getConfig()->get('plugins_dir_basename');
             $command = str_replace(
-                ['{dir}', '{repo_name}', '{path}',],
-                [$dependencies_dir, $repo_name, $path,],
+                ['{repo_name}', '{path}'],
+                [$repo_name, $path],
                 self::COMPOSER_ADD_REPOSITORY
             );
+            $command = self::populateComposerWorkingDir($command, $dependencies_dir);
             $results = $this->runCommand($command);
             if ($results['exit_code'] !== 0) {
                 throw new TerminusException(
@@ -248,10 +251,11 @@ abstract class PluginBaseCommand extends TerminusCommand
 
         // Third: Require packages.
         $command = str_replace(
-            ['{dir}', '{packages}',],
-            [$dependencies_dir, 'pantheon-systems/terminus-plugins:*'],
+            ['{packages}'],
+            ['pantheon-systems/terminus-plugins:*'],
             self::DEPENDENCIES_REQUIRE_COMMAND
         );
+        $command = self::populateComposerWorkingDir($command, $dependencies_dir);
         $results = $this->runCommand($command);
         if ($results['exit_code'] === 0) {
             // Finally: Update packages.
@@ -324,12 +328,7 @@ abstract class PluginBaseCommand extends TerminusCommand
     protected function getPathRepositories($plugins_dir)
     {
         $path_repositories = [];
-
-        $command = str_replace(
-            ['{dir}',],
-            [$plugins_dir],
-            self::COMPOSER_GET_REPOSITORIES
-        );
+        $command = self::populateComposerWorkingDir(self::COMPOSER_GET_REPOSITORIES, $plugins_dir);
         $results = $this->runCommand($command);
         if ($results['exit_code'] === 0) {
             $json = json_decode($results['output'], true);
@@ -453,10 +452,11 @@ abstract class PluginBaseCommand extends TerminusCommand
                 // Update path repository in plugins dir and dependencies dir.
                 foreach ([$plugins_dir, $dependencies_dir] as $dir) {
                     $command = str_replace(
-                        ['{dir}', '{repo_name}', '{path}',],
-                        [$dir, $project_name_without_version, realpath($instalation_path),],
+                        ['{repo_name}', '{path}'],
+                        [$project_name_without_version, realpath($instalation_path)],
                         self::COMPOSER_ADD_REPOSITORY
                     );
+                    $command = self::populateComposerWorkingDir($command, $dir);
                     $results = $this->runCommand($command);
                     if ($results['exit_code'] !== 0) {
                         throw new TerminusException(
@@ -468,10 +468,11 @@ abstract class PluginBaseCommand extends TerminusCommand
             }
 
             $command = str_replace(
-                ['{dir}', '{project}',],
-                [$plugins_dir, $project_name,],
+                ['{project}'],
+                [$project_name],
                 self::INSTALL_COMMAND
             );
+            $command = self::populateComposerWorkingDir($command, $plugins_dir);
             $results = $this->runCommand($command);
             if ($results['exit_code'] !== 0) {
                 throw new TerminusException(
@@ -514,8 +515,8 @@ abstract class PluginBaseCommand extends TerminusCommand
     public static function populateComposerWorkingDir(string $command, string $dir): string
     {
         return str_replace(
-            '{dir}',
-            $dir,
+            ['{dir}'],
+            [$dir],
             $command
         );
     }

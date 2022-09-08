@@ -72,11 +72,7 @@ class CreateCommand extends PluginBaseCommand
         $basename = basename($path);
         $realpath = realpath($parent_folder) . DIRECTORY_SEPARATOR . $basename;
         try {
-            $command = str_replace(
-                ['{dir}',],
-                [$realpath,],
-                self::COMPOSER_CREATE_PROJECT
-            );
+            $command = self::populateComposerWorkingDir(self::COMPOSER_CREATE_PROJECT, $realpath);
             $results = $this->runCommand($command);
             if ($results['exit_code'] !== 0) {
                 throw new TerminusException('Error creating plugin project.');
