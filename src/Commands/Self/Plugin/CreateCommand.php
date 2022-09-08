@@ -3,9 +3,7 @@
 namespace Pantheon\Terminus\Commands\Self\Plugin;
 
 use Consolidation\AnnotatedCommand\CommandData;
-use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
 use Pantheon\Terminus\Exceptions\TerminusException;
-use Pantheon\Terminus\Plugins\PluginInfo;
 
 /**
  * Creates a new Terminus plugin using Composer.
