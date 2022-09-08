@@ -83,9 +83,8 @@ class PluginInfo implements ConfigAwareInterface, ContainerAwareInterface, Logge
         $discovery->setSearchPattern('/.*(Command|Hook).php$/')
             ->setSearchLocations([])
             ->setSearchDepth(self::MAX_COMMAND_DEPTH);
-        $command_files = $discovery->discover($path, $namespace);
 
-        return $command_files;
+        return $discovery->discover($path, $namespace);
     }
 
     /**
