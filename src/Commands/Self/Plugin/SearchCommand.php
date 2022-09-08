@@ -33,9 +33,12 @@ class SearchCommand extends PluginBaseCommand
      *     name: Name
      *     status: Status
      *     description: Description
+     * @usage <plugin> Searches for Terminus plugins with "plugin" in the name.
+     *
      * @return RowsOfFields
      *
-     * @usage <plugin> Searches for Terminus plugins with "plugin" in the name.
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
      */
     public function search($keyword)
     {
@@ -71,6 +74,7 @@ class SearchCommand extends PluginBaseCommand
                             return true;
                         }
                     }
+                    return false;
                 }
             )
         );
@@ -86,6 +90,13 @@ class SearchCommand extends PluginBaseCommand
 
     /**
      * Validate package versions against terminus major version.
+     *
+     * @param $versions_array
+     *
+     * @return bool
+     *
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
      */
     protected function validatePackageVersions($versions_array)
     {
@@ -104,7 +115,10 @@ class SearchCommand extends PluginBaseCommand
 
     /**
      * Check for minimum plugin command requirements.
+     *
      * @hook validate self:plugin:search
+     *
+     * @throws \Pantheon\Terminus\Exceptions\TerminusNotFoundException
      */
     public function validate()
     {

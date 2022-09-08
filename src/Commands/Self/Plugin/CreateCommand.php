@@ -22,9 +22,13 @@ class CreateCommand extends PluginBaseCommand
      * @aliases self:plugin:new plugin:create plugin:new
      *
      * @param string $path Path where the plugin will be created.
+     * @param string[] $options
+     *
      * @option project-name Namme of the project to be created (vendor/project-name).
      *
      * @usage <path> --project-name=vendor/project_name
+     *
+     * @throws \Pantheon\Terminus\Exceptions\TerminusException
      */
     public function create(string $path, $options = [
         'project-name' => '',
@@ -42,7 +46,11 @@ class CreateCommand extends PluginBaseCommand
     /**
      * Check for minimum plugin command requirements.
      * @hook validate self:plugin:create
+     *
      * @param CommandData $commandData
+     *
+     * @throws \Pantheon\Terminus\Exceptions\TerminusException
+     * @throws \Pantheon\Terminus\Exceptions\TerminusNotFoundException
      */
     public function validate(CommandData $commandData)
     {

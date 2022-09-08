@@ -3,7 +3,6 @@
 namespace Pantheon\Terminus\Commands\Self\Plugin;
 
 use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
-use Consolidation\AnnotatedCommand\CommandData;
 use Pantheon\Terminus\Plugins\PluginInfo;
 
 /**
@@ -58,10 +57,12 @@ class ListCommand extends PluginBaseCommand
 
     /**
      * Check for minimum plugin commands requirements.
+     *
      * @hook validate self:plugin:list
-     * @param CommandData $commandData
+     *
+     * @throws \Pantheon\Terminus\Exceptions\TerminusNotFoundException
      */
-    public function validate(CommandData $commandData)
+    public function validate()
     {
         $this->checkRequirements();
     }

@@ -2,7 +2,6 @@
 
 namespace Pantheon\Terminus\Commands\Self\Plugin;
 
-use Consolidation\AnnotatedCommand\CommandData;
 use Pantheon\Terminus\Exceptions\TerminusException;
 
 /**
@@ -26,17 +25,18 @@ class ReloadCommand extends PluginBaseCommand
 
     /**
      * Check for minimum plugin command requirements.
+     *
      * @hook validate self:plugin:install
-     * @param CommandData $commandData
+     *
+     * @throws \Pantheon\Terminus\Exceptions\TerminusNotFoundException
      */
-    public function validate(CommandData $commandData)
+    public function validate()
     {
         $this->checkRequirements();
     }
 
     /**
-     * @param string $project_name Name of project to be installed
-     * @return array Results from the install command
+     * Performs plugins reload.
      */
     private function doReload()
     {
