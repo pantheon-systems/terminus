@@ -71,7 +71,7 @@ class PluginInfo implements ConfigAwareInterface, ContainerAwareInterface, Logge
     }
 
     /**
-     * Get all of the commands and hooks in the plugin.
+     * Get all the commands and hooks in the plugin.
      *
      * @return array
      */
@@ -100,7 +100,7 @@ class PluginInfo implements ConfigAwareInterface, ContainerAwareInterface, Logge
     /**
      * Get the info array for the plugin.
      *
-     * @return array|null|string
+     * @return array|null
      */
     public function getInfo()
     {
@@ -135,6 +135,9 @@ class PluginInfo implements ConfigAwareInterface, ContainerAwareInterface, Logge
      * Get the latest available plugin version.
      *
      * @return string Latest plugin version
+     *
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
      */
     public function getLatestVersion()
     {
@@ -190,12 +193,14 @@ class PluginInfo implements ConfigAwareInterface, ContainerAwareInterface, Logge
      * Check whether a Packagist project is valid.
      *
      * @return bool True if valid, false otherwise
+     *
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
      */
     public function isValidPackagistProject()
     {
         return self::checkWhetherPackagistProject($this->getName(), $this->getLocalMachine());
     }
-
 
     /**
      * Check whether a Packagist project is valid.
@@ -274,6 +279,9 @@ class PluginInfo implements ConfigAwareInterface, ContainerAwareInterface, Logge
 
     /**
      * @return LocalMachineHelper
+     *
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
      */
     protected function getLocalMachine()
     {
@@ -283,7 +291,8 @@ class PluginInfo implements ConfigAwareInterface, ContainerAwareInterface, Logge
     /**
      * Check to see if the provided info object has autoload info
      *
-     * @param type $info
+     * @param array $info
+     *
      * @return boolean
      */
     protected function hasAutoload($info)
@@ -293,10 +302,15 @@ class PluginInfo implements ConfigAwareInterface, ContainerAwareInterface, Logge
 
     /**
      * Read and parse the info for the plugin.
-     * Each check has an error message so that a plugin author gets the specific message needed if the plugin is malformed.
      *
-     * @return array|string
+     * Each check has an error message so that a plugin author gets the specific message needed if the plugin
+     * is malformed.
+     *
+     * @return array
+     *
      * @throws \Pantheon\Terminus\Exceptions\TerminusException
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
      */
     protected function parsePluginInfo()
     {
@@ -367,7 +381,7 @@ class PluginInfo implements ConfigAwareInterface, ContainerAwareInterface, Logge
     }
 
     /**
-     * Return the directory where this plugin stores it's command files.
+     * Return the directory where this plugin stores its command files.
      *
      * @return string
      */
@@ -379,7 +393,11 @@ class PluginInfo implements ConfigAwareInterface, ContainerAwareInterface, Logge
 
     /**
      * @param string $command
+     *
      * @return array
+     *
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
      */
     private function runCommand(string $command)
     {
