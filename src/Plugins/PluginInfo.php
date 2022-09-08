@@ -48,7 +48,6 @@ class PluginInfo implements ConfigAwareInterface, ContainerAwareInterface, Logge
      */
     protected $stable_latest_version;
 
-
     /**
      * Determines whether current terminus version satisfies given terminus-compatible value.
      */
