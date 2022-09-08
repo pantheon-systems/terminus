@@ -317,4 +317,20 @@ class PluginInfo implements ConfigAwareInterface, ContainerAwareInterface, Logge
         $this->logger->debug("Returned:\n{output}", $results);
         return $results;
     }
+
+    /**
+     * Replaces "{dir}" placeholder (Composer's "-d" option) in the command string with the actual plugin directory.
+     *
+     * @param string $command
+     *
+     * @return string
+     */
+    private function populateComposerWorkingDir(string $command): string
+    {
+        return str_replace(
+            '{dir}',
+            $this->plugin_dir,
+            $command
+        );
+    }
 }
