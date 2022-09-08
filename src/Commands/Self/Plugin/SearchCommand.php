@@ -17,7 +17,7 @@ class SearchCommand extends PluginBaseCommand
     const APPROVED_PROJECTS = 'terminus-plugin-project/terminus-pancakes-plugin';
     const NO_PLUGINS_MESSAGE = 'No compatible plugins have met your criterion.';
     const OFFICIAL_PLUGIN_AUTHOR = 'pantheon-systems';
-    const SEARCH_COMMAND = 'composer search -t terminus-plugin {keyword}';
+    const SEARCH_COMMAND = 'composer search -d {dir} -t terminus-plugin {keyword}';
     const PROJECT_URL = 'https://repo.packagist.org/p2/{project}.json';
     const PROJECT_DEV_URL = 'https://repo.packagist.org/p2/{project}~dev.json';
 
@@ -40,6 +40,7 @@ class SearchCommand extends PluginBaseCommand
     public function search($keyword)
     {
         $command = str_replace('{keyword}', $keyword, self::SEARCH_COMMAND);
+        $command = self::populateComposerWorkingDir($command, $this->getTerminusDependenciesDir());
         $results = explode(
             PHP_EOL,
             str_replace(' - ', ' ', trim($this->runCommand($command)['output']))
