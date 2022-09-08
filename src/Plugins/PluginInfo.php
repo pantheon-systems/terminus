@@ -5,6 +5,7 @@ namespace Pantheon\Terminus\Plugins;
 use Consolidation\AnnotatedCommand\CommandFileDiscovery;
 use League\Container\ContainerAwareInterface;
 use League\Container\ContainerAwareTrait;
+use Pantheon\Terminus\Commands\Self\Plugin\PluginBaseCommand;
 use Pantheon\Terminus\Config\ConfigAwareTrait;
 use Pantheon\Terminus\Helpers\LocalMachineHelper;
 use Psr\Log\LoggerAwareInterface;
@@ -147,7 +148,7 @@ class PluginInfo implements ConfigAwareInterface, ContainerAwareInterface, Logge
             $this->getName() ?? '',
             self::GET_LATEST_AVAILABLE_VERSION
         );
-        $command = $this->populateComposerWorkingDir($command);
+        $command = PluginBaseCommand::populateComposerWorkingDir($command, $this->plugin_dir);
 
         $results = $this->runCommand($command);
         if (!empty($results['output'])) {
@@ -317,21 +318,5 @@ class PluginInfo implements ConfigAwareInterface, ContainerAwareInterface, Logge
         $results = $this->getLocalMachine()->exec($command);
         $this->logger->debug("Returned:\n{output}", $results);
         return $results;
-    }
-
-    /**
-     * Replaces "{dir}" placeholder (Composer's "-d" option) in the command string with the actual plugin directory.
-     *
-     * @param string $command
-     *
-     * @return string
-     */
-    private function populateComposerWorkingDir(string $command): string
-    {
-        return str_replace(
-            '{dir}',
-            $this->plugin_dir,
-            $command
-        );
     }
 }

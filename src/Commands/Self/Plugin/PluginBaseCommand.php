@@ -492,4 +492,21 @@ abstract class PluginBaseCommand extends TerminusCommand
 
         return $results;
     }
+
+    /**
+     * Replaces "{dir}" placeholder (Composer's "-d" option) in the command string with the given value.
+     *
+     * @param string $command
+     * @param string $dir
+     *
+     * @return string
+     */
+    public static function populateComposerWorkingDir(string $command, string $dir): string
+    {
+        return str_replace(
+            '{dir}',
+            $dir,
+            $command
+        );
+    }
 }
