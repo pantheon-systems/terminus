@@ -224,7 +224,7 @@ class PluginInfo implements ConfigAwareInterface, ContainerAwareInterface, Logge
             self::VALIDATION_COMMAND
         );
         $results = $local_machine_helper->exec($command);
-        $result = (trim($results['output']));
+        $result = trim($results['output']);
 
         if (empty($result)) {
             return false;
