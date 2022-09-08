@@ -14,7 +14,8 @@ use Robo\Contract\ConfigAwareInterface;
 use Composer\Semver\Semver;
 
 /**
- * Class PluginInfo
+ * Class PluginInfo.
+ *
  * @package Pantheon\Terminus\Plugins
  */
 class PluginInfo implements ConfigAwareInterface, ContainerAwareInterface, LoggerAwareInterface
@@ -207,6 +208,7 @@ class PluginInfo implements ConfigAwareInterface, ContainerAwareInterface, Logge
      *
      * @param string $project_name Name of plugin package to install
      * @param LocalMachineHelper $local_machine_helper
+     *
      * @return bool True if valid, false otherwise
      */
     public static function checkWhetherPackagistProject($project_name, LocalMachineHelper $local_machine_helper)
