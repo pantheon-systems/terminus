@@ -4,6 +4,7 @@ namespace Pantheon\Terminus\Commands\Self\Plugin;
 
 use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
 use Consolidation\AnnotatedCommand\CommandData;
+use Pantheon\Terminus\Plugins\PluginInfo;
 
 /**
  * Lists installed Terminus plugins
@@ -27,11 +28,14 @@ class ListCommand extends PluginBaseCommand
      *   compatible_versions: Compatible With
      *
      * @return RowsOfFields
+     *
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
      */
     public function listPlugins()
     {
         $plugins = array_map(
-            function ($plugin) {
+            function (PluginInfo $plugin) {
                 return [
                     'name' => $plugin->getPluginName(),
                     'description' => $plugin->getInfo()['description'],
