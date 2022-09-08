@@ -27,7 +27,7 @@ class PluginInfo implements ConfigAwareInterface, ContainerAwareInterface, Logge
     const MAX_COMMAND_DEPTH = 4;
 
     // Commands
-    const GET_LATEST_AVAILABLE_VERSION = 'composer show {package} --latest --all --format=json';
+    const GET_LATEST_AVAILABLE_VERSION = 'composer show -d {dir} {package} --latest --all --format=json';
     const VALIDATION_COMMAND = 'composer search -N -t terminus-plugin {project}';
 
     // Version Numbers
@@ -148,6 +148,8 @@ class PluginInfo implements ConfigAwareInterface, ContainerAwareInterface, Logge
             $this->getName() ?? '',
             self::GET_LATEST_AVAILABLE_VERSION
         );
+        $command = $this->populateComposerWorkingDir($command);
+
         $results = $this->runCommand($command);
         if (!empty($results['output'])) {
             $package_info = json_decode($results['output'], true, 10);
