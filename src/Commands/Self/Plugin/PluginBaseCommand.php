@@ -277,7 +277,7 @@ abstract class PluginBaseCommand extends TerminusCommand
     protected function cleanupOldDependenciesFolders()
     {
         $dependencies_base_dir = $this->getConfig()->get('dependencies_base_dir');
-        $current_dependencies_dir = $this->getConfig()->get('terminus_dependencies_dir');
+        $current_dependencies_dir = $this->getTerminusDependenciesDir();
         $pattern_start = basename($dependencies_base_dir);
         $parent_folder = dirname($dependencies_base_dir);
         $all_folders = scandir($parent_folder);
@@ -444,7 +444,7 @@ abstract class PluginBaseCommand extends TerminusCommand
         $project_name_without_version = reset($project_name_parts);
         $config = $this->getConfig();
         $original_plugins_dir = $config->get('plugins_dir');
-        $original_dependencies_dir = $config->get('terminus_dependencies_dir');
+        $original_dependencies_dir = $this->getTerminusDependenciesDir();
         $folders = $this->updateTerminusDependencies($original_plugins_dir, $original_dependencies_dir);
         $plugins_dir = $folders['plugins_dir'];
         $dependencies_dir = $folders['dependencies_dir'];
@@ -491,6 +491,16 @@ abstract class PluginBaseCommand extends TerminusCommand
         }
 
         return $results;
+    }
+
+    /**
+     * Returns absolute path to Terminus' Composer dependencies.
+     *
+     * @return string
+     */
+    protected function getTerminusDependenciesDir(): string
+    {
+        return $this->getConfig()->get('terminus_dependencies_dir');
     }
 
     /**
