@@ -248,7 +248,7 @@ class PluginInfo implements ConfigAwareInterface, ContainerAwareInterface, Logge
     public static function getPluginNameFromProjectName($project_name)
     {
         preg_match('/.*\/(.*)/', $project_name, $matches);
-        return $matches[1];
+        return $matches[1] ?? 'n/a';
     }
 
     /**
