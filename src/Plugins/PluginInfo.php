@@ -389,31 +389,4 @@ class PluginInfo implements ConfigAwareInterface, ContainerAwareInterface, Logge
         $this->logger->debug("Returned:\n{output}", $results);
         return $results;
     }
-
-    /**
-     * @param string $results Version results from Composer
-     * @return array
-     */
-    private static function filterForVersionNumbers($results)
-    {
-        if (is_string($results)) {
-            $results = explode(PHP_EOL, $results);
-        }
-        if (empty($results)) {
-            return [];
-        }
-        return array_map(
-            function ($result) {
-                preg_match('/(\d*\.\d*\.\d*)/', $result, $output_array);
-                return $output_array[1];
-            },
-            array_filter(
-                $results,
-                function ($result) {
-                    preg_match('/(\d*\.\d*\.\d*)/', $result, $output_array);
-                    return isset($output_array[1]);
-                }
-            )
-        );
-    }
 }
