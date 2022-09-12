@@ -24,11 +24,13 @@ class CreateCommand extends PluginBaseCommand
      * @param string $path Path where the plugin will be created.
      * @param string[] $options
      *
-     * @option project-name Namme of the project to be created (vendor/project-name).
+     * @option project-name Name of the project to be created (vendor/project-name).
      *
      * @usage <path> --project-name=vendor/project_name
      *
      * @throws \Pantheon\Terminus\Exceptions\TerminusException
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
      */
     public function create(string $path, $options = [
         'project-name' => '',
@@ -51,6 +53,8 @@ class CreateCommand extends PluginBaseCommand
      *
      * @throws \Pantheon\Terminus\Exceptions\TerminusException
      * @throws \Pantheon\Terminus\Exceptions\TerminusNotFoundException
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
      */
     public function validate(CommandData $commandData)
     {
@@ -64,7 +68,11 @@ class CreateCommand extends PluginBaseCommand
     /**
      * @param string $path Path where this project will be created
      * @param string $project_name Name for the new project.
+     *
      * @return array Results from the create command
+     *
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
      */
     private function doCreate($path, $project_name)
     {
@@ -83,6 +91,8 @@ class CreateCommand extends PluginBaseCommand
         } catch (TerminusException $e) {
             $this->log()->error($e->getMessage());
         }
+
+        return [];
     }
 
     /**
