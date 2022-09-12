@@ -2,10 +2,8 @@
 
 namespace Pantheon\Terminus\Commands\Self;
 
-use Consolidation\OutputFormatters\StructuredData\PropertyList;
 use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
 use Pantheon\Terminus\Commands\TerminusCommand;
-use Robo\Contract\ConfigAwareInterface;
 
 class ConfigDumpCommand extends TerminusCommand
 {
