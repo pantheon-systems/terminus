@@ -61,6 +61,8 @@ class ListCommand extends PluginBaseCommand
      * @hook validate self:plugin:list
      *
      * @throws \Pantheon\Terminus\Exceptions\TerminusNotFoundException
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
      */
     public function validate()
     {
