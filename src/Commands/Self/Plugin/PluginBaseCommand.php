@@ -95,13 +95,13 @@ abstract class PluginBaseCommand extends TerminusCommand
      *
      * @param string $project Name of a project or plugin
      *
-     * @return array Plugin projects
+     * @return \Pantheon\Terminus\Plugins\PluginInfo Plugin projects
      *
      * @throws \Pantheon\Terminus\Exceptions\TerminusNotFoundException
      * @throws \Psr\Container\ContainerExceptionInterface
      * @throws \Psr\Container\NotFoundExceptionInterface
      */
-    protected function getPlugin($project)
+    protected function getPlugin(string $project): PluginInfo
     {
         $matches = array_filter(
             $this->getPluginProjects(),
