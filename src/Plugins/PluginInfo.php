@@ -28,7 +28,6 @@ class PluginInfo implements ConfigAwareInterface, ContainerAwareInterface, Logge
 
     // Commands
     const GET_LATEST_AVAILABLE_VERSION = 'composer show -d {dir} {package} --latest --all --format=json';
-    const VALIDATION_COMMAND = 'composer search -N -t terminus-plugin {project}';
 
     // Version Numbers
     const UNKNOWN_VERSION = 'unknown';
@@ -191,47 +190,6 @@ class PluginInfo implements ConfigAwareInterface, ContainerAwareInterface, Logge
     public function getPluginName()
     {
         return self::getPluginNameFromProjectName($this->getName());
-    }
-
-    /**
-     * Check whether a Packagist project is valid.
-     *
-     * @return bool True if valid, false otherwise
-     *
-     * @throws \Psr\Container\ContainerExceptionInterface
-     * @throws \Psr\Container\NotFoundExceptionInterface
-     */
-    public function isValidPackagistProject()
-    {
-        return self::checkWhetherPackagistProject($this->getName(), $this->getLocalMachine());
-    }
-
-    /**
-     * Check whether a Packagist project is valid.
-     *
-     * @param string $project_name Name of plugin package to install
-     * @param LocalMachineHelper $local_machine_helper
-     *
-     * @return bool True if valid, false otherwise
-     */
-    public static function checkWhetherPackagistProject($project_name, LocalMachineHelper $local_machine_helper)
-    {
-        // Separate version if exists.
-        $project_name_parts = explode(':', $project_name);
-        $project_name = reset($project_name_parts);
-        // Search for the Packagist project.
-        $command = str_replace(
-            '{project}',
-            $project_name ?? '',
-            self::VALIDATION_COMMAND
-        );
-        $results = $local_machine_helper->exec($command);
-        $result = trim($results['output']);
-
-        if (empty($result)) {
-            return false;
-        }
-        return ($result === $project_name);
     }
 
     /**

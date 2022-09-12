@@ -88,7 +88,7 @@ class UpdateCommand extends PluginBaseCommand
         $dependencies_dir = $folders['dependencies_dir'];
         $messages = [];
         $this->log()->notice(self::UPDATING_MESSAGE, $plugin_info);
-        if ($plugin->isValidPackagistProject()) {
+        if ($this->isPackagistProject($project)) {
             try {
                 $results = $this->runComposerUpdate($dependencies_dir, $project);
                 if ($results['output']) {

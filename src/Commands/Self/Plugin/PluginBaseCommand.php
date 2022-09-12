@@ -37,6 +37,7 @@ abstract class PluginBaseCommand extends TerminusCommand
     const DEPENDENCIES_UPDATE_COMMAND = 'composer update -d {dir} {packages} --with-dependencies';
     const INSTALL_COMMAND = 'composer require -d {dir} {project} --no-update';
     const COMPOSER_VERSION_COMMAND = 'composer --version';
+    const COMPOSER_SEARCH_COMMAND = 'composer search -d {dir} -N -t terminus-plugin --format json {project}';
 
     /**
      * @var array|null
@@ -502,6 +503,41 @@ abstract class PluginBaseCommand extends TerminusCommand
     protected function getTerminusDependenciesDir(): string
     {
         return $this->getConfig()->get('terminus_dependencies_dir');
+    }
+
+    /**
+     * Returns true if a Packagist project is valid.
+     *
+     * @param string $project_name Name of plugin package to install
+     *
+     * @return bool True if valid, false otherwise
+     *
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
+     */
+    protected function isPackagistProject(string $project_name): bool
+    {
+        // Separate version if exists.
+        $project_name_parts = explode(':', $project_name);
+        $project_name = reset($project_name_parts);
+        // Search for the Packagist project.
+        $command = str_replace(
+            '{project}',
+            $project_name ?? '',
+            self::COMPOSER_SEARCH_COMMAND
+        );
+        $command = self::populateComposerWorkingDir($command, $this->getTerminusDependenciesDir());
+        $output = trim($this->getLocalMachine()->exec($command)['output']);
+        $packages = json_decode($output, true);
+        if (json_last_error()) {
+            $this->log()->error(
+                sprintf('Failed executing "%s": json decode error code %d', $command, json_last_error())
+            );
+            return false;
+        }
+        $package_names = array_column($packages, 'name');
+
+        return in_array($project_name, $package_names, true);
     }
 
     /**

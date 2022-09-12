@@ -207,7 +207,7 @@ class InstallCommand extends PluginBaseCommand
     private function validateProject(string $projectName, ?string $installationPath): bool
     {
         if (null === $installationPath
-            && !PluginInfo::checkWhetherPackagistProject($projectName, $this->getLocalMachine())
+            && !$this->isPackagistProject($projectName)
         ) {
             $this->log()->error(self::INVALID_PROJECT_MESSAGE, ['project' => $projectName,]);
             return false;
