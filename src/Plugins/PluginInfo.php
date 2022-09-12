@@ -37,11 +37,12 @@ class PluginInfo implements ConfigAwareInterface, ContainerAwareInterface, Logge
      */
 
     protected $info = null;
+
     /**
      * @var string
      */
-
     protected $plugin_dir;
+
     /**
      * @var string
      */
