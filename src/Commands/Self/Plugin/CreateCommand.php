@@ -13,7 +13,8 @@ class CreateCommand extends PluginBaseCommand
 {
     const USAGE_MESSAGE = 'terminus self:plugin:create <path>';
     const EXISTING_FOLDER_MESSAGE = 'Path should be a non-existing folder that will be created';
-    const COMPOSER_CREATE_PROJECT = 'composer create-project pantheon-systems/terminus-plugin-example {dir}';
+    const COMPOSER_CREATE_PROJECT =
+        'composer create-project -d {dir} pantheon-systems/terminus-plugin-example {project_dir}';
 
     /**
      * Create a new terminus plugin.
@@ -80,7 +81,15 @@ class CreateCommand extends PluginBaseCommand
         $basename = basename($path);
         $realpath = realpath($parent_folder) . DIRECTORY_SEPARATOR . $basename;
         try {
-            $command = self::populateComposerWorkingDir(self::COMPOSER_CREATE_PROJECT, $realpath);
+            $command = str_replace(
+                ['{project_dir}'],
+                [$realpath],
+                self::COMPOSER_CREATE_PROJECT
+            );
+            $command = self::populateComposerWorkingDir(
+                self::COMPOSER_CREATE_PROJECT,
+                self::getTerminusDependenciesDir()
+            );
             $results = $this->runCommand($command);
             if ($results['exit_code'] !== 0) {
                 throw new TerminusException('Error creating plugin project.');
