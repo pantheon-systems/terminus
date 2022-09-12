@@ -11,7 +11,7 @@ use Pantheon\Terminus\Helpers\LocalMachineHelper;
 use Robo\Contract\ConfigAwareInterface;
 
 /**
- * Class PluginDiscovery
+ * Class PluginDiscovery.
  */
 class PluginDiscovery implements ContainerAwareInterface, LoggerAwareInterface, ConfigAwareInterface
 {
@@ -23,13 +23,16 @@ class PluginDiscovery implements ContainerAwareInterface, LoggerAwareInterface, 
      * List of all Terminus plugins that have been rolled into Terminus core.
      */
     const BLACKLIST = [
-        'pantheon-systems/terminus-aliases-plugin'
+        'pantheon-systems/terminus-aliases-plugin',
     ];
 
     /**
-     * Return a list of plugin
+     * Returns a list of plugins.
      *
      * @return PluginInfo[]
+     *
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
      */
     public function discover()
     {
