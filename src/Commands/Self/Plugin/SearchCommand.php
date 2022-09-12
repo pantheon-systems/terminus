@@ -6,11 +6,11 @@ use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
 use Pantheon\Terminus\Plugins\PluginInfo;
 
 /**
+ * SearchCommand class.
+ *
  * Search for Terminus plugins to install.
+ *
  * @package Pantheon\Terminus\Commands\Self\Plugin
- * @TODO Bonus: Add the ability to search and prompt to install new plugins.
- * @TODO Keep an internal registry of approved third-party plugins.
- * @TODO Do lookup if given a plugin name and not a project name, prompt OK for match, install
  */
 class SearchCommand extends PluginBaseCommand
 {
@@ -119,6 +119,8 @@ class SearchCommand extends PluginBaseCommand
      * @hook validate self:plugin:search
      *
      * @throws \Pantheon\Terminus\Exceptions\TerminusNotFoundException
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
      */
     public function validate()
     {
