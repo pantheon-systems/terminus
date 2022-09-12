@@ -507,7 +507,7 @@ abstract class PluginBaseCommand extends TerminusCommand
      * Install given project. Optionally from path repository.
      *
      * @param string $project_name Name of project to be installed
-     * @param string $instalation_path If not empty, install as a path repository
+     * @param string $installation_path If not empty, install as a path repository
      *
      * @return array Results from the install command
      *
@@ -515,7 +515,7 @@ abstract class PluginBaseCommand extends TerminusCommand
      * @throws \Psr\Container\ContainerExceptionInterface
      * @throws \Psr\Container\NotFoundExceptionInterface
      */
-    protected function installProject($project_name, $instalation_path = '')
+    protected function installProject($project_name, $installation_path = '')
     {
         $plugin_name = PluginInfo::getPluginNameFromProjectName($project_name);
         $project_name_parts = explode(':', $project_name);
@@ -527,12 +527,12 @@ abstract class PluginBaseCommand extends TerminusCommand
         $plugins_dir = $folders['plugins_dir'];
         $dependencies_dir = $folders['dependencies_dir'];
         try {
-            if (!empty($instalation_path)) {
+            if (!empty($installation_path)) {
                 // Update path repository in plugins dir and dependencies dir.
                 foreach ([$plugins_dir, $dependencies_dir] as $dir) {
                     $command = str_replace(
                         ['{repo_name}', '{path}'],
-                        [$project_name_without_version, realpath($instalation_path)],
+                        [$project_name_without_version, realpath($installation_path)],
                         self::COMPOSER_ADD_REPOSITORY
                     );
                     $command = self::populateComposerWorkingDir($command, $dir);
