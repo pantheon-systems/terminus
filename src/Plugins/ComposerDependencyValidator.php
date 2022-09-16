@@ -2,12 +2,7 @@
 
 namespace Pantheon\Terminus\Plugins;
 
-use Consolidation\AnnotatedCommand\AnnotationData;
-use Consolidation\AnnotatedCommand\Hooks\InitializeHookInterface;
 use Pantheon\Terminus\Exceptions\TerminusException;
-use Psr\Log\LoggerAwareInterface;
-use Psr\Log\LoggerAwareTrait;
-use Symfony\Component\Console\Input\InputInterface;
 
 class ComposerDependencyValidator
 {
@@ -23,8 +18,12 @@ class ComposerDependencyValidator
 
     /**
      * Compare the contents of the composer.json and composer.lock files
-     * of the plugin being used, and see if anything contaied therein is
+     * of the plugin being used, and see if anything contained therein is
      * incompatible with the projects loaded by Terminus itself.
+     *
+     * @param $plugin_dir
+     *
+     * @throws \Pantheon\Terminus\Exceptions\TerminusException
      */
     public function validate($plugin_dir)
     {
@@ -71,6 +70,11 @@ class ComposerDependencyValidator
      * that Terminus already provides. If it does, we will reject the
      * plugin. The plugin author may remove this dependency from the
      * plugin's composer.json file via 'composer remove'.
+     *
+     * @param $plugin_composer_json
+     * @param $terminus_composer_lock
+     *
+     * @throws \Pantheon\Terminus\Exceptions\TerminusException
      */
     protected function validatePluginDoesNotRequireTerminusDependencies($plugin_composer_json, $terminus_composer_lock)
     {
@@ -102,6 +106,13 @@ class ComposerDependencyValidator
      *  a) nothing in the plugin composer.lock exists in Terminus's composer.lock (ideal)
      * or
      *  b) anything that does appear in both places exists as exactly the same version.
+     *
+     * @param $plugin_composer_json
+     * @param $plugin_composer_lock
+     * @param $terminus_composer_lock
+     * @param $plugin_vendor_dir
+     *
+     * @throws \Pantheon\Terminus\Exceptions\TerminusException
      */
     protected function validateLockFilesCompatible(
         $plugin_composer_json,

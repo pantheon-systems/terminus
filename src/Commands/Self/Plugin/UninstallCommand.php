@@ -9,9 +9,11 @@ use Symfony\Component\Process\Exception\RuntimeException;
 use Pantheon\Terminus\Exceptions\TerminusException;
 
 /**
+ * UninstallCommand class.
+ *
  * Removes Terminus plugins.
+ *
  * @package Pantheon\Terminus\Commands\Self\Plugin
- * @TODO Add the ability to prompt for plugins to remove.
  */
 class UninstallCommand extends PluginBaseCommand
 {
@@ -29,9 +31,14 @@ class UninstallCommand extends PluginBaseCommand
      * @command self:plugin:uninstall
      * @aliases self:plugin:remove self:plugin:rm self:plugin:delete plugin:uninstall plugin:remove plugin:rm plugin:delete
      *
+     * @usage <project> [project] ... Uninstalls the indicated plugins.
+     *
      * @param array $projects A list of one or more installed projects or plugins to remove
      *
-     * @usage <project> [project] ... Uninstalls the indicated plugins.
+     * @throws \Pantheon\Terminus\Exceptions\TerminusException
+     * @throws \Pantheon\Terminus\Exceptions\TerminusNotFoundException
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
      */
     public function uninstall(array $projects)
     {
@@ -48,8 +55,12 @@ class UninstallCommand extends PluginBaseCommand
     /**
      * Check for minimum plugin command requirements.
      * @hook validate self:plugin:uninstall
+     *
      * @param CommandData $commandData
-     * @throws TerminusNotFoundException
+     *
+     * @throws \Pantheon\Terminus\Exceptions\TerminusNotFoundException
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
      */
     public function validate(CommandData $commandData)
     {
@@ -62,12 +73,16 @@ class UninstallCommand extends PluginBaseCommand
 
     /**
      * @param PluginInfo $project
+     *
+     * @throws \Pantheon\Terminus\Exceptions\TerminusException
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
      */
     private function doUninstallation(PluginInfo $project)
     {
         $config = $this->getConfig();
         $original_plugins_dir = $config->get('plugins_dir');
-        $original_dependencies_dir = $config->get('terminus_dependencies_dir');
+        $original_dependencies_dir = $this->getTerminusDependenciesDir();
         $folders = $this->updateTerminusDependencies($original_plugins_dir, $original_dependencies_dir);
         $plugins_dir = $folders['plugins_dir'];
         $dependencies_dir = $folders['dependencies_dir'];
@@ -76,10 +91,11 @@ class UninstallCommand extends PluginBaseCommand
 
             // First remove from terminus-plugins.
             $command = str_replace(
-                ['{dir}', '{project}',],
-                [$plugins_dir, $project_name,],
+                ['{project}'],
+                [$project_name],
                 self::UNINSTALL_COMMAND
             );
+            $command = self::populateComposerWorkingDir($command, $plugins_dir);
             $results = $this->runCommand($command);
             if ($results['exit_code'] !== 0) {
                 throw new TerminusException('Error removing package in terminus-dependencies.');
@@ -94,10 +110,11 @@ class UninstallCommand extends PluginBaseCommand
             // Cleanup path repositories if they exist.
             foreach ([$plugins_dir, $dependencies_dir] as $dir) {
                 $command = str_replace(
-                    ['{dir}', '{name}',],
-                    [$dir, $project_name,],
+                    ['{name}'],
+                    [$project_name],
                     self::REMOVE_PATH_REPO_COMMAND
                 );
+                $command = self::populateComposerWorkingDir($command, $dir);
                 $results = $this->runCommand($command);
                 if ($results['exit_code'] !== 0) {
                     throw new TerminusException('Error removing path repository in ' . basename($dir));
@@ -111,6 +128,5 @@ class UninstallCommand extends PluginBaseCommand
         } catch (TerminusException $e) {
             $this->log()->error($e->getMessage());
         }
-        return $results;
     }
 }

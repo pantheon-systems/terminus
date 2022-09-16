@@ -4,10 +4,11 @@ namespace Pantheon\Terminus\Commands\Self\Plugin;
 
 use Consolidation\AnnotatedCommand\CommandData;
 use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
-use Pantheon\Terminus\Plugins\PluginInfo;
 use Pantheon\Terminus\Exceptions\TerminusException;
 
 /**
+ * Class InstallCommand.
+ *
  * Installs a Terminus plugin using Composer.
  *
  * @package Pantheon\Terminus\Commands\Self\Plugin
@@ -30,14 +31,16 @@ class InstallCommand extends PluginBaseCommand
      * @usage <project 1> [project 2] ...
      *
      * @throws \Pantheon\Terminus\Exceptions\TerminusException
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
      */
     public function install(array $projects)
     {
         $projects = $this->convertRepositoryProjects($projects);
         foreach ($projects as $projectName => $installationPath) {
             if ($this->validateProject($projectName, $installationPath)) {
+                $this->log()->info(sprintf('Installing %s...', $projectName));
                 $results = $this->doInstallation($projectName, $installationPath);
-                // TODO Improve messaging
                 $this->log()->notice($results['output']);
             }
         }
@@ -50,6 +53,8 @@ class InstallCommand extends PluginBaseCommand
      * @aliases plugin:migrate
      *
      * @throws \Pantheon\Terminus\Exceptions\TerminusException
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
      */
     public function migrate()
     {
@@ -99,6 +104,8 @@ class InstallCommand extends PluginBaseCommand
      * @param CommandData $commandData
      *
      * @throws \Pantheon\Terminus\Exceptions\TerminusNotFoundException
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
      */
     public function validate(CommandData $commandData)
     {
@@ -119,6 +126,8 @@ class InstallCommand extends PluginBaseCommand
      *  - value is path toa local installation (if exists). Otherwise - NULL.
      *
      * @throws \Pantheon\Terminus\Exceptions\TerminusException
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
      */
     protected function convertRepositoryProjects(array $projects): array
     {
@@ -190,6 +199,10 @@ class InstallCommand extends PluginBaseCommand
      *
      * @return array
      *   Results from the "install" command.
+     *
+     * @throws \Pantheon\Terminus\Exceptions\TerminusException
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
      */
     private function doInstallation(string $projectName, ?string $installationPath)
     {
@@ -203,12 +216,13 @@ class InstallCommand extends PluginBaseCommand
      * @param string|null $installationPath
      *
      * @return bool
+     *
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
      */
     private function validateProject(string $projectName, ?string $installationPath): bool
     {
-        if (null === $installationPath
-            && !PluginInfo::checkWhetherPackagistProject($projectName, $this->getLocalMachine())
-        ) {
+        if (null === $installationPath && !$this->isPackagistProject($projectName)) {
             $this->log()->error(self::INVALID_PROJECT_MESSAGE, ['project' => $projectName,]);
             return false;
         }
