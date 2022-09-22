@@ -578,11 +578,30 @@ EOD;
             }
         }
         $terminus = new static($config, $input, $output);
+
         if ($dependencies_folder_absent && $terminus->hasPlugins()) {
-            $terminus->logger->warning(
-                'Could not load plugins because Terminus was upgraded. ' .
-                'Please run terminus self:plugin:reload to refresh.',
-            );
+            $omit_reload_warning = false;
+
+            $input_string = (string) $input;
+            $plugin_reload_command_names = [
+                'self:plugin:reload',
+                'self:plugin:refresh',
+                'plugin:reload',
+                'plugin:refresh',
+            ];
+            foreach ($plugin_reload_command_names as $command_name) {
+                if (strpos($input_string, $command_name) !== false) {
+                    $omit_reload_warning = true;
+                    break;
+                }
+            }
+
+            if (!$omit_reload_warning) {
+                $terminus->logger->warning(
+                    'Could not load plugins because Terminus was upgraded. ' .
+                    'Please run terminus self:plugin:reload to refresh.',
+                );
+            }
         }
         return $terminus;
     }
