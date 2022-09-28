@@ -107,13 +107,11 @@ class SiteCommandsTest extends TerminusTestBase
     public function testSiteInfoNoSiteEnvCommand()
     {
         putenv('TERMINUS_SITE=' . $this->getSiteName());
-        putenv('TERMINUS_ENV=' . $this->getMdEnv());
-        $site_env = sprintf("%s.%s", $this->getSiteName(), $this->getMdEnv());
-        $output = $this->terminus('site:info');
+        $output = $this->terminusWithStderrRedirected('site:info -v');
         $this->assertStringContainsString(
             sprintf(
-                'Missing site_env argument. Setting to "%s" (from TERMINUS_SITE/TERMINUS_ENV env vars).',
-                $site_env
+                'Missing "site" argument. Setting to "%s" (from TERMINUS_SITE env var).',
+                $this->getSiteName()
             ),
             $output
         );
