@@ -44,9 +44,13 @@ trait SiteAwareTrait
      *
      * @param string $site_id
      *   Either a site's UUID or its name or site_env.
+     *
      * @return Site
      *
+     * @throws \GuzzleHttp\Exception\GuzzleException
      * @throws \Pantheon\Terminus\Exceptions\TerminusException
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
      */
     public function getSite(string $site_id): Site
     {
@@ -66,7 +70,11 @@ trait SiteAwareTrait
      *
      * @return \Pantheon\Terminus\Models\Environment
      *
+     * @throws \GuzzleHttp\Exception\GuzzleException
      * @throws \Pantheon\Terminus\Exceptions\TerminusException
+     * @throws \Pantheon\Terminus\Exceptions\TerminusNotFoundException
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
      */
     public function getEnv(string $site_env, ?string $default_env = null): TerminusModel
     {
@@ -89,7 +97,11 @@ trait SiteAwareTrait
      *
      * @return TerminusModel|null
      *
-     * @throws TerminusException
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @throws \Pantheon\Terminus\Exceptions\TerminusException
+     * @throws \Pantheon\Terminus\Exceptions\TerminusNotFoundException
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
      */
     public function getOptionalEnv(string $site_env, ?string $default_env = null): ?TerminusModel
     {
@@ -105,7 +117,10 @@ trait SiteAwareTrait
      *
      * @param string $site_env
      *
+     * @throws \GuzzleHttp\Exception\GuzzleException
      * @throws \Pantheon\Terminus\Exceptions\TerminusException
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
      */
     public function requireSiteIsNotFrozen(string $site_env): void
     {
@@ -128,6 +143,11 @@ trait SiteAwareTrait
      *
      * @return array
      *   The site and environment in an array, if provided; may return [null, null].
+     *
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
+     *
      */
     public function getOptionalSiteEnv(string $site_env): array
     {
@@ -160,7 +180,12 @@ trait SiteAwareTrait
      * @return array
      *   The site and environment in an array.
      *
+     * @throws \GuzzleHttp\Exception\GuzzleException
      * @throws \Pantheon\Terminus\Exceptions\TerminusException
+     * @throws \Pantheon\Terminus\Exceptions\TerminusNotFoundException
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
+     *
      */
     public function getSiteEnv(string $site_env, ?string $default_env = null): array
     {
@@ -185,7 +210,12 @@ trait SiteAwareTrait
      * @return array
      *   The site and environment in an array.
      *
+     * @throws \GuzzleHttp\Exception\GuzzleException
      * @throws \Pantheon\Terminus\Exceptions\TerminusException
+     * @throws \Pantheon\Terminus\Exceptions\TerminusNotFoundException
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
+     *
      */
     public function getUnfrozenSiteEnv(string $site_env, ?string $default_env = null): array
     {
