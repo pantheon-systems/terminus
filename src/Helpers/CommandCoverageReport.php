@@ -207,7 +207,7 @@ class CommandCoverageReport implements ConfigAwareInterface, IOAwareInterface
         $command_short = str_replace(
             "Command",
             "",
-            $command_name
+            $command_name ?? ''
         );
         return $command_short;
     }

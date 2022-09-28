@@ -86,7 +86,7 @@ class MetricsCommand extends TerminusCommand implements SiteAwareInterface
             ->addRendererFunction(
                 function ($key, $cellData, FormatterOptions $options, $rowData) {
                     if ($key == 'datetime') {
-                        $cellData = str_replace('T00:00:00', '', $cellData);
+                        $cellData = str_replace('T00:00:00', '', $cellData ?? '');
                     }
                     return $cellData;
                 }

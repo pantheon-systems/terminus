@@ -82,7 +82,7 @@ class TerminusConfig extends \Robo\Config\Config
      */
     public function fixDirectorySeparators($path)
     {
-        return str_replace(['/', '\\',], DIRECTORY_SEPARATOR, $path);
+        return str_replace(['/', '\\',], DIRECTORY_SEPARATOR, $path ?? '');
     }
 
     /**
@@ -227,9 +227,9 @@ class TerminusConfig extends \Robo\Config\Config
         if (!empty($matches)) {
             foreach ($matches[1] as $id => $value) {
                 $replacement_key = $this->getKeyFromConstant(trim($value));
-                $replacement = $this->get($replacement_key);
+                $replacement = $this->get($replacement_key) ?? '';
                 if ($replacement) {
-                    $string = str_replace($matches[0][$id], $replacement, $string);
+                    $string = str_replace($matches[0][$id] ?? '', $replacement, $string);
                 }
             }
         }
