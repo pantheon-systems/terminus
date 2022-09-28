@@ -111,7 +111,7 @@ class WatchCommand extends TerminusCommand implements SiteAwareInterface
     protected function emitOperationLogs($workflow)
     {
         $workflow->fetchWithLogs();
-        $operations = $workflow->operations();
+        $operations = $workflow->getOperations()->all();
         foreach ($operations as $operation) {
             if ($operation->has('log_output')) {
                 $this->log()->notice($operation);
