@@ -77,7 +77,16 @@ abstract class TerminusTestBase extends TestCase
             $this->assertEquals(0, $exitCode, $error);
         }
 
-        $this->assertStringNotContainsString('PHP Deprecated:', $output);
+        $this->assertStringNotContainsString(
+            'PHP Deprecated',
+            $output,
+            'Command output must not contain PHP deprecation notices'
+        );
+        $this->assertStringNotContainsString(
+            'PHP Deprecated',
+            $error,
+            'Command error must not contain PHP deprecation notices'
+        );
 
         return $output;
     }
