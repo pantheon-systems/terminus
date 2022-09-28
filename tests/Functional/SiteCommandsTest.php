@@ -96,4 +96,26 @@ class SiteCommandsTest extends TerminusTestBase
         $siteInfoTable = $this->terminus(sprintf('site:info %s', $this->mockSiteName));
         $this->assertStringContainsString('Drupal 8 or later', $siteInfoTable);
     }
+
+    /**
+     * @test
+     * @covers \Pantheon\Terminus\Commands\Site\InfoCommand
+     *
+     * @group site
+     * @group short
+     */
+    public function testSiteInfoNoSiteEnvCommand()
+    {
+        putenv('TERMINUS_SITE=' . $this->getSiteName());
+        putenv('TERMINUS_ENV=' . $this->getMdEnv());
+        $site_env = sprintf("%s.%s", $this->getSiteName(), $this->getMdEnv());
+        $output = $this->terminus('site:info');
+        $this->assertStringContainsString(
+            sprintf(
+                'Missing site_env argument. Setting to "%s" (from TERMINUS_SITE/TERMINUS_ENV env vars).',
+                $site_env
+            ),
+            $output
+        );
+    }
 }

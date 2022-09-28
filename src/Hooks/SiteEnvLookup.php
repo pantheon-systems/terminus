@@ -6,16 +6,19 @@ use Consolidation\AnnotatedCommand\AnnotationData;
 use Pantheon\Terminus\Config\ConfigAwareTrait;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareTrait;
 use Robo\Contract\ConfigAwareInterface;
 
 /**
  * Class SiteEnvLookup
  * @package Pantheon\Terminus
  */
-class SiteEnvLookup implements ConfigAwareInterface, SiteAwareInterface
+class SiteEnvLookup implements ConfigAwareInterface, SiteAwareInterface, LoggerAwareInterface
 {
     use ConfigAwareTrait;
     use SiteAwareTrait;
+    use LoggerAwareTrait;
 
     /**
      * Determine the site and environment that this command should target.
@@ -140,13 +143,24 @@ class SiteEnvLookup implements ConfigAwareInterface, SiteAwareInterface
         $site = $this->getConfig()->get('site');
         $env = $this->getConfig()->get('env');
         if (!empty($site) && !empty($env)) {
-            return "$site.$env";
+            $site_env = "$site.$env";
+            $this->logger->warning(
+                sprintf(
+                    'Missing site_env argument. Setting to "%s" (from TERMINUS_SITE/TERMINUS_ENV env vars).',
+                    $site_env
+                )
+            );
+            return $site_env;
         }
 
         // Check the url of the origin of the repo at the cwd
         list($site, $env) = $this->siteAndEnvFromRepo();
         if (!empty($site) && !empty($env)) {
-            return "$site.$env";
+            $site_env = "$site.$env";
+            $this->logger->warning(
+                sprintf('Missing site_env argument. Setting to "%s" (from git remote in cwd).', $site_env)
+            );
+            return $site_env;
         }
         return '';
     }
