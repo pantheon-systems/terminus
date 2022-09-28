@@ -105,7 +105,7 @@ class SiteEnvLookup implements ConfigAwareInterface, SiteAwareInterface
      */
     protected function isValidSiteEnv($site_env)
     {
-        return strpos($site_env, '.') !== false;
+        return strpos($site_env ?? '', '.') !== false;
     }
 
     /**

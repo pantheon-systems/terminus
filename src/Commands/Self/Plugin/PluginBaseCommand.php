@@ -326,6 +326,10 @@ abstract class PluginBaseCommand extends TerminusCommand
         $pattern_start = basename($dependencies_base_dir);
         $parent_folder = dirname($dependencies_base_dir);
         $all_folders = scandir($parent_folder);
+        if (!$all_folders) {
+            return;
+        }
+
         $fs = $this->getLocalMachine()->getFileSystem();
         foreach ($all_folders as $folder) {
             $full_path = $parent_folder . DIRECTORY_SEPARATOR . $folder;

@@ -67,7 +67,7 @@ class Backup extends TerminusModel implements EnvironmentInterface
     public function getBucket()
     {
         $bucket = 'pantheon-backups';
-        if (strpos($this->getConfig()->get('host'), 'onebox') !== false) {
+        if (strpos($this->getConfig()->get('host') ?? '', 'onebox') !== false) {
             $bucket = "onebox-$bucket";
         }
         return $bucket;

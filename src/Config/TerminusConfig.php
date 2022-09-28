@@ -46,7 +46,10 @@ class TerminusConfig extends \Robo\Config\Config
      */
     public function ensureDirExists($name, $value)
     {
-        if ((strpos($name, 'TERMINUS_') !== false) && (strpos($name, '_DIR') !== false) && ($value != '~')) {
+        if (strpos($name ?? '', 'TERMINUS_') !== false
+            && strpos($name ?? '', '_DIR') !== false
+            && $value != '~'
+        ) {
             try {
                 $dir_exists = (is_dir($value) || (!file_exists($value) && @mkdir($value, 0777, true)));
             } catch (\Exception $e) {
@@ -208,7 +211,7 @@ class TerminusConfig extends \Robo\Config\Config
      */
     protected function keyIsConstant($key)
     {
-        return strpos($key, $this->constant_prefix) === 0;
+        return strpos($key ?? '', $this->constant_prefix) === 0;
     }
 
     /**
