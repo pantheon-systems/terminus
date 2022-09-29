@@ -46,7 +46,7 @@ class SearchCommand extends PluginBaseCommand
         $command = self::populateComposerWorkingDir($command, $this->getTerminusDependenciesDir());
         $results = explode(
             PHP_EOL,
-            str_replace(' - ', ' ', trim($this->runCommand($command)['output']))
+            str_replace(' - ', ' ', trim($this->runCommand($command)['output'] ?? ''))
         );
 
         $projects = array_map(

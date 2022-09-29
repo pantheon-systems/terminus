@@ -28,6 +28,6 @@ abstract class UserOwnedCollection extends APICollection implements UserInterfac
     public function getUrl()
     {
         // Replace the {user_id} token with the actual user id.
-        return str_replace('{user_id}', $this->getUser()->id ?? '', parent::getUrl());
+        return str_replace('{user_id}', $this->getUser()->id ?? '', parent::getUrl() ?? '');
     }
 }
