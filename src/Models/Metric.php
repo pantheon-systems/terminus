@@ -16,6 +16,9 @@ class Metric extends TerminusModel
             'datetime' => $this->get('datetime'),
             'pages_served' => $this->get('pages_served'),
             'visits' => $this->get('visits'),
+            'cache_hits' => $this->get('cache_hits'),
+            'cache_misses' => $this->get('cache_misses'),
+            'cache_hit_ratio' => $this->get('cache_hit_ratio'),
         ];
     }
 }
