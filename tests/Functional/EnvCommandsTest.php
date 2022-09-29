@@ -223,49 +223,6 @@ class EnvCommandsTest extends TerminusTestBase
 
     /**
      * @test
-     * @covers \Pantheon\Terminus\Commands\Env\CacheMetricsCommand
-     *
-     * @group env
-     * @group short
-     */
-    public function testCacheMetricsCommand()
-    {
-        $cacheMetrics = $this->terminusJsonResponse(sprintf('env:cache-metrics %s', $this->getSiteEnv()));
-        $this->assertIsArray($cacheMetrics);
-        $this->assertNotEmpty($cacheMetrics);
-        $this->assertArrayHasKey('timeseries', $cacheMetrics, 'Cache Metrics should have "timeseries" field.');
-        $cacheMetric = array_shift($cacheMetrics['timeseries']);
-        $this->assertIsArray($cacheMetric);
-        $this->assertNotEmpty($cacheMetric);
-        $this->assertArrayHasKey(
-            'time',
-            $cacheMetric,
-            'A cache metric should have "time" field.'
-        );
-        $this->assertArrayHasKey(
-            'pages_served',
-            $cacheMetric,
-            'A cache metric should have "pages_served" field.'
-        );
-        $this->assertArrayHasKey(
-            'cache_hits',
-            $cacheMetric,
-            'A cache metric should have "cache_hits" field.'
-        );
-        $this->assertArrayHasKey(
-            'cache_misses',
-            $cacheMetric,
-            'A cache metric should have "cache_misses" field.'
-        );
-        $this->assertArrayHasKey(
-            'cache_hit_ratio',
-            $cacheMetric,
-            'A cache metric should have "cache_hit_ratio" field.'
-        );
-    }
-
-    /**
-     * @test
      * @covers \Pantheon\Terminus\Commands\Env\ListCommand
      *
      * @group env

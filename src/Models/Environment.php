@@ -9,7 +9,6 @@ use Pantheon\Terminus\Collections\Bindings;
 use Pantheon\Terminus\Collections\Commits;
 use Pantheon\Terminus\Collections\Domains;
 use Pantheon\Terminus\Collections\EnvironmentMetrics;
-use Pantheon\Terminus\Collections\EnvironmentCacheMetrics;
 use Pantheon\Terminus\Collections\Workflows;
 use Pantheon\Terminus\Helpers\LocalMachineHelper;
 use Pantheon\Terminus\Friends\SiteInterface;

@@ -263,7 +263,6 @@ EOD;
         $container->add(\Pantheon\Terminus\Collections\Commits::class);
         $container->add(\Pantheon\Terminus\Collections\DNSRecords::class);
         $container->add(\Pantheon\Terminus\Collections\Domains::class);
-        $container->add(\Pantheon\Terminus\Collections\EnvironmentCacheMetrics::class);
         $container->add(\Pantheon\Terminus\Collections\EnvironmentMetrics::class);
         $container->add(\Pantheon\Terminus\Collections\Environments::class);
         $container->add(\Pantheon\Terminus\Collections\MachineTokens::class);
@@ -324,7 +323,6 @@ EOD;
             'Pantheon\\Terminus\\Commands\\Domain\\Primary\\AddCommand',
             'Pantheon\\Terminus\\Commands\\Domain\\Primary\\RemoveCommand',
             'Pantheon\\Terminus\\Commands\\Domain\\RemoveCommand',
-            'Pantheon\\Terminus\\Commands\\Env\\CacheMetricsCommand',
             'Pantheon\\Terminus\\Commands\\Env\\ClearCacheCommand',
             'Pantheon\\Terminus\\Commands\\Env\\CloneContentCommand',
             'Pantheon\\Terminus\\Commands\\Env\\CodeLogCommand',
