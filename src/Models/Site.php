@@ -335,7 +335,7 @@ class Site extends TerminusModel implements ContainerAwareInterface, Organizatio
         if (empty($this->site_metrics)) {
             $nickname = \uniqid(__FUNCTION__ . "-");
             $this->getContainer()->add($nickname, SiteMetrics::class)
-                ->addArguemnt(['site' => $this]);
+                ->addArgument(['site' => $this]);
             $this->site_metrics = $this->getContainer()->get($nickname);
         }
         return $this->site_metrics;
