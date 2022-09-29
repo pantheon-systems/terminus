@@ -199,7 +199,7 @@ class TerminusConfig extends \Robo\Config\Config
      */
     protected function getKeyFromConstant($constant_name)
     {
-        $key = strtolower(str_replace($this->constant_prefix, '', $constant_name));
+        $key = strtolower(str_replace($this->constant_prefix ?? '', '', $constant_name ?? ''));
         return $key;
     }
 

@@ -60,7 +60,7 @@ class SetCommand extends TerminusCommand implements SiteAwareInterface
         }
 
         try {
-            $mode = strtolower($mode);
+            $mode = strtolower($mode ?? '');
             $workflow = $env->changeConnectionMode($mode);
         } catch (TerminusException $e) {
             $message = $e->getMessage();
