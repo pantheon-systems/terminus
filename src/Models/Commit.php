@@ -17,7 +17,7 @@ class Commit extends TerminusModel
             'author' => $this->get('author'),
             'labels' => implode(', ', $this->get('labels')),
             'hash' => $this->get('hash'),
-            'message' => substr(strtr(trim($this->get('message')), ["\n" => ' ', "\t" => ' ']), 0, 50),
+            'message' => substr(strtr(trim($this->get('message') ?? ''), ["\n" => ' ', "\t" => ' ']), 0, 50),
         ];
     }
 }

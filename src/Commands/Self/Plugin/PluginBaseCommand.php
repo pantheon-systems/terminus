@@ -609,7 +609,7 @@ abstract class PluginBaseCommand extends TerminusCommand
             self::COMPOSER_SEARCH_COMMAND
         );
         $command = self::populateComposerWorkingDir($command, $this->getTerminusDependenciesDir());
-        $output = trim($this->getLocalMachine()->exec($command)['output']);
+        $output = trim($this->getLocalMachine()->exec($command)['output'] ?? '');
         $packages = json_decode($output, true);
         if (json_last_error()) {
             $this->log()->error(

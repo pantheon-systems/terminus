@@ -34,10 +34,10 @@ trait CommandExecutorTrait
             $pipes
         );
 
-        $stdout = trim(stream_get_contents($pipes[1]));
+        $stdout = trim(stream_get_contents($pipes[1]) ?? '');
         fclose($pipes[1]);
 
-        $stderr = trim(stream_get_contents($pipes[2]));
+        $stderr = trim(stream_get_contents($pipes[2]) ?? '');
         fclose($pipes[2]);
 
         $exitCode = proc_close($process);
