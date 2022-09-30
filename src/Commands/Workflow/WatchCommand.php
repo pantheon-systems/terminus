@@ -97,7 +97,7 @@ class WatchCommand extends TerminusCommand implements SiteAwareInterface
             'id'          => $workflow->id,
             'description' => $workflow->get('description'),
             'env'         => $workflow->get('environment'),
-            'time'        => date($date_format, $workflow->get('finished_at')),
+            'time'        => date($date_format, $workflow->getFinishedAt()),
         ];
         $this->log()->notice($finished_message, $finished_context);
         array_push($this->finished, $workflow->id);
@@ -132,7 +132,7 @@ class WatchCommand extends TerminusCommand implements SiteAwareInterface
             'id'          => $workflow->id,
             'description' => $workflow->get('description'),
             'env'         => $workflow->get('environment'),
-            'time'        => date($date_format, $workflow->get('started_at')),
+            'time'        => date($date_format, $workflow->getStartedAt()),
         ];
         $this->log()->notice($started_message, $started_context);
         array_push($this->started, $workflow->id);

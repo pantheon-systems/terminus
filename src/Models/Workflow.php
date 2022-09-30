@@ -126,6 +126,26 @@ class Workflow extends TerminusModel implements ContainerAwareInterface, Session
     }
 
     /**
+     * Returns "started_at" attribute.
+     *
+     * @return int
+     */
+    public function getStartedAt(): int
+    {
+        return (int) $this->get('started_at');
+    }
+
+    /**
+     * Returns "finished_at" attribute.
+     *
+     * @return int
+     */
+    public function getFinishedAt(): int
+    {
+        return (int) $this->get('finished_at');
+    }
+
+    /**
      * Re-fetches workflow data hydrated with logs
      *
      * @return Workflow
