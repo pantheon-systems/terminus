@@ -80,7 +80,7 @@ abstract class TerminusCommand implements
         foreach ($replacements as $key => $val) {
             $tr['{' . $key . '}'] = $val;
         }
-        $confirm_text = strtr($confirm_text, $tr);
+        $confirm_text = strtr($confirm_text ?? '', $tr);
         return $this->io()->confirm($confirm_text, false);
     }
 }

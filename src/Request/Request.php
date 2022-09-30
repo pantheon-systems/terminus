@@ -313,7 +313,7 @@ class Request implements
             $headers['Content-Length'] = strlen($body);
         }
 
-        $method = isset($options['method']) ? strtoupper($options['method']) : 'GET';
+        $method = isset($options['method']) ? strtoupper($options['method'] ?? '') : 'GET';
         $this->logger->info(
             self::DEBUG_REQUEST_STRING,
             [

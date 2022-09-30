@@ -72,6 +72,6 @@ class TerminusException extends \Exception
         if (is_array($message)) {
             $message = implode(PHP_EOL, $message);
         }
-        return strtr($message, $tr);
+        return strtr($message ?? '', $tr);
     }
 }

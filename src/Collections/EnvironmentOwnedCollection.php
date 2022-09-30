@@ -58,6 +58,6 @@ abstract class EnvironmentOwnedCollection extends APICollection
             '{environment_id}' => $this->getEnvironment()->id,
             '{site_id}' => $this->getEnvironment()->getSite()->id
         ];
-        return strtr($url, $tr);
+        return strtr($url ?? '', $tr);
     }
 }
