@@ -22,7 +22,14 @@ class SelfCommandsTest extends TerminusTestBase
         $this->assertCommandExists(self::SELF_UPDATE_COMMAND);
 
         // Test that the command works when plugins are not installed.
-        $output = $this->terminus(self::SELF_UPDATE_COMMAND);
+        [$output, $exitCode, $error] = static::callTerminus(self::SELF_UPDATE_COMMAND);
+        if (0 !== $exitCode
+            && false !== strpos($error, 'rate limit exceeded')
+        ) {
+            // @todo: fix CMS-972
+            $this->markTestSkipped(sprintf('Failed executing %s command: %s', self::SELF_UPDATE_COMMAND, $error));
+        }
+
         $this->assertEquals('No update available', $output);
 
         // Test that the command works when plugins are installed.
