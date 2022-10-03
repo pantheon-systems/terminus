@@ -84,7 +84,7 @@ class Plan extends TerminusModel implements SiteInterface
      */
     public function isFree()
     {
-        return strpos($this->getSku(), 'plan-free') === 0;
+        return strpos($this->getSku() ?? '', 'plan-free') === 0;
     }
 
     /**

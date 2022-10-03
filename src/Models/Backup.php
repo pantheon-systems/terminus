@@ -67,7 +67,7 @@ class Backup extends TerminusModel implements EnvironmentInterface
     public function getBucket()
     {
         $bucket = 'pantheon-backups';
-        if (strpos($this->getConfig()->get('host'), 'onebox') !== false) {
+        if (strpos($this->getConfig()->get('host') ?? '', 'onebox') !== false) {
             $bucket = "onebox-$bucket";
         }
         return $bucket;
@@ -163,7 +163,7 @@ class Backup extends TerminusModel implements EnvironmentInterface
                 throw new TerminusException('This backup has no archive to restore.');
                 break;
         }
-        $modified_id = str_replace("_$type", '', $this->id);
+        $modified_id = str_replace("_$type", '', $this->id ?? '');
         $env = $this->getEnvironment();
         $workflow = $env->getWorkflows()->create($wf_name, [
             'params' => [

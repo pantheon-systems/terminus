@@ -71,7 +71,7 @@ class AliasesDrushRcEmitter extends AliasesDrushRcBase implements
      */
     protected function filterForPantheon($line)
     {
-        if (strpos($line, '.drush/pantheon/drush8') !== false) {
+        if (strpos($line ?? '', '.drush/pantheon/drush8') !== false) {
             return false;
         }
         return true;

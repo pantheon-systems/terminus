@@ -165,7 +165,7 @@ class LocalMachineHelper implements ConfigAwareInterface, ContainerAwareInterfac
     protected function fixFilename($filename)
     {
         $config = $this->getConfig();
-        return $config->fixDirectorySeparators(str_replace('~', $config->get('user_home') ?? '', $filename));
+        return $config->fixDirectorySeparators(str_replace('~', $config->get('user_home') ?? '', $filename ?? ''));
     }
 
     /**

@@ -6,16 +6,19 @@ use Consolidation\AnnotatedCommand\AnnotationData;
 use Pantheon\Terminus\Config\ConfigAwareTrait;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareTrait;
 use Robo\Contract\ConfigAwareInterface;
 
 /**
  * Class SiteEnvLookup
  * @package Pantheon\Terminus
  */
-class SiteEnvLookup implements ConfigAwareInterface, SiteAwareInterface
+class SiteEnvLookup implements ConfigAwareInterface, SiteAwareInterface, LoggerAwareInterface
 {
     use ConfigAwareTrait;
     use SiteAwareTrait;
+    use LoggerAwareTrait;
 
     /**
      * Determine the site and environment that this command should target.
@@ -105,7 +108,7 @@ class SiteEnvLookup implements ConfigAwareInterface, SiteAwareInterface
      */
     protected function isValidSiteEnv($site_env)
     {
-        return strpos($site_env, '.') !== false;
+        return strpos($site_env ?? '', '.') !== false;
     }
 
     /**
@@ -118,12 +121,20 @@ class SiteEnvLookup implements ConfigAwareInterface, SiteAwareInterface
         // if present.
         $site = $this->getConfig()->get('site');
         if (!empty($site)) {
+            $this->logger->info(
+                sprintf('Missing "site" argument. Setting to "%s" (from TERMINUS_SITE env var).', $site)
+            );
+
             return $site;
         }
 
         // Check the url of the origin of the repo at the cwd
         list($site,) = $this->siteAndEnvFromRepo();
         if (!empty($site)) {
+            $this->logger->info(
+                sprintf('Missing "site" argument. Setting to "%s" (from current git repository info).', $site)
+            );
+
             return $site;
         }
         return '';
@@ -140,13 +151,26 @@ class SiteEnvLookup implements ConfigAwareInterface, SiteAwareInterface
         $site = $this->getConfig()->get('site');
         $env = $this->getConfig()->get('env');
         if (!empty($site) && !empty($env)) {
-            return "$site.$env";
+            $site_env = "$site.$env";
+            $this->logger->info(
+                sprintf(
+                    'Missing "site_env" argument. Setting to "%s" (from TERMINUS_SITE/TERMINUS_ENV env vars).',
+                    $site_env
+                )
+            );
+
+            return $site_env;
         }
 
         // Check the url of the origin of the repo at the cwd
         list($site, $env) = $this->siteAndEnvFromRepo();
         if (!empty($site) && !empty($env)) {
-            return "$site.$env";
+            $site_env = "$site.$env";
+            $this->logger->info(
+                sprintf('Missing "site_env" argument. Setting to "%s" (from current git repository info).', $site_env)
+            );
+
+            return $site_env;
         }
         return '';
     }

@@ -51,7 +51,7 @@ class SSHKey extends TerminusModel implements UserInterface
      */
     public function getHex()
     {
-        $hex = implode(':', str_split($this->id, 2));
+        $hex = implode(':', str_split($this->id ?? '', 2));
         return $hex;
     }
 

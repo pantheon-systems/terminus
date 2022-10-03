@@ -42,11 +42,11 @@ class SearchCommand extends PluginBaseCommand
      */
     public function search($keyword)
     {
-        $command = str_replace('{keyword}', $keyword, self::SEARCH_COMMAND);
+        $command = str_replace('{keyword}', $keyword ?? '', self::SEARCH_COMMAND);
         $command = self::populateComposerWorkingDir($command, $this->getTerminusDependenciesDir());
         $results = explode(
             PHP_EOL,
-            str_replace(' - ', ' ', trim($this->runCommand($command)['output']))
+            str_replace(' - ', ' ', trim($this->runCommand($command)['output'] ?? ''))
         );
 
         $projects = array_map(
@@ -63,12 +63,12 @@ class SearchCommand extends PluginBaseCommand
                 function ($message) {
                     list($project) = explode(' ', $message, 2);
                     if (preg_match('#^[^/]*/[^/]*$#', $project)) {
-                        $url = str_replace('{project}', $project, self::PROJECT_URL);
+                        $url = str_replace('{project}', $project ?? '', self::PROJECT_URL);
                         $json = json_decode(file_get_contents($url), true, 10);
                         if ($this->validatePackageVersions($json['packages'][$project])) {
                             return true;
                         }
-                        $url = str_replace('{project}', $project, self::PROJECT_DEV_URL);
+                        $url = str_replace('{project}', $project ?? '', self::PROJECT_DEV_URL);
                         $json = json_decode(file_get_contents($url), true, 10);
                         if ($this->validatePackageVersions($json['packages'][$project])) {
                             return true;

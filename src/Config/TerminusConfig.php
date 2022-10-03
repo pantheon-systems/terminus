@@ -46,7 +46,10 @@ class TerminusConfig extends \Robo\Config\Config
      */
     public function ensureDirExists($name, $value)
     {
-        if ((strpos($name, 'TERMINUS_') !== false) && (strpos($name, '_DIR') !== false) && ($value != '~')) {
+        if (strpos($name ?? '', 'TERMINUS_') !== false
+            && strpos($name ?? '', '_DIR') !== false
+            && $value != '~'
+        ) {
             try {
                 $dir_exists = (is_dir($value) || (!file_exists($value) && @mkdir($value, 0777, true)));
             } catch (\Exception $e) {
@@ -79,7 +82,7 @@ class TerminusConfig extends \Robo\Config\Config
      */
     public function fixDirectorySeparators($path)
     {
-        return str_replace(['/', '\\',], DIRECTORY_SEPARATOR, $path);
+        return str_replace(['/', '\\',], DIRECTORY_SEPARATOR, $path ?? '');
     }
 
     /**
@@ -196,7 +199,7 @@ class TerminusConfig extends \Robo\Config\Config
      */
     protected function getKeyFromConstant($constant_name)
     {
-        $key = strtolower(str_replace($this->constant_prefix, '', $constant_name));
+        $key = strtolower(str_replace($this->constant_prefix ?? '', '', $constant_name ?? ''));
         return $key;
     }
 
@@ -208,7 +211,7 @@ class TerminusConfig extends \Robo\Config\Config
      */
     protected function keyIsConstant($key)
     {
-        return strpos($key, $this->constant_prefix) === 0;
+        return strpos($key ?? '', $this->constant_prefix) === 0;
     }
 
     /**
@@ -224,9 +227,9 @@ class TerminusConfig extends \Robo\Config\Config
         if (!empty($matches)) {
             foreach ($matches[1] as $id => $value) {
                 $replacement_key = $this->getKeyFromConstant(trim($value));
-                $replacement = $this->get($replacement_key);
+                $replacement = $this->get($replacement_key) ?? '';
                 if ($replacement) {
-                    $string = str_replace($matches[0][$id], $replacement, $string);
+                    $string = str_replace($matches[0][$id] ?? '', $replacement, $string);
                 }
             }
         }

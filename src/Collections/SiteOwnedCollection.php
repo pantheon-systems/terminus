@@ -34,6 +34,6 @@ abstract class SiteOwnedCollection extends APICollection implements SiteInterfac
      */
     public function getUrl()
     {
-        return str_replace('{site_id}', $this->getSite()->id ?? '', parent::getUrl());
+        return str_replace('{site_id}', $this->getSite()->id ?? '', parent::getUrl() ?? '');
     }
 }

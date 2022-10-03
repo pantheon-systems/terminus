@@ -23,7 +23,7 @@ class DrushRcEditor
     /**
      * Load the drushrc.php file and return its parsed contents.
      *
-     * @return string
+     * @return string[]
      */
     public function getDrushConfig()
     {

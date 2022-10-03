@@ -84,9 +84,9 @@ class MetricsCommand extends TerminusCommand implements SiteAwareInterface
                 new NumericCellRenderer($metrics['timeseries'], ['visits' => 6, 'pages_served' => 12])
             )
             ->addRendererFunction(
-                function ($key, $cellData, FormatterOptions $options, $rowData) {
+                function ($key, $cellData) {
                     if ($key == 'datetime') {
-                        $cellData = str_replace('T00:00:00', '', $cellData);
+                        $cellData = str_replace('T00:00:00', '', $cellData ?? '');
                     }
                     return $cellData;
                 }

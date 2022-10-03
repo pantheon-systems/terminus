@@ -866,7 +866,7 @@ class Environment extends TerminusModel implements ContainerAwareInterface, Site
         if (!empty($ssh_host = $this->getConfig()->get('ssh_host'))) {
             $username = "appserver.{$this->id}.{$site->id}";
             $domain = $ssh_host;
-        } elseif (strpos($this->getConfig()->get('host'), 'onebox') !== false) {
+        } elseif (strpos($this->getConfig()->get('host') ?? '', 'onebox') !== false) {
             $username = "appserver.{$this->id}.{$site->id}";
             $domain = $this->getConfig()->get('host');
         } else {

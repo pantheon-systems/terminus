@@ -82,7 +82,7 @@ class DefaultsConfig extends TerminusConfig
         $script_name     = str_replace(
             $this->getTerminusRoot() . DIRECTORY_SEPARATOR,
             '',
-            $script_location['file']
+            $script_location['file'] ?? ''
         );
         return $script_name;
     }

@@ -66,7 +66,7 @@ class ListCommand extends TerminusCommand
     {
         if (isset($options['framework']) && !is_null($framework = $options['framework'])) {
             $upstreams->filter(function ($upstream) use ($framework) {
-                return $upstream->get('framework') === strtolower($framework);
+                return $upstream->get('framework') === strtolower($framework ?? '');
             });
         }
         return $upstreams;
