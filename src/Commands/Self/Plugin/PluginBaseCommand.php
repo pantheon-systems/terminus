@@ -584,7 +584,12 @@ abstract class PluginBaseCommand extends TerminusCommand
      */
     protected function getTerminusDependenciesDir(): string
     {
-        return $this->getConfig()->get('terminus_dependencies_dir');
+        $dir = $this->getConfig()->get('terminus_dependencies_dir');
+        if (!is_dir($dir)) {
+            mkdir($dir, 0777, true);
+        }
+
+        return $dir;
     }
 
     /**
