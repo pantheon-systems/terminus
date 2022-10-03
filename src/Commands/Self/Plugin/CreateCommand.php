@@ -87,7 +87,7 @@ class CreateCommand extends PluginBaseCommand
                 self::COMPOSER_CREATE_PROJECT
             );
             $command = self::populateComposerWorkingDir(
-                self::COMPOSER_CREATE_PROJECT,
+                $command,
                 self::getTerminusDependenciesDir()
             );
             $results = $this->runCommand($command);
