@@ -1,7 +1,15 @@
 # Change Log
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org)
 
-## 3.0.9-dev
+## 3.0.9 - 2022-10-06
+
+### Changed
+- Verbose option description to make it clearer (#2383)
+
+### Fixed
+- Terminus plugin manager composer commands should not be affected by current directory (#2386)
+- Omit reload warning if running reload command (#2388)
+- Deprecation warnings on PHP 8.1 (#2391)
 
 ## 3.0.8 - 2022-08-22
 
