@@ -44,7 +44,17 @@ class LookupCommand extends TerminusCommand implements SiteAwareInterface
         $environments = ['dev', 'test', 'live'];
         foreach ($sites as $site) {
             foreach ($environments as $env_name) {
-                if ($site->getEnvironments()->get($env_name)->getDomains()->has($domain)) {
+                try {
+                    $env = $site->getEnvironments()->get($env_name);
+                } catch (TerminusNotFoundException $e) {
+                    $this->log()->warning(
+                        'Site {site}: {message}',
+                        ['site' => $site->id, 'message' => $e->getMessage()]
+                    );
+                    continue;
+                }
+
+                if ($env->getDomains()->has($domain)) {
                     return new PropertyList([
                         'site_id' => $site->id,
                         'site_name' => $site->getName(),
