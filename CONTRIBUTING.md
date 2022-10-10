@@ -83,7 +83,8 @@ The Terminus 3.x functional tests can be run via:
   ```
 
 This will take some time to complete and will produce a report at the end with any failed or
-skipped tests.
+skipped tests. To run a specific test, find the test's group in the comments above the test and
+use the command specified in `composer.json` under `test:functional` with `--group=<the-group>`
 
 Versioning
 ----------
