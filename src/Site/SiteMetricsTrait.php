@@ -121,7 +121,7 @@ trait SiteMetricsTrait
      */
     protected function getCacheHitRatio($pages_served, $cache_hits)
     {
-        if(!$pages_served){
+        if (!$pages_served) {
             return '--';
         }
 
