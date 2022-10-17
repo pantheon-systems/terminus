@@ -149,6 +149,9 @@
       "@code:fix",
       "@code:lint",
       "composer validate --strict"
+    ],
+    "version-bump": [
+      "bumpversion --no-commit --no-tag minor"
     ]
   },
   "config": {
