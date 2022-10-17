@@ -151,7 +151,7 @@
       "composer validate --strict"
     ],
     "version-bump": [
-      "bumpversion minor"
+      "bumpversion --no-commit --no-tag minor"
     ]
   },
   "config": {
