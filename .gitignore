@@ -21,3 +21,4 @@ reports/*
 /Formula
 *.deb
 Brewfile.lock.json
+/.phive
