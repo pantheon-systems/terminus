@@ -69,11 +69,10 @@ class LoginCommand extends TerminusCommand
     private function getMachineTokenCreationURL()
     {
         return vsprintf(
-            '%s://%s/machine-token/create/%s',
+            '%s://%s/personal-settings/machine-tokens/create',
             [
                 $this->config->get('dashboard_protocol'),
                 $this->config->get('dashboard_host'),
-                gethostname(),
             ]
         );
     }
