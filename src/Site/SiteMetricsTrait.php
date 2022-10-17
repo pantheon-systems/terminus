@@ -94,7 +94,7 @@ trait SiteMetricsTrait
         // Format for display
         $data = array_map(
             function ($item) {
-                $item->datetime = $item->time;
+                $item->datetime = gmdate("Y-m-d\TH:i:s", $item->timestamp);
                 unset($item->time);
                 unset($item->timestamp);
                 $item->cache_hit_ratio = $this->getCacheHitRatio($item->pages_served, $item->cache_hits);
