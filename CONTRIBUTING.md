@@ -11,8 +11,9 @@ Setting Up
 
 1. Clone this Git repository on your local machine.
 2. Install [Composer](https://getcomposer.org/) if you don't already have it.
-3. Run `composer install` to fetch all the dependencies.
-4. Run `./bin/terminus --help` to test that everything was installed properly.
+3. Install [Box](https://github.com/box-project/box) if not already installed.
+4. Run `composer install` to fetch all the dependencies.
+5. Run `./bin/terminus --help` to test that everything was installed properly.
 
 Submitting Patches
 ------------------
@@ -45,14 +46,30 @@ The PHP code beautifier can automatically fix a number of style issues. Run it v
   composer cbf
   ```
 
+Building the PHAR
+-------------------------
+
+Terminus is built into a PHAR package using [Box](https://github.com/box-project/box), which must
+be installed first.
+
+From the root directory, build the package with:
+
+`composer build`
+
+This `terminus.phar` file is required to be built prior to running tests. Running the build will
+first clear out dev dependencies that were added via `composer install` and those will need to be
+reinstalled before continuing development.
+
 Running and Writing Tests
 -------------------------
 
 Terminus uses functional tests implemented using [PHPUnit](http://phpunit.de/)
 
-The tests can be run via:
+A `.env` file is required which can be based on `.env.dist` and must contain a site name for testing
+which has a paid plan enabled for multidev, specify an environment to use for the tests, a user
+account that owns that site, a machine token (TERMINUS_TOKEN) for that user, and an organization.
 
-`composer test:functional`
+A PHAR file must also be built before running tests.
 
 ### Functional Tests
 
@@ -65,6 +82,9 @@ The Terminus 3.x functional tests can be run via:
   composer test:functional
   ```
 
+This will take some time to complete and will produce a report at the end with any failed or
+skipped tests. To run a specific test, find the test's group in the comments above the test and
+use the command specified in `composer.json` under `test:functional` with `--group=<the-group>`
 
 Versioning
 ----------

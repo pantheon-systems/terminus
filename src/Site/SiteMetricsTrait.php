@@ -26,6 +26,11 @@ trait SiteMetricsTrait
     protected $datapoints;
 
     /**
+     * @var string Formatted datapoints and period
+     */
+    protected $duration;
+
+    /**
      * Metrics constructor
      */
     public function __constructor()
@@ -35,33 +40,17 @@ trait SiteMetricsTrait
     /**
      * @return string
      */
-    public function getPeriod()
+    public function getDuration()
     {
-        return $this->period;
+        return $this->duration;
     }
 
     /**
      * @param string $value
      */
-    public function setPeriod($value)
+    public function setDuration($value)
     {
-        return $this->setParameter('period', $value);
-    }
-
-    /**
-     * @return string
-     */
-    public function getDatapoints()
-    {
-        return $this->datapoints;
-    }
-
-    /**
-     * @param string $value
-     */
-    public function setDatapoints($value)
-    {
-        return $this->setParameter('datapoints', $value);
+        return $this->setParameter('duration', $value);
     }
 
     /**
@@ -86,13 +75,11 @@ trait SiteMetricsTrait
      */
     protected function requestData()
     {
-        $rawPagesServed = $this->requestDataAtUrl($this->getUrlForSeries('pageviews'), $this->getFetchArgs());
+        $rawMetrics = $this->requestDataAtUrl($this->getDataUrl(), $this->getFetchArgs());
 
-        if (empty($rawPagesServed->timeseries)) {
+        if (empty($rawMetrics)) {
             throw new \Exception("No data available.");
         }
-
-        $rawVisits = $this->requestDataAtUrl($this->getUrlForSeries('visits'), $this->getFetchArgs());
 
         // The data is passed to us with the data series of primary
         // interest to us nested inside a 'timeseries' element. The
@@ -102,16 +89,15 @@ trait SiteMetricsTrait
         // (@see TerminusCollection::fetch())
         // We also need to ensure that the elements of our timeseries
         // have unique IDs. We will use the time value for this.
-        $pageviewData = $this->assignIds($rawPagesServed->timeseries, 'timestamp');
-        $visitData = $this->assignIds($rawVisits->timeseries, 'timestamp');
-        $combineddata = $this->combineRawData($pageviewData, $visitData);
+        $combineddata = $this->assignIds($rawMetrics->timeseries, 'timestamp');
 
-        // Convert the timestamp to a datetime. The timestamp will remain
-        // as the row key.
+        // Format for display
         $data = array_map(
             function ($item) {
                 $item->datetime = gmdate("Y-m-d\TH:i:s", $item->timestamp);
+                unset($item->time);
                 unset($item->timestamp);
+                $item->cache_hit_ratio = $this->getCacheHitRatio($item->pages_served, $item->cache_hits);
                 return $item;
             },
             $combineddata
@@ -121,27 +107,25 @@ trait SiteMetricsTrait
         // store the other items in a 'metadata' field. We will avoid
         // caching the raw data because that would duplicate data
         // already cached.
-        unset($rawPagesServed->timeseries);
-        $this->metadata = $rawPagesServed;
+        unset($rawMetrics->timeseries);
+        $this->metadata = $rawMetrics;
 
         return $data;
     }
 
     /**
-     * Combine the raw pages served data with the raw unique visits data
-     * @param array $rawPagesServed
-     * @param array $rawVisits
+     * Get a percentage cache hit ratio based on cache hits and misses
+     * @param int $pages_served
+     * @param int $cache_hits
      * @return array
      */
-    protected function combineRawData($rawPagesServed, $rawVisits)
+    protected function getCacheHitRatio($pages_served, $cache_hits)
     {
-        $result = $rawVisits;
-        foreach ($result as $time => $item) {
-            $item->visits = $item->value;
-            $result[$time]->pages_served = $rawPagesServed[$time]->value;
-            unset($result[$time]->value);
+        if (!$pages_served) {
+            return '--';
         }
-        return $result;
+
+        return number_format($cache_hits / $pages_served * 100, 2) . '%';
     }
 
     /**
@@ -161,7 +145,7 @@ trait SiteMetricsTrait
      * @param $data An array of items with numeric indexes
      * @param $keyId The id of the element in each item that is the key
      *
-     * @return associative array of the same input items with new keys
+     * @return array of the same input items with new keys
      */
     protected function assignIds($data, $keyId)
     {
@@ -179,16 +163,13 @@ trait SiteMetricsTrait
 
     /**
      * Fill in the parameters for the desired request.
-     * @param string $seriesId
      * @return string
      */
-    protected function getUrlForSeries($seriesId)
+    protected function getDataUrl()
     {
         $url = $this->getUrl();
         $tr = [
-            '{series}' => $seriesId,
-            '{period}' => $this->getPeriod(),
-            '{datapoints}' => $this->getDatapoints(),
+            '{duration}' => $this->getDuration(),
         ];
         return strtr($url, $tr);
     }
