@@ -269,11 +269,12 @@ class Environment extends TerminusModel implements ContainerAwareInterface, Site
             return [];
         }
 
-        $password = $dbServerBinding->get('password');
+        $database_runtime = $dbServerBinding->get('database_runtime');
+        $password = $database_runtime->password;
         $domain = "dbserver.{$this->id}.{$this->getSite()->id}.drush.in";
         $port = $dbServerBinding->get('port');
-        $username = $dbServerBinding->getUsername();
-        $database = 'pantheon';
+        $username = $database_runtime->username;
+        $database = $database_runtime->database;
         $url = "mysql://$username:$password@$domain:$port/$database";
         $command = "mysql -u $username -p$password -h $domain -P $port $database";
 
