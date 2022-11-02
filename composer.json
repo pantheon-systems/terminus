@@ -39,7 +39,6 @@
     "ext-pcov": "*",
     "behat/behat": "^3.2.2",
     "erusev/parsedown": "^1.7",
-    "kint-php/kint": "^3.3",
     "pcov/clobber": "^2.0",
     "php-coveralls/php-coveralls": "^2.4",
     "php-vcr/php-vcr": "~1.5.2",
