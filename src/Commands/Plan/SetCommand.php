@@ -24,16 +24,16 @@ class SetCommand extends TerminusCommand implements SiteAwareInterface
      * @command plan:set
      *
      * @param string $site_id Site name
-     * @param string $plan_id The SKU or UUID of the plan to set
+     * @param string $plan_sku The SKU of the plan to set
      *
      * @usage <site> <plan> Updates <site>'s plan to <plan>.
      */
-    public function set($site_id, $plan_id)
+    public function set($site_id, $plan_sku)
     {
         $site = $this->getSite($site_id);
         $plans = $site->getPlans();
-        $workflow = $plans->set($plans->get($plan_id));
-        $this->log()->notice('Setting plan of "{site_id}" to "{plan_id}".', compact('site_id', 'plan_id'));
+        $workflow = $plans->set($plans->get($plan_sku));
+        $this->log()->notice('Setting plan of "{site_id}" to "{plan_sku}".', compact('site_id', 'plan_sku'));
         $this->processWorkflow($workflow);
         $this->log()->notice($workflow->getMessage());
     }
