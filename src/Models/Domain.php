@@ -45,7 +45,6 @@ class Domain extends TerminusModel implements
     {
         $action = $this->request->request($this->getUrl(), ['method' => 'delete']);
         if ($action->isError()) {
-            \Kint::dump($action);
             throw new TerminusProcessException(
                 "Domain remove failed. {site}.{env} => {domain}: {error}",
                 [
