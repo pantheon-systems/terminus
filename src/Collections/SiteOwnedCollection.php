@@ -23,7 +23,7 @@ abstract class SiteOwnedCollection extends APICollection implements SiteInterfac
         parent::__construct($options);
         if (!isset($options['site'])) {
             throw new TerminusException(
-                "Cannot find site or value was not in the incoming payload: " . \Kint::dump($options)
+                "Cannot find site or value was not in the incoming payload."
             );
         }
         $this->setSite($options['site']);
