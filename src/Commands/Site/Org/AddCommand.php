@@ -36,13 +36,17 @@ class AddCommand extends TerminusCommand implements SiteAwareInterface
     public function add($site, $organization)
     {
         if ($this->isValidUuid($organization)) {
-            $organizationName = $this->session()->getUser()->getOrganizationMemberships()->get($organization)->getOrganization()->getName();
+            $organizationName = $this->session()->getUser()->getOrganizationMemberships()
+                ->get($organization)->getOrganization()->getName();
         } else {
             $organizationName = $organization;
         }
         $site = $this->getSite($site);
 
-        $workflow = $site->getOrganizationMemberships()->create($organizationName, SiteOrganizationMembership::ROLE_TEAM_MEMBER);
+        $workflow = $site->getOrganizationMemberships()->create(
+            $organizationName,
+            SiteOrganizationMembership::ROLE_TEAM_MEMBER
+        );
         $this->log()->notice(
             'Adding {org} as a supporting organization to {site}.',
             ['site' => $site->getName(), 'org' => $organizationName,]
@@ -54,7 +58,8 @@ class AddCommand extends TerminusCommand implements SiteAwareInterface
     /**
      * Return whether given string is a valid uuid or not.
      */
-    private function isValidUuid(string $uuid) {
+    private function isValidUuid(string $uuid)
+    {
         return preg_match('/[a-f0-9]{8}\-[a-f0-9]{4}\-[a-f0-9]{4}\-[a-f0-9]{4}\-[a-f0-9]{12}/', $uuid);
     }
 }
