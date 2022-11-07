@@ -35,7 +35,8 @@ class AddCommand extends TerminusCommand
     /**
      * Get a (maybe) human friendly message to show to the user.
      */
-    private function getMessageToLog($response_data) {
+    private function getMessageToLog($response_data)
+    {
         if (trim($response_data) === "SSH validation failed: Unknown SSH key type 'ssh-ed25519'.") {
             return "SSH keys of type 'ed25519' are not yet supported. Please use a different key type.";
         }
