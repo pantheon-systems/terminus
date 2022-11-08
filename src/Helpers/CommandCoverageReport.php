@@ -106,8 +106,9 @@ class CommandCoverageReport implements ConfigAwareInterface, IOAwareInterface
             $reflector = new \ReflectionClass($className);
             if (!$reflector->isAbstract()) {
                 $total_tests += 1;
+                $classObject = new $className();
 
-                $commandInfo = $factory->getCommandInfoListFromClass($className);
+                $commandInfo = $factory->getCommandInfoListFromClass($classObject);
                 $commandName = static::classToCommandName($className);
                 $groupNameSafe = static::classToGroupName($className);
                 if (is_array($commandInfo)) {
