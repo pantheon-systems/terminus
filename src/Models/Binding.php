@@ -18,6 +18,7 @@ class Binding extends TerminusModel
      */
     public function getUsername()
     {
-        return $this->has('legacy_username') ? $this->get('legacy_username') : $this->get('username');
+        $database_runtime = $this->get('database_runtime');
+        return $this->has('legacy_username') ? $this->get('legacy_username') : $this->$database_runtime->username;
     }
 }
