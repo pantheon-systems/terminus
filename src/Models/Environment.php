@@ -226,20 +226,27 @@ class Environment extends TerminusModel implements ContainerAwareInterface, Site
      */
     public function cacheserverConnectionInfo()
     {
-        $cacheServerBindings = $this->getBindings()->getByType('cacheserver');
-        if (empty($cacheServerBindings)) {
-            return [];
+        $env_vars = $this->fetchEnvironmentVars();
+        if (property_exists($env_vars, 'CACHE_PORT')) {
+            $port = $env_vars->CACHE_PORT;
+        } else {
+            $port = null;
         }
-
-        $cacheServerBinding = $this->getBinding($cacheServerBindings);
-        if (null === $cacheServerBinding) {
-            return [];
+        if (property_exists($env_vars, 'CACHE_PASSWORD')) {
+            $password = $env_vars->CACHE_PASSWORD;
+        } else {
+            $password = null;
         }
-
-        $password = $cacheServerBinding->get('password');
-        $domain = $cacheServerBinding->get('host');
-        $port = $cacheServerBinding->get('port');
-        $username = $cacheServerBinding->getUsername();
+        if (property_exists($env_vars, 'CACHE_BINDING_ID')) {
+            $username = $env_vars->CACHE_BINDING_ID;
+        } else {
+            $username = null;
+        }
+        if (property_exists($env_vars, 'CACHE_HOST')) {
+            $domain = $env_vars->CACHE_HOST;
+        } else {
+            $domain = null;
+        }
         $url = "redis://$username:$password@$domain:$port";
         $command = "redis-cli -h $domain -p $port -a $password";
 
@@ -253,28 +260,51 @@ class Environment extends TerminusModel implements ContainerAwareInterface, Site
     }
 
     /**
+     * Fetches the environment variables and returns PHP object
+     */
+    public function fetchEnvironmentVars()
+    {
+        $path = sprintf(
+            'sites/%s/environments/%s/variables',
+            $this->getSite()->id,
+            $this->id
+        );
+        $options = ['method' => 'get',];
+        $response = $this->request()->request($path, $options);
+        if (empty($response['data'])) {
+            return false;
+        }
+        return $response['data'];
+    }
+    /**
      * Gives database connection info for this environment
      *
      * @return array
      */
     public function databaseConnectionInfo()
     {
-        $dbServerBindings = $this->getBindings()->getByType('dbserver');
-        if (empty($dbServerBindings)) {
-            return [];
-        }
-
-        $dbServerBinding = $this->getBinding($dbServerBindings);
-        if (null === $dbServerBinding) {
-            return [];
-        }
-
-        $database_runtime = $dbServerBinding->get('database_runtime');
-        $password = $database_runtime->password;
+        $env_vars = $this->fetchEnvironmentVars();
         $domain = "dbserver.{$this->id}.{$this->getSite()->id}.drush.in";
-        $port = $dbServerBinding->get('port');
-        $username = $database_runtime->username;
-        $database = $database_runtime->database;
+        if (property_exists($env_vars, 'DB_PORT')) {
+            $port = $env_vars->DB_PORT;
+        } else {
+            $port = null;
+        }
+        if (property_exists($env_vars, 'DB_PASSWORD')) {
+            $password = $env_vars->DB_PASSWORD;
+        } else {
+            $password = null;
+        }
+        if (property_exists($env_vars, 'DB_USER')) {
+            $username = $env_vars->DB_USER;
+        } else {
+            $username = null;
+        }
+        if (property_exists($env_vars, 'DATABASE')) {
+            $database = $env_vars->DATABASE;
+        } else {
+            $database = null;
+        }
         $url = "mysql://$username:$password@$domain:$port/$database";
         $command = "mysql -u $username -p$password -h $domain -P $port $database";
 
