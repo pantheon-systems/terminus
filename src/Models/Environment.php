@@ -227,26 +227,10 @@ class Environment extends TerminusModel implements ContainerAwareInterface, Site
     public function cacheserverConnectionInfo()
     {
         $env_vars = $this->fetchEnvironmentVars();
-        if (property_exists($env_vars, 'CACHE_PORT')) {
-            $port = $env_vars->CACHE_PORT;
-        } else {
-            $port = null;
-        }
-        if (property_exists($env_vars, 'CACHE_PASSWORD')) {
-            $password = $env_vars->CACHE_PASSWORD;
-        } else {
-            $password = null;
-        }
-        if (property_exists($env_vars, 'CACHE_BINDING_ID')) {
-            $username = $env_vars->CACHE_BINDING_ID;
-        } else {
-            $username = null;
-        }
-        if (property_exists($env_vars, 'CACHE_HOST')) {
-            $domain = $env_vars->CACHE_HOST;
-        } else {
-            $domain = null;
-        }
+        $port = $env_vars['CACHE_PORT'] ?? null;
+        $password = $env_vars['CACHE_PASSWORD'] ?? null;
+        $username = $env_vars['CACHE_BINDING_ID'] ?? null;
+        $domain = $env_vars['CACHE_HOST'] ?? null;
         $url = "redis://$username:$password@$domain:$port";
         $command = "redis-cli -h $domain -p $port -a $password";
 
@@ -262,7 +246,7 @@ class Environment extends TerminusModel implements ContainerAwareInterface, Site
     /**
      * Fetches the environment variables and returns PHP object
      */
-    public function fetchEnvironmentVars()
+    public function fetchEnvironmentVars(): array
     {
         $path = sprintf(
             'sites/%s/environments/%s/variables',
@@ -272,9 +256,9 @@ class Environment extends TerminusModel implements ContainerAwareInterface, Site
         $options = ['method' => 'get',];
         $response = $this->request()->request($path, $options);
         if (empty($response['data'])) {
-            return false;
+            return [];
         }
-        return $response['data'];
+        return (array) $response['data'];
     }
     /**
      * Gives database connection info for this environment
@@ -285,26 +269,10 @@ class Environment extends TerminusModel implements ContainerAwareInterface, Site
     {
         $env_vars = $this->fetchEnvironmentVars();
         $domain = "dbserver.{$this->id}.{$this->getSite()->id}.drush.in";
-        if (property_exists($env_vars, 'DB_PORT')) {
-            $port = $env_vars->DB_PORT;
-        } else {
-            $port = null;
-        }
-        if (property_exists($env_vars, 'DB_PASSWORD')) {
-            $password = $env_vars->DB_PASSWORD;
-        } else {
-            $password = null;
-        }
-        if (property_exists($env_vars, 'DB_USER')) {
-            $username = $env_vars->DB_USER;
-        } else {
-            $username = null;
-        }
-        if (property_exists($env_vars, 'DATABASE')) {
-            $database = $env_vars->DATABASE;
-        } else {
-            $database = null;
-        }
+        $port = $env_vars['DB_PORT'] ?? null;
+        $password = $env_vars['DB_PASSWORD'] ?? null;
+        $username = $env_vars['DB_USER'] ?? null;
+        $database = $env_vars['DATABASE'] ?? null;
         $url = "mysql://$username:$password@$domain:$port/$database";
         $command = "mysql -u $username -p$password -h $domain -P $port $database";
 
