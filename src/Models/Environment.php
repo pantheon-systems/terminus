@@ -5,7 +5,6 @@ namespace Pantheon\Terminus\Models;
 use League\Container\ContainerAwareInterface;
 use League\Container\ContainerAwareTrait;
 use Pantheon\Terminus\Collections\Backups;
-use Pantheon\Terminus\Collections\Bindings;
 use Pantheon\Terminus\Collections\Commits;
 use Pantheon\Terminus\Collections\Domains;
 use Pantheon\Terminus\Collections\EnvironmentMetrics;
@@ -295,27 +294,6 @@ class Environment extends TerminusModel implements ContainerAwareInterface, Site
         ];
     }
 
-    /**
-     * Returns the binding for the current environment from the list of bindings.
-     *
-     * @param array $bindings
-     *
-     * @return \Pantheon\Terminus\Models\Binding|null
-     */
-    private function getBinding(array $bindings): ?Binding
-    {
-        foreach ($bindings as $binding) {
-            if (!$binding instanceof Binding) {
-                continue;
-            }
-
-            if ($binding->get('environment') === $this->id) {
-                return $binding;
-            }
-        }
-
-        return null;
-    }
 
     /**
      * Counts the number of deployable commits
@@ -440,20 +418,6 @@ class Environment extends TerminusModel implements ContainerAwareInterface, Site
         return $this->backups;
     }
 
-    /**
-     * @return Bindings
-     */
-    public function getBindings()
-    {
-        if (empty($this->bindings)) {
-            $nickname = \uniqid(__FUNCTION__ . "-");
-
-            $this->getContainer()->add($nickname, Bindings::class)
-                ->addArguments([['environment' => $this]]);
-            $this->bindings = $this->getContainer()->get($nickname);
-        }
-        return $this->bindings;
-    }
 
     /**
      * @return string

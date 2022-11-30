@@ -220,7 +220,6 @@ EOD;
 
         // Models
         $container->add(\Pantheon\Terminus\Models\Backup::class);
-        $container->add(\Pantheon\Terminus\Models\Binding::class);
         $container->add(\Pantheon\Terminus\Models\Branch::class);
         $container->add(\Pantheon\Terminus\Models\Commit::class);
         $container->add(\Pantheon\Terminus\Models\DNSRecord::class);
@@ -258,7 +257,6 @@ EOD;
 
         // Collections
         $container->add(\Pantheon\Terminus\Collections\Backups::class);
-        $container->add(\Pantheon\Terminus\Collections\Bindings::class);
         $container->add(\Pantheon\Terminus\Collections\Branches::class);
         $container->add(\Pantheon\Terminus\Collections\Commits::class);
         $container->add(\Pantheon\Terminus\Collections\DNSRecords::class);

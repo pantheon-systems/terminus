@@ -4,12 +4,10 @@ namespace Pantheon\Terminus\UnitTests\Models;
 
 use League\Container\Container;
 use Pantheon\Terminus\Collections\Backups;
-use Pantheon\Terminus\Collections\Bindings;
 use Pantheon\Terminus\Collections\Domains;
 use Pantheon\Terminus\Collections\Environments;
 use Pantheon\Terminus\Collections\Workflows;
 use Pantheon\Terminus\Helpers\LocalMachineHelper;
-use Pantheon\Terminus\Models\Binding;
 use Pantheon\Terminus\Models\Domain;
 use Pantheon\Terminus\Models\Environment;
 use Pantheon\Terminus\Models\Lock;
