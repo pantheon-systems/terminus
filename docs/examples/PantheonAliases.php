@@ -48,20 +48,19 @@ class PantheonAliases
         $site_name   = $environment->site->get('name');
         $site_id     = $environment->site->get('id');
         $env_id      = $environment->get('id');
-        $db_bindings = $environment->bindings->getByType('dbserver');
+        $env_vars = $environment->fetchEnvironmentVars();
         $hostnames   = array_keys((array)$environment->getHostnames());
-        if (empty($hostnames) || empty($db_bindings)) {
+        if (empty($hostnames) || empty($env_vars)) {
             throw new TerminusException(
                 'No hostname entry for {site}.{env}',
                 ['site' => $site_name, 'env' => $env_id,],
                 1
             );
         }
-        $db_binding = array_shift($db_bindings);
         $uri        = array_shift($hostnames);
-        $db_user    = $db_binding->getUsername();
-        $db_pass    = $db_binding->get('password');
-        $db_port    = $db_binding->get('port');
+        $db_user    = $env_vars['DB_USER'] ?? null;
+        $db_pass    = $env_vars['DB_PASSWORD'] ?? null;
+        $db_port    = $env_vars['DB_PORT'] ?? null;
         if (strpos(TERMINUS_HOST, 'onebox') !== false) {
             $remote_user = "appserver.$env_id.$site_id";
             $remote_host = TERMINUS_HOST;

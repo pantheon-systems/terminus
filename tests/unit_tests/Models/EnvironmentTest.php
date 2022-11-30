@@ -100,9 +100,6 @@ class EnvironmentTest extends ModelTestCase
 
     public function testCacheserverConnectionInfo()
     {
-        $this->model->id = 'env id';
-        $this->binding->id = 'binding id';
-        $this->site->id = 'site id';
         $username = 'username';
         $password = 'password';
         $port = 'port';
@@ -114,45 +111,16 @@ class EnvironmentTest extends ModelTestCase
             'url' => "redis://$username:$password@$domain:$port",
             'command' => "redis-cli -h $domain -p $port -a $password",
         ];
-
-        $this->bindings->expects($this->once())
-            ->method('getByType')
-            ->with($this->equalTo('cacheserver'))
-            ->willReturn([$this->binding,]);
-        $this->binding->expects($this->once())
-            ->method('getUsername')
-            ->with()
-            ->willReturn($username);
-        $this->binding->expects($this->at(0))
-            ->method('get')
-            ->with($this->equalTo('environment'))
-            ->willReturn($this->model->id);
-        $this->binding->expects($this->at(1))
-            ->method('get')
-            ->with($this->equalTo('password'))
-            ->willReturn($password);
-        $this->binding->expects($this->at(2))
-            ->method('get')
-            ->with($this->equalTo('host'))
-            ->willReturn($domain);
-        $this->binding->expects($this->at(3))
-            ->method('get')
-            ->with($this->equalTo('port'))
-            ->willReturn($port);
-
         $out = $this->model->cacheserverConnectionInfo();
         $this->assertEquals($expected, $out);
     }
 
     /**
-     * Tests Environment::cacheserverConnectionInfo() when there are no DB servers.
+     * Tests Environment::cacheserverConnectionInfo() when there are is no host.
      */
     public function testCacheserverConnectionInfoEmpty()
     {
-        $this->bindings->expects($this->once())
-            ->method('getByType')
-            ->with($this->equalTo('cacheserver'))
-            ->willReturn([]);
+        $domain = null;
         $out = $this->model->cacheserverConnectionInfo();
         $this->assertEquals([], $out);
     }
@@ -274,7 +242,6 @@ class EnvironmentTest extends ModelTestCase
     public function testConnectionInfo()
     {
         $this->model->id = 'env id';
-        $this->binding->id = 'binding id';
         $this->site->id = 'site id';
         $password = 'password';
         $port = '2222';
@@ -296,23 +263,6 @@ class EnvironmentTest extends ModelTestCase
             'sftp_command' => "sftp -o Port=$port $sftp_username@$sftp_domain",
         ];
 
-        $this->bindings->expects($this->at(0))
-            ->method('getByType')
-            ->with($this->equalTo('dbserver'))
-            ->willReturn([$this->binding,]);
-        $this->binding->expects($this->at(0))
-            ->method('get')
-            ->with($this->equalTo('environment'))
-            ->willReturn($this->model->id);
-        $this->binding->expects($this->at(1))
-            ->method('get')
-            ->with($this->equalTo('password'))
-            ->willReturn($password);
-        $this->binding->expects($this->at(2))
-            ->method('get')
-            ->with($this->equalTo('port'))
-            ->willReturn($port);
-
         $db_expected = [
             'mysql_username' => $username,
             'mysql_password' => $password,
@@ -322,31 +272,6 @@ class EnvironmentTest extends ModelTestCase
             'mysql_url' => "mysql://$username:$password@$db_domain:$port/$database",
             'mysql_command' => "mysql -u $username -p$password -h $db_domain -P $port $database",
         ];
-
-        $this->bindings->expects($this->at(1))
-            ->method('getByType')
-            ->with($this->equalTo('cacheserver'))
-            ->willReturn([$this->binding,]);
-        $this->binding->expects($this->at(4))
-            ->method('get')
-            ->with($this->equalTo('environment'))
-            ->willReturn($this->model->id);
-        $this->binding->expects($this->at(5))
-            ->method('get')
-            ->with($this->equalTo('password'))
-            ->willReturn($password);
-        $this->binding->expects($this->at(6))
-            ->method('get')
-            ->with($this->equalTo('host'))
-            ->willReturn($cache_domain);
-        $this->binding->expects($this->at(7))
-            ->method('get')
-            ->with($this->equalTo('port'))
-            ->willReturn($port);
-        $this->binding->expects($this->exactly(2))
-            ->method('getUsername')
-            ->with()
-            ->willReturn($username);
 
         $cache_expected = [
             'redis_password' => $password,
@@ -422,18 +347,12 @@ class EnvironmentTest extends ModelTestCase
     public function testDatabaseConnectionInfo()
     {
         $this->model->id = 'env id';
-        $this->binding->id = 'binding id';
         $this->site->id = 'site id';
         $password = 'password';
         $port = 'port';
         $username = 'username';
         $database = 'pantheon';
         $domain = "dbserver.{$this->model->id}.{$this->model->getSite()->id}.drush.in";
-
-        $this->binding->expects($this->once())
-            ->method('getUsername')
-            ->with()
-            ->willReturn($username);
 
         $expected = [
             'username' => $username,
@@ -445,36 +364,16 @@ class EnvironmentTest extends ModelTestCase
             'command' => "mysql -u $username -p$password -h $domain -P $port $database",
         ];
 
-        $this->bindings->expects($this->once())
-            ->method('getByType')
-            ->with($this->equalTo('dbserver'))
-            ->willReturn([$this->binding,]);
-        $this->binding->expects($this->at(0))
-            ->method('get')
-            ->with($this->equalTo('environment'))
-            ->willReturn($this->model->id);
-        $this->binding->expects($this->at(1))
-            ->method('get')
-            ->with($this->equalTo('password'))
-            ->willReturn($password);
-        $this->binding->expects($this->at(2))
-            ->method('get')
-            ->with($this->equalTo('port'))
-            ->willReturn($port);
-
         $out = $this->model->databaseConnectionInfo();
         $this->assertEquals($expected, $out);
     }
 
     /**
-     * Tests Environment::databaseConnectionInfo() when there are no DB servers.
+     * Tests Environment::databaseConnectionInfo() when there are is no domain.
      */
     public function testDatabaseConnectionInfoEmpty()
     {
-        $this->bindings->expects($this->once())
-            ->method('getByType')
-            ->with($this->equalTo('dbserver'))
-            ->willReturn([]);
+        $domain = null;
         $out = $this->model->databaseConnectionInfo();
         $this->assertEquals([], $out);
     }
