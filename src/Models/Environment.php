@@ -233,7 +233,11 @@ class Environment extends TerminusModel implements ContainerAwareInterface, Site
         $domain = $env_vars['CACHE_HOST'] ?? null;
         $url = "redis://$username:$password@$domain:$port";
         $command = "redis-cli -h $domain -p $port -a $password";
-
+        
+        if (is_null($domain)) {
+            return [];
+        }
+        
         return [
             'password' => $password,
             'host' => $domain,
@@ -275,6 +279,10 @@ class Environment extends TerminusModel implements ContainerAwareInterface, Site
         $database = $env_vars['DATABASE'] ?? null;
         $url = "mysql://$username:$password@$domain:$port/$database";
         $command = "mysql -u $username -p$password -h $domain -P $port $database";
+
+        if (is_null($domain)) {
+            return [];
+        }
 
         return [
             'host' => $domain,
