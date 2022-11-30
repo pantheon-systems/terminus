@@ -24,7 +24,22 @@ class AddCommand extends TerminusCommand
      */
     public function add($file)
     {
-        $this->session()->getUser()->getSSHKeys()->addKey($file);
+        $response = $this->session()->getUser()->getSSHKeys()->addKey($file);
+        if ($response['status_code'] !== 200) {
+            $this->log()->error($this->getMessageToLog($response['data']));
+            return;
+        }
         $this->log()->notice('Added SSH key from file {file}.', compact('file'));
+    }
+
+    /**
+     * Get a (maybe) human friendly message to show to the user.
+     */
+    private function getMessageToLog($response_data)
+    {
+        if (trim($response_data) === "SSH validation failed: Unknown SSH key type 'ssh-ed25519'.") {
+            return "SSH keys of type 'ed25519' are not yet supported. Please use a different key type.";
+        }
+        return $response_data;
     }
 }

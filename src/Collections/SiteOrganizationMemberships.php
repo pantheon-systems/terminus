@@ -31,15 +31,15 @@ class SiteOrganizationMemberships extends SiteOwnedCollection
     /**
      * Adds this organization as a member of the site.
      *
-     * @param Organization $organization An object representing the organization
+     * @param string $organizationName Organization label
      * @param string $role Role for supporting organization to take
      * @return Workflow
      **/
-    public function create(Organization $organization, $role)
+    public function create(string $organizationName, $role)
     {
         return $this->getSite()->getWorkflows()->create(
             'add_site_organization_membership',
-            ['params' => ['organization_name' => $organization->getLabel(), 'role' => $role,],]
+            ['params' => ['organization_name' => $organizationName, 'role' => $role,],]
         );
     }
 }

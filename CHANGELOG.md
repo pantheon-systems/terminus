@@ -1,10 +1,25 @@
 # Change Log
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org)
 
+## 3.1.2-dev
+
+## 3.1.1 - 2022-11-08
+
+### Changed
+- Update plan:set docs to sku instead of id (#2407)
+
+### Fixed
+- Remove Kint from terminus (#2405)
+- Site:org:add should not need user org membership if a label is provided (#2404)
+- Look for status code in ssh-key:add response (#2406)
+
 ## 3.1.0 - 2022-10-17
 
-- Added new cache-hit/miss ratio in the cache commands
-- Fix deprecation notice in dependency on php 8.1
+### Added
+- Added new cache-hit/miss ratio in the cache commands (#2399)
+
+### Fixed
+- Fix deprecation notice in dependency on PHP 8.1 (#2397)
 
 ## 3.0.9 - 2022-10-06
 

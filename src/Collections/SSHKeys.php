@@ -44,7 +44,7 @@ class SSHKeys extends UserOwnedCollection
                 'method' => 'post',
             ]
         );
-        return (array)$response['data'];
+        return $response;
     }
 
     /**
