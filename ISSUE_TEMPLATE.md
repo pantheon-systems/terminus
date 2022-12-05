@@ -15,7 +15,7 @@
 ( ) 8.1
 
 ### Terminus Version
-Please note which version of Terminus you are using.
+<!-- Please note which version of Terminus you are using. -->
 
 ### Command Executed
 (copy/paste if possible)
