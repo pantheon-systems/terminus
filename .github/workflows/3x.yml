@@ -48,7 +48,7 @@ jobs:
     strategy:
       matrix:
         operating-system: [ 'macos-latest' ]
-        php-versions: [ '7.4', '8.1' ]
+        php-versions: [ '7.4', '8.1', '8.2' ]
       max-parallel: 1
     env:
       TERMINUS_TOKEN: ${{ secrets.TERMINUS_TOKEN }}
