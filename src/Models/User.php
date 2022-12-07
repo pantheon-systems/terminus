@@ -69,6 +69,13 @@ class User extends TerminusModel implements
     private $workflows;
 
     /**
+     * @var SiteOrganizationMemberships
+     *
+     * Set by UserJoinTrait.
+     */
+    public $memberships;
+
+    /**
      * Provides Pantheon Dashboard URL for this user
      *
      * @return string

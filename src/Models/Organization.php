@@ -55,7 +55,7 @@ class Organization extends TerminusModel implements
     /**
      * @var SiteOrganizationMemberships
      *
-     * Set by SiteJoinTrait.
+     * Set by OrganizationJoinTrait.
      */
     public $memberships;
 
