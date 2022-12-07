@@ -57,7 +57,7 @@ class Organization extends TerminusModel implements
      *
      * Set by SiteJoinTrait.
      */
-    private $memberships;
+    protected $memberships;
 
     /**
      * @return string
