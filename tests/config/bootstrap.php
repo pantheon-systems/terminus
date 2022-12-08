@@ -74,7 +74,7 @@ if (!getenv('TERMINUS_TESTING_RUNTIME_ENV')) {
     );
     if (0 !== $code) {
         /** @noinspection PhpUnhandledExceptionInspection */
-        throw new Exception(sprintf('Command "%s" exited with non-zero code (%d)', $createMdCommand, $code));
+        throw new Exception(sprintf('Command "%s" exited with non-zero code (%d). Output: %s', $createMdCommand, $code, implode("\n", $output)));
     }
 
     TerminusTestBase::setMdEnv($multidev);
