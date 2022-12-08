@@ -67,6 +67,10 @@ class User extends TerminusModel implements
      * @var Workflows
      */
     private $workflows;
+    /**
+     * @var Upstreams
+     */
+    private $upstreams;
 
     /**
      * @var SiteOrganizationMemberships
