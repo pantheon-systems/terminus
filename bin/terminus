@@ -20,9 +20,9 @@ if (version_compare(PHP_VERSION, '7.4.0', '<') === true) {
     exit(1);
 }
 
-if (!getenv('TERMINUS_ALLOW_UNSUPPORTED_NEWER_PHP') && version_compare(PHP_VERSION, '8.2.0', '>=') === true) {
+if (!getenv('TERMINUS_ALLOW_UNSUPPORTED_NEWER_PHP') && version_compare(PHP_VERSION, '8.3.0', '>=') === true) {
     echo "\n";
-    echo 'PHP 8.2+ is not supported by this version of Terminus.' . "\n";
+    echo 'PHP 8.3+ is not supported by this version of Terminus.' . "\n";
     echo 'Check for new versions at https://github.com/pantheon-systems/terminus/releases' . "\n";
     echo "\n";
     echo 'Set environment variable TERMINUS_ALLOW_UNSUPPORTED_NEWER_PHP to try continuing anyway.' . "\n";
