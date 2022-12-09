@@ -40,7 +40,9 @@ class CreateCommand extends PluginBaseCommand
         $project_name = $options['project-name'];
         if (!file_exists($path)) {
             $results = $this->doCreate($path, $project_name);
-            $this->log()->notice($results['output']);
+            if (!empty($results['output'])) {
+              $this->log()->notice($results['output']);
+            }
         } else {
             throw new TerminusException(self::EXISTING_FOLDER_MESSAGE);
         }
