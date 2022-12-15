@@ -20,9 +20,9 @@ if (version_compare(PHP_VERSION, '7.4.0', '<') === true) {
     exit(1);
 }
 
-if (!getenv('TERMINUS_ALLOW_UNSUPPORTED_NEWER_PHP') && version_compare(PHP_VERSION, '8.2.0', '>=') === true) {
+if (!getenv('TERMINUS_ALLOW_UNSUPPORTED_NEWER_PHP') && version_compare(PHP_VERSION, '8.3.0', '>=') === true) {
     echo "\n";
-    echo 'PHP 8.2+ is not supported by this version of Terminus.' . "\n";
+    echo 'PHP 8.3+ is not supported by this version of Terminus.' . "\n";
     echo 'Check for new versions at https://github.com/pantheon-systems/terminus/releases' . "\n";
     echo "\n";
     echo 'Set environment variable TERMINUS_ALLOW_UNSUPPORTED_NEWER_PHP to try continuing anyway.' . "\n";
@@ -32,7 +32,7 @@ if (!getenv('TERMINUS_ALLOW_UNSUPPORTED_NEWER_PHP') && version_compare(PHP_VERSI
 
 // This variable is automatically managed via updateDependenciesversion() in /RoboFile.php,
 // which is run after every call to composer update.
-$terminusPluginsDependenciesVersion = '6d4a6b25a9';
+$terminusPluginsDependenciesVersion = '19d217d1ab';
 
 // Cannot use $_SERVER superglobal since that's empty during phpunit testing
 // getenv('HOME') isn't set on Windows and generates a Notice.

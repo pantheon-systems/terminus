@@ -91,6 +91,18 @@ class Site extends TerminusModel implements ContainerAwareInterface, Organizatio
     private $workflows;
 
     /**
+     * @var SiteOrganizationMemberships
+     *
+     * Set by SiteJoinTrait.
+     */
+    public $memberships;
+
+    /**
+     * @var Pantheon\Terminus\Collections\Tags
+     */
+    public $tags;
+
+    /**
      * Add a payment method to the given site
      *
      * @param string $payment_method_id UUID of new payment method

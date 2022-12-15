@@ -64,6 +64,11 @@ class Environment extends TerminusModel implements ContainerAwareInterface, Site
     private $workflows;
 
     /**
+     * @var EnvironmentMetrics
+     */
+    private $environment_metrics;
+
+    /**
      * Apply upstream updates
      *
      * @param boolean $updatedb True to run update.php

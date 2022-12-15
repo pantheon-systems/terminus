@@ -53,6 +53,13 @@ class Organization extends TerminusModel implements
     private $workflows;
 
     /**
+     * @var SiteOrganizationMemberships
+     *
+     * Set by OrganizationJoinTrait.
+     */
+    public $memberships;
+
+    /**
      * @return string
      */
     public function __toString()

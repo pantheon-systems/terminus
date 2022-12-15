@@ -150,7 +150,7 @@ class CloneContentCommand extends TerminusCommand implements SiteAwareInterface
     private function emitNotice($element)
     {
         $this->log()->notice(
-            "Cloning ${element} from {source} environment to {target} environment",
+            "Cloning {$element} from {source} environment to {target} environment",
             ['source' => $this->source_env->getName(), 'target' => $this->target_env->getName(),]
         );
     }
