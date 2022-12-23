@@ -40,7 +40,7 @@ class SyncCodeCommand extends TerminusCommand implements SiteAwareInterface
         $env = $this->getEnv($site_env);
 
         if ($env->getName() === 'test' || $env->getName() === 'live') {
-            throw new TerminusException('Test and live are not valid envs for this command.');
+            throw new TerminusException('Test and live are not valid environments for this command.');
         }
 
         $params = [
