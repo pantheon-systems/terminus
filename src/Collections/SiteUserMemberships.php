@@ -29,8 +29,8 @@ class SiteUserMemberships extends SiteOwnedCollection
     /**
      * Adds this user as a member to the site.
      *
-     * @param string $email
-     *   Email of team member to add.
+     * @param string $member
+     *   Email or uuid of team member to add.
      * @param string $role
      *   Role to assign to the new user.
      *
@@ -38,16 +38,23 @@ class SiteUserMemberships extends SiteOwnedCollection
      *
      * @throws \Pantheon\Terminus\Exceptions\TerminusException
      */
-    public function create($email, $role)
+    public function create($member, $role)
     {
+        $workflow_name = 'add_site_user_membership';
+        $params = [
+            'params' => [
+                'role' => $role
+            ],
+        ];
+        if (preg_match('/^[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}$/', $member)) {
+            $params['params']['user_id'] = $member;
+            $workflow_name = 'add_site_user_membership_by_uuid';
+        } else {
+            $params['params']['user_email'] = $member;
+        }
         return $this->getSite()->getWorkflows()->create(
-            'add_site_user_membership',
-            [
-                'params' => [
-                    'user_email' => $email,
-                    'role' => $role,
-                ],
-            ]
+            $workflow_name,
+            $params
         );
     }
 }
