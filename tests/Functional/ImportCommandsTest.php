@@ -103,13 +103,12 @@ class ImportCommandsTest extends TerminusTestBase
         $this->assertNotEmpty($importedSiteInfo);
 
         // Import the site from the archive file.
-        $this->terminus(
-            sprintf(
-                'import:site %s %s',
-                $this->importedSiteName,
-                'https://dev-site-archive-d7.pantheonsite.io/sites/default/files/site-archive-d7.tar.gz'
-            )
+        $siteImportCommand = sprintf(
+            'import:site %s %s',
+            $this->importedSiteName,
+            'https://dev-site-archive-d7.pantheonsite.io/sites/default/files/site-archive-d7.tar.gz'
         );
+        $this->assertTerminusCommandSucceedsInAttempts($siteImportCommand);
         sleep(60);
 
         // Verify that the code and the database have been imported.

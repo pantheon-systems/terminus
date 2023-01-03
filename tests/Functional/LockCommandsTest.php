@@ -28,7 +28,7 @@ class LockCommandsTest extends TerminusTestBase
 
         // Verify the lock is disabled.
         $getLockInfoCommand = sprintf('lock:info %s', $this->getSiteEnv());
-        $this->assertTerminusCommandResultEqualsInAttempts(function () use ($getLockInfoCommand) {
+        $this->assertCallbackResultEqualsInAttempts(function () use ($getLockInfoCommand) {
             return $this->terminusJsonResponse($getLockInfoCommand);
         }, [
             'locked' => false,
@@ -48,7 +48,7 @@ class LockCommandsTest extends TerminusTestBase
         $this->terminus($enableLockInfoCommand);
 
         // Verify the lock is enabled.
-        $this->assertTerminusCommandResultEqualsInAttempts(function () use ($getLockInfoCommand) {
+        $this->assertCallbackResultEqualsInAttempts(function () use ($getLockInfoCommand) {
             return $this->terminusJsonResponse($getLockInfoCommand);
         }, [
             'locked' => true,
