@@ -31,7 +31,7 @@ class DeployCommand extends TerminusCommand implements SiteAwareInterface
      *
      * @param string $site_env Site & environment in the format `site-name.env` (only Test or Live environment)
      * @option string $sync-content Clone database/files from Live environment when deploying Test environment
-     * @option string $cc [DEPRECATED 2.2.1-dev] Does not work. Meant to clear caches after deploy. Please use env:clear-cache instead.
+     * @option string $cc Clear caches after deploy.
      * @option string $updatedb Run update.php after deploy (Drupal only)
      * @option string $note Custom deploy log message
      *
@@ -61,6 +61,7 @@ class DeployCommand extends TerminusCommand implements SiteAwareInterface
             $params = [
               'updatedb'    => (integer)$options['updatedb'],
               'annotation'  => $annotation,
+              'clear_cache' => (integer)$options['cc'],
             ];
             if ($env->getName() === 'test' && isset($options['sync-content']) && $options['sync-content']) {
                 $live_env = 'live';

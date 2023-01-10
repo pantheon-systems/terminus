@@ -46,6 +46,7 @@ class DeployCommandTest extends EnvCommandTest
             ->willReturn($this->workflow)
             ->with([
                 'updatedb' => 0,
+                'clear_cache' => 0,
                 'annotation' => 'Deploy from Terminus',
                 'clone_database' => [
                     'from_environment' => 'live'
@@ -58,7 +59,7 @@ class DeployCommandTest extends EnvCommandTest
         // Run the deploy.
         $this->command->deploy(
             "mysite.{$this->environment->id}",
-            ['sync-content' => true, 'note' => 'Deploy from Terminus', 'updatedb' => false,]
+            ['sync-content' => true, 'note' => 'Deploy from Terminus', 'updatedb' => false, 'cc' => false,]
         );
     }
 
@@ -102,13 +103,14 @@ class DeployCommandTest extends EnvCommandTest
             ->willReturn($this->workflow)
             ->with([
                 'updatedb' => 1,
+                'clear_cache' => 1,
                 'annotation' => 'Deploy from Terminus',
             ]);
 
         // Run the deploy.
         $this->command->deploy(
             "mysite.{$this->environment->id}",
-            ['sync-content' => true, 'note' => 'Deploy from Terminus', 'updatedb' => true,]
+            ['sync-content' => true, 'note' => 'Deploy from Terminus', 'updatedb' => true, 'cc' => true,]
         );
     }
 
