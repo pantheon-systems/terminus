@@ -87,6 +87,9 @@ jobs:
           name: terminus-phar
       - name: Install Composer Dependencies
         run: composer install --no-interaction --prefer-dist
+      - name: Setup tmate session
+        if: ${{ github.event.inputs.tmate_enabled == 1 }}
+        uses: mxschmitt/action-tmate@v3
       - name: Functional Tests (short)
         if: ${{ github.event_name == 'push' || github.event_name == 'schedule' || github.event.inputs.functional_tests_group == 'all' }}
         run: composer test:short
@@ -96,9 +99,7 @@ jobs:
       - name: Functional Tests (arbitrary group)
         if: ${{ github.event.inputs.functional_tests_group != '' && github.event.inputs.functional_tests_group != 'all' }}
         run: composer test:group -- ${{ github.event.inputs.functional_tests_group }}
-      - name: Setup tmate session
-        if: ${{ github.event.inputs.tmate_enabled == 1 }}
-        uses: mxschmitt/action-tmate@v3
+
       - name: Coverage Report
         run: composer coverage
       - name: Save coverage as artifact
