@@ -281,7 +281,7 @@ class Environment extends TerminusModel implements ContainerAwareInterface, Site
         $port = $env_vars['DB_PORT'] ?? null;
         $password = $env_vars['DB_PASSWORD'] ?? null;
         $username = $env_vars['DB_USER'] ?? null;
-        $database = $env_vars['DATABASE'] ?? null;
+        $database = $env_vars['DB_NAME'] ?? null;
         $url = "mysql://$username:$password@$domain:$port/$database";
         $command = "mysql -u $username -p$password -h $domain -P $port $database";
 
