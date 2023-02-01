@@ -9,6 +9,11 @@ on:
         description: Run arbitrary functional tests group by name or all (short and long) tests (default)
         required: true
         default: all
+      tmate_enabled:
+        description: Enable tmate debugging
+        required: true
+        default: "0"
+
 jobs:
   # Checkout in separate job because docker image is alpine based and checkout action doesn't work.
   checkout_build:
@@ -82,6 +87,9 @@ jobs:
           name: terminus-phar
       - name: Install Composer Dependencies
         run: composer install --no-interaction --prefer-dist
+      - name: Setup tmate session
+        if: ${{ github.event.inputs.tmate_enabled == 1 }}
+        uses: mxschmitt/action-tmate@v3
       - name: Functional Tests (short)
         if: ${{ github.event_name == 'push' || github.event_name == 'schedule' || github.event.inputs.functional_tests_group == 'all' }}
         run: composer test:short
@@ -98,6 +106,14 @@ jobs:
         with:
           name: CoverageReport
           path: docs/TestCoverage.md
+      - name: Finish sesssion
+        if: ${{ always() && github.event.inputs.tmate_enabled == 1 }}
+        run: |
+          while [ ! -f /tmp/finish ]
+          do
+            sleep 2
+          done
+          exit 0
 
   release:
     runs-on: ubuntu-latest
