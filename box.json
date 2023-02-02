@@ -10,5 +10,8 @@
     "templates",
     "vendor"
   ],
+  "files":[
+    ".version"
+  ],
   "output": "terminus.phar"
 }
