@@ -7,7 +7,8 @@
 ---
 
 # App
-TERMINUS_VERSION: '3.1.3-dev'
+## Version should now be obtained from the .version file in the root of the repo
+## TERMINUS_VERSION: 'X-X-X'
 
 # Connectivity
 TERMINUS_HOST:        'terminus.pantheon.io'
