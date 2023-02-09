@@ -232,7 +232,7 @@
             absolute_url: ''
             json: ''
             Accept: null
-        body: '{"type":"deploy","params":{"updatedb":0,"annotation":"Deploy test","clone_database":{"from_environment":"live"},"clone_files":{"from_environment":"live"}}}'
+        body: '{"type":"deploy","params":{"updatedb":0,"clear_cache":0,"annotation":"Deploy test","clone_database":{"from_environment":"live"},"clone_files":{"from_environment":"live"}}}'
     response:
         status:
             http_version: '1.1'
