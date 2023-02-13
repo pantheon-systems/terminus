@@ -1,7 +1,16 @@
 # Change Log
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org)
 
-## 3.1.2-dev
+## 3.1.3-dev -
+
+## 3.1.2 - 2023-01-03
+
+### Added
+- PHP 8.2 compatibility (#2414)
+
+### Changed
+- Documentation for import:site command (#2410)
+- Database and cache connection information is now fetched from env vars (#2403)
 
 ## 3.1.1 - 2022-11-08
 
