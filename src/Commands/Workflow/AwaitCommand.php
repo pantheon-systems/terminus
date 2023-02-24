@@ -24,6 +24,7 @@ class AwaitCommand extends TerminusCommand implements SiteAwareInterface
      * @param $site_env_id The pantheon site to wait for.
      * @param $description The workflow description to wait for. Optional; default is code sync.
      * @option start Ignore any workflows started prior to the start time (epoch)
+     * @option max Maximum number of seconds to wait for the workflow to complete
      */
     public function workflowAwait(
         $site_env_id,
