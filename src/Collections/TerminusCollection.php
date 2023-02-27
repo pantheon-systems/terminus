@@ -180,7 +180,7 @@ abstract class TerminusCollection implements ContainerAwareInterface, RequestAwa
     /**
      * Determines whether the models contain any object provided a list of IDs
      *
-     * @param array $ids UUIDs of object to seek
+     * @param array $ids Ids of object to seek
      * @return boolean True if object is found, false if it is not
      */
     public function containsAny($ids)
@@ -192,13 +192,12 @@ abstract class TerminusCollection implements ContainerAwareInterface, RequestAwa
     /**
      * Determines whether the models contain all objects provided a list of IDs
      *
-     * @param array $ids UUIDs of object to seek
+     * @param array $ids Ids of object to seek
      * @return boolean True if object is found, false if it is not
      */
     public function containsAll($ids)
     {
-        $ids = array_flip($ids);
-        return !is_null($models = $this->all()) && empty(array_diff(array_keys($ids), array_keys($models)));
+        return !is_null($models = $this->all()) && empty(array_diff($ids, array_keys($models)));
     }
 
     /**
