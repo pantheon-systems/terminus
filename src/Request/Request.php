@@ -296,7 +296,7 @@ class Request implements
             $headers = array_merge($headers, $options['headers']);
         }
 
-        if (strpos($path, '://') === false) {
+        if (strpos($path ?? '', '://') === false) {
             $uri = "{$this->getBaseURI()}/api/$path";
             if ($part !== 'machine-token') {
                 $headers['Authorization'] = sprintf('Bearer %s', $this->session()->get('session'));
@@ -313,7 +313,7 @@ class Request implements
             $headers['Content-Length'] = strlen($body);
         }
 
-        $method = isset($options['method']) ? strtoupper($options['method']) : 'GET';
+        $method = isset($options['method']) ? strtoupper($options['method'] ?? '') : 'GET';
         $this->logger->info(
             self::DEBUG_REQUEST_STRING,
             [

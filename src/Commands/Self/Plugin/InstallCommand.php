@@ -4,9 +4,11 @@ namespace Pantheon\Terminus\Commands\Self\Plugin;
 
 use Consolidation\AnnotatedCommand\CommandData;
 use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
-use Pantheon\Terminus\Plugins\PluginInfo;
+use Pantheon\Terminus\Exceptions\TerminusException;
 
 /**
+ * Class InstallCommand.
+ *
  * Installs a Terminus plugin using Composer.
  *
  * @package Pantheon\Terminus\Commands\Self\Plugin
@@ -29,14 +31,16 @@ class InstallCommand extends PluginBaseCommand
      * @usage <project 1> [project 2] ...
      *
      * @throws \Pantheon\Terminus\Exceptions\TerminusException
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
      */
     public function install(array $projects)
     {
-        $projects = $this->convertPathProjects($projects);
+        $projects = $this->convertRepositoryProjects($projects);
         foreach ($projects as $projectName => $installationPath) {
             if ($this->validateProject($projectName, $installationPath)) {
+                $this->log()->info(sprintf('Installing %s...', $projectName));
                 $results = $this->doInstallation($projectName, $installationPath);
-                // TODO Improve messaging
                 $this->log()->notice($results['output']);
             }
         }
@@ -49,6 +53,8 @@ class InstallCommand extends PluginBaseCommand
      * @aliases plugin:migrate
      *
      * @throws \Pantheon\Terminus\Exceptions\TerminusException
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
      */
     public function migrate()
     {
@@ -98,6 +104,8 @@ class InstallCommand extends PluginBaseCommand
      * @param CommandData $commandData
      *
      * @throws \Pantheon\Terminus\Exceptions\TerminusNotFoundException
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
      */
     public function validate(CommandData $commandData)
     {
@@ -118,23 +126,56 @@ class InstallCommand extends PluginBaseCommand
      *  - value is path toa local installation (if exists). Otherwise - NULL.
      *
      * @throws \Pantheon\Terminus\Exceptions\TerminusException
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
      */
-    protected function convertPathProjects(array $projects): array
+    protected function convertRepositoryProjects(array $projects): array
     {
         $convertedProjects = [];
 
         foreach ($projects as $projectNameOrPath) {
-            if (!$this->hasProjectAtPath($projectNameOrPath)) {
-                // No project was found, presume the parameter is a project, and it has no path.
-                $convertedProjects[$this->getComposerProjectName($projectNameOrPath)] = null;
-            } else {
+            if ($this->isGitRepo($projectNameOrPath)) {
+                $pluginsDir = $this->getConfig()->get('plugins_dir');
+                $folderName = basename($projectNameOrPath);
+                $pluginFolderName = sprintf('%s/%s', $pluginsDir, $folderName);
+                $fs = $this->getLocalMachine()->getFileSystem();
+                if (is_dir($pluginFolderName)) {
+                    // If folder exists, try removing it, and if it fails, throw an error.
+                    $fs->remove($pluginFolderName);
+                }
+                $fs->mkdir($pluginFolderName);
+                $command = sprintf('git -C %s clone %s --depth 1 .', $pluginFolderName, $projectNameOrPath);
+                $results = $this->runCommand($command);
+                if ($results['exit_code'] !== 0) {
+                    throw new TerminusException(
+                        'Error cloning repo {repo} into path {path}.',
+                        [
+                            'repo' => $projectNameOrPath,
+                            'path' => $pluginFolderName,
+                        ]
+                    );
+                }
+                $projectNameOrPath = $pluginFolderName;
+            }
+            if ($this->hasProjectAtPath($projectNameOrPath)) {
                 $projectName = $this->getProjectNameFromPath($projectNameOrPath);
                 // A project name was found at the path, so record the name and its path.
                 $convertedProjects[$this->getComposerProjectName($projectName)] = $projectNameOrPath;
+            } else {
+                // Presume the parameter is a packagist project.
+                $convertedProjects[$this->getComposerProjectName($projectNameOrPath)] = null;
             }
         }
 
         return $convertedProjects;
+    }
+
+    /**
+     * Determines if given url is a git repo or not.
+     */
+    protected function isGitRepo($possibleUrl)
+    {
+        return preg_match('/^(git@|https:\/\/|git:\/\/).*\.git$/', $possibleUrl);
     }
 
     /**
@@ -158,6 +199,10 @@ class InstallCommand extends PluginBaseCommand
      *
      * @return array
      *   Results from the "install" command.
+     *
+     * @throws \Pantheon\Terminus\Exceptions\TerminusException
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
      */
     private function doInstallation(string $projectName, ?string $installationPath)
     {
@@ -171,12 +216,13 @@ class InstallCommand extends PluginBaseCommand
      * @param string|null $installationPath
      *
      * @return bool
+     *
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
      */
     private function validateProject(string $projectName, ?string $installationPath): bool
     {
-        if (null === $installationPath
-            && !PluginInfo::checkWhetherPackagistProject($projectName, $this->getLocalMachine())
-        ) {
+        if (null === $installationPath && !$this->isPackagistProject($projectName)) {
             $this->log()->error(self::INVALID_PROJECT_MESSAGE, ['project' => $projectName,]);
             return false;
         }

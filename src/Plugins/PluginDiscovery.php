@@ -5,15 +5,13 @@ namespace Pantheon\Terminus\Plugins;
 use League\Container\ContainerAwareInterface;
 use League\Container\ContainerAwareTrait;
 use Pantheon\Terminus\Config\ConfigAwareTrait;
-use Pantheon\Terminus\Exceptions\TerminusException;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
-use Pantheon\Terminus\Plugins\PluginInfo;
 use Pantheon\Terminus\Helpers\LocalMachineHelper;
 use Robo\Contract\ConfigAwareInterface;
 
 /**
- * Class PluginDiscovery
+ * Class PluginDiscovery.
  */
 class PluginDiscovery implements ContainerAwareInterface, LoggerAwareInterface, ConfigAwareInterface
 {
@@ -25,13 +23,16 @@ class PluginDiscovery implements ContainerAwareInterface, LoggerAwareInterface, 
      * List of all Terminus plugins that have been rolled into Terminus core.
      */
     const BLACKLIST = [
-        'pantheon-systems/terminus-aliases-plugin'
+        'pantheon-systems/terminus-aliases-plugin',
     ];
 
     /**
-     * Return a list of plugin
+     * Returns a list of plugins.
      *
      * @return PluginInfo[]
+     *
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
      */
     public function discover()
     {
@@ -58,20 +59,13 @@ class PluginDiscovery implements ContainerAwareInterface, LoggerAwareInterface, 
             return $out;
         }
         foreach ($dependencies_composer_lock['packages'] as $package) {
-            try {
-                if (empty($package['type']) || $package['type'] !== 'terminus-plugin') {
-                    continue;
-                }
-                $plugin = $this->getContainer()->get(PluginInfo::class);
-                $plugin->setInfoArray($package);
-                if (!in_array($plugin->getName(), self::BLACKLIST)) {
-                    $out[] = $plugin;
-                }
-            } catch (TerminusException $e) {
-                $this->logger->warning(
-                    'Plugin Discovery: Ignoring directory {dir} because: {msg}.',
-                    ['dir' => $dir->getPathName(), 'msg' => $e->getMessage()]
-                );
+            if (empty($package['type']) || $package['type'] !== 'terminus-plugin') {
+                continue;
+            }
+            $plugin = $this->getContainer()->get(PluginInfo::class);
+            $plugin->setInfoArray($package);
+            if (!in_array($plugin->getName(), self::BLACKLIST)) {
+                $out[] = $plugin;
             }
         }
         return $out;

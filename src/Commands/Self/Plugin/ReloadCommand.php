@@ -2,22 +2,25 @@
 
 namespace Pantheon\Terminus\Commands\Self\Plugin;
 
-use Consolidation\AnnotatedCommand\CommandData;
 use Pantheon\Terminus\Exceptions\TerminusException;
 
 /**
+ * ReloadCommand class.
+ *
  * Reload Terminus plugins when terminus or other folder has been updated.
+ *
  * @package Pantheon\Terminus\Commands\Self\Plugin
  */
 class ReloadCommand extends PluginBaseCommand
 {
-
     /**
      * Reload Terminus plugins.
      *
      * @command self:plugin:reload
      * @aliases self:plugin:refresh plugin:reload plugin:refresh
      *
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
      */
     public function reload()
     {
@@ -26,24 +29,30 @@ class ReloadCommand extends PluginBaseCommand
 
     /**
      * Check for minimum plugin command requirements.
+     *
      * @hook validate self:plugin:install
-     * @param CommandData $commandData
+     *
+     * @throws \Pantheon\Terminus\Exceptions\TerminusNotFoundException
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
      */
-    public function validate(CommandData $commandData)
+    public function validate()
     {
         $this->checkRequirements();
     }
 
     /**
-     * @param string $project_name Name of project to be installed
-     * @return array Results from the install command
+     * Performs plugins reload.
+     *
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
      */
     private function doReload()
     {
         $config = $this->getConfig();
         try {
             $original_plugins_dir = $config->get('plugins_dir');
-            $original_dependencies_dir = $config->get('terminus_dependencies_dir');
+            $original_dependencies_dir = $this->getTerminusDependenciesDir();
             $folders = $this->updateTerminusDependencies($original_plugins_dir, $original_dependencies_dir);
             $plugins_dir = $folders['plugins_dir'];
             $dependencies_dir = $folders['dependencies_dir'];

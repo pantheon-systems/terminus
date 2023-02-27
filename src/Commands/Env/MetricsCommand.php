@@ -24,6 +24,10 @@ class MetricsCommand extends TerminusCommand implements SiteAwareInterface
     const WEEKLY_PERIOD = 'week';
     const MONTHLY_PERIOD = 'month';
 
+    const DAILY_PERIOD_SHORT = 'd';
+    const WEEKLY_PERIOD_SHORT = 'w';
+    const MONTHLY_PERIOD_SHORT = 'm';
+
     const DEFAULT_MONTHLY_DATAPOINTS = 12;
     const DEFAULT_WEEKLY_DATAPOINTS = 12;
     const DEFAULT_DAILY_DATAPOINTS = 28;
@@ -41,6 +45,9 @@ class MetricsCommand extends TerminusCommand implements SiteAwareInterface
      *     datetime: Period
      *     visits: Visits
      *     pages_served: Pages Served
+     *     cache_hits: Cache Hits
+     *     cache_misses: Cache Misses
+     *     cache_hit_ratio: Cache Hit Ratio
      * @param string $site_env Site & environment in the format `site-name.env`.
      *   Defaults to the live environment if `.env` is not specified.
      * @param string[] $options
@@ -67,26 +74,29 @@ class MetricsCommand extends TerminusCommand implements SiteAwareInterface
         $env = $this->getOptionalEnv($site_env);
         if (null !== $env) {
             $metrics = $env->getEnvironmentMetrics()
-                ->setPeriod($options['period'])
-                ->setDatapoints($this->selectDatapoints($options['datapoints'], $options['period']))
+                ->setDuration($this->selectDatapoints($options['datapoints'], $options['period']))
                 ->serialize();
         } else {
             $metrics = $this->getSite($site_env)
                 ->getSiteMetrics()
-                ->setPeriod($options['period'])
-                ->setDatapoints($this->selectDatapoints($options['datapoints'], $options['period']))
+                ->setDuration($this->selectDatapoints($options['datapoints'], $options['period']))
                 ->serialize();
         }
 
         return (new RowsOfFieldsWithMetadata($metrics))
             ->setDataKey('timeseries')
             ->addRenderer(
-                new NumericCellRenderer($metrics['timeseries'], ['visits' => 6, 'pages_served' => 12])
+                new NumericCellRenderer($metrics['timeseries'], [
+                    'visits' => 6,
+                    'pages_served' => 12,
+                    'cache_hits' => 12,
+                    'cache_misses' => 12
+                ])
             )
             ->addRendererFunction(
-                function ($key, $cellData, FormatterOptions $options, $rowData) {
+                function ($key, $cellData) {
                     if ($key == 'datetime') {
-                        $cellData = str_replace('T00:00:00', '', $cellData);
+                        $cellData = str_replace('T00:00:00', '', $cellData ?? '');
                     }
                     return $cellData;
                 }
@@ -102,9 +112,10 @@ class MetricsCommand extends TerminusCommand implements SiteAwareInterface
     protected function selectDatapoints($datapoints, $period)
     {
         if (!$datapoints || ($datapoints == 'auto')) {
-            return $this->defaultDatapoints($period);
+            $datapoints = $this->defaultDatapoints($period);
         }
-        return $datapoints;
+
+        return $datapoints . $this->shortPeriod($period);
     }
 
     /**
@@ -218,5 +229,21 @@ class MetricsCommand extends TerminusCommand implements SiteAwareInterface
         ];
 
         return $defaultPeriodValues[$period];
+    }
+
+    /**
+     * Return the period in short format.
+     * @param string $period
+     * @return string
+     */
+    public function shortPeriod($period)
+    {
+        $shortPeriodValues = [
+            self::DAILY_PERIOD => self::DAILY_PERIOD_SHORT,
+            self::WEEKLY_PERIOD => self::WEEKLY_PERIOD_SHORT,
+            self::MONTHLY_PERIOD => self::MONTHLY_PERIOD_SHORT,
+        ];
+
+        return $shortPeriodValues[$period];
     }
 }

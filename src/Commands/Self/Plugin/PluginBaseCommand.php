@@ -12,8 +12,10 @@ use Composer\Semver\Semver;
 use Symfony\Component\Filesystem\Exception\IOException;
 
 /**
- * Class PluginBaseCommand
- * Base class for Terminus commands that deal with sending Plugin commands
+ * Class PluginBaseCommand.
+ *
+ * Base class for Terminus commands that deal with sending Plugin commands.
+ *
  * @package Pantheon\Terminus\Commands\Self\Plugin
  */
 abstract class PluginBaseCommand extends TerminusCommand
@@ -37,6 +39,7 @@ abstract class PluginBaseCommand extends TerminusCommand
     const DEPENDENCIES_UPDATE_COMMAND = 'composer update -d {dir} {packages} --with-dependencies';
     const INSTALL_COMMAND = 'composer require -d {dir} {project} --no-update';
     const COMPOSER_VERSION_COMMAND = 'composer --version';
+    const COMPOSER_SEARCH_COMMAND = 'composer search -d {dir} -N -t terminus-plugin --format json {project}';
 
     /**
      * @var array|null
@@ -44,7 +47,12 @@ abstract class PluginBaseCommand extends TerminusCommand
     private $projects = null;
 
     /**
+     * Returns Local Machine Helper.
+     *
      * @return LocalMachineHelper
+     *
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
      */
     protected function getLocalMachine()
     {
@@ -53,7 +61,10 @@ abstract class PluginBaseCommand extends TerminusCommand
 
     /**
      * Check for minimum plugin command requirements.
-     * @throws TerminusNotFoundException
+     *
+     * @throws \Pantheon\Terminus\Exceptions\TerminusNotFoundException
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
      */
     protected function checkRequirements()
     {
@@ -83,10 +94,14 @@ abstract class PluginBaseCommand extends TerminusCommand
      * Get data on a specific installed plugin.
      *
      * @param string $project Name of a project or plugin
-     * @return array Plugin projects
-     * @throws TerminusNotFoundException
+     *
+     * @return \Pantheon\Terminus\Plugins\PluginInfo Plugin projects
+     *
+     * @throws \Pantheon\Terminus\Exceptions\TerminusNotFoundException
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
      */
-    protected function getPlugin($project)
+    protected function getPlugin(string $project): PluginInfo
     {
         $matches = array_filter(
             $this->getPluginProjects(),
@@ -104,6 +119,9 @@ abstract class PluginBaseCommand extends TerminusCommand
      * Get plugin projects.
      *
      * @return array Plugin projects
+     *
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
      */
     protected function getPluginProjects()
     {
@@ -115,8 +133,13 @@ abstract class PluginBaseCommand extends TerminusCommand
 
     /**
      * Detects whether a project/plugin is installed.
+     *
      * @param string $project
+     *
      * @return bool
+     *
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
      */
     protected function isInstalled($project)
     {
@@ -130,7 +153,11 @@ abstract class PluginBaseCommand extends TerminusCommand
 
     /**
      * @param string $command
+     *
      * @return array
+     *
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
      */
     protected function runCommand(string $command)
     {
@@ -170,24 +197,36 @@ abstract class PluginBaseCommand extends TerminusCommand
     /**
      * Run composer update in the given folder.
      *
+     * @param $folder
+     * @param string $packages
+     *
      * @return array Array returned by runCommand.
+     *
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
      */
     protected function runComposerUpdate($folder, $packages = '')
     {
         $command = str_replace(
-            ['{dir}', '{packages}',],
-            [$folder, $packages],
+            ['{packages}'],
+            [$packages],
             self::DEPENDENCIES_UPDATE_COMMAND
         );
+        $command = self::populateComposerWorkingDir($command, $folder);
         return $this->runCommand($command);
     }
 
     /**
      * Require terminus resolved packages into terminus-dependencies folder.
      *
+     * @param string $source_plugins_dir
+     * @param string $source_dependencies_dir
+     *
      * @return array
      *
      * @throws \Pantheon\Terminus\Exceptions\TerminusException
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
      */
     protected function updateTerminusDependencies($source_plugins_dir = '', $source_dependencies_dir = '')
     {
@@ -217,10 +256,11 @@ abstract class PluginBaseCommand extends TerminusCommand
         $packages = $this->getPackagesWithVersionString($terminus_composer_lock);
         // First: Require dependencies from terminus.
         $command = str_replace(
-            ['{dir}', '{packages}',],
-            [$dependencies_dir, $packages,],
+            ['{packages}'],
+            [$packages],
             self::DEPENDENCIES_REQUIRE_COMMAND
         );
+        $command = self::populateComposerWorkingDir($command, $dependencies_dir);
         $results = $this->runCommand($command);
         if ($results['exit_code'] !== 0) {
             throw new TerminusException(
@@ -233,10 +273,11 @@ abstract class PluginBaseCommand extends TerminusCommand
         foreach ($path_repositories as $repo_name => $path) {
             $plugins_dir_basename = $this->getConfig()->get('plugins_dir_basename');
             $command = str_replace(
-                ['{dir}', '{repo_name}', '{path}',],
-                [$dependencies_dir, $repo_name, $path,],
+                ['{repo_name}', '{path}'],
+                [$repo_name, $path],
                 self::COMPOSER_ADD_REPOSITORY
             );
+            $command = self::populateComposerWorkingDir($command, $dependencies_dir);
             $results = $this->runCommand($command);
             if ($results['exit_code'] !== 0) {
                 throw new TerminusException(
@@ -248,10 +289,11 @@ abstract class PluginBaseCommand extends TerminusCommand
 
         // Third: Require packages.
         $command = str_replace(
-            ['{dir}', '{packages}',],
-            [$dependencies_dir, 'pantheon-systems/terminus-plugins:*'],
+            ['{packages}'],
+            ['pantheon-systems/terminus-plugins:*'],
             self::DEPENDENCIES_REQUIRE_COMMAND
         );
+        $command = self::populateComposerWorkingDir($command, $dependencies_dir);
         $results = $this->runCommand($command);
         if ($results['exit_code'] === 0) {
             // Finally: Update packages.
@@ -273,14 +315,21 @@ abstract class PluginBaseCommand extends TerminusCommand
 
     /**
      * Cleanup old dependencies folders.
+     *
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
      */
     protected function cleanupOldDependenciesFolders()
     {
         $dependencies_base_dir = $this->getConfig()->get('dependencies_base_dir');
-        $current_dependencies_dir = $this->getConfig()->get('terminus_dependencies_dir');
+        $current_dependencies_dir = $this->getTerminusDependenciesDir();
         $pattern_start = basename($dependencies_base_dir);
         $parent_folder = dirname($dependencies_base_dir);
         $all_folders = scandir($parent_folder);
+        if (!$all_folders) {
+            return;
+        }
+
         $fs = $this->getLocalMachine()->getFileSystem();
         foreach ($all_folders as $folder) {
             $full_path = $parent_folder . DIRECTORY_SEPARATOR . $folder;
@@ -307,29 +356,34 @@ abstract class PluginBaseCommand extends TerminusCommand
     /**
      * @param string $path Path where composer.json file should exist.
      * @param string $package_name Package name to create if composer.json doesn't exist.
+     *
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
      */
     protected function ensureComposerJsonExists($path, $package_name)
     {
         $this->ensureDirectoryExists($path);
         if (!$this->getLocalMachine()->getFileSystem()->exists($path . '/composer.json')) {
-            $this->runCommand("composer --working-dir=${path} init --name=${package_name} -n");
-            $this->runCommand("composer --working-dir=${path} config minimum-stability dev");
-            $this->runCommand("composer --working-dir=${path} config prefer-stable true");
+            $this->runCommand("composer --working-dir=$path init --name=$package_name -n");
+            $this->runCommand("composer --working-dir=$path config minimum-stability dev");
+            $this->runCommand("composer --working-dir=$path config prefer-stable true");
         }
     }
 
     /**
      * Return existing path repositories in given dir.
+     *
+     * @param $plugins_dir
+     *
+     * @return array
+     *
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
      */
     protected function getPathRepositories($plugins_dir)
     {
         $path_repositories = [];
-
-        $command = str_replace(
-            ['{dir}',],
-            [$plugins_dir],
-            self::COMPOSER_GET_REPOSITORIES
-        );
+        $command = self::populateComposerWorkingDir(self::COMPOSER_GET_REPOSITORIES, $plugins_dir);
         $results = $this->runCommand($command);
         if ($results['exit_code'] === 0) {
             $json = json_decode($results['output'], true);
@@ -347,12 +401,20 @@ abstract class PluginBaseCommand extends TerminusCommand
     }
 
     /**
-     * Create temporary dir
+     * Creates temporary dir.
+     *
+     * @param string $prefix
+     * @param false $dir
+     *
+     * @return string|void
+     *
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
      */
     protected function createTempDir($prefix = 'terminus', $dir = false)
     {
         $fs = $this->getLocalMachine()->getFileSystem();
-        $tempfile = $fs->tempnam($dir ? $dir : sys_get_temp_dir(), $prefix ? $prefix : '');
+        $tempfile = $fs->tempnam($dir ?: sys_get_temp_dir(), $prefix ?: '');
         if ($fs->exists($tempfile)) {
             $fs->remove($tempfile);
         }
@@ -365,6 +427,11 @@ abstract class PluginBaseCommand extends TerminusCommand
 
     /**
      * Register our shutdown function if it hasn't already been registered.
+     *
+     * @param $path
+     *
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
      */
     protected function registerCleanupFunction($path)
     {
@@ -378,6 +445,12 @@ abstract class PluginBaseCommand extends TerminusCommand
 
     /**
      * Replace source folder into destination.
+     *
+     * @param $source
+     * @param $destination
+     *
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
      */
     protected function replaceFolder($source, $destination)
     {
@@ -391,6 +464,9 @@ abstract class PluginBaseCommand extends TerminusCommand
     /**
      * @param string $path
      * @param int $permissions
+     *
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
      */
     protected function ensureDirectoryExists($path, $permissions = 0755)
     {
@@ -403,6 +479,8 @@ abstract class PluginBaseCommand extends TerminusCommand
      * @param string $project_or_path Project or path for the plugins.
      *
      * @return string Project name.
+     *
+     * @throws \Pantheon\Terminus\Exceptions\TerminusException
      */
     protected function getProjectNameFromPath(string $project_or_path)
     {
@@ -433,30 +511,35 @@ abstract class PluginBaseCommand extends TerminusCommand
      * Install given project. Optionally from path repository.
      *
      * @param string $project_name Name of project to be installed
-     * @param string $instalation_path If not empty, install as a path repository
+     * @param string $installation_path If not empty, install as a path repository
      *
      * @return array Results from the install command
+     *
+     * @throws \Pantheon\Terminus\Exceptions\TerminusException
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
      */
-    protected function installProject($project_name, $instalation_path = '')
+    protected function installProject($project_name, $installation_path = '')
     {
         $plugin_name = PluginInfo::getPluginNameFromProjectName($project_name);
         $project_name_parts = explode(':', $project_name);
         $project_name_without_version = reset($project_name_parts);
         $config = $this->getConfig();
         $original_plugins_dir = $config->get('plugins_dir');
-        $original_dependencies_dir = $config->get('terminus_dependencies_dir');
+        $original_dependencies_dir = $this->getTerminusDependenciesDir();
         $folders = $this->updateTerminusDependencies($original_plugins_dir, $original_dependencies_dir);
         $plugins_dir = $folders['plugins_dir'];
         $dependencies_dir = $folders['dependencies_dir'];
         try {
-            if (!empty($instalation_path)) {
+            if (!empty($installation_path)) {
                 // Update path repository in plugins dir and dependencies dir.
                 foreach ([$plugins_dir, $dependencies_dir] as $dir) {
                     $command = str_replace(
-                        ['{dir}', '{repo_name}', '{path}',],
-                        [$dir, $project_name_without_version, realpath($instalation_path),],
+                        ['{repo_name}', '{path}'],
+                        [$project_name_without_version, realpath($installation_path)],
                         self::COMPOSER_ADD_REPOSITORY
                     );
+                    $command = self::populateComposerWorkingDir($command, $dir);
                     $results = $this->runCommand($command);
                     if ($results['exit_code'] !== 0) {
                         throw new TerminusException(
@@ -468,10 +551,11 @@ abstract class PluginBaseCommand extends TerminusCommand
             }
 
             $command = str_replace(
-                ['{dir}', '{project}',],
-                [$plugins_dir, $project_name,],
+                ['{project}'],
+                [$project_name],
                 self::INSTALL_COMMAND
             );
+            $command = self::populateComposerWorkingDir($command, $plugins_dir);
             $results = $this->runCommand($command);
             if ($results['exit_code'] !== 0) {
                 throw new TerminusException(
@@ -490,6 +574,82 @@ abstract class PluginBaseCommand extends TerminusCommand
             $this->log()->error($e->getMessage());
         }
 
-        return $results;
+        return $results ?? [];
+    }
+
+    /**
+     * Returns absolute path to Terminus' Composer dependencies.
+     *
+     * @return string
+     */
+    protected function getTerminusDependenciesDir(): string
+    {
+        $dir = $this->getConfig()->get('terminus_dependencies_dir');
+        if (!is_dir($dir)) {
+            mkdir($dir, 0777, true);
+        }
+
+        return $dir;
+    }
+
+    /**
+     * Returns true if a Packagist project is valid.
+     *
+     * @param string $project_name Name of plugin package to install
+     *
+     * @return bool True if valid, false otherwise
+     *
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
+     */
+    protected function isPackagistProject(string $project_name): bool
+    {
+        // Separate version if exists.
+        $project_name_parts = explode(':', $project_name);
+        $project_name = reset($project_name_parts);
+        // Search for the Packagist project.
+        $command = str_replace(
+            '{project}',
+            $project_name ?? '',
+            self::COMPOSER_SEARCH_COMMAND
+        );
+        $command = self::populateComposerWorkingDir($command, $this->getTerminusDependenciesDir());
+
+        $exec_result = $this->getLocalMachine()->exec($command);
+        if (0 !== $exec_result['exit_code']) {
+            $this->log()->error(
+                sprintf('Failed executing "%s": %s', $command, $exec_result['stderr'])
+            );
+            return false;
+        }
+
+        $output = trim($exec_result['output'] ?? '');
+        $packages = json_decode($output, true);
+        if (json_last_error()) {
+            $this->log()->error(
+                sprintf('Failed executing "%s": json decode error code %d', $command, json_last_error())
+            );
+            return false;
+        }
+        $package_names = array_column($packages, 'name');
+
+        return in_array($project_name, $package_names, true);
+    }
+
+    /**
+     * Replaces "{dir}" placeholder (Composer's "-d" option) in the command string with the given value.
+     *
+     * @param string $command
+     * @param string $dir
+     *
+     * @return string
+     */
+    public static function populateComposerWorkingDir(string $command, string $dir): string
+    {
+        return str_replace(
+            ['{dir}'],
+            [$dir],
+            $command
+        );
     }
 }

@@ -3,9 +3,7 @@
 namespace Pantheon\Terminus\Commands\Self\Plugin;
 
 use Consolidation\AnnotatedCommand\CommandData;
-use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
 use Pantheon\Terminus\Exceptions\TerminusException;
-use Pantheon\Terminus\Plugins\PluginInfo;
 
 /**
  * Creates a new Terminus plugin using Composer.
@@ -15,7 +13,8 @@ class CreateCommand extends PluginBaseCommand
 {
     const USAGE_MESSAGE = 'terminus self:plugin:create <path>';
     const EXISTING_FOLDER_MESSAGE = 'Path should be a non-existing folder that will be created';
-    const COMPOSER_CREATE_PROJECT = 'composer create-project pantheon-systems/terminus-plugin-example {dir}';
+    const COMPOSER_CREATE_PROJECT =
+        'composer create-project -d {dir} pantheon-systems/terminus-plugin-example {project_dir}';
 
     /**
      * Create a new terminus plugin.
@@ -24,9 +23,15 @@ class CreateCommand extends PluginBaseCommand
      * @aliases self:plugin:new plugin:create plugin:new
      *
      * @param string $path Path where the plugin will be created.
-     * @option project-name Namme of the project to be created (vendor/project-name).
+     * @param string[] $options
+     *
+     * @option project-name Name of the project to be created (vendor/project-name).
      *
      * @usage <path> --project-name=vendor/project_name
+     *
+     * @throws \Pantheon\Terminus\Exceptions\TerminusException
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
      */
     public function create(string $path, $options = [
         'project-name' => '',
@@ -35,7 +40,9 @@ class CreateCommand extends PluginBaseCommand
         $project_name = $options['project-name'];
         if (!file_exists($path)) {
             $results = $this->doCreate($path, $project_name);
-            $this->log()->notice($results['output']);
+            if (!empty($results['output'])) {
+                $this->log()->notice($results['output']);
+            }
         } else {
             throw new TerminusException(self::EXISTING_FOLDER_MESSAGE);
         }
@@ -44,7 +51,13 @@ class CreateCommand extends PluginBaseCommand
     /**
      * Check for minimum plugin command requirements.
      * @hook validate self:plugin:create
+     *
      * @param CommandData $commandData
+     *
+     * @throws \Pantheon\Terminus\Exceptions\TerminusException
+     * @throws \Pantheon\Terminus\Exceptions\TerminusNotFoundException
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
      */
     public function validate(CommandData $commandData)
     {
@@ -58,7 +71,11 @@ class CreateCommand extends PluginBaseCommand
     /**
      * @param string $path Path where this project will be created
      * @param string $project_name Name for the new project.
+     *
      * @return array Results from the create command
+     *
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
      */
     private function doCreate($path, $project_name)
     {
@@ -67,9 +84,13 @@ class CreateCommand extends PluginBaseCommand
         $realpath = realpath($parent_folder) . DIRECTORY_SEPARATOR . $basename;
         try {
             $command = str_replace(
-                ['{dir}',],
-                [$realpath,],
+                ['{project_dir}'],
+                [$realpath],
                 self::COMPOSER_CREATE_PROJECT
+            );
+            $command = self::populateComposerWorkingDir(
+                $command,
+                self::getTerminusDependenciesDir()
             );
             $results = $this->runCommand($command);
             if ($results['exit_code'] !== 0) {
@@ -81,6 +102,8 @@ class CreateCommand extends PluginBaseCommand
         } catch (TerminusException $e) {
             $this->log()->error($e->getMessage());
         }
+
+        return [];
     }
 
     /**

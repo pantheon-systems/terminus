@@ -106,8 +106,9 @@ class CommandCoverageReport implements ConfigAwareInterface, IOAwareInterface
             $reflector = new \ReflectionClass($className);
             if (!$reflector->isAbstract()) {
                 $total_tests += 1;
+                $classObject = new $className();
 
-                $commandInfo = $factory->getCommandInfoListFromClass($className);
+                $commandInfo = $factory->getCommandInfoListFromClass($classObject);
                 $commandName = static::classToCommandName($className);
                 $groupNameSafe = static::classToGroupName($className);
                 if (is_array($commandInfo)) {
@@ -207,7 +208,7 @@ class CommandCoverageReport implements ConfigAwareInterface, IOAwareInterface
         $command_short = str_replace(
             "Command",
             "",
-            $command_name
+            $command_name ?? ''
         );
         return $command_short;
     }
@@ -222,7 +223,7 @@ class CommandCoverageReport implements ConfigAwareInterface, IOAwareInterface
     {
         $exploded_class = explode("\\Commands\\", $class);
         $exploded_again = explode("\\", $exploded_class[1]);
-        return strtolower($exploded_again[0]);
+        return strtolower($exploded_again[0] ?? '');
     }
 
     /**

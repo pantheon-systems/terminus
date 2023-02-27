@@ -142,9 +142,9 @@ class Sites extends APICollection implements SessionAwareInterface
      */
     public function filterByPlanName($plan_name)
     {
-        $plan_name = strtolower($plan_name);
+        $plan_name = strtolower($plan_name ?? '');
         return $this->filter(function ($model) use ($plan_name) {
-            return (strtolower($model->get('plan_name')) === $plan_name);
+            return strtolower($model->get('plan_name') ?? '') === $plan_name;
         });
     }
 
@@ -201,7 +201,7 @@ class Sites extends APICollection implements SessionAwareInterface
      */
     public function filterByUpstream($upstream_id)
     {
-        $upstream_id = strtolower($upstream_id);
+        $upstream_id = strtolower($upstream_id ?? '');
         return $this->filter(function ($model) use ($upstream_id) {
             return in_array($upstream_id, $model->getUpstream()->getReferences());
         });

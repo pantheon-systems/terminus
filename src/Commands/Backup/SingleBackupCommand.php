@@ -4,6 +4,7 @@ namespace Pantheon\Terminus\Commands\Backup;
 
 use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
 use Pantheon\Terminus\Models\Backup;
+use Pantheon\Terminus\Exceptions\TerminusException;
 
 abstract class SingleBackupCommand extends BackupCommand
 {
@@ -37,5 +38,36 @@ abstract class SingleBackupCommand extends BackupCommand
             $backup = array_shift($backups);
         }
         return $backup;
+    }
+
+    /**
+     * Validate the provided element name and throw exceptions if unsupported.
+     *
+     * @param string $site_env
+     *   Site & environment in the format `site-name.env`
+     * @param string $element
+     *   The element name to validate.
+     * @param bool $supportAll
+     *   Whether to support the "all" element.
+     *
+     * @throws TerminusException If the element is not supported.
+     */
+    protected function validateElement(string $siteEnv, string $element, bool $supportAll = true): void
+    {
+        if ($element == 'all' && !$supportAll) {
+            throw new TerminusException('The backup element "all" is not supported for this command.');
+        }
+
+        $env = $this->getEnv($siteEnv);
+        $supported = $env->getBackups()->getValidElements();
+
+        if ($supportAll) {
+            $supported[] = 'all';
+        }
+        if (!in_array($element, $supported)) {
+            throw new TerminusException(
+                sprintf('Element should be one of the following items: %s', implode(', ', $supported))
+            );
+        }
     }
 }

@@ -6,18 +6,18 @@ use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
 use Pantheon\Terminus\Plugins\PluginInfo;
 
 /**
+ * SearchCommand class.
+ *
  * Search for Terminus plugins to install.
+ *
  * @package Pantheon\Terminus\Commands\Self\Plugin
- * @TODO Bonus: Add the ability to search and prompt to install new plugins.
- * @TODO Keep an internal registry of approved third-party plugins.
- * @TODO Do lookup if given a plugin name and not a project name, prompt OK for match, install
  */
 class SearchCommand extends PluginBaseCommand
 {
     const APPROVED_PROJECTS = 'terminus-plugin-project/terminus-pancakes-plugin';
     const NO_PLUGINS_MESSAGE = 'No compatible plugins have met your criterion.';
     const OFFICIAL_PLUGIN_AUTHOR = 'pantheon-systems';
-    const SEARCH_COMMAND = 'composer search -t terminus-plugin {keyword}';
+    const SEARCH_COMMAND = 'composer search -d {dir} -t terminus-plugin {keyword}';
     const PROJECT_URL = 'https://repo.packagist.org/p2/{project}.json';
     const PROJECT_DEV_URL = 'https://repo.packagist.org/p2/{project}~dev.json';
 
@@ -33,16 +33,20 @@ class SearchCommand extends PluginBaseCommand
      *     name: Name
      *     status: Status
      *     description: Description
+     * @usage <plugin> Searches for Terminus plugins with "plugin" in the name.
+     *
      * @return RowsOfFields
      *
-     * @usage <plugin> Searches for Terminus plugins with "plugin" in the name.
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
      */
     public function search($keyword)
     {
-        $command = str_replace('{keyword}', $keyword, self::SEARCH_COMMAND);
+        $command = str_replace('{keyword}', $keyword ?? '', self::SEARCH_COMMAND);
+        $command = self::populateComposerWorkingDir($command, $this->getTerminusDependenciesDir());
         $results = explode(
             PHP_EOL,
-            str_replace(' - ', ' ', trim($this->runCommand($command)['output']))
+            str_replace(' - ', ' ', trim($this->runCommand($command)['output'] ?? ''))
         );
 
         $projects = array_map(
@@ -59,17 +63,18 @@ class SearchCommand extends PluginBaseCommand
                 function ($message) {
                     list($project) = explode(' ', $message, 2);
                     if (preg_match('#^[^/]*/[^/]*$#', $project)) {
-                        $url = str_replace('{project}', $project, self::PROJECT_URL);
+                        $url = str_replace('{project}', $project ?? '', self::PROJECT_URL);
                         $json = json_decode(file_get_contents($url), true, 10);
                         if ($this->validatePackageVersions($json['packages'][$project])) {
                             return true;
                         }
-                        $url = str_replace('{project}', $project, self::PROJECT_DEV_URL);
+                        $url = str_replace('{project}', $project ?? '', self::PROJECT_DEV_URL);
                         $json = json_decode(file_get_contents($url), true, 10);
                         if ($this->validatePackageVersions($json['packages'][$project])) {
                             return true;
                         }
                     }
+                    return false;
                 }
             )
         );
@@ -85,6 +90,13 @@ class SearchCommand extends PluginBaseCommand
 
     /**
      * Validate package versions against terminus major version.
+     *
+     * @param $versions_array
+     *
+     * @return bool
+     *
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
      */
     protected function validatePackageVersions($versions_array)
     {
@@ -103,7 +115,12 @@ class SearchCommand extends PluginBaseCommand
 
     /**
      * Check for minimum plugin command requirements.
+     *
      * @hook validate self:plugin:search
+     *
+     * @throws \Pantheon\Terminus\Exceptions\TerminusNotFoundException
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
      */
     public function validate()
     {

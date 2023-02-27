@@ -1,7 +1,54 @@
 # Change Log
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org)
 
-## 3.0.8-dev
+## 3.1.3-dev -
+
+## 3.1.2 - 2023-01-03
+
+### Added
+- PHP 8.2 compatibility (#2414)
+
+### Changed
+- Documentation for import:site command (#2410)
+- Database and cache connection information is now fetched from env vars (#2403)
+
+## 3.1.1 - 2022-11-08
+
+### Changed
+- Update plan:set docs to sku instead of id (#2407)
+
+### Fixed
+- Remove Kint from terminus (#2405)
+- Site:org:add should not need user org membership if a label is provided (#2404)
+- Look for status code in ssh-key:add response (#2406)
+
+## 3.1.0 - 2022-10-17
+
+### Added
+- Added new cache-hit/miss ratio in the cache commands (#2399)
+
+### Fixed
+- Fix deprecation notice in dependency on PHP 8.1 (#2397)
+
+## 3.0.9 - 2022-10-06
+
+### Changed
+- Verbose option description to make it clearer (#2383)
+
+### Fixed
+- Terminus plugin manager composer commands should not be affected by current directory (#2386)
+- Omit reload warning if running reload command (#2388)
+- Deprecation warnings on PHP 8.1 (#2391)
+
+## 3.0.8 - 2022-08-22
+
+### Changed
+- Install plugins can now be done from git url (#2362)
+
+### Fixed
+- Make sure local:clone gets the right branch (#2375)
+- Plugin update should work without args or with 'all' args (#2369)
+- Make backup:restore command work with element = all (#2381)
 
 ## 3.0.7 - 2022-03-29
 

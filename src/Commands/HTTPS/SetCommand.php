@@ -40,12 +40,12 @@ class SetCommand extends TerminusCommand implements SiteAwareInterface
     public function set($site_env, $certificate, $private_key, $options = ['intermediate-certificate' => null,])
     {
         $key = [
-            'cert' => file_exists($certificate) ? trim(file_get_contents($certificate)) : $certificate,
-            'key' => file_exists($private_key) ? trim(file_get_contents($private_key)) : $private_key,
+            'cert' => file_exists($certificate) ? trim(file_get_contents($certificate) ?: '') : $certificate,
+            'key' => file_exists($private_key) ? trim(file_get_contents($private_key) ?: '') : $private_key,
         ];
         if (!is_null($int = $options['intermediate-certificate'])) {
             if (file_exists($int)) {
-                $key['intermediary'] = trim(file_get_contents($int));
+                $key['intermediary'] = trim(file_get_contents($int) ?: '');
             } else {
                 $key['intermediary'] = $int;
             }

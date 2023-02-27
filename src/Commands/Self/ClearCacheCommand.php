@@ -6,7 +6,8 @@ use Pantheon\Terminus\Commands\TerminusCommand;
 use Pantheon\Terminus\Helpers\LocalMachineHelper;
 
 /**
- * Class ClearCacheCommand
+ * Class ClearCacheCommand.
+ *
  * @package Pantheon\Terminus\Commands\Self
  */
 class ClearCacheCommand extends TerminusCommand
@@ -18,6 +19,9 @@ class ClearCacheCommand extends TerminusCommand
      * @aliases self:cc
      *
      * @usage Clears the local Terminus session cache and all locally saved machine tokens.
+     *
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
      */
     public function clearCache()
     {

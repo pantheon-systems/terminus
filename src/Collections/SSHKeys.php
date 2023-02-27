@@ -40,11 +40,11 @@ class SSHKeys extends UserOwnedCollection
         $response = $this->request->request(
             'users/' . $this->getUser()->id . '/keys',
             [
-                'form_params' => rtrim(file_get_contents($key_file)),
+                'form_params' => rtrim(file_get_contents($key_file) ?: ''),
                 'method' => 'post',
             ]
         );
-        return (array)$response['data'];
+        return $response;
     }
 
     /**

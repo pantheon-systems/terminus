@@ -23,7 +23,7 @@ class SiteMetrics extends SiteOwnedCollection
     /**
      * @var string base URL to fetch
      */
-    protected $url = 'sites/{site_id}/{series}?granularity={period}&datapoints={datapoints}';
+    protected $url = 'sites/{site_id}/traffic?duration={duration}';
 
     /**
      * SiteMetrics constructor

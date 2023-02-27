@@ -43,7 +43,7 @@ trait EnvironmentTrait
         return str_replace(
             ['{site_id}', '{env_id}', '{id}',],
             [$env->getSite()->id, $env->id, $this->id,],
-            parent::getUrl()
+            parent::getUrl() ?? ''
         );
     }
 }

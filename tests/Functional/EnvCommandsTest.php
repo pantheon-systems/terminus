@@ -204,6 +204,21 @@ class EnvCommandsTest extends TerminusTestBase
             $metric,
             'A metric should have "pages_served" field.'
         );
+        $this->assertArrayHasKey(
+            'cache_hits',
+            $metric,
+            'A metric should have "cache_hits" field.'
+        );
+        $this->assertArrayHasKey(
+            'cache_misses',
+            $metric,
+            'A metric should have "cache_misses" field.'
+        );
+        $this->assertArrayHasKey(
+            'cache_hit_ratio',
+            $metric,
+            'A metric should have "cache_hit_ratio" field.'
+        );
     }
 
     /**

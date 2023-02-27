@@ -5,8 +5,8 @@ namespace Pantheon\Terminus\Plugins;
 use Consolidation\AnnotatedCommand\CommandFileDiscovery;
 use League\Container\ContainerAwareInterface;
 use League\Container\ContainerAwareTrait;
+use Pantheon\Terminus\Commands\Self\Plugin\PluginBaseCommand;
 use Pantheon\Terminus\Config\ConfigAwareTrait;
-use Pantheon\Terminus\Exceptions\TerminusException;
 use Pantheon\Terminus\Helpers\LocalMachineHelper;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
@@ -14,7 +14,8 @@ use Robo\Contract\ConfigAwareInterface;
 use Composer\Semver\Semver;
 
 /**
- * Class PluginInfo
+ * Class PluginInfo.
+ *
  * @package Pantheon\Terminus\Plugins
  */
 class PluginInfo implements ConfigAwareInterface, ContainerAwareInterface, LoggerAwareInterface
@@ -26,8 +27,7 @@ class PluginInfo implements ConfigAwareInterface, ContainerAwareInterface, Logge
     const MAX_COMMAND_DEPTH = 4;
 
     // Commands
-    const GET_LATEST_AVAILABLE_VERSION = 'composer show {package} --latest --all --format=json';
-    const VALIDATION_COMMAND = 'composer search -N -t terminus-plugin {project}';
+    const GET_LATEST_AVAILABLE_VERSION = 'composer show -d {dir} {package} --latest --all --format=json';
 
     // Version Numbers
     const UNKNOWN_VERSION = 'unknown';
@@ -35,16 +35,18 @@ class PluginInfo implements ConfigAwareInterface, ContainerAwareInterface, Logge
     /**
      * @var null|array
      */
+
     protected $info = null;
+
     /**
      * @var string
      */
     protected $plugin_dir;
+
     /**
      * @var string
      */
     protected $stable_latest_version;
-
 
     /**
      * Determines whether current terminus version satisfies given terminus-compatible value.
@@ -61,15 +63,6 @@ class PluginInfo implements ConfigAwareInterface, ContainerAwareInterface, Logge
     }
 
     /**
-     * Set Plugin dir.
-     */
-    public function setPluginDir($plugin_dir)
-    {
-        $this->plugin_dir = $plugin_dir;
-        $this->info = $this->parsePluginInfo();
-    }
-
-    /**
      * Set packageinfo.
      */
     public function setInfoArray($info)
@@ -80,7 +73,7 @@ class PluginInfo implements ConfigAwareInterface, ContainerAwareInterface, Logge
     }
 
     /**
-     * Get all of the commands and hooks in the plugin.
+     * Get all the commands and hooks in the plugin.
      *
      * @return array
      */
@@ -92,9 +85,8 @@ class PluginInfo implements ConfigAwareInterface, ContainerAwareInterface, Logge
         $discovery->setSearchPattern('/.*(Command|Hook).php$/')
             ->setSearchLocations([])
             ->setSearchDepth(self::MAX_COMMAND_DEPTH);
-        $command_files = $discovery->discover($path, $namespace);
 
-        return $command_files;
+        return $discovery->discover($path, $namespace);
     }
 
     /**
@@ -110,7 +102,7 @@ class PluginInfo implements ConfigAwareInterface, ContainerAwareInterface, Logge
     /**
      * Get the info array for the plugin.
      *
-     * @return array|null|string
+     * @return array|null
      */
     public function getInfo()
     {
@@ -145,6 +137,9 @@ class PluginInfo implements ConfigAwareInterface, ContainerAwareInterface, Logge
      * Get the latest available plugin version.
      *
      * @return string Latest plugin version
+     *
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
      */
     public function getLatestVersion()
     {
@@ -153,6 +148,8 @@ class PluginInfo implements ConfigAwareInterface, ContainerAwareInterface, Logge
             $this->getName() ?? '',
             self::GET_LATEST_AVAILABLE_VERSION
         );
+        $command = PluginBaseCommand::populateComposerWorkingDir($command, $this->plugin_dir);
+
         $results = $this->runCommand($command);
         if (!empty($results['output'])) {
             $package_info = json_decode($results['output'], true, 10);
@@ -197,44 +194,6 @@ class PluginInfo implements ConfigAwareInterface, ContainerAwareInterface, Logge
     }
 
     /**
-     * Check whether a Packagist project is valid.
-     *
-     * @return bool True if valid, false otherwise
-     */
-    public function isValidPackagistProject()
-    {
-        return self::checkWhetherPackagistProject($this->getName(), $this->getLocalMachine());
-    }
-
-
-    /**
-     * Check whether a Packagist project is valid.
-     *
-     * @param string $project_name Name of plugin package to install
-     * @param LocalMachineHelper $local_machine_helper
-     * @return bool True if valid, false otherwise
-     */
-    public static function checkWhetherPackagistProject($project_name, LocalMachineHelper $local_machine_helper)
-    {
-        // Separate version if exists.
-        $project_name_parts = explode(':', $project_name);
-        $project_name = reset($project_name_parts);
-        // Search for the Packagist project.
-        $command = str_replace(
-            '{project}',
-            $project_name ?? '',
-            self::VALIDATION_COMMAND
-        );
-        $results = $local_machine_helper->exec($command);
-        $result = (trim($results['output']));
-
-        if (empty($result)) {
-            return false;
-        }
-        return ($result === $project_name);
-    }
-
-    /**
      * @param $version_number
      * @return string
      */
@@ -250,7 +209,7 @@ class PluginInfo implements ConfigAwareInterface, ContainerAwareInterface, Logge
     public static function getPluginNameFromProjectName($project_name)
     {
         preg_match('/.*\/(.*)/', $project_name, $matches);
-        return $matches[1];
+        return $matches[1] ?? 'n/a';
     }
 
     /**
@@ -284,6 +243,9 @@ class PluginInfo implements ConfigAwareInterface, ContainerAwareInterface, Logge
 
     /**
      * @return LocalMachineHelper
+     *
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
      */
     protected function getLocalMachine()
     {
@@ -291,93 +253,7 @@ class PluginInfo implements ConfigAwareInterface, ContainerAwareInterface, Logge
     }
 
     /**
-     * Check to see if the provided info object has autoload info
-     *
-     * @param type $info
-     * @return boolean
-     */
-    protected function hasAutoload($info)
-    {
-        return isset($info['autoload']) && isset($info['autoload']['psr-4']);
-    }
-
-    /**
-     * Read and parse the info for the plugin.
-     * Each check has an error message so that a plugin author gets the specific message needed if the plugin is malformed.
-     *
-     * @return array|string
-     * @throws \Pantheon\Terminus\Exceptions\TerminusException
-     */
-    protected function parsePluginInfo()
-    {
-        if (!$this->plugin_dir) {
-            throw new TerminusException('No plugin directory was specified');
-        }
-        if (!file_exists($this->plugin_dir)) {
-            throw new TerminusException('The directory "{dir}" does not exist', ['dir' => $this->plugin_dir]);
-        }
-        if (!is_dir($this->plugin_dir)) {
-            throw new TerminusException('The file "{dir}" is not a directory', ['dir' => $this->plugin_dir]);
-        }
-        if (!is_readable($this->plugin_dir)) {
-            throw new TerminusException('The directory "{dir}" is not readable', ['dir' => $this->plugin_dir]);
-        }
-
-        $composer_json = $this->plugin_dir . '/composer.json';
-        if (!file_exists($composer_json)) {
-            throw new TerminusException('The file "{file}" does not exist', ['file' => $composer_json]);
-        }
-        if (!is_readable($composer_json)) {
-            throw new TerminusException('The file "{file}" is not readable', ['file' => $composer_json]);
-        }
-
-        if (!$this->info) {
-            $info = json_decode(file_get_contents($composer_json), true);
-        } else {
-            $info = $this->info;
-        }
-
-        if (!$info) {
-            throw new TerminusException('No correct info retrieved for package at {dir}', ['dir' => $this->plugin_dir]);
-        }
-
-        if (!isset($info['type']) || $info['type'] !== 'terminus-plugin') {
-            throw new TerminusException(
-                'The composer.json must contain a "type" attribute with the value "terminus-plugin"'
-            );
-        }
-
-        if (!isset($info['extra']['terminus'])) {
-            throw new TerminusException('The composer.json must contain a "terminus" section in "extras"');
-        }
-
-        if (!isset($info['extra']['terminus']['compatible-version'])) {
-            throw new TerminusException(
-                'The composer.json must contain a "compatible-version" field in "extras/terminus"'
-            );
-        }
-
-        if ($this->hasAutoload($info)) {
-            $namespaces = array_keys($info['autoload']['psr-4']);
-            foreach ($namespaces as $namespace) {
-                if (substr($namespace, -1) != '\\') {
-                    throw new TerminusException(
-                        'The namespace "{namespace}" in the composer.json autoload psr-4 section '
-                        . 'must end with a namespace separator. Should be "{correct}"',
-                        ['namespace' => addslashes($namespace), 'correct' => addslashes($namespace . '\\'),]
-                    );
-                }
-            }
-        }
-
-        $info['version'] = $this->getInstalledVersion();
-        $info['latest_version'] = $this->getLatestVersion();
-
-        return (array)$info;
-    }
-
-    /**
-     * Return the directory where this plugin stores it's command files.
+     * Return the directory where this plugin stores its command files.
      *
      * @return string
      */
@@ -389,7 +265,11 @@ class PluginInfo implements ConfigAwareInterface, ContainerAwareInterface, Logge
 
     /**
      * @param string $command
+     *
      * @return array
+     *
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
      */
     private function runCommand(string $command)
     {
@@ -397,32 +277,5 @@ class PluginInfo implements ConfigAwareInterface, ContainerAwareInterface, Logge
         $results = $this->getLocalMachine()->exec($command);
         $this->logger->debug("Returned:\n{output}", $results);
         return $results;
-    }
-
-    /**
-     * @param string $results Version results from Composer
-     * @return array
-     */
-    private static function filterForVersionNumbers($results)
-    {
-        if (is_string($results)) {
-            $results = explode(PHP_EOL, $results);
-        }
-        if (empty($results)) {
-            return [];
-        }
-        return array_map(
-            function ($result) {
-                preg_match('/(\d*\.\d*\.\d*)/', $result, $output_array);
-                return $output_array[1];
-            },
-            array_filter(
-                $results,
-                function ($result) {
-                    preg_match('/(\d*\.\d*\.\d*)/', $result, $output_array);
-                    return isset($output_array[1]);
-                }
-            )
-        );
     }
 }

@@ -64,6 +64,11 @@ class Environment extends TerminusModel implements ContainerAwareInterface, Site
     private $workflows;
 
     /**
+     * @var EnvironmentMetrics
+     */
+    private $environment_metrics;
+
+    /**
      * Apply upstream updates
      *
      * @param boolean $updatedb True to run update.php
@@ -226,22 +231,17 @@ class Environment extends TerminusModel implements ContainerAwareInterface, Site
      */
     public function cacheserverConnectionInfo()
     {
-        $cacheServerBindings = $this->getBindings()->getByType('cacheserver');
-        if (empty($cacheServerBindings)) {
-            return [];
-        }
-
-        $cacheServerBinding = $this->getBinding($cacheServerBindings);
-        if (null === $cacheServerBinding) {
-            return [];
-        }
-
-        $password = $cacheServerBinding->get('password');
-        $domain = $cacheServerBinding->get('host');
-        $port = $cacheServerBinding->get('port');
-        $username = $cacheServerBinding->getUsername();
+        $env_vars = $this->fetchEnvironmentVars();
+        $port = $env_vars['CACHE_PORT'] ?? null;
+        $password = $env_vars['CACHE_PASSWORD'] ?? null;
+        $username = $env_vars['CACHE_BINDING_ID'] ?? null;
+        $domain = $env_vars['CACHE_HOST'] ?? null;
         $url = "redis://$username:$password@$domain:$port";
         $command = "redis-cli -h $domain -p $port -a $password";
+
+        if (is_null($domain)) {
+            return [];
+        }
 
         return [
             'password' => $password,
@@ -253,29 +253,41 @@ class Environment extends TerminusModel implements ContainerAwareInterface, Site
     }
 
     /**
+     * Fetches the environment variables and returns PHP object
+     */
+    public function fetchEnvironmentVars(): array
+    {
+        $path = sprintf(
+            'sites/%s/environments/%s/variables',
+            $this->getSite()->id,
+            $this->id
+        );
+        $options = ['method' => 'get',];
+        $response = $this->request()->request($path, $options);
+        if (empty($response['data'])) {
+            return [];
+        }
+        return (array) $response['data'];
+    }
+    /**
      * Gives database connection info for this environment
      *
      * @return array
      */
     public function databaseConnectionInfo()
     {
-        $dbServerBindings = $this->getBindings()->getByType('dbserver');
-        if (empty($dbServerBindings)) {
-            return [];
-        }
-
-        $dbServerBinding = $this->getBinding($dbServerBindings);
-        if (null === $dbServerBinding) {
-            return [];
-        }
-
-        $password = $dbServerBinding->get('password');
+        $env_vars = $this->fetchEnvironmentVars();
         $domain = "dbserver.{$this->id}.{$this->getSite()->id}.drush.in";
-        $port = $dbServerBinding->get('port');
-        $username = $dbServerBinding->getUsername();
-        $database = 'pantheon';
+        $port = $env_vars['DB_PORT'] ?? null;
+        $password = $env_vars['DB_PASSWORD'] ?? null;
+        $username = $env_vars['DB_USER'] ?? null;
+        $database = $env_vars['DB_NAME'] ?? null;
         $url = "mysql://$username:$password@$domain:$port/$database";
         $command = "mysql -u $username -p$password -h $domain -P $port $database";
+
+        if (is_null($domain)) {
+            return [];
+        }
 
         return [
             'host' => $domain,
@@ -757,10 +769,8 @@ class Environment extends TerminusModel implements ContainerAwareInterface, Site
         if (!in_array($this->id, ['test', 'live',])) {
             return true;
         }
-        // One can determine whether an environment has been initialized
-        // by checking if it has code commits. Uninitialized environments do not.
-        $commits = $this->getCommits()->all();
-        return (count($commits) > 0);
+
+        return $this->settings('is_initialized');
     }
 
     /**
@@ -868,7 +878,7 @@ class Environment extends TerminusModel implements ContainerAwareInterface, Site
         if (!empty($ssh_host = $this->getConfig()->get('ssh_host'))) {
             $username = "appserver.{$this->id}.{$site->id}";
             $domain = $ssh_host;
-        } elseif (strpos($this->getConfig()->get('host'), 'onebox') !== false) {
+        } elseif (strpos($this->getConfig()->get('host') ?? '', 'onebox') !== false) {
             $username = "appserver.{$this->id}.{$site->id}";
             $domain = $this->getConfig()->get('host');
         } else {
@@ -951,7 +961,7 @@ class Environment extends TerminusModel implements ContainerAwareInterface, Site
     private function settings($setting = null)
     {
         $path = "sites/{$this->getSite()->id}/environments/{$this->id}/settings";
-        $response = (array)$this->request()->request($path, ['method' => 'get',]);
+        $response = $this->request()->request($path, ['method' => 'get',]);
         return $response['data']->$setting;
     }
 

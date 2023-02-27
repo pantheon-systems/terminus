@@ -241,6 +241,6 @@ class AliasesCommand extends TerminusCommand implements SiteAwareInterface
      */
     protected function shortenHomePath($message)
     {
-        return str_replace($this->getConfig()->get('user_home'), '~', $message);
+        return str_replace($this->getConfig()->get('user_home') ?? '', '~', $message ?? '');
     }
 }

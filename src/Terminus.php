@@ -86,6 +86,19 @@ class Terminus implements
         $this->setOutput($output);
         $application = new Application('Terminus', $config->get('version'));
         $options = $application->getDefinition()->getOptions();
+        if (isset($options['verbose'])) {
+            $originalVerboseOption = $options['verbose'];
+            $description = <<<EOD
+Increase the verbosity of messages: 1 for normal output (-v), 2 for more verbose output (-vv), and 3 for debug (-vvv)
+EOD;
+            $options['verbose'] = new InputOption(
+                $originalVerboseOption->getName(),
+                $originalVerboseOption->getShortcut(),
+                InputOption::VALUE_NONE,
+                $description
+            );
+            $application->getDefinition()->setOptions($options);
+        }
         $application->getDefinition()
             ->addOption(
                 new InputOption(
@@ -565,11 +578,30 @@ class Terminus implements
             }
         }
         $terminus = new static($config, $input, $output);
+
         if ($dependencies_folder_absent && $terminus->hasPlugins()) {
-            $terminus->logger->warning(
-                'Could not load plugins because Terminus was upgraded. ' .
-                'Please run terminus self:plugin:reload to refresh.',
-            );
+            $omit_reload_warning = false;
+
+            $input_string = (string) $input;
+            $plugin_reload_command_names = [
+                'self:plugin:reload',
+                'self:plugin:refresh',
+                'plugin:reload',
+                'plugin:refresh',
+            ];
+            foreach ($plugin_reload_command_names as $command_name) {
+                if (strpos($input_string, $command_name) !== false) {
+                    $omit_reload_warning = true;
+                    break;
+                }
+            }
+
+            if (!$omit_reload_warning) {
+                $terminus->logger->warning(
+                    'Could not load plugins because Terminus was upgraded. ' .
+                    'Please run terminus self:plugin:reload to refresh.',
+                );
+            }
         }
         return $terminus;
     }

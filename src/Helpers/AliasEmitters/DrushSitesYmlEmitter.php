@@ -57,7 +57,7 @@ class DrushSitesYmlEmitter implements AliasEmitterInterface
         }
         $drushConfigFiltered['drush']['paths']['alias-path'][] = '${env.home}/.drush/sites';
         $drushConfigFiltered['drush']['paths']['alias-path'][] =
-            str_replace($this->home, '${env.home}', $pantheon_sites_dir);
+            str_replace($this->home ?? '', '${env.home}', $pantheon_sites_dir ?? '');
         $drushConfigFiltered['drush']['paths']['include'][] = '${env.home}/.drush/pantheon';
         $drushYmlEditor->writeDrushConfig($drushConfigFiltered);
 
@@ -80,7 +80,9 @@ class DrushSitesYmlEmitter implements AliasEmitterInterface
      */
     protected function filterForSites($line)
     {
-        if ((strpos($line, 'pantheon') !== false) || (strpos($line, '/.drush/sites') !== false)) {
+        if (strpos($line ?? '', 'pantheon') !== false
+            || strpos($line ?? '', '/.drush/sites') !== false
+        ) {
             return false;
         }
         return true;
