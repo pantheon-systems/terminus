@@ -19,6 +19,8 @@ class AliasesCommand extends TerminusCommand implements SiteAwareInterface
 
     /**
      * Generates Pantheon Drush aliases for sites on which the currently logged-in user is on the team.
+     * Note that Drush 9 does not read alias files from global locations. You must set valid alias locations in your drush.yml file.
+     * Refer to https://docs.pantheon.io/guides/drush/drush-aliases#manage-available-site-aliases-lists for more information.
      *
      * @authorize
      *
