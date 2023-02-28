@@ -19,6 +19,8 @@ class DatabaseCommand extends TerminusCommand implements SiteAwareInterface
 
     /**
      * Imports a database archive to the environment.
+     * This command drops the existing database and imports the target into a new database.
+     * Use with caution to avoid accidental database deletion.
      *
      * @authorize
      *
