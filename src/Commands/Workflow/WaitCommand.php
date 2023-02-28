@@ -11,7 +11,7 @@ use Pantheon\Terminus\Site\SiteAwareTrait;
  *
  * @package Pantheon\Terminus\Commands\Workflow
  */
-class AwaitCommand extends TerminusCommand implements SiteAwareInterface
+class WaitCommand extends TerminusCommand implements SiteAwareInterface
 {
     use SiteAwareTrait;
 
@@ -20,13 +20,13 @@ class AwaitCommand extends TerminusCommand implements SiteAwareInterface
      * for code commits, since Terminus will already wait for workflows
      * that it starts through the API.
      *
-     * @command workflow:await
+     * @command workflow:wait
      * @param $site_env_id The pantheon site to wait for.
      * @param $description The workflow description to wait for. Optional; default is code sync.
      * @option start Ignore any workflows started prior to the start time (epoch)
      * @option max Maximum number of seconds to wait for the workflow to complete
      */
-    public function workflowAwait(
+    public function workflowWait(
         $site_env_id,
         $description = '',
         $options = [
