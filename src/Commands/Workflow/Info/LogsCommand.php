@@ -9,7 +9,7 @@ namespace Pantheon\Terminus\Commands\Workflow\Info;
 class LogsCommand extends InfoBaseCommand
 {
     /**
-     * Displays the details of a workflow including Quicksilver operation logs.
+     * Displays the details of Quicksilver operation logs.
      *
      * @authorize
      *
