@@ -2,7 +2,7 @@
 ### Platform
 ( ) MacOS
 ( ) Linux
-( ) Winderz
+( ) WSL2
 
 ### Installed Via
 ( ) Homebrew

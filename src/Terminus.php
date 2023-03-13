@@ -429,6 +429,7 @@ EOD;
             'Pantheon\\Terminus\\Commands\\Workflow\\Info\\OperationsCommand',
             'Pantheon\\Terminus\\Commands\\Workflow\\Info\\StatusCommand',
             'Pantheon\\Terminus\\Commands\\Workflow\\ListCommand',
+            'Pantheon\\Terminus\\Commands\\Workflow\\WaitCommand',
             'Pantheon\\Terminus\\Commands\\Workflow\\WatchCommand'
         ];
     }

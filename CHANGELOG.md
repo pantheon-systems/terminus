@@ -1,7 +1,32 @@
 # Change Log
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org)
 
-## 3.1.3-dev -
+## 3.1.5-dev
+
+## 3.1.4 - 2023-03-01
+
+### Added
+- Multiple tag filter support for org:site:list command (#2360)
+- Workflow wait command added as a copy of existing command in Build Tools plugin (#2435)
+
+### Fixed
+- Cache clear option is now used in the env:deploy command (#2432)
+
+### Changed
+
+- PHP compatibility errors are written to stderr instead of stdout (#2434)
+- Description for database import command (#2436)
+- Description for workflow:info:logs command (#2439)
+- Description for aliases command (#2438)
+
+## 3.1.3 - 2023-02-01
+
+### Added
+- Add SFTP Port as an available field for connection:info (#2420)
+
+### Fixed
+- Fix env var for db name in connection:info (#2427)
+- Library updates to fix compatibility issues with php 8.2 (#2430)
 
 ## 3.1.2 - 2023-01-03
 
