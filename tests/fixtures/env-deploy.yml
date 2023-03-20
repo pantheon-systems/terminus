@@ -191,7 +191,7 @@
             User-Agent: 'Terminus/0.11.4 (php_version=7.0.6&script=boot-fs.php)'
             Content-type: application/json
             Authorization: 'Bearer 11111111-1111-1111-1111-111111111111:4a2fe1de-6640-11e6-8d03-bc764e10b0ce:ufQocJfmb6tEtFlbf9z62'
-        body: '{"type":"deploy","params":{"updatedb":0,"annotation":"Deploy test","clone_database":{"from_environment":"live"},"clone_files":{"from_environment":"live"}}}'
+        body: '{"type":"deploy","params":{"updatedb":0,"clear_cache":0,"annotation":"Deploy test","clone_database":{"from_environment":"live"},"clone_files":{"from_environment":"live"}}}'
     response:
         status:
             http_version: '1.1'
