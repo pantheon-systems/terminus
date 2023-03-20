@@ -46,7 +46,10 @@ class SiteUserMemberships extends SiteOwnedCollection
                 'role' => $role
             ],
         ];
-        if (preg_match('/^[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}$/', $member)) {
+        if (preg_match(
+            '/^[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}$/',
+            $member
+        )) {
             $params['params']['user_id'] = $member;
             $workflow_name = 'add_site_user_membership_by_uuid';
         } else {
