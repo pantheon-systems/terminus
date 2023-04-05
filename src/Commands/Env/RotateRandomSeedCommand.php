@@ -36,7 +36,15 @@ class RotateRandomSeedCommand extends TerminusCommand implements SiteAwareInterf
     public function rotateRandseed($site_env)
     {
         $this->requireSiteIsNotFrozen($site_env);
+        $site = $this->getSite($site_env);
         $env = $this->getEnv($site_env);
+
+        if (!$this->confirm(
+            'Are you sure you want to log out all active users and invalidate all unused one-time login links for the {env} environment of {site}?',
+            ['site' => $site->getName(), 'env' => $env->getName()]
+        )) {
+            return;
+        }
 
         $this->processWorkflow($env->rotateRandseed());
         $this->log()->notice(
