@@ -40,7 +40,9 @@ class RotateRandomSeedCommand extends TerminusCommand implements SiteAwareInterf
         $env = $this->getEnv($site_env);
 
         if (!$this->confirm(
-            'Are you sure you want to log out all active users and invalidate all unused one-time login links for the {env} environment of {site}?',
+            'Are you sure you want to log out all active users ' .
+            'and invalidate all unused one-time login links for the ' .
+            '{env} environment of {site}?',
             ['site' => $site->getName(), 'env' => $env->getName()]
         )) {
             return;
