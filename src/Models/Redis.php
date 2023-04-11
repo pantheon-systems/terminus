@@ -16,7 +16,7 @@ class Redis extends AddOnModel
      * @param Environment $env An object representing the environment on which to clear the Redis cache
      * @return Workflow
      */
-    public function clear($env)
+    public function clear(Environment $env)
     {
         // @Todo: Change this when the env model conversion is merged
         return $env->getWorkflows()->create('clear_redis_cache');
