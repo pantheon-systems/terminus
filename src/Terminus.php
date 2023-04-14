@@ -332,6 +332,7 @@ EOD;
             'Pantheon\\Terminus\\Commands\\Env\\InfoCommand',
             'Pantheon\\Terminus\\Commands\\Env\\ListCommand',
             'Pantheon\\Terminus\\Commands\\Env\\MetricsCommand',
+            'Pantheon\\Terminus\\Commands\\Env\\RotateRandomSeedCommand',
             'Pantheon\\Terminus\\Commands\\Env\\ViewCommand',
             'Pantheon\\Terminus\\Commands\\Env\\WakeCommand',
             'Pantheon\\Terminus\\Commands\\Env\\WipeCommand',
@@ -428,6 +429,7 @@ EOD;
             'Pantheon\\Terminus\\Commands\\Workflow\\Info\\OperationsCommand',
             'Pantheon\\Terminus\\Commands\\Workflow\\Info\\StatusCommand',
             'Pantheon\\Terminus\\Commands\\Workflow\\ListCommand',
+            'Pantheon\\Terminus\\Commands\\Workflow\\WaitCommand',
             'Pantheon\\Terminus\\Commands\\Workflow\\WatchCommand'
         ];
     }
