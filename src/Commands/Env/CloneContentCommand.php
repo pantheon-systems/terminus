@@ -94,6 +94,15 @@ class CloneContentCommand extends TerminusCommand implements SiteAwareInterface
         }
 
         if (empty($options['files-only'])) {
+            // If the site is a wordpress site, we need to pass the search-replace
+            // option to the API along with the from_url and to_url from each
+            // environment.
+            if ($site->getFramework()->isWordpressFramework()) {
+                $options['search-replace'] = [
+                    'from_url' => $this->source_env->domain(),
+                    'to_url' => $this->target_env->domain(),
+                ];
+            }
             $this->cloneDatabase($options);
         }
     }
@@ -128,6 +137,7 @@ class CloneContentCommand extends TerminusCommand implements SiteAwareInterface
         $params = [
             'clear_cache' => $options['cc'],
             'updatedb' => $options['updatedb'],
+            'wp_replace_siteurl' => $options['search-replace'] ?? "None",
         ];
         $this->emitNotice('database');
         $this->runClone($this->target_env->cloneDatabase($this->source_env, $params));
