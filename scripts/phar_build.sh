@@ -8,12 +8,14 @@ composer install --no-dev
 VERSION=$(cat .version)
 ## if not in the context of a github action, lable the build as
 ## a dev build
-if [ -n "${GITHUB_RUN_ID}" ]
+if [[ -z "${GITHUB_RUN_ID}" ]]
 then
-    echo "+dev" >> .version
+    echo "$VERSION+dev" > .version
 fi
 
-echo "Building terminus.phar..."
+BUILD_VERSION=$(cat .version)
+
+echo "Building terminus.phar...${BUILD_VERSION}"
 box compile
 echo "terminus.phar file has been created successfully!"
 
