@@ -10,7 +10,7 @@ VERSION=$(cat .version)
 ## a dev build
 if [ -n "${GITHUB_RUN_ID}" ]
 then
-    echo "-dev" >> .version
+    echo "+dev" >> .version
 fi
 
 echo "Building terminus.phar..."
