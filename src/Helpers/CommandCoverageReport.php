@@ -77,7 +77,8 @@ class CommandCoverageReport implements ConfigAwareInterface, IOAwareInterface
         $config->extend(new YamlConfig($config->get('user_home') . '/.terminus/config.yml'));
         $config->extend(new DotEnvConfig(getcwd()));
         $config->extend(new EnvConfig());
-        $version = trim(file_get_contents($config->get('root') . "/.version"),
+        $version = trim(
+            file_get_contents($config->get('root') . "/.version"),
             " " . PHP_EOL
         );
         $config->set("TERMINUS_VERSION", $version);
