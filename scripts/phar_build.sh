@@ -12,7 +12,6 @@ if [[ -z "${BUILD_RELEASE}" ]]
 then
   ## When you build, you're always building (.version + 1-dev)
   ## unless you build a release, in which case you're building (.version)
-  bumpversion --no-tag --no-commit minor --verbose
   VERSION=$(cat .version)
   BUILD_VERSION="${VERSION}-dev"
 fi
@@ -27,6 +26,3 @@ if [[ -n "${TERMINUS_ON_PHAR_COMPLETE_REINSTALL_COMPOSER_WITH_DEV}" ]]; then
     echo "Reinstalling composer dependencies with --dev..."
     composer install --dev
 fi
-
-## restore version to correct value
-echo ${VERSION} > .version
