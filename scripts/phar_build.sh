@@ -5,15 +5,19 @@ set -e
 echo "Installing composer dependencies with --no-dev..."
 composer install --no-dev
 
-VERSION=$(cat .version)
+BUILD_VERSION=$(cat .version)
 ## if the github action doesn't explicitly set this var
 ## make sure this is tagged as a development build
 if [[ -z "${BUILD_RELEASE}" ]]
 then
-    echo "$VERSION-dev" > .version
+  ## When you build, you're always building (.version + 1-dev)
+  ## unless you build a release, in which case you're building (.version)
+  bumpversion --no-tag --no-commit minor --verbose
+  VERSION=$(cat .version)
+  BUILD_VERSION="${VERSION}-dev"
 fi
 
-BUILD_VERSION=$(cat .version)
+
 
 echo "Building terminus.phar...${BUILD_VERSION}"
 box compile

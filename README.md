@@ -68,5 +68,6 @@ Refer to the [Terminus manual](https://pantheon.io/docs/terminus/install#install
 
 ## NEW RELEASE PROCESS
 
-1. Merge an approved PR into the `3.x` branch. A new minor version will be tagged.
-2. Once the new version has been taged, edit the version creating a release from the github tags list.
+1. Merge an approved PR into the `3.x` branch. A new dev version will be tagged automatically by the CI system.
+
+2. Once the new version has been taged, edit the tag on github.com creating a release from the github tag.
