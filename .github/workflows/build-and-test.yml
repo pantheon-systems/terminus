@@ -32,8 +32,6 @@ jobs:
         run: composer install
       - name: Validate Code
         run: composer code:lint
-      - name: current_version
-        run: echo "CURRENT_VERSION=$(cat .version" >> $GITHUB_ENV
       - name: Phar Build
         run: |
           mkdir $HOME/box
