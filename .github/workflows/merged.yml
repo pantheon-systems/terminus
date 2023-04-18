@@ -30,3 +30,15 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           tags: true
+      - name: Phar Build
+        run: |
+          mkdir $HOME/box
+          composer require humbug/box --working-dir=$HOME/box
+          export PATH=~/box/vendor/bin:$PATH
+          composer phar:build
+      - name: Save terminus.phar as artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: terminus-phar
+          path: terminus.phar
+          if-no-files-found: error
