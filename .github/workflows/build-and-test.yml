@@ -2,16 +2,10 @@
 name: Terminus 3.x
 on:
   push:
-  workflow_dispatch:
-    inputs:
-      functional_tests_group:
-        description: Run arbitrary functional tests group by name or all (short and long) tests (default)
-        required: true
-        default: all
-      tmate_enabled:
-        description: Enable tmate debugging
-        required: true
-        default: "0"
+    ignore: [ 'master' ]
+  pull_request:
+    branches: [ '*' ]
+
 
 jobs:
   # Checkout in separate job because docker image is alpine based and checkout action doesn't work.
