@@ -6,11 +6,11 @@ echo "Installing composer dependencies with --no-dev..."
 composer install --no-dev
 
 VERSION=$(cat .version)
-## if not in the context of a github action, lable the build as
-## a dev build
-if [[ -z "${GITHUB_RUN_ID}" ]]
+## if the github action doesn't explicitly set this var
+## make sure this is tagged as a development build
+if [[ -z "${BUILD_RELEASE}" ]]
 then
-    echo "$VERSION+dev" > .version
+    echo "$VERSION-dev" > .version
 fi
 
 BUILD_VERSION=$(cat .version)
