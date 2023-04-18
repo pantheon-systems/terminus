@@ -31,6 +31,9 @@ class CloneContentCommand extends TerminusCommand implements SiteAwareInterface
 
     /**
      * Clones database/files from one environment to another environment.
+     * Wordpress sites will search the database for the default domain and
+     * replace it with the target environment's domain unless you specify
+     * a different search/replace string with --search-for and --replace-with.
      *
      * @authorize
      *
@@ -43,6 +46,8 @@ class CloneContentCommand extends TerminusCommand implements SiteAwareInterface
      * @option bool $db-only Only clone database
      * @option bool $files-only Only clone files
      * @option bool $updatedb Update the Drupal database
+     * @option string $search-for URL to search for (wordpress only)
+     * @option string $replace-with URL to replace (wordpress only)
      *
      * @throws \Pantheon\Terminus\Exceptions\TerminusException
      *
@@ -51,6 +56,7 @@ class CloneContentCommand extends TerminusCommand implements SiteAwareInterface
      * @usage <site>.<env> <target_env> --db-only Clones only the database from <site>'s <env> environment to <target_env> environment.
      * @usage <site>.<env> <target_env> --files-only Clones only files from <site>'s <env> environment to <target_env> environment.
      * @usage <site>.<env> <target_env> --updatedb Clones from <site>'s <env> environment to <target_env> environment and updates the Drupal database (if applicable).
+     * @usage <site>.<env> <target_env> --search-for=www.example.com --replace-with=mulitidevEnv.example.com (wordpress only) Clones from <site>'s <env> environment to <target_env> environment and replaces www.example.com with mulitidevEnv.example.com in the database.
      */
     public function cloneContent(
         $site_env,
@@ -60,6 +66,8 @@ class CloneContentCommand extends TerminusCommand implements SiteAwareInterface
             'db-only' => false,
             'files-only' => false,
             'updatedb' => false,
+            'search-for' => '',
+            'replace-with' => '',
         ]
     ) {
         if (!empty($options['db-only']) && !empty($options['files-only'])) {
@@ -99,8 +107,8 @@ class CloneContentCommand extends TerminusCommand implements SiteAwareInterface
             // environment.
             if ($site->getFramework()->isWordpressFramework()) {
                 $options['search-replace'] = [
-                    'from_url' => $this->source_env->domain(),
-                    'to_url' => $this->target_env->domain(),
+                    'from_url' => $options['search-for'] ?? $this->source_env->domain(),
+                    'to_url' => $options['replace-with'] ?? $this->target_env->domain(),
                 ];
             }
             $this->cloneDatabase($options);
