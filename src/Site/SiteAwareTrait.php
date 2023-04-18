@@ -42,26 +42,6 @@ trait SiteAwareTrait
     /**
      * Returns the site by site UUID, site name or `site-name.env`.
      *
-     * @deprecated Use fetchSite() instead.
-     *
-     * @param string $site_id
-     *   Either a site's UUID or its name or site_env.
-     *
-     * @return Site
-     *
-     * @throws \GuzzleHttp\Exception\GuzzleException
-     * @throws \Pantheon\Terminus\Exceptions\TerminusException
-     * @throws \Psr\Container\ContainerExceptionInterface
-     * @throws \Psr\Container\NotFoundExceptionInterface
-     */
-    public function getSite(string $site_id): Site
-    {
-        return $this->fetchSite($site_id);
-    }
-
-    /**
-     * Returns the site by site UUID, site name or `site-name.env`.
-     *
      * @param string $site_id
      *   Either a site's UUID or its name or site_env.
      *
