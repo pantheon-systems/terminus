@@ -30,7 +30,7 @@ abstract class SingleBackupCommand extends BackupCommand
                 throw new TerminusNotFoundException(
                     'No backups available. Create one with `terminus backup:create {site}.{env}`',
                     [
-                        'site' => $this->getSite($site_env)->getName(),
+                        'site' => $this->fetchSite($site_env)->getName(),
                         'env' => $env->getName(),
                     ]
                 );

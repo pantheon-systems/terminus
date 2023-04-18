@@ -46,7 +46,7 @@ class AddCommand extends TerminusCommand implements SiteAwareInterface
             'Set {domain} as primary for {site}.{env}',
             [
                 'domain' => $domain,
-                'site' => $this->getSite($site_env)->getName(),
+                'site' => $this->fetchSite($site_env)->getName(),
                 'env' => $env->getName(),
             ]
         );

@@ -40,7 +40,7 @@ class RemoveCommand extends TerminusCommand implements SiteAwareInterface
             'Removed {domain} from {site}.{env}',
             [
                 'domain' => $domain,
-                'site' => $this->getSite($site_env)->getName(),
+                'site' => $this->fetchSite($site_env)->getName(),
                 'env' => $env->getName(),
             ]
         );

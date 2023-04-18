@@ -39,7 +39,7 @@ class RemoveCommand extends TerminusCommand implements SiteAwareInterface
         $this->log()->notice(
             'Primary domain has been removed from {site}.{env}',
             [
-                'site' => $this->getSite($site_env)->getName(),
+                'site' => $this->fetchSite($site_env)->getName(),
                 'env' => $env->getName(),
             ]
         );

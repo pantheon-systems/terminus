@@ -144,7 +144,7 @@ trait SiteAwareTrait
      */
     public function requireSiteIsNotFrozen(string $site_env): void
     {
-        if ($this->getSite($site_env)->isFrozen()) {
+        if ($this->fetchSite($site_env)->isFrozen()) {
             throw new TerminusException(
                 'This site is frozen. Its test and live environments and many commands will be '
                 . 'unavailable while it remains frozen.'
@@ -172,7 +172,7 @@ trait SiteAwareTrait
     public function getOptionalSiteEnv(string $site_env): array
     {
         try {
-            $site = $this->getSite($site_env);
+            $site = $this->fetchSite($site_env);
         } catch (TerminusException $e) {
             return [null, null];
         }
@@ -210,7 +210,7 @@ trait SiteAwareTrait
     public function getSiteEnv(string $site_env, ?string $default_env = null): array
     {
         return [
-            $this->getSite($site_env),
+            $this->fetchSite($site_env),
             $this->getOptionalEnv($site_env, $default_env),
         ];
     }
@@ -219,7 +219,7 @@ trait SiteAwareTrait
      * Get the site and environment by `site-name.env`, provided the site is not frozen.
      *
      * @deprecated
-     *   Use $this->requireSiteIsNotFrozen($site_env) in conjunction with $this->getSite($site_env) and/or
+     *   Use $this->requireSiteIsNotFrozen($site_env) in conjunction with $this->fetchSite($site_env) and/or
      *   $this->getEnv($site_env)/$this->getOptionalEnv($site_env).
      *
      * @param string $site_env
@@ -242,7 +242,7 @@ trait SiteAwareTrait
         $this->requireSiteIsNotFrozen($site_env);
 
         return [
-            $this->getSite($site_env),
+            $this->fetchSite($site_env),
             $this->getOptionalEnv($site_env, $default_env),
         ];
     }

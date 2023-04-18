@@ -48,7 +48,7 @@ class CreateCommand extends TerminusCommand implements SiteAwareInterface
         ]
     ) {
         $this->requireSiteIsNotFrozen($site_env);
-        $site = $this->getSite($site_env);
+        $site = $this->fetchSite($site_env);
         $env = $this->getEnv($site_env);
 
         if (strlen($multidev) > 11) {

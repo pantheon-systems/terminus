@@ -28,7 +28,7 @@ class SetCommand extends SiteCommand
      */
     public function set($site_name, $upstream_id)
     {
-        $site = $this->getSite($site_name);
+        $site = $this->fetchSite($site_name);
         if (!$site->getAuthorizations()->can('switch_upstream')) {
             throw new TerminusException('You do not have permission to change the upstream of this site.');
         }

@@ -36,7 +36,7 @@ class DisableCommand extends TerminusCommand implements SiteAwareInterface
         $this->log()->notice(
             '{site}.{env} has been unlocked.',
             [
-                'site' => $this->getSite($site_env)->getName(),
+                'site' => $this->fetchSite($site_env)->getName(),
                 'env' => $env->getName(),
             ]
         );

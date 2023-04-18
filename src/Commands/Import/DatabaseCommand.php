@@ -36,7 +36,7 @@ class DatabaseCommand extends TerminusCommand implements SiteAwareInterface
     public function import($site_env, $url)
     {
         $this->requireSiteIsNotFrozen($site_env);
-        $site = $this->getSite($site_env);
+        $site = $this->fetchSite($site_env);
         $env = $this->getEnv($site_env);
 
         if (!$this->confirm(

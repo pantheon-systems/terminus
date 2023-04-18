@@ -29,7 +29,7 @@ class DisableCommand extends TerminusCommand implements SiteAwareInterface
      */
     public function disable($site_id)
     {
-        $site = $this->getSite($site_id);
+        $site = $this->fetchSite($site_id);
         $workflow = $site->getRedis()->disable();
         $this->processWorkflow($workflow);
         $this->log()->notice($workflow->getMessage());

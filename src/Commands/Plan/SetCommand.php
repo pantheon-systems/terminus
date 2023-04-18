@@ -30,7 +30,7 @@ class SetCommand extends TerminusCommand implements SiteAwareInterface
      */
     public function set($site_id, $plan_sku)
     {
-        $site = $this->getSite($site_id);
+        $site = $this->fetchSite($site_id);
         $plans = $site->getPlans();
         $workflow = $plans->set($plans->get($plan_sku));
         $this->log()->notice('Setting plan of "{site_id}" to "{plan_sku}".', compact('site_id', 'plan_sku'));

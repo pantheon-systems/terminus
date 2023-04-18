@@ -36,7 +36,7 @@ class RotateRandomSeedCommand extends TerminusCommand implements SiteAwareInterf
     public function rotateRandseed($site_env)
     {
         $this->requireSiteIsNotFrozen($site_env);
-        $site = $this->getSite($site_env);
+        $site = $this->fetchSite($site_env);
         $env = $this->getEnv($site_env);
 
         if (!$this->confirm(
