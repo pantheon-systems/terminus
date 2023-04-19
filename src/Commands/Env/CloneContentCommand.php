@@ -50,8 +50,8 @@ class CloneContentCommand extends TerminusCommand implements SiteAwareInterface
      * @option bool $db-only Only clone database
      * @option bool $files-only Only clone files
      * @option bool $updatedb Update the Drupal database
-     * @option string $search-for URL to search for (wordpress only)
-     * @option string $replace-with URL to replace (wordpress only)
+     * @option string $search-for URL to search for (WordPress only)
+     * @option string $replace-with URL to replace (WordPress only)
      *
      * @throws \Pantheon\Terminus\Exceptions\TerminusException
      *
@@ -60,7 +60,7 @@ class CloneContentCommand extends TerminusCommand implements SiteAwareInterface
      * @usage <site>.<env> <target_env> --db-only Clones only the database from <site>'s <env> environment to <target_env> environment.
      * @usage <site>.<env> <target_env> --files-only Clones only files from <site>'s <env> environment to <target_env> environment.
      * @usage <site>.<env> <target_env> --updatedb Clones from <site>'s <env> environment to <target_env> environment and updates the Drupal database (if applicable).
-     * @usage <site>.<env> <target_env> --search-for=www.example.com --replace-with=mulitidevEnv.example.com (wordpress only) Clones from <site>'s <env> environment to <target_env> environment and replaces www.example.com with mulitidevEnv.example.com in the database.
+     * @usage <site>.<env> <target_env> --search-for=www.example.com --replace-with=mulitidevEnv.example.com (WordPress only) Clones from <site>'s <env> environment to <target_env> environment and replaces www.example.com with mulitidevEnv.example.com in the database.
      */
     public function cloneContent(
         $site_env,
@@ -106,7 +106,7 @@ class CloneContentCommand extends TerminusCommand implements SiteAwareInterface
         }
 
         if (empty($options['files-only'])) {
-            // If the site is a wordpress site, we need to pass the search-replace
+            // If the site is a WordPress site, we need to pass the search-replace
             // option to the API along with the from_url and to_url from each
             // environment.
             if ($site->getFramework()->isWordpressFramework()) {
