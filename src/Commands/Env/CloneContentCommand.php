@@ -31,7 +31,7 @@ class CloneContentCommand extends TerminusCommand implements SiteAwareInterface
 
     /**
      * Clones database/files from one environment to another environment.
-     * Wordpress sites will search the database for the default domain and
+     * WordPress sites will search the database for the default domain and
      * replace it with the target environment's domain unless you specify
      * a different search/replace string with --search-for and --replace-with.
      *
