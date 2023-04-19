@@ -32,7 +32,7 @@ class RoleCommand extends TerminusCommand implements SiteAwareInterface
      */
     public function role($site_id, $member, $role)
     {
-        $site = $this->getSite($site_id);
+        $site = $this->getSiteById($site_id);
         if (!(boolean)$site->getFeature('change_management')) {
             throw new TerminusException('This site does not have its change-management option enabled.');
         }

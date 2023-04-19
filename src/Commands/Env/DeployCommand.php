@@ -48,7 +48,7 @@ class DeployCommand extends TerminusCommand implements SiteAwareInterface
         $options = ['sync-content' => false, 'note' => 'Deploy from Terminus', 'cc' => false, 'updatedb' => false,]
     ) {
         $this->requireSiteIsNotFrozen($site_env);
-        $site = $this->getSite($site_env);
+        $site = $this->getSiteById($site_env);
         $env = $this->getEnv($site_env);
 
         $annotation = $options['note'];

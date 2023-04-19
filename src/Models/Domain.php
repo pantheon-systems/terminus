@@ -48,7 +48,7 @@ class Domain extends TerminusModel implements
             throw new TerminusProcessException(
                 "Domain remove failed. {site}.{env} => {domain}: {error}",
                 [
-                    "site" => $this->getSite()->getName(),
+                    "site" => $this->environment->getSite()->getName(),
                     "env" => $this->environment->id,
                     "domain" => $this->id,
                     "error" => $action->getStatusCodeReason(),

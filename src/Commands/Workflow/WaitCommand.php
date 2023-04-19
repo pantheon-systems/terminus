@@ -62,7 +62,7 @@ class WaitCommand extends TerminusCommand implements SiteAwareInterface
         $workflows = $site->getWorkflows();
 
         while (true) {
-            $site = $this->getsite($site->id);
+            $site = $this->getSiteById($site->id);
             // Refresh env on each interation.
             $index = 0;
             $workflows->reset();

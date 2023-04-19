@@ -191,7 +191,7 @@ class SiteEnvLookup implements ConfigAwareInterface, SiteAwareInterface, LoggerA
         }
 
         $site_id = $matches[1];
-        $site = $this->getSite($site_id);
+        $site = $this->getSiteById($site_id);
 
         // Get the current branch
         $env = exec('git rev-parse --abbrev-ref HEAD');

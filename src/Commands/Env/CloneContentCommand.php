@@ -67,7 +67,7 @@ class CloneContentCommand extends TerminusCommand implements SiteAwareInterface
         }
 
         $this->requireSiteIsNotFrozen($site_env);
-        $site = $this->getSite($site_env);
+        $site = $this->getSiteById($site_env);
         $this->source_env = $this->getEnv($site_env);
         $this->target_env = $site->getEnvironments()->get($target_env);
 

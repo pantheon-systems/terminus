@@ -36,7 +36,7 @@ class SiteCommand extends TerminusCommand implements SiteAwareInterface
      */
     public function import($site_name, $url)
     {
-        $site = $this->getSite($site_name);
+        $site = $this->getSiteById($site_name);
         $env = $site->getEnvironments()->get('dev');
 
         if (!$this->confirm(

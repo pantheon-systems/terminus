@@ -38,7 +38,7 @@ class ListCommand extends TerminusCommand implements SiteAwareInterface
     public function listOrgs($site_id)
     {
         return $this->getRowsOfFields(
-            $this->getSite($site_id)->getOrganizationMemberships(),
+            $this->getSiteById($site_id)->getOrganizationMemberships(),
             ['message' => 'This site has no supporting organizations.',]
         );
     }

@@ -23,7 +23,7 @@ abstract class InfoBaseCommand extends TerminusCommand implements SiteAwareInter
      */
     protected function getWorkflow($site_id, $workflow_id = null)
     {
-        $site = $this->getSite($site_id);
+        $site = $this->getSiteById($site_id);
         $workflows = $site->getWorkflows()->setPaging(false)->fetch()->all();
 
         if (!is_null($workflow_id)) {

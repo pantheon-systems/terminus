@@ -37,6 +37,6 @@ class ListCommand extends SiteCommand
      */
     public function listPlans($site_id)
     {
-        return $this->getRowsOfFields($this->getSite($site_id)->getPlans());
+        return $this->getRowsOfFields($this->getSiteById($site_id)->getPlans());
     }
 }

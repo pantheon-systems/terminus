@@ -59,7 +59,7 @@ class DockerizeCommand extends TerminusCommand implements
         $siteData = $site;
 
         if (!$siteData instanceof Site) {
-            $siteData = $this->getSite($site);
+            $siteData = $this->getSiteById($site);
             if (!$siteData instanceof Site) {
                 throw new TerminusException(
                     'Cannot find site with the ID: {site}',
