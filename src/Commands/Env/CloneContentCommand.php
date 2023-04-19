@@ -35,6 +35,10 @@ class CloneContentCommand extends TerminusCommand implements SiteAwareInterface
      * replace it with the target environment's domain unless you specify
      * a different search/replace string with --search-for and --replace-with.
      *
+     * IMPORTANT NOTE: if you have a WordPress multi-site installation, you
+     * will need an entry in your pantheon.yml in order to search all the
+     * sites in your install.  See http://pantheon.io/some/link/in/docs.
+     *
      * @authorize
      *
      * @command env:clone-content
