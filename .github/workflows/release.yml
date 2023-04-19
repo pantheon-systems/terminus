@@ -25,6 +25,16 @@ jobs:
         run: composer install
       - name: Validate Code
         run: composer code:lint
+      - name: Bump version and push tag
+        uses: jaumann/github-bumpversion-action@v0.0.7
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DEFAULT_BUMP: release
+      - name: Push changes
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          tags: true
       - name: Phar Build
         env:
           ## Do not include "-dev" in the version ID

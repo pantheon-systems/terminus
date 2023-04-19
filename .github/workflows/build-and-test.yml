@@ -2,7 +2,11 @@
 name: Terminus 3.x
 on:
   push:
-    ignore: [ 'master' ]
+    ## We do not build and test on changes to 3.x. We only build and test on pull requests.
+    ignore: [ '3.x' ]
+    ## we only build and test on chagnes to branches that aren't master
+    branches: [ '*' ]
+    ## And we build for pull request creation and updates
   pull_request:
     branches: [ '*' ]
 
@@ -26,6 +30,11 @@ jobs:
         run: composer install
       - name: Validate Code
         run: composer code:lint
+      - name: Bump version and push tag
+        uses: jaumann/github-bumpversion-action@v0.0.7
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DEFAULT_BUMP: build
       - name: Phar Build
         run: |
           mkdir $HOME/box
