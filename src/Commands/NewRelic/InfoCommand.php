@@ -37,6 +37,6 @@ class InfoCommand extends TerminusCommand implements SiteAwareInterface
      */
     public function info($site_id)
     {
-        return $this->getPropertyList($this->fetchSite($site_id)->getNewRelic());
+        return $this->getPropertyList($this->getSiteById($site_id)->getNewRelic());
     }
 }

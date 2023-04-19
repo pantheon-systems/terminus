@@ -42,7 +42,7 @@ class CloneCommand extends TerminusCommand implements SiteAwareInterface, Config
      */
     public function clone(string $site_id, array $options = ['site_dir' => null, 'override' => null]): string
     {
-        $site = $this->fetchSite($site_id);
+        $site = $this->getSiteById($site_id);
         $env = $site->getEnvironments()->get('dev');
 
         $gitUrl = $env->connectionInfo()['git_url'] ?? null;

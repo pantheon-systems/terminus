@@ -29,7 +29,7 @@ class EnableCommand extends TerminusCommand implements SiteAwareInterface
      */
     public function enable($site_id)
     {
-        $site = $this->fetchSite($site_id);
+        $site = $this->getSiteById($site_id);
         $workflow = $site->getNewRelic()->enable();
         $this->processWorkflow($workflow);
         $this->log()->notice($workflow->getMessage());

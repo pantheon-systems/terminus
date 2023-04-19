@@ -47,7 +47,7 @@ class WatchCommand extends TerminusCommand implements SiteAwareInterface
      */
     public function watch($site_id, $options = ['checks' => null])
     {
-        $site = $this->fetchSite($site_id);
+        $site = $this->getSiteById($site_id);
         if (!is_null($number_of_checks = $options['checks'])) {
             $number_of_checks = (integer)$number_of_checks;
         }

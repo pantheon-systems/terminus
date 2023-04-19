@@ -45,7 +45,7 @@ class CommitAndPushCommand extends TerminusCommand implements SiteAwareInterface
     {
         $siteData = $site;
         if (!$siteData instanceof Site) {
-            $siteData = $this->fetchSite($site);
+            $siteData = $this->getSiteById($site);
             if (!$siteData instanceof Site) {
                 throw new TerminusException(
                     "Cannot find site with the ID: {site}",

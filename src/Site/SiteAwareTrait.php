@@ -42,7 +42,7 @@ trait SiteAwareTrait
     /**
      * Returns the site by site UUID, site name or `site-name.env`.
      *
-     * @deprecated Use fetchSite() instead.
+     * @deprecated Use getSiteById() instead.
      *
      * @param string $site_id
      *   Either a site's UUID or its name or site_env.
@@ -56,7 +56,7 @@ trait SiteAwareTrait
      */
     public function getSite(string $site_id): Site
     {
-        return $this->fetchSite($site_id);
+        return $this->getSiteById($site_id);
     }
 
     /**
@@ -72,7 +72,7 @@ trait SiteAwareTrait
      * @throws \Psr\Container\ContainerExceptionInterface
      * @throws \Psr\Container\NotFoundExceptionInterface
      */
-    public function fetchSite(string $site_id): Site
+    public function getSiteById(string $site_id): Site
     {
         if (false !== strpos($site_id, '.')) {
             $site_env_parts = explode('.', $site_id);
@@ -144,7 +144,7 @@ trait SiteAwareTrait
      */
     public function requireSiteIsNotFrozen(string $site_env): void
     {
-        if ($this->fetchSite($site_env)->isFrozen()) {
+        if ($this->getSiteById($site_env)->isFrozen()) {
             throw new TerminusException(
                 'This site is frozen. Its test and live environments and many commands will be '
                 . 'unavailable while it remains frozen.'
@@ -172,7 +172,7 @@ trait SiteAwareTrait
     public function getOptionalSiteEnv(string $site_env): array
     {
         try {
-            $site = $this->fetchSite($site_env);
+            $site = $this->getSiteById($site_env);
         } catch (TerminusException $e) {
             return [null, null];
         }
@@ -210,7 +210,7 @@ trait SiteAwareTrait
     public function getSiteEnv(string $site_env, ?string $default_env = null): array
     {
         return [
-            $this->fetchSite($site_env),
+            $this->getSiteById($site_env),
             $this->getOptionalEnv($site_env, $default_env),
         ];
     }
@@ -219,7 +219,7 @@ trait SiteAwareTrait
      * Get the site and environment by `site-name.env`, provided the site is not frozen.
      *
      * @deprecated
-     *   Use $this->requireSiteIsNotFrozen($site_env) in conjunction with $this->fetchSite($site_env) and/or
+     *   Use $this->requireSiteIsNotFrozen($site_env) in conjunction with $this->getSiteById($site_env) and/or
      *   $this->getEnv($site_env)/$this->getOptionalEnv($site_env).
      *
      * @param string $site_env
@@ -242,7 +242,7 @@ trait SiteAwareTrait
         $this->requireSiteIsNotFrozen($site_env);
 
         return [
-            $this->fetchSite($site_env),
+            $this->getSiteById($site_env),
             $this->getOptionalEnv($site_env, $default_env),
         ];
     }

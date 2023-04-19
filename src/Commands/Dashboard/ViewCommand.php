@@ -69,6 +69,6 @@ class ViewCommand extends TerminusCommand implements SiteAwareInterface
             return $this->getOptionalEnv($site_env)->dashboardUrl();
         }
 
-        return $this->fetchSite($site_env)->dashboardUrl();
+        return $this->getSiteById($site_env)->dashboardUrl();
     }
 }

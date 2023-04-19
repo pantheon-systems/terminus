@@ -40,7 +40,7 @@ class EnableCommand extends TerminusCommand implements SiteAwareInterface
         $this->log()->notice(
             '{site}.{env} has been locked.',
             [
-                'site' => $this->fetchSite($site_env)->getName(),
+                'site' => $this->getSiteById($site_env)->getName(),
                 'env' => $env->getName(),
             ]
         );

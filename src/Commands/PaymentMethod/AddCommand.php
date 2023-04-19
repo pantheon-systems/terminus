@@ -31,7 +31,7 @@ class AddCommand extends TerminusCommand implements SiteAwareInterface
      */
     public function add($site_name, $payment_method)
     {
-        $site = $this->fetchSite($site_name);
+        $site = $this->getSiteById($site_name);
         $pm = $this->session()->getUser()->getPaymentMethods()->fetch()->get($payment_method);
         $this->processWorkflow($site->addPaymentMethod($pm->id));
         $this->log()->notice(

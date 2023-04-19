@@ -34,7 +34,7 @@ class SetCommand extends TerminusCommand implements SiteAwareInterface
      */
     public function set($site_id, $level)
     {
-        $site = $this->fetchSite($site_id);
+        $site = $this->getSiteById($site_id);
         $workflow = $site->updateServiceLevel($level);
         $this->log()->notice('Setting plan of "{site_id}" to "{level}".', compact('site_id', 'level'));
         $this->processWorkflow($workflow);

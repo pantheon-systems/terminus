@@ -46,7 +46,7 @@ class GetLiveDBCommand extends TerminusCommand implements
     public function downloadLiveDbBackup($site, $options = ['overwrite' => false])
     {
         if (!$site instanceof Site) {
-            $site = $this->fetchSite($site);
+            $site = $this->getSiteById($site);
         }
 
         /** @var \Pantheon\Terminus\Models\Environment $liveEnv */

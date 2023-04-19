@@ -34,7 +34,7 @@ class RestoreCommand extends SingleBackupCommand
     {
         $this->validateElement($site_env, $options['element'], true);
 
-        $site = $this->fetchSite($site_env);
+        $site = $this->getSiteById($site_env);
         $env = $this->getEnv($site_env);
 
         if ($options['file'] && $options['element'] !== 'all') {
@@ -54,7 +54,7 @@ class RestoreCommand extends SingleBackupCommand
             throw new TerminusNotFoundException(
                 'No backups available. Create one with `terminus backup:create {site}.{env}`',
                 [
-                    'site' => $this->fetchSite($site_env)->getName(),
+                    'site' => $this->getSiteById($site_env)->getName(),
                     'env' => $env->getName(),
                 ]
             );

@@ -35,7 +35,7 @@ class RemoveCommand extends TerminusCommand implements SiteAwareInterface
     public function remove($site, $organization)
     {
         $org = $this->session()->getUser()->getOrganizationMemberships()->get($organization)->getOrganization();
-        $site = $this->fetchSite($site);
+        $site = $this->getSiteById($site);
 
         $membership = $site->getOrganizationMemberships()->get($organization);
         $workflow = $membership->delete();

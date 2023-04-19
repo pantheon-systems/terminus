@@ -41,7 +41,7 @@ class AddCommand extends TerminusCommand implements SiteAwareInterface
         } else {
             $organizationName = $organization;
         }
-        $site = $this->fetchSite($site);
+        $site = $this->getSiteById($site);
 
         $workflow = $site->getOrganizationMemberships()->create(
             $organizationName,

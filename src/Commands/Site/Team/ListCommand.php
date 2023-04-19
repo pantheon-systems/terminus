@@ -39,7 +39,7 @@ class ListCommand extends TerminusCommand implements SiteAwareInterface
     public function teamList($site_id)
     {
         return $this->getRowsOfFields(
-            $this->fetchSite($site_id)->getUserMemberships(),
+            $this->getSiteById($site_id)->getUserMemberships(),
             [
                 'message' => '{site} has no team members.',
                 'message_options' => ['site' => $site_id,],

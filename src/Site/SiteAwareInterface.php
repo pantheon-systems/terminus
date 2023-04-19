@@ -32,7 +32,7 @@ interface SiteAwareInterface
     /**
      * Returns the site by site id, name or site_env.
      *
-     * @deprecated Use fetchSite() instead.
+     * @deprecated Use getSiteById() instead.
      *
      * @param string $site_id
      *
@@ -47,5 +47,5 @@ interface SiteAwareInterface
      *
      * @return mixed
      */
-    public function fetchSite(string $site_id): Site;
+    public function getSiteById(string $site_id): Site;
 }

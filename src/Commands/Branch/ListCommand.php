@@ -37,6 +37,6 @@ class ListCommand extends TerminusCommand implements SiteAwareInterface
      */
     public function listBranches($site_id)
     {
-        return $this->getRowsOfFields($this->fetchSite($site_id)->getBranches());
+        return $this->getRowsOfFields($this->getSiteById($site_id)->getBranches());
     }
 }
