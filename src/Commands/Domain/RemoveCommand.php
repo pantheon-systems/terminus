@@ -34,7 +34,9 @@ class RemoveCommand extends TerminusCommand implements SiteAwareInterface
     public function remove($site_env, $domain)
     {
         $env = $this->getEnv($site_env);
-        $env->getDomains()->get($domain)->delete();
+        $domain_object = $env->getDomains()->get($domain);
+        $domain_object->setEnvironment($env);
+        $domain_object->delete();
 
         $this->log()->notice(
             'Removed {domain} from {site}.{env}',
