@@ -32,17 +32,6 @@ interface SiteAwareInterface
     /**
      * Returns the site by site id, name or site_env.
      *
-     * @deprecated Use fetchSite() instead.
-     *
-     * @param string $site_id
-     *
-     * @return mixed
-     */
-    public function getSite(string $site_id): Site;
-
-    /**
-     * Returns the site by site id, name or site_env.
-     *
      * @param string $site_id
      *
      * @return mixed
