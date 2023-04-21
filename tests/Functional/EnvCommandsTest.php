@@ -9,6 +9,30 @@ namespace Pantheon\Terminus\Tests\Functional;
  */
 class EnvCommandsTest extends TerminusTestBase
 {
+
+    /**
+     * @param string $siteName
+     * @param string $envName
+     *
+     * @return string|null
+     */
+    protected function ensureSiteEnvironment(string $siteName, string $envName): ?string
+    {
+        return $this->terminus(sprintf('multidev:create %s.dev %s', $siteName, $envName));
+    }
+
+    /**
+     * @param string $siteName
+     * @param string $envName
+     *
+     * @return string|null
+     */
+    protected function deleteSiteEnvironment(string $siteName, string $envName): ?string
+    {
+        return $this->terminus(sprintf('multidev:delete %s.%s', $siteName, $envName));
+    }
+
+
     /**
      * @param string $siteName
      * @param string $envName

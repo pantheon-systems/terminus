@@ -12,6 +12,18 @@ use PHPUnit\Framework\TestCase;
  */
 abstract class TerminusTestBase extends TestCase
 {
+
+    /**
+     * @var \Monolog\Logger $logger
+     */
+    protected Logger $logger;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->logger = $GLOBALS['LOGGER'];
+    }
+
     /**
      * @var \Monolog\Logger $logger
      */
