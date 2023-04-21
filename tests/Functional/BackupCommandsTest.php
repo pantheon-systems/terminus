@@ -21,6 +21,7 @@ class BackupCommandsTest extends TerminusTestBase
      */
     protected function setUp(): void
     {
+        parent::setUp();
         $this->client = new Client();
     }
 
