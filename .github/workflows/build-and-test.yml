@@ -1,5 +1,5 @@
 ## This workflow is triggered on pushes to the master branch and on pull requests.
-name: Terminus 3.x
+name: Terminus Build & Test
 on:
   push:
     ## We do not build and test on changes to 3.x. We only build and test on pull requests.
