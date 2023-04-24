@@ -6,15 +6,6 @@ echo "Installing composer dependencies with --no-dev..."
 composer install --no-dev
 
 BUILD_VERSION=$(cat .version)
-## if the github action doesn't explicitly set this var
-## make sure this is tagged as a development build
-if [[ -z "${BUILD_RELEASE}" ]]
-then
-  bumpversion release --allow-dirty --tag --commit patch
-  BUILD_VERSION=$(cat .version)
-fi
-
-
 
 echo "Building terminus.phar...${BUILD_VERSION}"
 box compile
