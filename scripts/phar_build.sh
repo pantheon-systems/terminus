@@ -10,10 +10,8 @@ BUILD_VERSION=$(cat .version)
 ## make sure this is tagged as a development build
 if [[ -z "${BUILD_RELEASE}" ]]
 then
-  ## When you build, you're always building (.version + 1-dev)
-  ## unless you build a release, in which case you're building (.version)
-  VERSION=$(cat .version)
-  BUILD_VERSION="${VERSION}-dev"
+  bumpversion release --allow-dirty --tag --commit patch
+  BUILD_VERSION=$(cat .version)
 fi
 
 
