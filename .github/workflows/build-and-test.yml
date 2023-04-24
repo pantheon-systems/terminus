@@ -30,6 +30,8 @@ jobs:
         run: composer install
       - name: Validate Code
         run: composer code:lint
+      - name: Git Config
+        run: git config --global --add safe.directory /github/workspace
       - name: Bump version and push tag
         uses: jaumann/github-bumpversion-action@v0.0.7
         env:
