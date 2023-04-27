@@ -16,6 +16,7 @@ class RemoteCommandsTest extends TerminusTestBase
      */
     protected function setUp(): void
     {
+        parent::setUp();
         if (!$this->isSiteFrameworkDrupal()) {
             $this->markTestSkipped(
                 'A Drupal-based test site is required to test remote Drush commands.'
