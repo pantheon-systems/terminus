@@ -48,10 +48,6 @@
     "squizlabs/php_codesniffer": "^3.5",
     "wdalmut/php-deb-packager": "^0.0.14"
   },
-  "conflict": {
-    "drupal/core": "*",
-    "pantheon-systems/wordpress-composer": "*"
-  },
   "autoload": {
     "psr-4": {
       "Pantheon\\Terminus\\": "src/",
