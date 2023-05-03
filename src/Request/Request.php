@@ -190,10 +190,20 @@ class Request implements
 
                 if ($retry !== $maxRetries) {
                     $logWarningOnRetry(sprintf('status code - %s', $response->getStatusCode()));
+                    $this->logger->debug(
+                        'Response body: {body}',
+                        ['body' => $response->getBody()->getContents()]
+                    );
 
                     return true;
                 }
             }
+
+            $this->logger->error("HTTP request {method} {uri} has failed with error {error}.", [
+                'method' => $request->getMethod(),
+                'uri' => $request->getUri(),
+                'error' => $response->getBody()->getContents(),
+            ]);
 
             throw new TerminusException(
                 'HTTP request has failed with error "Maximum retry attempts reached".',
