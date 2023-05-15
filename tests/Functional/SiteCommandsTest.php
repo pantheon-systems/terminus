@@ -95,6 +95,7 @@ class SiteCommandsTest extends TerminusTestBase
         // Format table prints processed value.
         $siteInfoTable = $this->terminus(sprintf('site:info %s', $this->mockSiteName));
         $this->assertStringContainsString('Drupal 8 or later', $siteInfoTable);
+        $this->assertStringContainsString("Drupal 9 (deprecated)", $siteInfoTable);
     }
 
     /**
