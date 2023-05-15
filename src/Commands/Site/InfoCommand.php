@@ -33,6 +33,7 @@ class InfoCommand extends SiteCommand
      *     plan_name: Plan
      *     max_num_cdes: Max Multidevs
      *     upstream: Upstream
+     *     upstream_label: Upstream Label
      *     holder_type: Holder Type
      *     holder_id: Holder ID
      *     owner: Owner
