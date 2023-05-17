@@ -9,22 +9,22 @@ use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 
 /**
- * Class SyncCodeCommand.
+ * Class RebuildCommand.
  *
  * @package Pantheon\Terminus\Commands\Env
  */
-class SyncCodeCommand extends TerminusCommand implements SiteAwareInterface
+class RebuildCommand extends TerminusCommand implements SiteAwareInterface
 {
     use SiteAwareTrait;
     use WorkflowProcessingTrait;
 
     /**
-     * Sync code for the given environment (only dev and multidev allowed).
+     * Rebuild code for the given environment (only dev and multidev allowed).
      *
      * @authorize
      *
-     * @command env:sync-code
-     * @aliases sync-code
+     * @command env:rebuild
+     * @aliases rebuild
      *
      * @param string $site_env Site & environment in the format `site-name.env` (only Dev or Multidev)
      *
@@ -32,7 +32,7 @@ class SyncCodeCommand extends TerminusCommand implements SiteAwareInterface
      *
      * @usage <site>.<env> Sync code into the <site>'s Dev or multidev environment.
      */
-    public function deploy(
+    public function rebuild(
         $site_env
     ) {
         $this->requireSiteIsNotFrozen($site_env);

@@ -38,7 +38,7 @@ class AddCommand extends TerminusCommand implements SiteAwareInterface
             'Added {domain} to {site}.{env}',
             [
                 'domain' => $domain,
-                'site' => $this->getSite($site_env)->getName(),
+                'site' => $this->getSiteById($site_env)->getName(),
                 'env' => $env->getName(),
             ]
         );

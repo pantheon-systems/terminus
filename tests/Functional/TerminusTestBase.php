@@ -2,6 +2,7 @@
 
 namespace Pantheon\Terminus\Tests\Functional;
 
+use Monolog\Logger;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -11,6 +12,18 @@ use PHPUnit\Framework\TestCase;
  */
 abstract class TerminusTestBase extends TestCase
 {
+
+    /**
+     * @var \Monolog\Logger $logger
+     */
+    protected Logger $logger;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->logger = $GLOBALS['LOGGER'];
+    }
+
     /**
      * Run a terminus command.
      *
@@ -191,11 +204,20 @@ abstract class TerminusTestBase extends TestCase
     /**
      * Returns the site name.
      *
+     * @param string $
+     *
      * @return string
      */
-    public static function getSiteName(): string
+    public static function getSiteName(string $siteFramework = "drupal"): string
     {
-        return getenv('TERMINUS_SITE');
+        switch ($siteFramework) {
+            case "wordpress":
+                return getenv('TERMINUS_SITE_WP');
+            case "wordpress_network":
+                return getenv('TERMINUS_SITE_WP_NETWORK');
+            default:
+                return getenv('TERMINUS_SITE');
+        }
     }
 
     /**

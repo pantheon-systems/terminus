@@ -77,7 +77,7 @@ class MetricsCommand extends TerminusCommand implements SiteAwareInterface
                 ->setDuration($this->selectDatapoints($options['datapoints'], $options['period']))
                 ->serialize();
         } else {
-            $metrics = $this->getSite($site_env)
+            $metrics = $this->getSiteById($site_env)
                 ->getSiteMetrics()
                 ->setDuration($this->selectDatapoints($options['datapoints'], $options['period']))
                 ->serialize();

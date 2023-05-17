@@ -31,7 +31,7 @@ class ConsoleCommand extends TerminusCommand implements SiteAwareInterface
      */
     public function console($site_env = null)
     {
-        $site = $site_env ?? $this->getSite($site_env);
+        $site = $site_env ?? $this->getSiteById($site_env);
         $env = $site_env ?? $this->getOptionalEnv($site_env);
 
         eval(\Psy\sh());

@@ -32,7 +32,7 @@ class FilesCommand extends TerminusCommand implements SiteAwareInterface
      */
     public function import($site_env, $url)
     {
-        $site = $this->getSite($site_env);
+        $site = $this->getSiteById($site_env);
         $env = $this->getEnv($site_env);
 
         if (!$this->confirm(

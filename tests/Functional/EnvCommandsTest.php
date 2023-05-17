@@ -9,6 +9,30 @@ namespace Pantheon\Terminus\Tests\Functional;
  */
 class EnvCommandsTest extends TerminusTestBase
 {
+
+    /**
+     * @param string $siteName
+     * @param string $envName
+     *
+     * @return string|null
+     */
+    protected function ensureSiteEnvironment(string $siteName, string $envName): ?string
+    {
+        return $this->terminus(sprintf('multidev:create %s.dev %s', $siteName, $envName));
+    }
+
+    /**
+     * @param string $siteName
+     * @param string $envName
+     *
+     * @return string|null
+     */
+    protected function deleteSiteEnvironment(string $siteName, string $envName): ?string
+    {
+        return $this->terminus(sprintf('multidev:delete %s.%s', $siteName, $envName));
+    }
+
+
     /**
      * @test
      * @covers \Pantheon\Terminus\Commands\Env\ClearCacheCommand
@@ -43,6 +67,21 @@ class EnvCommandsTest extends TerminusTestBase
     public function testCloneContentCommand()
     {
         $this->terminus(sprintf('env:clone-content %s.%s %s', $this->getSiteName(), 'dev', $this->getMdEnv()));
+    }
+
+    /**
+     * @test
+     * @covers \Pantheon\Terminus\Commands\Env\CloneContentCommand
+     *
+     * @group env
+     * @group long
+     */
+    public function testCloneContentForWordpressCommand()
+    {
+        // 1. Ensure that the multidev environment exists
+        $this->ensureSiteEnvironment($this->getSiteName("wordpress"), $this->getMdEnv());
+        $this->terminus(sprintf('env:clone-content %s.%s %s', $this->getSiteName(), 'dev', $this->getMdEnv()));
+        $this->deleteSiteEnvironment($this->getSiteName("wordpress"), $this->getMdEnv());
     }
 
     /**

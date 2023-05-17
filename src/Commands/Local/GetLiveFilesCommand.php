@@ -48,7 +48,7 @@ class GetLiveFilesCommand extends TerminusCommand implements
     public function downloadLiveFilesBackup($site, $options = ['overwrite' => false])
     {
         if (!$site instanceof Site) {
-            $site = $this->getSite($site);
+            $site = $this->getSiteById($site);
         }
         /** @var \Pantheon\Terminus\Models\Environment $liveEnv */
         $liveEnv = $site

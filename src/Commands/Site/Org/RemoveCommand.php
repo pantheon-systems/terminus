@@ -28,20 +28,20 @@ class RemoveCommand extends TerminusCommand implements SiteAwareInterface
      * @param string $site Site name
      * @param string $organization Organization name or UUID
      *
-     * @throws TerminusException
+     * @throws \Pantheon\Terminus\Exceptions\TerminusException
+     * @throws \Pantheon\Terminus\Exceptions\TerminusNotFoundException
      *
      * @usage <site> <organization> Disassociates <organization> as a supporting organization from <site>.
      */
     public function remove($site, $organization)
     {
-        $org = $this->session()->getUser()->getOrganizationMemberships()->get($organization)->getOrganization();
-        $site = $this->getSite($site);
-
+        $site = $this->getSiteById($site);
         $membership = $site->getOrganizationMemberships()->get($organization);
+
         $workflow = $membership->delete();
         $this->log()->notice(
             'Removing {org} as a supporting organization from {site}.',
-            ['site' => $site->getName(), 'org' => $org->getName()]
+            ['site' => $site->getName(), 'org' => $membership->getOrganization()->getName()]
         );
         $this->processWorkflow($workflow);
         $this->log()->notice($workflow->getMessage());

@@ -454,6 +454,7 @@ class Site extends TerminusModel implements ContainerAwareInterface, Organizatio
             'plan_name' => $this->get('plan_name'),
             'max_num_cdes' => $settings ? $settings->max_num_cdes : 0,
             'upstream' => (string)$this->getUpstream(),
+            'upstream_label' => $this->getUpstream()->get('label'),
             'holder_type' => $this->get('holder_type'),
             'holder_id' => $this->get('holder_id'),
             'owner' => $this->get('owner'),

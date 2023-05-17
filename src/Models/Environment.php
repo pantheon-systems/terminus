@@ -121,6 +121,16 @@ class Environment extends TerminusModel implements ContainerAwareInterface, Site
     }
 
     /**
+     * Rotate an environment's randseed
+     *
+     * @return Workflow
+     */
+    public function rotateRandseed()
+    {
+        return $this->getWorkflows()->create('rotate_environment_randseed');
+    }
+
+    /**
      * Clones database from this environment to another
      *
      * @param Environment $from_env An object representing the environment to clone

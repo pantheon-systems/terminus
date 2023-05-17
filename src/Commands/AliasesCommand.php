@@ -8,6 +8,7 @@ use Pantheon\Terminus\Site\SiteAwareTrait;
 use Pantheon\Terminus\Helpers\AliasEmitters\AliasesDrushRcEmitter;
 use Pantheon\Terminus\Helpers\AliasEmitters\PrintingEmitter;
 use Pantheon\Terminus\Helpers\AliasEmitters\DrushSitesYmlEmitter;
+use Pantheon\Terminus\Exceptions\TerminusException;
 
 /**
  * Generate lots of aliases
@@ -56,6 +57,10 @@ class AliasesCommand extends TerminusCommand implements SiteAwareInterface
         // Be forgiving about the spelling of 'yaml'
         if ($options['type'] == 'yaml') {
             $options['type'] = 'yml';
+        }
+
+        if ($options['type'] === 'yml' && !empty($options['location'])) {
+            throw new TerminusException('The --location option is not compatible with --type=yml.');
         }
 
         $this->log()->notice("Fetching site information to build Drush aliases...");
