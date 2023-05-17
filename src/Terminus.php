@@ -332,7 +332,7 @@ EOD;
             'Pantheon\\Terminus\\Commands\\Env\\InfoCommand',
             'Pantheon\\Terminus\\Commands\\Env\\ListCommand',
             'Pantheon\\Terminus\\Commands\\Env\\MetricsCommand',
-            'Pantheon\\Terminus\\Commands\\Env\\RebuildCommand',
+            'Pantheon\\Terminus\\Commands\\Env\\CodeRebuildCommand',
             'Pantheon\\Terminus\\Commands\\Env\\RotateRandomSeedCommand',
             'Pantheon\\Terminus\\Commands\\Env\\ViewCommand',
             'Pantheon\\Terminus\\Commands\\Env\\WakeCommand',

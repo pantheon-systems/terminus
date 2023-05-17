@@ -9,11 +9,11 @@ use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 
 /**
- * Class RebuildCommand.
+ * Class CodeRebuildCommand.
  *
  * @package Pantheon\Terminus\Commands\Env
  */
-class RebuildCommand extends TerminusCommand implements SiteAwareInterface
+class CodeRebuildCommand extends TerminusCommand implements SiteAwareInterface
 {
     use SiteAwareTrait;
     use WorkflowProcessingTrait;
@@ -23,8 +23,8 @@ class RebuildCommand extends TerminusCommand implements SiteAwareInterface
      *
      * @authorize
      *
-     * @command env:rebuild
-     * @aliases rebuild
+     * @command env:code-rebuild
+     * @aliases code-rebuild
      *
      * @param string $site_env Site & environment in the format `site-name.env` (only Dev or Multidev)
      *
