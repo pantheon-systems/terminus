@@ -386,6 +386,17 @@ class Environment extends TerminusModel implements ContainerAwareInterface, Site
     }
 
     /**
+     * Sync code to the given environment
+     *
+     * @param array $params Parameters for the sync_code workflow
+     * @return Workflow
+     */
+    public function syncCode($params)
+    {
+        return $this->getWorkflows()->create('sync_code_with_build', compact('params'));
+    }
+
+    /**
      * Deploys the Test or Live environment
      *
      * @param array $params Parameters for the deploy workflow
