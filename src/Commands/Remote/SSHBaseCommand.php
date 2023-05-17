@@ -90,7 +90,7 @@ abstract class SSHBaseCommand extends TerminusCommand implements SiteAwareInterf
         ]);
 
         if ($ssh_data['exit_code'] != 0) {
-            throw new TerminusProcessException($ssh_data['output']);
+            throw new TerminusProcessException($ssh_data['output'], [], $ssh_data['exit_code']);
         }
     }
 
