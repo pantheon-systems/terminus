@@ -126,6 +126,21 @@ abstract class TerminusCollection implements ContainerAwareInterface, RequestAwa
     }
 
     /**
+     * Filters the models by a regex that should not match against a specific attribute
+     *
+     * @param string $attribute Name of the attribute to apply the regex filter to
+     * @param string $regex Non-delimited PHP regex to filter site names by
+     * @return TerminusCollection
+     */
+    public function filterByRegexNoMatch($attribute, $regex = '(.*)')
+    {
+        return $this->filter(function ($model) use ($attribute, $regex) {
+            preg_match("~$regex~", $model->get($attribute), $matches);
+            return empty($matches);
+        });
+    }
+
+    /**
      * Retrieves the model of the given ID
      *
      * @param string $id ID of desired model instance

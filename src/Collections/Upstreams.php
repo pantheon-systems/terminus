@@ -57,6 +57,17 @@ class Upstreams extends UserOwnedCollection implements OrganizationsInterface
     }
 
     /**
+     * Filters an array of Upstreams by their label not matching the given regex
+     *
+     * @param string $regex Non-delimited PHP regex to filter site names by
+     * @return Upstreams
+     */
+    public function filterByNameNoMatch($regex = '(.*)')
+    {
+        return $this->filterByRegexNoMatch('label', $regex);
+    }
+
+    /**
      * @return UserOrganizationMemberships
      */
     public function getOrganizationMemberships()

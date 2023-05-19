@@ -50,12 +50,21 @@ class ListCommand extends TerminusCommand
         } else {
             $upstreams = $user->getUpstreams();
         }
-
+        $upstreams = $this->filterByDeprecated($upstreams);
         $upstreams = $this->filterByFramework($upstreams, $options);
         $upstreams = $this->filterByName($upstreams, $options);
         $upstreams = $this->filterForCoreCustom($upstreams, $options);
 
         return $this->getRowsOfFields($upstreams, ['sort' => $this->sortFunction($options)]);
+    }
+
+    /**
+     * @param Upstreams|OrganizationUpstreams $upstreams
+     */
+    protected function filterByDeprecated($upstreams)
+    {
+        $upstreams->filterByNameNoMatch('\(deprecated\)');
+        return $upstreams;
     }
 
     /**
