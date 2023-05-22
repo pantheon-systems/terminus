@@ -1,7 +1,22 @@
 # Change Log
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org)
 
-## 3.1.6-dev
+## 3.2.0 - 2023-05-22
+
+### Added
+
+- New env:rebuild-code command (#2417)
+- Validation for aliases command (#2447)
+
+### Fixed
+- Bug with multidev:delete when ids are numbers-only (#2462)
+
+### Changed
+- Add upstream label field to site:info (#2455)
+- Do not check for user membership to remove supporting org (#2453)
+- Improve error messages on error 5xx (#2454)
+- Add search and replace to env:clone-content command for WordPress sites (#2448)
+- Deprecate getSite with param (#2449)
 
 ## 3.1.5 - 2023-04-06
 
