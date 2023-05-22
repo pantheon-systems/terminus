@@ -376,7 +376,7 @@ class Environment extends TerminusModel implements ContainerAwareInterface, Site
         $default_options = ['delete_branch' => false,];
         $options = array_merge($default_options, $arg_options);
         $params = array_merge(
-            ['environment_id' => $this->id,],
+            ['environment_id' => (string) $this->id,],
             $options
         );
         return $this->getSite()->getWorkflows()->create(
