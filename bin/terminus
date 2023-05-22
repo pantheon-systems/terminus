@@ -76,6 +76,9 @@ if (!is_dir($tokens_dir)) {
     );
 }
 
+// Generate UUID for use as distributed trace id
+$GLOBALS['PANTHEON_TRACE_ID'] = vsprintf('%s%s-%s-%s-%s-%s%s%s', str_split(bin2hex(random_bytes(16)), 4));
+
 $terminus = Terminus::factory($terminusPluginsDependenciesVersion);
 $status_code = $terminus->run();
 exit($status_code);
