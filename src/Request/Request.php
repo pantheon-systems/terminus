@@ -456,7 +456,7 @@ class Request implements
         $argv = $GLOBALS['argv'];
         $command = $argv[1];
         if (in_array($command, self::SENSITIVE_COMMANDS)) {
-           return $command;
+            return $command;
         } else {
             return implode(" ", array_slice($argv, 1));
         }
