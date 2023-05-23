@@ -10,7 +10,7 @@ use Pantheon\Terminus\Commands\StructuredListTrait;
  * Class ListCommand
  * @package Pantheon\Terminus\Commands\Org
  */
-class ListCommand extends TerminusCommand
+class ListCommand extends OrgCommand
 {
     use StructuredListTrait;
 
