@@ -74,13 +74,30 @@ class EnvCommandsTest extends TerminusTestBase
      *
      * @group env
      * @group long
+     * @group wordpress
      */
     public function testCloneContentForWordpressCommand()
     {
         // 1. Ensure that the multidev environment exists
         $this->ensureSiteEnvironment($this->getSiteName("wordpress"), $this->getMdEnv());
-        $this->terminus(sprintf('env:clone-content %s.%s %s', $this->getSiteName(), 'dev', $this->getMdEnv()));
+        $this->terminus(sprintf('env:clone-content %s.%s %s', $this->getSiteName("wordpress"), 'dev', $this->getMdEnv()));
         $this->deleteSiteEnvironment($this->getSiteName("wordpress"), $this->getMdEnv());
+    }
+
+    /**
+     * @test
+     * @covers \Pantheon\Terminus\Commands\Env\CloneContentCommand
+     *
+     * @group env
+     * @group long
+     * @group wordpress
+     */
+    public function testCloneContentForWordpressNetworkCommand()
+    {
+        // 1. Ensure that the multidev environment exists
+        $this->ensureSiteEnvironment($this->getSiteName("wordpress_network"), $this->getMdEnv());
+        $this->terminus(sprintf('env:clone-content %s.%s %s', $this->getSiteName("wordpress_network"), 'dev', $this->getMdEnv()));
+        $this->deleteSiteEnvironment($this->getSiteName("wordpress_network"), $this->getMdEnv());
     }
 
     /**

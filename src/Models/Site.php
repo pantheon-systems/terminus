@@ -4,9 +4,6 @@ namespace Pantheon\Terminus\Models;
 
 use League\Container\ContainerAwareInterface;
 use League\Container\ContainerAwareTrait;
-use Pantheon\Terminus\Friends\LocalCopiesTrait;
-use Pantheon\Terminus\Friends\OrganizationsInterface;
-use Pantheon\Terminus\Friends\OrganizationsTrait;
 use Pantheon\Terminus\Collections\Branches;
 use Pantheon\Terminus\Collections\Environments;
 use Pantheon\Terminus\Collections\Plans;
@@ -16,6 +13,9 @@ use Pantheon\Terminus\Collections\SiteOrganizationMemberships;
 use Pantheon\Terminus\Collections\SiteUserMemberships;
 use Pantheon\Terminus\Collections\Workflows;
 use Pantheon\Terminus\Exceptions\TerminusException;
+use Pantheon\Terminus\Friends\LocalCopiesTrait;
+use Pantheon\Terminus\Friends\OrganizationsInterface;
+use Pantheon\Terminus\Friends\OrganizationsTrait;
 use Pantheon\Terminus\Helpers\Utility\SiteFramework;
 
 /**
@@ -27,6 +27,7 @@ class Site extends TerminusModel implements
     ContainerAwareInterface,
     OrganizationsInterface
 {
+
     use ContainerAwareTrait;
     use OrganizationsTrait;
     use LocalCopiesTrait;
@@ -34,7 +35,7 @@ class Site extends TerminusModel implements
     /**
      *
      */
-    public const PRETTY_NAME = 'site';
+    const PRETTY_NAME = 'site';
 
     /**
      * @var array
@@ -117,6 +118,11 @@ class Site extends TerminusModel implements
      * @var Pantheon\Terminus\Collections\Tags
      */
     public $tags;
+
+    /**
+     * @var string
+     */
+    public $framework;
 
     /**
      * Add a payment method to the given site
@@ -410,8 +416,7 @@ class Site extends TerminusModel implements
             (array)$this->get('upstream'),
             (array)$this->get('product')
         );
-        if (
-            empty((array)$upstream_data)
+        if (empty((array)$upstream_data)
             && !is_null($settings = $this->get('settings'))
             && isset($settings->upstream)
         ) {
@@ -545,13 +550,13 @@ class Site extends TerminusModel implements
     /**
      * Update service level
      *
-     * @deprecated 2.0.0 This is no longer the appropriate way to change a
-     *     site's plan. Use $this->getPlans()->set().
-     *
      * @param string $service_level Level to set service on site to
      *
      * @return Workflow
      * @throws TerminusException|\Exception
+     * @deprecated 2.0.0 This is no longer the appropriate way to change a
+     *     site's plan. Use $this->getPlans()->set().
+     *
      */
     public function updateServiceLevel($service_level)
     {
