@@ -20,6 +20,7 @@ use Pantheon\Terminus\Friends\SitesTrait;
 
 /**
  * Class User
+ *
  * @package Pantheon\Terminus\Models
  */
 class User extends TerminusModel implements
@@ -33,40 +34,49 @@ class User extends TerminusModel implements
     use ProfileTrait;
     use SitesTrait;
 
-    const PRETTY_NAME = 'user';
+    public const PRETTY_NAME = 'user';
+
     /**
      * @var string
      */
     protected $url = 'users/{id}';
+
     /**
      * @var \stdClass
      * @todo Wrap this in a proper class.
      */
     private $aliases;
+
     /**
      * @var PaymentMethods
      */
     private $payment_methods;
+
     /**
      * @var PaymentMethods
      */
     private $machine_tokens;
+
     /**
      * @var UserOrganizationMemberships
      */
     private $org_memberships;
+
     /**
      * @var UserSiteMemberships
      */
     private $site_memberships;
+
     /**
      * @var SSHKeys
      */
     private $ssh_keys;
+
     /**
      * @var Workflows
      */
     private $workflows;
+
     /**
      * @var Upstreams
      */
@@ -147,7 +157,10 @@ class User extends TerminusModel implements
     {
         if (empty($this->org_memberships)) {
             $nickname = \uniqid(__FUNCTION__ . "-");
-            $this->getContainer()->add($nickname, UserOrganizationMemberships::class)
+            $this->getContainer()->add(
+                $nickname,
+                UserOrganizationMemberships::class
+            )
                 ->addArgument(['user' => $this]);
             $this->org_memberships = $this->getContainer()
                 ->get($nickname);

@@ -19,12 +19,15 @@ class SiteOrganizationMembership extends TerminusModel implements
     use OrganizationJoinTrait;
     use SiteTrait;
 
-    const PRETTY_NAME = 'site-organization membership';
+    public const PRETTY_NAME = 'site-organization membership';
 
-    const ROLE_ADMIN = 'admin';
-    const ROLE_DEVELOPER = 'developer';
-    const ROLE_TEAM_MEMBER = 'team_member';
-    const ROLE_UNPRIVILEGED = 'unprivileged';
+    public const ROLE_ADMIN = 'admin';
+
+    public const ROLE_DEVELOPER = 'developer';
+
+    public const ROLE_TEAM_MEMBER = 'team_member';
+
+    public const ROLE_UNPRIVILEGED = 'unprivileged';
 
     /**
      * Remove membership of organization
@@ -49,10 +52,10 @@ class SiteOrganizationMembership extends TerminusModel implements
         $organization = $this->getOrganization();
         $site = $this->getSite();
         return [
-            'org_id' => $organization->id,
-            'org_name' => $organization->getName(),
-            'site_id' => $site->id,
-            'site_name' => $site->getName(),
+          'org_id' => $organization->id,
+          'org_name' => $organization->getName(),
+          'site_id' => $site->id,
+          'site_name' => $site->getName(),
         ];
     }
 
@@ -60,6 +63,7 @@ class SiteOrganizationMembership extends TerminusModel implements
      * Changes the role of the given member
      *
      * @param string $role Desired role for this organization
+     *
      * @return Workflow
      */
     public function setRole($role)

@@ -8,16 +8,18 @@ use Pantheon\Terminus\Friends\UserTrait;
 
 /**
  * Class SSHKey
+ *
  * @package Pantheon\Terminus\Models
  */
 class SSHKey extends TerminusModel implements UserInterface
 {
     use UserTrait;
 
-    const PRETTY_NAME = 'SSH key';
+    public const PRETTY_NAME = 'SSH key';
 
     /**
      * Deletes a specific SSH key
+     *
      * @return array
      * @throws \Pantheon\Terminus\Exceptions\TerminusException
      */
@@ -28,7 +30,9 @@ class SSHKey extends TerminusModel implements UserInterface
             ['method' => 'delete',]
         );
         if ($response['status_code'] !== 200) {
-            throw new TerminusException('There was an problem deleting the SSH key.');
+            throw new TerminusException(
+                'There was an problem deleting the SSH key.'
+            );
         }
     }
 
@@ -62,10 +66,10 @@ class SSHKey extends TerminusModel implements UserInterface
      */
     public function serialize()
     {
-        return array(
+        return [
             'id' => $this->id,
             'hex' => $this->getHex(),
             'comment' => $this->getComment(),
-        );
+        ];
     }
 }

@@ -13,7 +13,9 @@ class DotEnvConfigTest extends TerminusTestCase
         unlink($tmp);
         mkdir($tmp);
 
-        file_put_contents($tmp . '/' . '.env', <<<EOT
+        file_put_contents(
+            $tmp . '/' . '.env',
+            <<<EOT
 # Comment here
 TERMINUS_SOME_VAR=abc
 TERMINUS_ANOTHER_VAR="123"

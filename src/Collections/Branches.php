@@ -10,7 +10,7 @@ use Pantheon\Terminus\Models\Branch;
  */
 class Branches extends SiteOwnedCollection
 {
-    const PRETTY_NAME = 'branches';
+    public const PRETTY_NAME = 'branches';
     /**
      * @var string
      */

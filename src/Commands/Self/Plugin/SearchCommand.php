@@ -14,18 +14,24 @@ use Pantheon\Terminus\Plugins\PluginInfo;
  */
 class SearchCommand extends PluginBaseCommand
 {
-    const APPROVED_PROJECTS = 'terminus-plugin-project/terminus-pancakes-plugin';
-    const NO_PLUGINS_MESSAGE = 'No compatible plugins have met your criterion.';
-    const OFFICIAL_PLUGIN_AUTHOR = 'pantheon-systems';
-    const SEARCH_COMMAND = 'composer search -d {dir} -t terminus-plugin {keyword}';
-    const PROJECT_URL = 'https://repo.packagist.org/p2/{project}.json';
-    const PROJECT_DEV_URL = 'https://repo.packagist.org/p2/{project}~dev.json';
+    public const APPROVED_PROJECTS = 'terminus-plugin-project/terminus-pancakes-plugin';
+
+    public const NO_PLUGINS_MESSAGE = 'No compatible plugins have met your criterion.';
+
+    public const OFFICIAL_PLUGIN_AUTHOR = 'pantheon-systems';
+
+    public const SEARCH_COMMAND = 'composer search -d {dir} -t terminus-plugin {keyword}';
+
+    public const PROJECT_URL = 'https://repo.packagist.org/p2/{project}.json';
+
+    public const PROJECT_DEV_URL = 'https://repo.packagist.org/p2/{project}~dev.json';
 
     /**
      * Search for available Terminus plugins.
      *
      * @command self:plugin:search
-     * @aliases self:plugin:find self:plugin:locate plugin:search plugin:find plugin:locate
+     * @aliases self:plugin:find self:plugin:locate plugin:search plugin:find
+     *     plugin:locate
      *
      * @param string $keyword A search string used to query for plugins
      *
@@ -42,16 +48,27 @@ class SearchCommand extends PluginBaseCommand
      */
     public function search($keyword)
     {
-        $command = str_replace('{keyword}', $keyword ?? '', self::SEARCH_COMMAND);
-        $command = self::populateComposerWorkingDir($command, $this->getTerminusDependenciesDir());
+        $command = str_replace(
+            '{keyword}',
+            $keyword ?? '',
+            self::SEARCH_COMMAND
+        );
+        $command = self::populateComposerWorkingDir(
+            $command,
+            $this->getTerminusDependenciesDir()
+        );
         $results = explode(
             PHP_EOL,
-            str_replace(' - ', ' ', trim($this->runCommand($command)['output'] ?? ''))
+            str_replace(
+                ' - ',
+                ' ',
+                trim($this->runCommand($command)['output'] ?? '')
+            )
         );
 
         $projects = array_map(
             function ($message) {
-                list($project, $description) = explode(' ', $message, 2);
+                [$project, $description] = explode(' ', $message, 2);
                 return [
                     'name' => $project,
                     'status' => self::checkStatus($project),
@@ -61,16 +78,32 @@ class SearchCommand extends PluginBaseCommand
             array_filter(
                 $results,
                 function ($message) {
-                    list($project) = explode(' ', $message, 2);
+                    [$project] = explode(' ', $message, 2);
                     if (preg_match('#^[^/]*/[^/]*$#', $project)) {
-                        $url = str_replace('{project}', $project ?? '', self::PROJECT_URL);
+                        $url = str_replace(
+                            '{project}',
+                            $project ?? '',
+                            self::PROJECT_URL
+                        );
                         $json = json_decode(file_get_contents($url), true, 10);
-                        if ($this->validatePackageVersions($json['packages'][$project])) {
+                        if (
+                            $this->validatePackageVersions(
+                                $json['packages'][$project]
+                            )
+                        ) {
                             return true;
                         }
-                        $url = str_replace('{project}', $project ?? '', self::PROJECT_DEV_URL);
+                        $url = str_replace(
+                            '{project}',
+                            $project ?? '',
+                            self::PROJECT_DEV_URL
+                        );
                         $json = json_decode(file_get_contents($url), true, 10);
-                        if ($this->validatePackageVersions($json['packages'][$project])) {
+                        if (
+                            $this->validatePackageVersions(
+                                $json['packages'][$project]
+                            )
+                        ) {
                             return true;
                         }
                     }
@@ -131,11 +164,12 @@ class SearchCommand extends PluginBaseCommand
      * Check the project status on Packagist.
      *
      * @param string $project Project name
+     *
      * @return string Project status
      */
     protected static function checkStatus($project)
     {
-        if (preg_match('#^'. self::OFFICIAL_PLUGIN_AUTHOR . '/#', $project)) {
+        if (preg_match('#^' . self::OFFICIAL_PLUGIN_AUTHOR . '/#', $project)) {
             return 'Official';
         }
 

@@ -7,13 +7,16 @@ use Pantheon\Terminus\Exceptions\TerminusException;
 
 /**
  * Creates a new Terminus plugin using Composer.
+ *
  * @package Pantheon\Terminus\Commands\Self\Plugin
  */
 class CreateCommand extends PluginBaseCommand
 {
-    const USAGE_MESSAGE = 'terminus self:plugin:create <path>';
-    const EXISTING_FOLDER_MESSAGE = 'Path should be a non-existing folder that will be created';
-    const COMPOSER_CREATE_PROJECT =
+    public const USAGE_MESSAGE = 'terminus self:plugin:create <path>';
+
+    public const EXISTING_FOLDER_MESSAGE = 'Path should be a non-existing folder that will be created';
+
+    public const COMPOSER_CREATE_PROJECT =
         'composer create-project -d {dir} pantheon-systems/terminus-plugin-example {project_dir}';
 
     /**
@@ -25,7 +28,8 @@ class CreateCommand extends PluginBaseCommand
      * @param string $path Path where the plugin will be created.
      * @param string[] $options
      *
-     * @option project-name Name of the project to be created (vendor/project-name).
+     * @option project-name Name of the project to be created
+     *     (vendor/project-name).
      *
      * @usage <path> --project-name=vendor/project_name
      *
@@ -33,10 +37,12 @@ class CreateCommand extends PluginBaseCommand
      * @throws \Psr\Container\ContainerExceptionInterface
      * @throws \Psr\Container\NotFoundExceptionInterface
      */
-    public function create(string $path, $options = [
-        'project-name' => '',
-    ])
-    {
+    public function create(
+        string $path,
+        $options = [
+            'project-name' => '',
+        ]
+    ) {
         $project_name = $options['project-name'];
         if (!file_exists($path)) {
             $results = $this->doCreate($path, $project_name);
@@ -50,6 +56,7 @@ class CreateCommand extends PluginBaseCommand
 
     /**
      * Check for minimum plugin command requirements.
+     *
      * @hook validate self:plugin:create
      *
      * @param CommandData $commandData
@@ -114,12 +121,17 @@ class CreateCommand extends PluginBaseCommand
         if (!$new_name) {
             $new_name = 'terminus-plugin-project/' . basename($path);
         }
-        $composer_json_contents = file_get_contents($path . DIRECTORY_SEPARATOR . 'composer.json');
+        $composer_json_contents = file_get_contents(
+            $path . DIRECTORY_SEPARATOR . 'composer.json'
+        );
         $composer_json_contents = str_replace(
             'pantheon-systems/terminus-plugin-example',
             $new_name,
             $composer_json_contents
         );
-        file_put_contents($path . DIRECTORY_SEPARATOR . 'composer.json', $composer_json_contents);
+        file_put_contents(
+            $path . DIRECTORY_SEPARATOR . 'composer.json',
+            $composer_json_contents
+        );
     }
 }

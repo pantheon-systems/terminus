@@ -17,7 +17,7 @@ use Symfony\Component\Filesystem\Filesystem;
  */
 class SiteEnvLookupTest extends TerminusTestCase
 {
-    const SITE_ID_FIXTURE = 'abc';
+    public const SITE_ID_FIXTURE = 'abc';
 
     /**
      * @var SiteEnvLookup

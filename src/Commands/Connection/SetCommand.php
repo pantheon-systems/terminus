@@ -18,8 +18,8 @@ class SetCommand extends TerminusCommand implements SiteAwareInterface
     use SiteAwareTrait;
     use WorkflowProcessingTrait;
 
-    const COMMIT_ADVICE = 'If you wish to save these changes, use `terminus env:commit {site_env}`.';
-    const UNCOMMITTED_CHANGE_WARNING =
+    public const COMMIT_ADVICE = 'If you wish to save these changes, use `terminus env:commit {site_env}`.';
+    public const UNCOMMITTED_CHANGE_WARNING =
         'This environment has uncommitted changes. Switching the connection mode will discard this work.';
 
     /**
@@ -51,10 +51,12 @@ class SetCommand extends TerminusCommand implements SiteAwareInterface
                 self::UNCOMMITTED_CHANGE_WARNING . ' ' . self::COMMIT_ADVICE,
                 compact('site_env')
             );
-            if (!$this->confirm(
-                'Are you sure you want to change the connection mode of {env}?',
-                ['env' => $envName]
-            )) {
+            if (
+                !$this->confirm(
+                    'Are you sure you want to change the connection mode of {env}?',
+                    ['env' => $envName]
+                )
+            ) {
                 return;
             }
         }

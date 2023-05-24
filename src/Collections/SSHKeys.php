@@ -11,7 +11,7 @@ use Pantheon\Terminus\Models\SSHKey;
  */
 class SSHKeys extends UserOwnedCollection
 {
-    const PRETTY_NAME = 'SSH keys';
+    public const PRETTY_NAME = 'SSH keys';
     /**
      * @var string
      */

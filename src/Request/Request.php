@@ -51,13 +51,20 @@ class Request implements
     use SessionAwareTrait;
     use IO;
 
-    const PAGED_REQUEST_ENTRY_LIMIT = 100;
+    public const PAGED_REQUEST_ENTRY_LIMIT = 100;
 
-    const HIDDEN_VALUE_REPLACEMENT = '**HIDDEN**';
+    public const HIDDEN_VALUE_REPLACEMENT = '**HIDDEN**';
 
-    const DEBUG_REQUEST_STRING = "#### REQUEST ####\nHeaders: {headers}\nURI: {uri}\nMethod: {method}\nBody: {body}";
+    public const DEBUG_REQUEST_STRING = "#### REQUEST ####\n"
+    . "Headers: {headers}\n"
+    . "URI: {uri}\n"
+    . "Method: {method}\n"
+    . "Body: {body}";
 
-    const DEBUG_RESPONSE_STRING = "#### RESPONSE ####\nHeaders: {headers}\nData: {data}\nStatus Code: {status_code}";
+    public const DEBUG_RESPONSE_STRING = "#### RESPONSE ####\n"
+    . "Headers: {headers}\n"
+    . "Data: {data}\n"
+    . "Status Code: {status_code}";
 
     protected ClientInterface $client;
 
@@ -85,7 +92,10 @@ class Request implements
             if (substr($target, -1) == DIRECTORY_SEPARATOR) {
                 $target = $target . strtok(basename($url), '?');
             } else {
-                $target = $target . DIRECTORY_SEPARATOR . strtok(basename($url), '?');
+                $target = $target . DIRECTORY_SEPARATOR . strtok(
+                    basename($url),
+                    '?'
+                );
             }
         }
         $this->logger->notice('Downloading {url} to {target}', [
@@ -93,12 +103,24 @@ class Request implements
             'target' => $target,
         ]);
 
-        if (!$overwrite && $this->getContainer()->get(LocalMachineHelper::class)->getFilesystem()->exists($target)) {
-            throw new TerminusException('Target file {target} already exists.', compact('target'));
+        if (
+            !$overwrite && $this->getContainer()
+                ->get(LocalMachineHelper::class)
+                ->getFilesystem()
+                ->exists($target)
+        ) {
+            throw new TerminusException(
+                'Target file {target} already exists.',
+                compact('target')
+            );
         }
 
         $parsed_url = parse_url($url);
-        $this->getClient($parsed_url['host'])->request('GET', $url, ['sink' => $target]);
+        $this->getClient($parsed_url['host'])->request(
+            'GET',
+            $url,
+            ['sink' => $target]
+        );
     }
 
     /**
@@ -114,8 +136,12 @@ class Request implements
             $stack->push(Middleware::retry($this->createRetryDecider()));
 
             $params = $config->get('client_options') + [
-                    'base_uri' => ($base_uri === null) ? $this->getBaseURI() : $base_uri,
-                    RequestOptions::VERIFY => (boolean) $config->get('verify_host_cert', true),
+                    'base_uri' => ($base_uri === null) ? $this->getBaseURI(
+                    ) : $base_uri,
+                    RequestOptions::VERIFY => (bool)$config->get(
+                        'verify_host_cert',
+                        true
+                    ),
                     'handler' => $stack,
                 ];
 
@@ -154,21 +180,25 @@ class Request implements
             $maxRetries,
             $logWarning
         ) {
-            $logWarningOnRetry = fn (string $reason) => 0 === $retry
-                ? $logWarning(sprintf(
-                    'HTTP request %s %s has failed: %s',
-                    $request->getMethod(),
-                    $request->getUri(),
-                    $reason
-                ))
-                : $logWarning(sprintf(
-                    'Retrying %s %s %s out of %s (reason: %s)',
-                    $request->getMethod(),
-                    $request->getUri(),
-                    $retry,
-                    $maxRetries,
-                    $reason
-                ));
+            $logWarningOnRetry = fn(string $reason) => 0 === $retry
+                ? $logWarning(
+                    sprintf(
+                        'HTTP request %s %s has failed: %s',
+                        $request->getMethod(),
+                        $request->getUri(),
+                        $reason
+                    )
+                )
+                : $logWarning(
+                    sprintf(
+                        'Retrying %s %s %s out of %s (reason: %s)',
+                        $request->getMethod(),
+                        $request->getUri(),
+                        $retry,
+                        $maxRetries,
+                        $reason
+                    )
+                );
 
             if ($exception instanceof ConnectException) {
                 // Retry on connection-related exceptions such as "Connection refused" and "Operation timed out".
@@ -189,7 +219,9 @@ class Request implements
                 }
 
                 if ($retry !== $maxRetries) {
-                    $logWarningOnRetry(sprintf('status code - %s', $response->getStatusCode()));
+                    $logWarningOnRetry(
+                        sprintf('status code - %s', $response->getStatusCode())
+                    );
                     $this->logger->debug(
                         'Response body: {body}',
                         ['body' => $response->getBody()->getContents()]
@@ -199,11 +231,14 @@ class Request implements
                 }
             }
 
-            $this->logger->error("HTTP request {method} {uri} has failed with error {error}.", [
-                'method' => $request->getMethod(),
-                'uri' => $request->getUri(),
-                'error' => $response->getBody()->getContents(),
-            ]);
+            $this->logger->error(
+                "HTTP request {method} {uri} has failed with error {error}.",
+                [
+                    'method' => $request->getMethod(),
+                    'uri' => $request->getUri(),
+                    'error' => $response->getBody()->getContents(),
+                ]
+            );
 
             throw new TerminusException(
                 'HTTP request has failed with error "Maximum retry attempts reached".',
@@ -296,7 +331,7 @@ class Request implements
      * @throws \GuzzleHttp\Exception\GuzzleException
      * @throws TerminusException
      */
-    public function request($path, array $options = []) : RequestOperationResult
+    public function request($path, array $options = []): RequestOperationResult
     {
         // Set headers.
         $parts = explode('/', $path);
@@ -309,7 +344,10 @@ class Request implements
         if (strpos($path ?? '', '://') === false) {
             $uri = "{$this->getBaseURI()}/api/$path";
             if ($part !== 'machine-token') {
-                $headers['Authorization'] = sprintf('Bearer %s', $this->session()->get('session'));
+                $headers['Authorization'] = sprintf(
+                    'Bearer %s',
+                    $this->session()->get('session')
+                );
             }
         } else {
             $uri = $path;
@@ -317,20 +355,31 @@ class Request implements
         $body = $debug_body = null;
         if (isset($options['form_params'])) {
             $debug_body = $this->stripSensitiveInfo($options['form_params']);
-            $body = json_encode($options['form_params'], JSON_UNESCAPED_SLASHES);
+            $body = json_encode(
+                $options['form_params'],
+                JSON_UNESCAPED_SLASHES
+            );
             unset($options['form_params']);
             $headers['Content-Type'] = 'application/json';
             $headers['Content-Length'] = strlen($body);
         }
 
-        $method = isset($options['method']) ? strtoupper($options['method'] ?? '') : 'GET';
+        $method = isset($options['method']) ? strtoupper(
+            $options['method'] ?? ''
+        ) : 'GET';
         $this->logger->info(
             self::DEBUG_REQUEST_STRING,
             [
-                'headers' => json_encode($this->stripSensitiveInfo($headers), JSON_UNESCAPED_SLASHES),
+                'headers' => json_encode(
+                    $this->stripSensitiveInfo($headers),
+                    JSON_UNESCAPED_SLASHES
+                ),
                 'uri' => $uri,
                 'method' => $method,
-                'body' => json_encode($this->stripSensitiveInfo($debug_body), JSON_UNESCAPED_SLASHES),
+                'body' => json_encode(
+                    $this->stripSensitiveInfo($debug_body),
+                    JSON_UNESCAPED_SLASHES
+                ),
             ]
         );
         //Required objects and arrays stir benign warnings.

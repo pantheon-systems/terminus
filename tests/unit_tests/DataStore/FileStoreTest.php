@@ -65,7 +65,7 @@ class FileStoreTest extends TerminusTestCase
         $this->filestore->remove('foo');
         $this->assertFalse($this->filestore->has('foo'));
         $this->assertEquals(['bar'], array_values($this->filestore->keys()));
-        
+
         // Key cleaning
         $this->filestore->set('foo/bar&baz!bop', '123');
         $this->assertTrue($this->filestore->has('foo/bar&baz!bop'));

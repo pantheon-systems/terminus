@@ -13,7 +13,6 @@ use Pantheon\Terminus\Models\User;
  */
 class WhoamiCommandTest extends AuthTest
 {
-
     /**
      * @inheritdoc
      */

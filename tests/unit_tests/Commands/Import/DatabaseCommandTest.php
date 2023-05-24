@@ -39,7 +39,7 @@ class DatabaseCommandTest extends CommandTestCase
         $this->command->setInput($this->input);
         $this->expectWorkflowProcessing();
     }
-    
+
     /**
      * Exercises import:database command with a valid URL
      */

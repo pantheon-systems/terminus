@@ -70,7 +70,7 @@ class RemoveCommandTest extends SSHKeyCommandTest
         $this->ssh_keys->expects($this->once())
             ->method('get')
             ->with($this->equalTo('123'))
-            ->will($this->throwException(new TerminusException));
+            ->will($this->throwException(new TerminusException()));
 
 
         $this->setExpectedException(TerminusException::class);
@@ -99,7 +99,7 @@ class RemoveCommandTest extends SSHKeyCommandTest
             ->willReturn(
                 $token
             );
-        
+
         $this->setExpectedException(
             \Exception::class,
             'There was an problem deleting the SSH key.'

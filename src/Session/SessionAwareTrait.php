@@ -9,7 +9,6 @@ namespace Pantheon\Terminus\Session;
  */
 trait SessionAwareTrait
 {
-
     /**
      * @var Session
      */

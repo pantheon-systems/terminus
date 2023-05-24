@@ -9,7 +9,7 @@ namespace Pantheon\Terminus\Helpers\Utility;
  */
 class SiteFramework
 {
-    const PRETTY_NAME = 'framework';
+    public const PRETTY_NAME = 'framework';
 
     /**
      * @var string|null

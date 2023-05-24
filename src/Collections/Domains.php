@@ -13,7 +13,7 @@ use Pantheon\Terminus\Request\RequestOperationResult;
  */
 class Domains extends EnvironmentOwnedCollection
 {
-    const PRETTY_NAME = 'domains';
+    public const PRETTY_NAME = 'domains';
     /**
      * @var string
      */

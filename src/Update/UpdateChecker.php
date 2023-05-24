@@ -15,6 +15,7 @@ use Robo\Contract\ConfigAwareInterface;
 
 /**
  * Class UpdateChecker
+ *
  * @package Pantheon\Terminus\Update
  */
 class UpdateChecker implements
@@ -28,19 +29,26 @@ class UpdateChecker implements
     use DataStoreAwareTrait;
     use LoggerAwareTrait;
 
-    const DEFAULT_COLOR = "\e[0m";
-    const UPDATE_COMMAND = 'You can update Terminus by running `composer update` or using the Terminus installer:'
-        . PHP_EOL
-        . 'curl -O https://raw.githubusercontent.com/pantheon-systems/terminus-installer/master/builds/installer.phar '
-        . '&& php installer.phar update';
-    const UPDATE_COMMAND_PHAR = 'You can update Terminus by running:' . PHP_EOL . 'terminus self:update';
-    const UPDATE_NOTICE = 'A new Terminus version v{latest_version} is available.'
-        . PHP_EOL
-        . 'You are currently using version v{running_version}.'
-        . PHP_EOL
-        . '{update_command}';
-    const UPDATE_NOTICE_COLOR = "\e[38;5;33m";
-    const UPDATE_VARS_COLOR = "\e[38;5;45m";
+    public const DEFAULT_COLOR = "\e[0m";
+
+    public const UPDATE_COMMAND = 'You can update Terminus by running `composer '
+    . 'update` or using the Terminus installer:'
+    . PHP_EOL
+    . 'curl -O https://raw.githubusercontent.com/pantheon-systems/terminus-installer/master/builds/installer.phar '
+    . '&& php installer.phar update'
+    . '&& php installer.phar update';
+
+    public const UPDATE_COMMAND_PHAR = 'You can update Terminus by running:' . PHP_EOL . 'terminus self:update';
+
+    public const UPDATE_NOTICE = 'A new Terminus version v{latest_version} is available.'
+    . PHP_EOL
+    . 'You are currently using version v{running_version}.'
+    . PHP_EOL
+    . '{update_command}';
+
+    public const UPDATE_NOTICE_COLOR = "\e[38;5;33m";
+
+    public const UPDATE_VARS_COLOR = "\e[38;5;45m";
 
     /**
      * @var boolean
@@ -73,8 +81,14 @@ class UpdateChecker implements
             return;
         }
 
-        $update_exists = version_compare($latest_version, $running_version, '>');
-        $should_hide_update = (bool) $this->getConfig()->get('hide_update_message');
+        $update_exists = version_compare(
+            $latest_version,
+            $running_version,
+            '>'
+        );
+        $should_hide_update = (bool)$this->getConfig()->get(
+            'hide_update_message'
+        );
         if ($update_exists && !$should_hide_update) {
             $this->logger->notice($this->getUpdateNotice(), [
                 'latest_version' => self::UPDATE_VARS_COLOR . $latest_version,
@@ -83,7 +97,7 @@ class UpdateChecker implements
                     \Phar::running()
                         ? self::UPDATE_COMMAND_PHAR
                         : self::UPDATE_COMMAND
-                    ),
+                ),
             ]);
         }
     }
@@ -108,7 +122,9 @@ class UpdateChecker implements
             if (!function_exists('posix_isatty')) {
                 $this->setCheckForUpdates(true);
             } else {
-                $this->setCheckForUpdates(posix_isatty(STDOUT) && posix_isatty(STDIN));
+                $this->setCheckForUpdates(
+                    posix_isatty(STDOUT) && posix_isatty(STDIN)
+                );
             }
         }
         return $this->should_check_for_updates;
@@ -132,7 +148,11 @@ class UpdateChecker implements
     private function getUpdateNotice()
     {
         return self::UPDATE_NOTICE_COLOR
-            . str_replace('}', '}' . self::UPDATE_NOTICE_COLOR, self::UPDATE_NOTICE)
+            . str_replace(
+                '}',
+                '}' . self::UPDATE_NOTICE_COLOR,
+                self::UPDATE_NOTICE
+            )
             . self::DEFAULT_COLOR;
     }
 }

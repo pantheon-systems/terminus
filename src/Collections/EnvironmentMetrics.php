@@ -7,13 +7,14 @@ use Pantheon\Terminus\Site\SiteMetricsTrait;
 
 /**
  * Class EnvironmentMetrics
+ *
  * @package Pantheon\Terminus\Collections
  */
 class EnvironmentMetrics extends EnvironmentOwnedCollection
 {
-    const PRETTY_NAME = 'metrics';
-
     use SiteMetricsTrait;
+
+    public const PRETTY_NAME = 'metrics';
 
     /**
      * @var string

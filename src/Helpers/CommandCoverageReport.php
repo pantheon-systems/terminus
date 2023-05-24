@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Pantheon\Terminus\Helpers;
 
 use Consolidation\AnnotatedCommand\AnnotatedCommandFactory;
@@ -34,7 +33,7 @@ class CommandCoverageReport implements ConfigAwareInterface, IOAwareInterface
 
     public static $STATUS_ICON = [
         '-1' => "❌",
-        '0' =>'✅',
+        '0' => '✅',
         '1' => '💩',
         '2' => '💩',
         '3' => '❌',
@@ -84,7 +83,7 @@ class CommandCoverageReport implements ConfigAwareInterface, IOAwareInterface
     /**
      *
      */
-    public function getReport($template = 'README.twig') : string
+    public function getReport($template = 'README.twig'): string
     {
         $total_tests = 0;
         $passing_tests = 0;

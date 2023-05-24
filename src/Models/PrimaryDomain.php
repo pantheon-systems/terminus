@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Pantheon\Terminus\Models;
 
 use Pantheon\Terminus\Friends\EnvironmentInterface;

@@ -7,13 +7,14 @@ use Pantheon\Terminus\Friends\SiteTrait;
 
 /**
  * Class Branch
+ *
  * @package Pantheon\Terminus\Models
  */
 class Branch extends TerminusModel implements SiteInterface
 {
     use SiteTrait;
 
-    const PRETTY_NAME = 'branch';
+    public const PRETTY_NAME = 'branch';
 
     /**
      * Deletes this branch from the site

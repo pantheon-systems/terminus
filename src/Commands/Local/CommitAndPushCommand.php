@@ -41,7 +41,7 @@ class CommitAndPushCommand extends TerminusCommand implements SiteAwareInterface
      * @throws \Pantheon\Terminus\Exceptions\TerminusException
      *
      */
-    public function commitAndPushCommand($site) : string
+    public function commitAndPushCommand($site): string
     {
         $siteData = $site;
         if (!$siteData instanceof Site) {

@@ -7,13 +7,15 @@ use Pantheon\Terminus\Friends\SiteTrait;
 
 /**
  * Class Plan
+ *
  * @package Pantheon\Terminus\Models
  */
 class Plan extends TerminusModel implements SiteInterface
 {
     use SiteTrait;
 
-    const PRETTY_NAME = 'plan';
+    public const PRETTY_NAME = 'plan';
+
     /**
      * @var string
      */
@@ -24,7 +26,12 @@ class Plan extends TerminusModel implements SiteInterface
      */
     public function __construct($attributes = null, array $options = [])
     {
-        if (($attributes !== null) && property_exists($attributes, 'attributes')) {
+        if (
+            ($attributes !== null) && property_exists(
+                $attributes,
+                'attributes'
+            )
+        ) {
             $attributes = (object)$attributes->attributes;
         }
         parent::__construct($attributes, $options);
@@ -38,9 +45,9 @@ class Plan extends TerminusModel implements SiteInterface
      */
     public function getMonthlyPrice()
     {
-        $price = (integer)$this->get('price');
+        $price = (int)$this->get('price');
         if ($this->isAnnual()) {
-            return $price/12;
+            return $price / 12;
         }
         return $price;
     }
@@ -103,7 +110,10 @@ class Plan extends TerminusModel implements SiteInterface
         if (!$this->isFree() && ($price === 0)) {
             return null;
         }
-        return sprintf($this->getConfig()->get('monetary_format'), ($price / 100));
+        return sprintf(
+            $this->getConfig()->get('monetary_format'),
+            ($price / 100)
+        );
     }
 
 

@@ -13,7 +13,6 @@ use Pantheon\Terminus\Models\TerminusModel;
  */
 class LoginCommand extends TerminusCommand
 {
-
     /**
      * Logs in a user to Pantheon.
      *

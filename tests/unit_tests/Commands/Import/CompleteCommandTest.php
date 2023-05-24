@@ -29,7 +29,7 @@ class CompleteCommandTest extends CommandTestCase
         $this->command->setLogger($this->logger);
         $this->expectWorkflowProcessing();
     }
-    
+
     /**
      * Tests the import:complete command
      */

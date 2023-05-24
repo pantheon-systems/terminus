@@ -10,7 +10,7 @@ use Pantheon\Terminus\Models\WorkflowOperation;
  */
 class WorkflowOperations extends TerminusCollection
 {
-    const PRETTY_NAME = 'workflow operations';
+    public const PRETTY_NAME = 'workflow operations';
     /**
      * @var string
      */

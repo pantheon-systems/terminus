@@ -4,11 +4,12 @@ namespace Pantheon\Terminus\Models;
 
 /**
  * Class Metric
+ *
  * @package Pantheon\Terminus\Models
  */
 class Metric extends TerminusModel
 {
-    const PRETTY_NAME = 'Metric';
+    public const PRETTY_NAME = 'Metric';
 
     public function serialize()
     {

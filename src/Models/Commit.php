@@ -4,11 +4,12 @@ namespace Pantheon\Terminus\Models;
 
 /**
  * Class Commit
+ *
  * @package Pantheon\Terminus\Models
  */
 class Commit extends TerminusModel
 {
-    const PRETTY_NAME = 'commit';
+    public const PRETTY_NAME = 'commit';
 
     public function serialize()
     {
@@ -17,7 +18,14 @@ class Commit extends TerminusModel
             'author' => $this->get('author'),
             'labels' => implode(', ', $this->get('labels')),
             'hash' => $this->get('hash'),
-            'message' => substr(strtr(trim($this->get('message') ?? ''), ["\n" => ' ', "\t" => ' ']), 0, 50),
+            'message' => substr(
+                strtr(
+                    trim($this->get('message') ?? ''),
+                    ["\n" => ' ', "\t" => ' ']
+                ),
+                0,
+                50
+            ),
         ];
     }
 }

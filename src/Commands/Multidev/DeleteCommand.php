@@ -38,10 +38,12 @@ class DeleteCommand extends TerminusCommand implements SiteAwareInterface
     {
         $env = $this->getEnv($site_env);
 
-        if (!$this->confirm(
-            'Are you sure you want to delete {env}?',
-            ['env' => $env->getName()]
-        )) {
+        if (
+            !$this->confirm(
+                'Are you sure you want to delete {env}?',
+                ['env' => $env->getName()]
+            )
+        ) {
             return;
         }
 

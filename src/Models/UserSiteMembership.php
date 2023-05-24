@@ -11,15 +11,19 @@ use Pantheon\Terminus\Friends\UserTrait;
 
 /**
  * Class UserSiteMembership
+ *
  * @package Pantheon\Terminus\Models
  */
-class UserSiteMembership extends TerminusModel implements ContainerAwareInterface, SiteInterface, UserInterface
+class UserSiteMembership extends TerminusModel implements
+    ContainerAwareInterface,
+    SiteInterface,
+    UserInterface
 {
     use ContainerAwareTrait;
     use SiteJoinTrait;
     use UserTrait;
 
-    const PRETTY_NAME = 'user-site membership';
+    public const PRETTY_NAME = 'user-site membership';
 
     /**
      * @inheritdoc

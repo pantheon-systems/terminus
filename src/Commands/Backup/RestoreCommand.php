@@ -60,10 +60,12 @@ class RestoreCommand extends SingleBackupCommand
             );
         }
 
-        if (!$this->confirm(
-            'Are you sure you want to restore to {env} on {site}?',
-            ['site' => $site->getName(), 'env' => $env->getName()]
-        )) {
+        if (
+            !$this->confirm(
+                'Are you sure you want to restore to {env} on {site}?',
+                ['site' => $site->getName(), 'env' => $env->getName()]
+            )
+        ) {
             return;
         }
 

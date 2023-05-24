@@ -23,7 +23,8 @@ class SelfCommandsTest extends TerminusTestBase
 
         // Test that the command works when plugins are not installed.
         [$output, $exitCode, $error] = static::callTerminus(self::SELF_UPDATE_COMMAND);
-        if (0 !== $exitCode
+        if (
+            0 !== $exitCode
             && false !== strpos($error, 'rate limit exceeded')
         ) {
             // @todo: fix CMS-972

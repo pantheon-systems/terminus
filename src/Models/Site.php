@@ -20,9 +20,12 @@ use Pantheon\Terminus\Helpers\Utility\SiteFramework;
 
 /**
  * Class Site
+ *
  * @package Pantheon\Terminus\Models
  */
-class Site extends TerminusModel implements ContainerAwareInterface, OrganizationsInterface
+class Site extends TerminusModel implements
+    ContainerAwareInterface,
+    OrganizationsInterface
 {
     use ContainerAwareTrait;
     use OrganizationsTrait;
@@ -31,60 +34,73 @@ class Site extends TerminusModel implements ContainerAwareInterface, Organizatio
     /**
      *
      */
-    const PRETTY_NAME = 'site';
+    public const PRETTY_NAME = 'site';
 
     /**
      * @var array
      */
     public static $date_attributes = ['created', 'last_frozen_at',];
+
     /**
      * @var string
      */
     protected $url = 'sites/{id}?site_state=true';
+
     /**
      * @var Branches
      */
     protected $branches;
+
     /**
      * @var Environments
      */
     protected $environments;
+
     /**
      * @var NewRelic
      */
     protected $new_relic;
+
     /**
      * @var SiteOrganizationMemberships
      */
     protected $org_memberships;
+
     /**
      * @var Plan
      */
     protected $plan;
+
     /**
      * @var Plans
      */
     protected $plans;
+
     /**
      * @var Redis
      */
     protected $redis;
+
     /**
      * @var Solr
      */
     protected $solr;
+
     /**
      * @var SiteUserMemberships
      */
     protected $user_memberships;
+
     /**
      * @var SiteAuthorizations
      */
     private $authorizations;
+
     /**
      * @var array
      */
     private $features;
+
     /**
      * @var Workflows
      */
@@ -106,12 +122,19 @@ class Site extends TerminusModel implements ContainerAwareInterface, Organizatio
      * Add a payment method to the given site
      *
      * @param string $payment_method_id UUID of new payment method
+     *
      * @return Workflow
      */
     public function addPaymentMethod($payment_method_id)
     {
-        $args = ['site' => $this->id, 'params' => ['instrument_id' => $payment_method_id,],];
-        return $this->getWorkflows()->create('associate_site_instrument', $args);
+        $args = [
+            'site' => $this->id,
+            'params' => ['instrument_id' => $payment_method_id,],
+        ];
+        return $this->getWorkflows()->create(
+            'associate_site_instrument',
+            $args
+        );
     }
 
     /**
@@ -150,11 +173,15 @@ class Site extends TerminusModel implements ContainerAwareInterface, Organizatio
      * Creates a new site for migration
      *
      * @param string $upstream_id The UUID for the product to deploy.
+     *
      * @return Workflow
      */
     public function deployProduct($upstream_id)
     {
-        return $this->getWorkflows()->create('deploy_product', ['params' => ['product_id' => $upstream_id,],]);
+        return $this->getWorkflows()->create(
+            'deploy_product',
+            ['params' => ['product_id' => $upstream_id,],]
+        );
     }
 
     /**
@@ -221,7 +248,9 @@ class Site extends TerminusModel implements ContainerAwareInterface, Organizatio
     {
         if (!isset($this->features)) {
             try {
-                $response = $this->request()->request("sites/{$this->id}/features");
+                $response = $this->request()->request(
+                    "sites/{$this->id}/features"
+                );
                 $this->features = (array)$response['data'];
             } catch (\Exception $e) {
                 if ($e->getCode() == 404) {
@@ -282,7 +311,10 @@ class Site extends TerminusModel implements ContainerAwareInterface, Organizatio
     {
         if (empty($this->user_memberships)) {
             $nickname = \uniqid(__FUNCTION__ . "-");
-            $this->getContainer()->add($nickname, SiteOrganizationMemberships::class)
+            $this->getContainer()->add(
+                $nickname,
+                SiteOrganizationMemberships::class
+            )
                 ->addArgument(['site' => $this]);
             $this->org_memberships = $this->getContainer()->get($nickname);
         }
@@ -374,8 +406,12 @@ class Site extends TerminusModel implements ContainerAwareInterface, Organizatio
      */
     public function getUpstream(): SiteUpstream
     {
-        $upstream_data = (object)array_merge((array)$this->get('upstream'), (array)$this->get('product'));
-        if (empty((array)$upstream_data)
+        $upstream_data = (object)array_merge(
+            (array)$this->get('upstream'),
+            (array)$this->get('product')
+        );
+        if (
+            empty((array)$upstream_data)
             && !is_null($settings = $this->get('settings'))
             && isset($settings->upstream)
         ) {
@@ -432,7 +468,10 @@ class Site extends TerminusModel implements ContainerAwareInterface, Organizatio
      */
     public function removePaymentMethod()
     {
-        return $this->getWorkflows()->create('disassociate_site_instrument', ['site' => $this->id,]);
+        return $this->getWorkflows()->create(
+            'disassociate_site_instrument',
+            ['site' => $this->id,]
+        );
     }
 
     /**
@@ -476,41 +515,56 @@ class Site extends TerminusModel implements ContainerAwareInterface, Organizatio
      * Sets the site owner to the indicated team member
      *
      * @param User $user_id UUID of new owner of site
+     *
      * @return Workflow
      * @throws TerminusException
      */
     public function setOwner($user_id)
     {
-        return $this->getWorkflows()->create('promote_site_user_to_owner', ['params' => compact('user_id'),]);
+        return $this->getWorkflows()->create(
+            'promote_site_user_to_owner',
+            ['params' => compact('user_id'),]
+        );
     }
 
     /**
      * Creates a new site for migration
      *
      * @param string $upstream_id The UUID for the product to deploy.
+     *
      * @return Workflow
      */
     public function setUpstream($upstream_id)
     {
-        return $this->getWorkflows()->create('switch_upstream', ['params' => ['upstream_id' => $upstream_id,],]);
+        return $this->getWorkflows()->create(
+            'switch_upstream',
+            ['params' => ['upstream_id' => $upstream_id,],]
+        );
     }
 
     /**
      * Update service level
      *
-     * @deprecated 2.0.0 This is no longer the appropriate way to change a site's plan. Use $this->getPlans()->set().
+     * @deprecated 2.0.0 This is no longer the appropriate way to change a
+     *     site's plan. Use $this->getPlans()->set().
      *
      * @param string $service_level Level to set service on site to
+     *
      * @return Workflow
      * @throws TerminusException|\Exception
      */
     public function updateServiceLevel($service_level)
     {
         try {
-            return $this->getWorkflows()->create('change_site_service_level', ['params' => compact('service_level'),]);
+            return $this->getWorkflows()->create(
+                'change_site_service_level',
+                ['params' => compact('service_level'),]
+            );
         } catch (\Exception $e) {
             if ($e->getCode() == 403) {
-                throw new TerminusException('A payment method is required to increase the service level of this site.');
+                throw new TerminusException(
+                    'A payment method is required to increase the service level of this site.'
+                );
             }
             throw $e;
         }
@@ -519,9 +573,9 @@ class Site extends TerminusModel implements ContainerAwareInterface, Organizatio
     /**
      * @return bool
      */
-    public function valid():bool
+    public function valid(): bool
     {
-        return (bool) $this->id;
+        return (bool)$this->id;
     }
 
     /**

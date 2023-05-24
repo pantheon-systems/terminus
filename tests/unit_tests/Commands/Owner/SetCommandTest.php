@@ -104,7 +104,7 @@ class SetCommandTest extends CommandTestCase
         $this->user_memberships->expects($this->once())
             ->method('get')
             ->with($this->equalTo($email))
-            ->will($this->throwException(new TerminusNotFoundException));
+            ->will($this->throwException(new TerminusNotFoundException()));
 
         $this->site->expects($this->never())
             ->method('setOwner');
@@ -128,7 +128,7 @@ class SetCommandTest extends CommandTestCase
         $this->user_memberships->expects($this->once())
             ->method('get')
             ->with($this->equalTo($email))
-            ->will($this->throwException(new \Exception));
+            ->will($this->throwException(new \Exception()));
 
         $this->site->expects($this->never())
             ->method('setOwner');

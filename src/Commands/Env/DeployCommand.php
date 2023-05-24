@@ -59,9 +59,9 @@ class DeployCommand extends TerminusCommand implements SiteAwareInterface
             }
 
             $params = [
-              'updatedb'    => (integer)$options['updatedb'],
+              'updatedb'    => (int)$options['updatedb'],
               'annotation'  => $annotation,
-              'clear_cache' => (integer)$options['cc'],
+              'clear_cache' => (int)$options['cc'],
             ];
             if ($env->getName() === 'test' && isset($options['sync-content']) && $options['sync-content']) {
                 $live_env = 'live';

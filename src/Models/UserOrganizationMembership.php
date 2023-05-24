@@ -11,6 +11,7 @@ use Pantheon\Terminus\Friends\UserTrait;
 
 /**
  * Class UserOrganizationMembership
+ *
  * @package Pantheon\Terminus\Models
  */
 class UserOrganizationMembership extends TerminusModel implements
@@ -22,5 +23,5 @@ class UserOrganizationMembership extends TerminusModel implements
     use OrganizationJoinTrait;
     use UserTrait;
 
-    const PRETTY_NAME = 'user-organization membership';
+    public const PRETTY_NAME = 'user-organization membership';
 }

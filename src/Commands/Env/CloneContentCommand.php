@@ -90,14 +90,16 @@ class CloneContentCommand extends TerminusCommand implements SiteAwareInterface
 
         $this->checkForInitialization($this->source_env, 'from');
         $this->checkForInitialization($this->target_env, 'into');
-        if (!$this->confirm(
-            'Are you sure you want to clone content from {from} to {to} on {site}?',
-            [
+        if (
+            !$this->confirm(
+                'Are you sure you want to clone content from {from} to {to} on {site}?',
+                [
                 'from' => $this->source_env->getName(),
                 'site' => $site->getName(),
                 'to' => $this->target_env->getName(),
-            ]
-        )) {
+                ]
+            )
+        ) {
             return;
         }
 

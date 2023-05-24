@@ -11,7 +11,6 @@ use Pantheon\Terminus\Models\User;
  */
 interface SessionAwareInterface
 {
-
     /***
      * Inject a session object.
      *

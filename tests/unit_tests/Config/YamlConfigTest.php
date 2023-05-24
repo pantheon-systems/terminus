@@ -12,7 +12,9 @@ class YamlConfigTest extends TerminusTestCase
     public function testReadYaml()
     {
         $tmp = tempnam(sys_get_temp_dir(), 'terminus_test_');
-        file_put_contents($tmp, <<<EOT
+        file_put_contents(
+            $tmp,
+            <<<EOT
 TERMINUS_SOME_VAR: abc
 TERMINUS_ANOTHER_VAR: 123
 EOT

@@ -129,7 +129,7 @@ class SiteEnvLookup implements ConfigAwareInterface, SiteAwareInterface, LoggerA
         }
 
         // Check the url of the origin of the repo at the cwd
-        list($site,) = $this->siteAndEnvFromRepo();
+        list($site, ) = $this->siteAndEnvFromRepo();
         if (!empty($site)) {
             $this->logger->info(
                 sprintf('Missing "site" argument. Setting to "%s" (from current git repository info).', $site)
@@ -182,11 +182,13 @@ class SiteEnvLookup implements ConfigAwareInterface, SiteAwareInterface, LoggerA
     protected function siteAndEnvFromRepo()
     {
         $repo_url = exec('git config --get remote.origin.url');
-        if (!preg_match(
-            '#ssh://[^@]*@codeserver\.[^.]*\.([^.]*)\.drush\.in:2222/~/repository\.git#',
-            $repo_url,
-            $matches
-        )) {
+        if (
+            !preg_match(
+                '#ssh://[^@]*@codeserver\.[^.]*\.([^.]*)\.drush\.in:2222/~/repository\.git#',
+                $repo_url,
+                $matches
+            )
+        ) {
             return ['',''];
         }
 

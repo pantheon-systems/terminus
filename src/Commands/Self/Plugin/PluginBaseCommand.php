@@ -21,25 +21,25 @@ use Symfony\Component\Filesystem\Exception\IOException;
 abstract class PluginBaseCommand extends TerminusCommand
 {
     // Messages
-    const INSTALL_COMPOSER_MESSAGE =
+    public const INSTALL_COMPOSER_MESSAGE =
         'Please install Composer to enable plugin management. See https://getcomposer.org/download/.';
-    const OUTDATED_COMPOSER_MESSAGE =
+    public const OUTDATED_COMPOSER_MESSAGE =
         'Please update Composer to enable plugin management. Run composer self-update.';
-    const INSTALL_GIT_MESSAGE = 'Please install Git to enable plugin management.';
-    const PROJECT_NOT_FOUND_MESSAGE = 'No project or plugin named {project} found.';
-    const DEPENDENCIES_REQUIRE_COMMAND = 'composer require -d {dir} {packages}';
-    const COMPOSER_ADD_REPOSITORY =
+    public const INSTALL_GIT_MESSAGE = 'Please install Git to enable plugin management.';
+    public const PROJECT_NOT_FOUND_MESSAGE = 'No project or plugin named {project} found.';
+    public const DEPENDENCIES_REQUIRE_COMMAND = 'composer require -d {dir} {packages}';
+    public const COMPOSER_ADD_REPOSITORY =
         "composer config -d {dir} repositories.{repo_name} '{\"type\": \"path\","
         . "\"url\": \"{path}\", \"options\": {\"symlink\": true}}'";
-    const COMPOSER_GET_REPOSITORIES = 'composer config -d {dir} repositories';
-    const BACKUP_COMMAND =
+    public const COMPOSER_GET_REPOSITORIES = 'composer config -d {dir} repositories';
+    public const BACKUP_COMMAND =
         "mkdir -p {backup_dir} && tar czvf {backup_dir}"
         . DIRECTORY_SEPARATOR . "backup.tar.gz \"{dir}\"";
-    const COMPOSER_REMOVE_REPOSITORY = 'composer config -d {dir} --unset repositories.{repo_name}';
-    const DEPENDENCIES_UPDATE_COMMAND = 'composer update -d {dir} {packages} --with-dependencies';
-    const INSTALL_COMMAND = 'composer require -d {dir} {project} --no-update';
-    const COMPOSER_VERSION_COMMAND = 'composer --version';
-    const COMPOSER_SEARCH_COMMAND = 'composer search -d {dir} -N -t terminus-plugin --format json {project}';
+    public const COMPOSER_REMOVE_REPOSITORY = 'composer config -d {dir} --unset repositories.{repo_name}';
+    public const DEPENDENCIES_UPDATE_COMMAND = 'composer update -d {dir} {packages} --with-dependencies';
+    public const INSTALL_COMMAND = 'composer require -d {dir} {project} --no-update';
+    public const COMPOSER_VERSION_COMMAND = 'composer --version';
+    public const COMPOSER_SEARCH_COMMAND = 'composer search -d {dir} -N -t terminus-plugin --format json {project}';
 
     /**
      * @var array|null
@@ -333,9 +333,11 @@ abstract class PluginBaseCommand extends TerminusCommand
         $fs = $this->getLocalMachine()->getFileSystem();
         foreach ($all_folders as $folder) {
             $full_path = $parent_folder . DIRECTORY_SEPARATOR . $folder;
-            if (!is_dir($full_path)
+            if (
+                !is_dir($full_path)
                 || strpos($folder, $pattern_start) !== 0
-                || $full_path === $current_dependencies_dir) {
+                || $full_path === $current_dependencies_dir
+            ) {
                 continue;
             }
             // Delete folder if:
@@ -388,7 +390,8 @@ abstract class PluginBaseCommand extends TerminusCommand
         if ($results['exit_code'] === 0) {
             $json = json_decode($results['output'], true);
             foreach ($json as $key => $repository) {
-                if (isset($repository['type']) &&
+                if (
+                    isset($repository['type']) &&
                     ($repository['type'] == 'path') &&
                     isset($repository['url']) &&
                     !empty($repository['url'])

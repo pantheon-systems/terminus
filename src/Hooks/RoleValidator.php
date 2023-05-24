@@ -7,15 +7,19 @@ use Pantheon\Terminus\Exceptions\TerminusException;
 
 class RoleValidator
 {
-    const ORG_ROLES = 'admin|developer|team_member|unprivileged';
-    const PARAM_NAME = 'role';
-    const ROLE_SEPARATOR = '|';
-    const SITE_ROLES = 'developer|team_member';
+    public const ORG_ROLES = 'admin|developer|team_member|unprivileged';
+
+    public const PARAM_NAME = 'role';
+
+    public const ROLE_SEPARATOR = '|';
+
+    public const SITE_ROLES = 'developer|team_member';
 
     /**
      * @hook validate *
      *
      * @param CommandData $command_data
+     *
      * @throws TerminusException If the input role is invalid
      */
     public function validateRole(CommandData $command_data)
@@ -25,15 +29,20 @@ class RoleValidator
             return;
         }
 
-        $acceptable_roles = self::getRoles($command_data->annotationData()->get('command'));
+        $acceptable_roles = self::getRoles(
+            $command_data->annotationData()->get('command')
+        );
         $role = $input->getArgument(self::PARAM_NAME);
 
         if (!in_array($role, $acceptable_roles)) {
             $replacements = [
                 'role' => $role,
-                'roles' => self::prettifyList($acceptable_roles)
+                'roles' => self::prettifyList($acceptable_roles),
             ];
-            throw new TerminusException('{role} is not a valid role selection. Please enter {roles}.', $replacements);
+            throw new TerminusException(
+                '{role} is not a valid role selection. Please enter {roles}.',
+                $replacements
+            );
         }
     }
 
@@ -41,8 +50,10 @@ class RoleValidator
      * Gives the roles available for a given command
      *
      * @param string $command_name The name of the command being validated
+     *
      * @return array Roles permitted for this type of command
-     * @throws TerminusException if a command name is given for which there is no role list
+     * @throws TerminusException if a command name is given for which there is
+     *     no role list
      */
     protected static function getRoles($command_name)
     {
@@ -62,7 +73,9 @@ class RoleValidator
      * Turns an array into a list string using an Oxford comma
      *
      * @param array $list Array to turn into a list
-     * @param string $connector Connector to use before the last item in the sentence
+     * @param string $connector Connector to use before the last item in the
+     *     sentence
+     *
      * @return string
      */
     protected static function prettifyList(array $list, $connector = 'or')

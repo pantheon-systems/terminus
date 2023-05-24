@@ -4,11 +4,12 @@ namespace Pantheon\Terminus\Models;
 
 /**
  * Class OrganizationUpstream
+ *
  * @package Pantheon\Terminus\Models
  */
 class OrganizationUpstream extends TerminusModel
 {
-    const PRETTY_NAME = 'upstream';
+    public const PRETTY_NAME = 'upstream';
 
     /**
      * @return string[]
@@ -24,7 +25,8 @@ class OrganizationUpstream extends TerminusModel
     public function serialize()
     {
         $data = (array)$this->attributes;
-        $data['organization'] = $this->collection->getOrganization()->getLabel();
+        $data['organization'] = $this->collection->getOrganization()->getLabel(
+        );
         return $data;
     }
 }

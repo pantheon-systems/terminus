@@ -8,16 +8,18 @@ use Pantheon\Terminus\Friends\UserTrait;
 
 /**
  * Class MachineToken
+ *
  * @package Pantheon\Terminus\Models
  */
 class MachineToken extends TerminusModel implements UserInterface
 {
     use UserTrait;
 
-    const PRETTY_NAME = 'machine token';
+    public const PRETTY_NAME = 'machine token';
 
     /**
      * Deletes machine token
+     *
      * @return void
      * @throws \Pantheon\Terminus\Exceptions\TerminusException
      */
@@ -28,7 +30,9 @@ class MachineToken extends TerminusModel implements UserInterface
             ['method' => 'delete',]
         );
         if ($response['status_code'] !== 200) {
-            throw new TerminusException('There was an problem deleting the machine token.');
+            throw new TerminusException(
+                'There was an problem deleting the machine token.'
+            );
         }
     }
 }

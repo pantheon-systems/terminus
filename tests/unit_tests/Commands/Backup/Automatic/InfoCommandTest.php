@@ -13,7 +13,6 @@ use Pantheon\Terminus\UnitTests\Commands\Backup\BackupCommandTest;
  */
 class InfoCommandTest extends BackupCommandTest
 {
-
     /**
      * @inheritdoc
      */

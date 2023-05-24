@@ -10,7 +10,6 @@ use Pantheon\Terminus\Commands\TerminusCommand;
  */
 class LogoutCommand extends TerminusCommand
 {
-
     /**
      * Logs out the currently logged-in user and deletes any saved machine tokens.
      *

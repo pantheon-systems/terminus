@@ -14,6 +14,7 @@ use Pantheon\Terminus\Site\SiteAwareTrait;
 
 /**
  * Class Domain
+ *
  * @package Pantheon\Terminus\Models
  */
 class Domain extends TerminusModel implements
@@ -30,7 +31,8 @@ class Domain extends TerminusModel implements
      */
     private $dns_records;
 
-    const PRETTY_NAME = 'domain';
+    public const PRETTY_NAME = 'domain';
+
     /**
      * @var string
      */
@@ -43,7 +45,10 @@ class Domain extends TerminusModel implements
      */
     public function delete(): RequestOperationResult
     {
-        $action = $this->request->request($this->getUrl(), ['method' => 'delete']);
+        $action = $this->request->request(
+            $this->getUrl(),
+            ['method' => 'delete']
+        );
         if ($action->isError()) {
             throw new TerminusProcessException(
                 "Domain remove failed. {site}.{env} => {domain}: {error}",
@@ -68,7 +73,7 @@ class Domain extends TerminusModel implements
             $this->getContainer()->add($nickname, DNSRecords::class)
                 ->addArgument([
                     'data' => $this->get('dns_status_details')->dns_records,
-                    'domain' => $this
+                    'domain' => $this,
                 ]);
             $this->dns_records = $this->getContainer()->get($nickname);
         }
@@ -87,8 +92,8 @@ class Domain extends TerminusModel implements
             'type' => $this->get('type'),
             'status' => in_array($this->get('status'), ['ok', 'okay',]) ? 'OK' : $this->get('status'),
             'status_message' => $this->get('status_message'),
-            'deletable' => (boolean)$this->get('deletable'),
-            'primary' => (boolean)$this->get('primary'),
+            'deletable' => (bool)$this->get('deletable'),
+            'primary' => (bool)$this->get('primary'),
         ];
     }
 }

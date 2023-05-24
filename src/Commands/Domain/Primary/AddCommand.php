@@ -20,7 +20,7 @@ class AddCommand extends TerminusCommand implements SiteAwareInterface
     use SiteAwareTrait;
     use WorkflowProcessingTrait;
 
-    const PLATFORM_DOMAIN = '.pantheonsite.io';
+    public const PLATFORM_DOMAIN = '.pantheonsite.io';
 
     /**
      * Sets a domain associated to the environment as primary, causing all traffic to redirect to it.

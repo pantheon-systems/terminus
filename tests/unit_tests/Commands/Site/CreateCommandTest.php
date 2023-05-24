@@ -23,6 +23,7 @@ use Pantheon\Terminus\UnitTests\Commands\WorkflowProgressTrait;
 class CreateCommandTest extends CommandTestCase
 {
     use WorkflowProgressTrait;
+
     /**
      * @var Organization
      */

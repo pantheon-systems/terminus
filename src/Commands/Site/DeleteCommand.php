@@ -32,7 +32,8 @@ class DeleteCommand extends SiteCommand implements SiteAwareInterface
     public function delete($site_id)
     {
         $site = $this->sites()->get($site_id);
-        if (!$this->input()->getOption('yes')
+        if (
+            !$this->input()->getOption('yes')
             && !$this->io()->confirm(sprintf('Are you sure you want to delete %s site?', $site_id))
         ) {
             return;

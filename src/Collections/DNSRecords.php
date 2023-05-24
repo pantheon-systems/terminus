@@ -14,7 +14,7 @@ class DNSRecords extends TerminusCollection implements DomainInterface
 {
     use DomainTrait;
 
-    const PRETTY_NAME = 'DNS Records';
+    public const PRETTY_NAME = 'DNS Records';
     /**
      * @var string
      */
