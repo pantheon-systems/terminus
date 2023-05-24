@@ -120,7 +120,7 @@ class Site extends TerminusModel implements
     public $tags;
 
     /**
-     * @var string
+     * @var SiteFramework
      */
     public $framework;
 
