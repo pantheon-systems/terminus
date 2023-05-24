@@ -151,10 +151,14 @@ class CloneContentCommand extends TerminusCommand implements SiteAwareInterface
         $params = [
             'clear_cache' => $options['cc'],
             'updatedb' => $options['updatedb'],
-            'wp_replace_siteurl' => $options['search-replace'] ?? "None",
         ];
+        if (!empty($options['search-replace'])) {
+            $params['search_replace'] = $options['search-replace'];
+        }
         $this->emitNotice('database');
-        $this->runClone($this->target_env->cloneDatabase($this->source_env, $params));
+        $this->runClone(
+            $this->target_env->cloneDatabase($this->source_env, $params)
+        );
     }
 
     /**
