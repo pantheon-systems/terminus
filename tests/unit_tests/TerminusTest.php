@@ -13,24 +13,28 @@ class TerminusTest extends TerminusTestCase
      * @var Robo\Config
      */
     protected $config;
+
     /**
      * @var ContainerInterface
      */
     protected $container;
+
     /**
      * @var InputInterface
      */
     protected $input;
+
     /**
      * @var OutputInterface
      */
     protected $output;
+
     /**
      * @var Terminus
      */
     protected $terminus;
 
-    const CURRENT_VERSION = '1.2.3';
+    public const CURRENT_VERSION = '1.2.3';
 
     /**
      * @inheritdoc
@@ -79,15 +83,15 @@ class TerminusTest extends TerminusTestCase
             ->method('get')
             ->with($this->equalTo('time_zone'))
             ->willReturn('UTC');
-/*
-        $this->terminus = new Terminus($config, $this->input, $this->output);
+        /*
+                $this->terminus = new Terminus($config, $this->input, $this->output);
 
-        // Setting a new config mock object so the counts won't start at 7
-        $this->config = $this->getMockBuilder(Config::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $this->terminus->setConfig($this->config);
-*/
+                // Setting a new config mock object so the counts won't start at 7
+                $this->config = $this->getMockBuilder(Config::class)
+                    ->disableOriginalConstructor()
+                    ->getMock();
+                $this->terminus->setConfig($this->config);
+        */
     }
 
     /**
@@ -118,7 +122,9 @@ class TerminusTest extends TerminusTestCase
         $this->markTestIncomplete("Mocks need to be updated.");
 
         if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
-            $this->markTestIncomplete("Windows CI doesn't have the necessary extensions.");
+            $this->markTestIncomplete(
+                "Windows CI doesn't have the necessary extensions."
+            );
         }
 
         $this->config->expects($this->at(0))

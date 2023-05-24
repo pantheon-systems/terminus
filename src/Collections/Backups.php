@@ -12,11 +12,11 @@ use Pantheon\Terminus\Models\Workflow;
  */
 class Backups extends EnvironmentOwnedCollection
 {
-    const DAILY_BACKUP_TTL = 8;
-    const SECONDS_IN_A_DAY = 86400;
-    const WEEKLY_BACKUP_TTL = 32;
+    public const DAILY_BACKUP_TTL = 8;
+    public const SECONDS_IN_A_DAY = 86400;
+    public const WEEKLY_BACKUP_TTL = 32;
 
-    const PRETTY_NAME = 'backups';
+    public const PRETTY_NAME = 'backups';
     /**
      * @var string
      */
@@ -264,7 +264,7 @@ class Backups extends EnvironmentOwnedCollection
      */
     public static function convertDaysToSeconds($number_of_days)
     {
-        return (integer)ceil((integer)$number_of_days * self::SECONDS_IN_A_DAY);
+        return (int)ceil((int)$number_of_days * self::SECONDS_IN_A_DAY);
     }
 
     /**
@@ -275,7 +275,7 @@ class Backups extends EnvironmentOwnedCollection
      */
     public static function convertSecondsToDays($number_of_seconds)
     {
-        return (integer)ceil((integer)$number_of_seconds / self::SECONDS_IN_A_DAY);
+        return (int)ceil((int)$number_of_seconds / self::SECONDS_IN_A_DAY);
     }
 
     /**

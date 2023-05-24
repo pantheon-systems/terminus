@@ -15,7 +15,7 @@ class WatchCommand extends TerminusCommand implements SiteAwareInterface
 {
     use SiteAwareTrait;
 
-    const WORKFLOWS_WATCH_INTERVAL = 5;
+    public const WORKFLOWS_WATCH_INTERVAL = 5;
     /**
      * @var array We keep track of workflows that have been printed. This is necessary because the local clock may
      * drift from the server's clock, causing events to be printed twice.
@@ -49,7 +49,7 @@ class WatchCommand extends TerminusCommand implements SiteAwareInterface
     {
         $site = $this->getSiteById($site_id);
         if (!is_null($number_of_checks = $options['checks'])) {
-            $number_of_checks = (integer)$number_of_checks;
+            $number_of_checks = (int)$number_of_checks;
         }
 
         $this->log()->notice('Watching workflows...');
@@ -69,7 +69,8 @@ class WatchCommand extends TerminusCommand implements SiteAwareInterface
                     $this->emitStartedNotice($workflow);
                 }
 
-                if ($workflow->wasFinishedAfter($last_wf_finished_at)
+                if (
+                    $workflow->wasFinishedAfter($last_wf_finished_at)
                     && !$this->finishedNoticeAlreadyEmitted($workflow)
                 ) {
                     $this->emitFinishedNotice($workflow);

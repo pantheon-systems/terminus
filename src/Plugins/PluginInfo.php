@@ -18,19 +18,22 @@ use Composer\Semver\Semver;
  *
  * @package Pantheon\Terminus\Plugins
  */
-class PluginInfo implements ConfigAwareInterface, ContainerAwareInterface, LoggerAwareInterface
+class PluginInfo implements
+    ConfigAwareInterface,
+    ContainerAwareInterface,
+    LoggerAwareInterface
 {
     use ConfigAwareTrait;
     use ContainerAwareTrait;
     use LoggerAwareTrait;
 
-    const MAX_COMMAND_DEPTH = 4;
+    public const MAX_COMMAND_DEPTH = 4;
 
     // Commands
-    const GET_LATEST_AVAILABLE_VERSION = 'composer show -d {dir} {package} --latest --all --format=json';
+    public const GET_LATEST_AVAILABLE_VERSION = 'composer show -d {dir} {package} --latest --all --format=json';
 
     // Version Numbers
-    const UNKNOWN_VERSION = 'unknown';
+    public const UNKNOWN_VERSION = 'unknown';
 
     /**
      * @var null|array
@@ -49,7 +52,8 @@ class PluginInfo implements ConfigAwareInterface, ContainerAwareInterface, Logge
     protected $stable_latest_version;
 
     /**
-     * Determines whether current terminus version satisfies given terminus-compatible value.
+     * Determines whether current terminus version satisfies given
+     * terminus-compatible value.
      */
     public function isVersionCompatible($plugin_compatible = null)
     {
@@ -57,7 +61,9 @@ class PluginInfo implements ConfigAwareInterface, ContainerAwareInterface, Logge
             $plugin_compatible = $this->getCompatibleTerminusVersion();
         }
         $current_version = $this->getConfig()->get('version');
-        $fallback_version = $this->getConfig()->get('plugins_fallback_compatibility');
+        $fallback_version = $this->getConfig()->get(
+            'plugins_fallback_compatibility'
+        );
         return (Semver::satisfies($current_version, $plugin_compatible) ||
             Semver::satisfies($fallback_version, $plugin_compatible));
     }
@@ -68,7 +74,9 @@ class PluginInfo implements ConfigAwareInterface, ContainerAwareInterface, Logge
     public function setInfoArray($info)
     {
         $this->info = $info;
-        $dependencies_dir = $this->getConfig()->get('terminus_dependencies_dir');
+        $dependencies_dir = $this->getConfig()->get(
+            'terminus_dependencies_dir'
+        );
         $this->plugin_dir = $dependencies_dir . '/vendor/' . $info['name'];
     }
 
@@ -92,7 +100,8 @@ class PluginInfo implements ConfigAwareInterface, ContainerAwareInterface, Logge
     /**
      * Get the compatible Terminus version.
      *
-     * @return string A version constraint string defining what versions of Terminus this plugin works with.
+     * @return string A version constraint string defining what versions of
+     *     Terminus this plugin works with.
      */
     public function getCompatibleTerminusVersion()
     {
@@ -119,7 +128,9 @@ class PluginInfo implements ConfigAwareInterface, ContainerAwareInterface, Logge
         if (!empty($this->info['version'])) {
             return $this->info['version'];
         }
-        $dependencies_dir = $this->getConfig()->get('terminus_dependencies_dir');
+        $dependencies_dir = $this->getConfig()->get(
+            'terminus_dependencies_dir'
+        );
         $composer_lock = json_decode(
             file_get_contents($dependencies_dir . '/composer.lock'),
             true,
@@ -148,7 +159,10 @@ class PluginInfo implements ConfigAwareInterface, ContainerAwareInterface, Logge
             $this->getName() ?? '',
             self::GET_LATEST_AVAILABLE_VERSION
         );
-        $command = PluginBaseCommand::populateComposerWorkingDir($command, $this->plugin_dir);
+        $command = PluginBaseCommand::populateComposerWorkingDir(
+            $command,
+            $this->plugin_dir
+        );
 
         $results = $this->runCommand($command);
         if (!empty($results['output'])) {
@@ -195,6 +209,7 @@ class PluginInfo implements ConfigAwareInterface, ContainerAwareInterface, Logge
 
     /**
      * @param $version_number
+     *
      * @return string
      */
     public static function getMajorVersionFromVersion($version_number)
@@ -224,7 +239,7 @@ class PluginInfo implements ConfigAwareInterface, ContainerAwareInterface, Logge
             $keys = array_keys($info['autoload']['psr-4']);
             return [
                 'prefix' => reset($keys),
-                'dir' => reset($info['autoload']['psr-4'])
+                'dir' => reset($info['autoload']['psr-4']),
             ];
         }
         return ['prefix' => '', 'dir' => 'src'];

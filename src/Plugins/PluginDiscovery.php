@@ -13,7 +13,10 @@ use Robo\Contract\ConfigAwareInterface;
 /**
  * Class PluginDiscovery.
  */
-class PluginDiscovery implements ContainerAwareInterface, LoggerAwareInterface, ConfigAwareInterface
+class PluginDiscovery implements
+    ContainerAwareInterface,
+    LoggerAwareInterface,
+    ConfigAwareInterface
 {
     use ContainerAwareTrait;
     use LoggerAwareTrait;
@@ -22,7 +25,7 @@ class PluginDiscovery implements ContainerAwareInterface, LoggerAwareInterface, 
     /**
      * List of all Terminus plugins that have been rolled into Terminus core.
      */
-    const BLACKLIST = [
+    public const BLACKLIST = [
         'pantheon-systems/terminus-aliases-plugin',
     ];
 
@@ -41,8 +44,14 @@ class PluginDiscovery implements ContainerAwareInterface, LoggerAwareInterface, 
         $dependencies_composer_lock = [];
         $out = [];
         try {
-            $local_machine = $this->getContainer()->get(LocalMachineHelper::class);
-            if ($local_machine->getFilesystem()->exists($dependencies_dir . '/composer.lock')) {
+            $local_machine = $this->getContainer()->get(
+                LocalMachineHelper::class
+            );
+            if (
+                $local_machine->getFilesystem()->exists(
+                    $dependencies_dir . '/composer.lock'
+                )
+            ) {
                 $dependencies_composer_lock = \json_decode(
                     file_get_contents($dependencies_dir . '/composer.lock'),
                     true,

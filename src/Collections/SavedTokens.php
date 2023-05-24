@@ -17,7 +17,7 @@ class SavedTokens extends TerminusCollection implements ConfigAwareInterface, Da
     use ConfigAwareTrait;
     use DataStoreAwareTrait;
 
-    const PRETTY_NAME = 'tokens';
+    public const PRETTY_NAME = 'tokens';
     /**
      * @var string
      */

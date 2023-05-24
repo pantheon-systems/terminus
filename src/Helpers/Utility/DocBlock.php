@@ -78,7 +78,7 @@ class DocBlock
     public static $vectors = array(
         'param' => ['type', 'var', 'desc'],
         'return' => ['type', 'desc'],
-        'step' =>['name'],
+        'step' => ['name'],
     );
 
     /**
@@ -173,7 +173,7 @@ class DocBlock
             } else {
                 // This block is tagged
                 $tag = substr(self::strTag($body), 1);
-                $body = ltrim(substr($body, strlen($tag)+2));
+                $body = ltrim(substr($body, strlen($tag) + 2));
 
                 if (isset(self::$vectors[$tag])) {
                     // The tagged block is a vector

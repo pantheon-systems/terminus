@@ -13,6 +13,7 @@ use Pantheon\Terminus\Models\WorkflowOperation;
 /**
  * Class WatchCommandTest
  * Testing class for Pantheon\Terminus\Commands\Workflow\WatchCommand
+ *
  * @package Pantheon\Terminus\UnitTests\Commands\Workflow
  */
 class WatchCommandTest extends WorkflowCommandTest
@@ -21,20 +22,23 @@ class WatchCommandTest extends WorkflowCommandTest
      * @var TerminusConfig
      */
     protected $config;
+
     /**
      * @var WorkflowOperation
      */
     protected $operation;
+
     /**
      * @var Workflow
      */
     protected $workflow;
+
     /**
      * @var Workflows
      */
     protected $workflows;
 
-    const ARBITRARY_TIMESTAMP = -14160840;
+    public const ARBITRARY_TIMESTAMP = -14160840;
 
     /**
      * Setup the test fixture.
@@ -56,7 +60,15 @@ class WatchCommandTest extends WorkflowCommandTest
             ->disableOriginalConstructor()
             ->getMock();
         $this->workflow = $this->getMockBuilder(Workflow::class)
-            ->setMethods(['get', 'wasFinishedBefore', 'wasCreatedBefore', 'fetchWithLogs', 'operations',])
+            ->setMethods(
+                [
+                    'get',
+                    'wasFinishedBefore',
+                    'wasCreatedBefore',
+                    'fetchWithLogs',
+                    'operations',
+                ]
+            )
             ->disableOriginalConstructor()
             ->getMock();
         $this->operation = $this->getMockBuilder(WorkflowOperation::class)
@@ -164,7 +176,8 @@ class WatchCommandTest extends WorkflowCommandTest
     }
 
     /**
-     * Tests the workflow:list command's emitting of the workflow-finished notice
+     * Tests the workflow:list command's emitting of the workflow-finished
+     * notice
      *
      * @param array $settings
      */
@@ -193,7 +206,9 @@ class WatchCommandTest extends WorkflowCommandTest
             ->method('log')
             ->with(
                 $this->equalTo('notice'),
-                $this->equalTo('Finished workflow {id} {description} ({env}) at {time}'),
+                $this->equalTo(
+                    'Finished workflow {id} {description} ({env}) at {time}'
+                ),
                 $this->equalTo([
                     'id' => $this->workflow->id,
                     'description' => $description,

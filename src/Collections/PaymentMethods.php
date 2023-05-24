@@ -14,7 +14,7 @@ use Pantheon\Terminus\Models\TerminusModel;
  */
 class PaymentMethods extends UserOwnedCollection
 {
-    const PRETTY_NAME = 'payment methods';
+    public const PRETTY_NAME = 'payment methods';
 
     /**
      * @var string

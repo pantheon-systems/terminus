@@ -90,7 +90,7 @@ class ListCommand extends TerminusCommand
      */
     protected function filterForCoreCustom($upstreams, $options = [])
     {
-        if (!(isset($options['all']) && (boolean)$options['all'])) {
+        if (!(isset($options['all']) && (bool)$options['all'])) {
             $upstreams->filter(function ($upstream) {
                 return in_array($upstream->get('type'), ['core', 'custom',]);
             });

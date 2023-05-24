@@ -11,6 +11,7 @@ use Pantheon\Terminus\Friends\UserJoinTrait;
 
 /**
  * Class OrganizationUserMembership
+ *
  * @package Pantheon\Terminus\Models
  */
 class OrganizationUserMembership extends TerminusModel implements
@@ -22,7 +23,7 @@ class OrganizationUserMembership extends TerminusModel implements
     use OrganizationTrait;
     use UserJoinTrait;
 
-    const PRETTY_NAME = 'organization-user membership';
+    public const PRETTY_NAME = 'organization-user membership';
 
     /**
      * Removes a user from this organization
@@ -42,13 +43,17 @@ class OrganizationUserMembership extends TerminusModel implements
      */
     public function serialize()
     {
-        return array_merge($this->getUser()->serialize(), ['role' => $this->get('role'),]);
+        return array_merge(
+            $this->getUser()->serialize(),
+            ['role' => $this->get('role'),]
+        );
     }
 
     /**
      * Sets the user's role within this organization
      *
      * @param string $role Role for this user to take in the organization
+     *
      * @return Workflow
      */
     public function setRole($role)

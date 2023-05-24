@@ -4,7 +4,7 @@ namespace Pantheon\Terminus\Models;
 
 class Solr extends AddOnModel
 {
-    const PRETTY_NAME = 'Solr';
+    public const PRETTY_NAME = 'Solr';
 
     /**
      * Disables Solr indexing
@@ -17,7 +17,7 @@ class Solr extends AddOnModel
         return $site->getWorkflows()->create('disable_addon', [
             'params' => [
                 'addon' => 'indexserver',
-            ]
+            ],
         ]);
     }
 
@@ -32,7 +32,7 @@ class Solr extends AddOnModel
         return $site->getWorkflows()->create('enable_addon', [
             'params' => [
                 'addon' => 'indexserver',
-            ]
+            ],
         ]);
     }
 }

@@ -12,7 +12,7 @@ use Pantheon\Terminus\Models\Workflow;
  */
 class Environments extends SiteOwnedCollection
 {
-    const PRETTY_NAME = 'environments';
+    public const PRETTY_NAME = 'environments';
     /**
      * @var string
      */

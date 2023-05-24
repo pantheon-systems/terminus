@@ -15,9 +15,11 @@ use Pantheon\Terminus\Exceptions\TerminusException;
  */
 class InstallCommand extends PluginBaseCommand
 {
-    const ALREADY_INSTALLED_MESSAGE = '{project} is already installed.';
-    const INVALID_PROJECT_MESSAGE = '{project} is not a valid Packagist project.';
-    const USAGE_MESSAGE = 'terminus self:plugin:<install|add> <Packagist project 1> [Packagist project 2] ...';
+    public const ALREADY_INSTALLED_MESSAGE = '{project} is already installed.';
+
+    public const INVALID_PROJECT_MESSAGE = '{project} is not a valid Packagist project.';
+
+    public const USAGE_MESSAGE = 'terminus self:plugin:<install|add> <Packagist project 1> [Packagist project 2] ...';
 
     /**
      * Install one or more Terminus plugins.
@@ -26,7 +28,8 @@ class InstallCommand extends PluginBaseCommand
      * @aliases self:plugin:add plugin:install plugin:add
      *
      * @param array $projects
-     *   A list of one or more plugin projects to install. Projects may include version constraints.
+     *   A list of one or more plugin projects to install. Projects may include
+     *     version constraints.
      *
      * @usage <project 1> [project 2] ...
      *
@@ -40,7 +43,10 @@ class InstallCommand extends PluginBaseCommand
         foreach ($projects as $projectName => $installationPath) {
             if ($this->validateProject($projectName, $installationPath)) {
                 $this->log()->info(sprintf('Installing %s...', $projectName));
-                $results = $this->doInstallation($projectName, $installationPath);
+                $results = $this->doInstallation(
+                    $projectName,
+                    $installationPath
+                );
                 $this->log()->notice($results['output']);
             }
         }
@@ -64,7 +70,10 @@ class InstallCommand extends PluginBaseCommand
             return;
         }
 
-        $plugin_dirs = glob($plugins_dir . DIRECTORY_SEPARATOR . '*', GLOB_ONLYDIR);
+        $plugin_dirs = glob(
+            $plugins_dir . DIRECTORY_SEPARATOR . '*',
+            GLOB_ONLYDIR
+        );
         if (!$plugin_dirs) {
             $this->log()->notice('No Terminus 2 plugins to migrate.');
             return;
@@ -72,16 +81,20 @@ class InstallCommand extends PluginBaseCommand
 
         // Get installed Terminus 3 plugins.
         $plugins = $this->getPluginProjects();
-        $t3projects = array_filter(array_map(
-            fn($plugin) => $plugin->getName(),
-            $plugins
-        ));
+        $t3projects = array_filter(
+            array_map(
+                fn ($plugin) => $plugin->getName(),
+                $plugins
+            )
+        );
 
         // Get installed Terminus 2 plugins.
-        $t2projects = array_filter(array_map(
-            fn($dir) => $this->getProjectNameFromPath($dir),
-            $plugin_dirs
-        ));
+        $t2projects = array_filter(
+            array_map(
+                fn ($dir) => $this->getProjectNameFromPath($dir),
+                $plugin_dirs
+            )
+        );
 
         // Get only the Terminus 2 plugins that need migrated.
         $projects = array_diff($t2projects, $t3projects);
@@ -117,7 +130,8 @@ class InstallCommand extends PluginBaseCommand
     }
 
     /**
-     * Convert given projects into an array indexed by project name and path (if exists) as value.
+     * Convert given projects into an array indexed by project name and path
+     * (if exists) as value.
      *
      * @param array $projects
      *
@@ -144,7 +158,11 @@ class InstallCommand extends PluginBaseCommand
                     $fs->remove($pluginFolderName);
                 }
                 $fs->mkdir($pluginFolderName);
-                $command = sprintf('git -C %s clone %s --depth 1 .', $pluginFolderName, $projectNameOrPath);
+                $command = sprintf(
+                    'git -C %s clone %s --depth 1 .',
+                    $pluginFolderName,
+                    $projectNameOrPath
+                );
                 $results = $this->runCommand($command);
                 if ($results['exit_code'] !== 0) {
                     throw new TerminusException(
@@ -158,12 +176,18 @@ class InstallCommand extends PluginBaseCommand
                 $projectNameOrPath = $pluginFolderName;
             }
             if ($this->hasProjectAtPath($projectNameOrPath)) {
-                $projectName = $this->getProjectNameFromPath($projectNameOrPath);
+                $projectName = $this->getProjectNameFromPath(
+                    $projectNameOrPath
+                );
                 // A project name was found at the path, so record the name and its path.
-                $convertedProjects[$this->getComposerProjectName($projectName)] = $projectNameOrPath;
+                $convertedProjects[$this->getComposerProjectName(
+                    $projectName
+                )] = $projectNameOrPath;
             } else {
                 // Presume the parameter is a packagist project.
-                $convertedProjects[$this->getComposerProjectName($projectNameOrPath)] = null;
+                $convertedProjects[$this->getComposerProjectName(
+                    $projectNameOrPath
+                )] = null;
             }
         }
 
@@ -175,7 +199,10 @@ class InstallCommand extends PluginBaseCommand
      */
     protected function isGitRepo($possibleUrl)
     {
-        return preg_match('/^(git@|https:\/\/|git:\/\/).*\.git$/', $possibleUrl);
+        return preg_match(
+            '/^(git@|https:\/\/|git:\/\/).*\.git$/',
+            $possibleUrl
+        );
     }
 
     /**
@@ -204,8 +231,10 @@ class InstallCommand extends PluginBaseCommand
      * @throws \Psr\Container\ContainerExceptionInterface
      * @throws \Psr\Container\NotFoundExceptionInterface
      */
-    private function doInstallation(string $projectName, ?string $installationPath)
-    {
+    private function doInstallation(
+        string $projectName,
+        ?string $installationPath
+    ) {
         return $this->installProject($projectName, $installationPath);
     }
 
@@ -220,15 +249,27 @@ class InstallCommand extends PluginBaseCommand
      * @throws \Psr\Container\ContainerExceptionInterface
      * @throws \Psr\Container\NotFoundExceptionInterface
      */
-    private function validateProject(string $projectName, ?string $installationPath): bool
-    {
-        if (null === $installationPath && !$this->isPackagistProject($projectName)) {
-            $this->log()->error(self::INVALID_PROJECT_MESSAGE, ['project' => $projectName,]);
+    private function validateProject(
+        string $projectName,
+        ?string $installationPath
+    ): bool {
+        if (
+            null === $installationPath && !$this->isPackagistProject(
+                $projectName
+            )
+        ) {
+            $this->log()->error(
+                self::INVALID_PROJECT_MESSAGE,
+                ['project' => $projectName,]
+            );
             return false;
         }
 
         if ($this->isInstalled($projectName)) {
-            $this->log()->notice(self::ALREADY_INSTALLED_MESSAGE, ['project' => $projectName,]);
+            $this->log()->notice(
+                self::ALREADY_INSTALLED_MESSAGE,
+                ['project' => $projectName,]
+            );
             return false;
         }
 

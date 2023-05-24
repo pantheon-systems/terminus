@@ -46,7 +46,8 @@ class TerminusConfig extends \Robo\Config\Config
      */
     public function ensureDirExists($name, $value)
     {
-        if (strpos($name ?? '', 'TERMINUS_') !== false
+        if (
+            strpos($name ?? '', 'TERMINUS_') !== false
             && strpos($name ?? '', '_DIR') !== false
             && $value != '~'
         ) {
@@ -93,7 +94,7 @@ class TerminusConfig extends \Robo\Config\Config
      */
     public function formatDatetime($datetime)
     {
-        return date($this->get('date_format'), (integer)$datetime);
+        return date($this->get('date_format'), (int)$datetime);
     }
 
     /**

@@ -39,7 +39,7 @@ class PluginManagerCommandsTest extends TerminusTestBase
         // Define test plugin packages.
         $testPluginPackage = 'pantheon-systems/' . self::TEST_PLUGIN_NAME;
         $testPluginPackages = array_map(
-            fn($package) => 'pantheon-systems/' . $package,
+            fn ($package) => 'pantheon-systems/' . $package,
             self::TEST_PLUGIN_NAMES
         );
 

@@ -99,7 +99,7 @@ class PlanTest extends ModelTestCase
     {
         $annual_data = $this->data['annual_collection'];
         $this->assertEquals(
-            ($annual_data['attributes']['price']/12),
+            ($annual_data['attributes']['price'] / 12),
             $this->makePlan($annual_data)->getMonthlyPrice()
         );
 

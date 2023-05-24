@@ -14,12 +14,17 @@ use Pantheon\Terminus\Plugins\PluginInfo;
  */
 class UpdateCommand extends PluginBaseCommand
 {
-    const ALREADY_UP_TO_DATE_MESSAGE = 'Already up-to-date.';
-    const GIT_UPDATE_COMMAND = 'cd %s && git checkout %s';
-    const INVALID_PROJECT_MESSAGE = 'Unable to update: {project} is not a valid Packagist project.';
-    const NO_PLUGINS_MESSAGE = 'You have no plugins installed.';
-    const SEMVER_CANNOT_UPDATE_MESSAGE = 'Unable to update. Semver compliance issue with tagged release.';
-    const UPDATING_MESSAGE = 'Updating {name}...';
+    public const ALREADY_UP_TO_DATE_MESSAGE = 'Already up-to-date.';
+
+    public const GIT_UPDATE_COMMAND = 'cd %s && git checkout %s';
+
+    public const INVALID_PROJECT_MESSAGE = 'Unable to update: {project} is not a valid Packagist project.';
+
+    public const NO_PLUGINS_MESSAGE = 'You have no plugins installed.';
+
+    public const SEMVER_CANNOT_UPDATE_MESSAGE = 'Unable to update. Semver compliance issue with tagged release.';
+
+    public const UPDATING_MESSAGE = 'Updating {name}...';
 
     /**
      * Update one or more Terminus plugins.
@@ -97,14 +102,20 @@ class UpdateCommand extends PluginBaseCommand
         $plugin_dir = $plugin->getPath();
         $original_plugins_dir = $config->get('plugins_dir');
         $original_dependencies_dir = $this->getTerminusDependenciesDir();
-        $folders = $this->updateTerminusDependencies($original_plugins_dir, $original_dependencies_dir);
+        $folders = $this->updateTerminusDependencies(
+            $original_plugins_dir,
+            $original_dependencies_dir
+        );
         $plugins_dir = $folders['plugins_dir'];
         $dependencies_dir = $folders['dependencies_dir'];
         $messages = [];
         $this->log()->notice(self::UPDATING_MESSAGE, $plugin_info);
         if ($this->isPackagistProject($project)) {
             try {
-                $results = $this->runComposerUpdate($dependencies_dir, $project);
+                $results = $this->runComposerUpdate(
+                    $dependencies_dir,
+                    $project
+                );
                 if ($results['output']) {
                     $messages[] = $results['output'];
                 }
@@ -112,16 +123,25 @@ class UpdateCommand extends PluginBaseCommand
                     $messages[] = $results['stderr'];
                 }
                 if ($results['exit_code'] !== 0) {
-                    throw new TerminusException('Error updating packages in terminus-dependencies.');
+                    throw new TerminusException(
+                        'Error updating packages in terminus-dependencies.'
+                    );
                 }
 
                 $this->replaceFolder($plugins_dir, $original_plugins_dir);
-                $this->replaceFolder($dependencies_dir, $original_dependencies_dir);
+                $this->replaceFolder(
+                    $dependencies_dir,
+                    $original_dependencies_dir
+                );
             } catch (TerminusException $e) {
                 $this->log()->error($e->getMessage());
             }
         } else {
-            $messages[] = str_replace(['{project}'], [$project], self::INVALID_PROJECT_MESSAGE);
+            $messages[] = str_replace(
+                ['{project}'],
+                [$project],
+                self::INVALID_PROJECT_MESSAGE
+            );
         }
         foreach ($messages as $message) {
             $this->log()->notice($message, $plugin_info);

@@ -21,7 +21,7 @@ class Sites extends APICollection implements SessionAwareInterface
 {
     use SessionAwareTrait;
 
-    const PRETTY_NAME = 'sites';
+    public const PRETTY_NAME = 'sites';
 
     /**
      * @var string

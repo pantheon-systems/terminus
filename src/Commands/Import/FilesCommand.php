@@ -35,10 +35,12 @@ class FilesCommand extends TerminusCommand implements SiteAwareInterface
         $site = $this->getSiteById($site_env);
         $env = $this->getEnv($site_env);
 
-        if (!$this->confirm(
-            'Are you sure you overwrite the files for {env} on {site}?',
-            ['site' => $site->getName(), 'env' => $env->getName()]
-        )) {
+        if (
+            !$this->confirm(
+                'Are you sure you overwrite the files for {env} on {site}?',
+                ['site' => $site->getName(), 'env' => $env->getName()]
+            )
+        ) {
             return;
         }
 

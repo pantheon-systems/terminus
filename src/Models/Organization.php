@@ -17,6 +17,7 @@ use Pantheon\Terminus\Friends\UsersTrait;
 
 /**
  * Class Organization
+ *
  * @package Pantheon\Terminus\Models
  */
 class Organization extends TerminusModel implements
@@ -30,23 +31,28 @@ class Organization extends TerminusModel implements
     use SitesTrait;
     use UsersTrait;
 
-    const PRETTY_NAME = 'organization';
+    public const PRETTY_NAME = 'organization';
+
     /**
      * @var array
      */
     private $features;
+
     /**
      * @var OrganizationSiteMemberships
      */
     private $site_memberships;
+
     /**
      * @var Upstreams
      */
     private $upstreams;
+
     /**
      * @var OrganizationUserMemberships
      */
     private $user_memberships;
+
     /**
      * @var Workflows
      */
@@ -71,12 +77,15 @@ class Organization extends TerminusModel implements
      * Returns a specific organization feature value
      *
      * @param string $feature Feature to check
+     *
      * @return mixed|null Feature value, or null if not found
      */
     public function getFeature($feature)
     {
         if (!isset($this->features)) {
-            $response = $this->request->request("organizations/{$this->id}/features");
+            $response = $this->request->request(
+                "organizations/{$this->id}/features"
+            );
             $this->features = (array)$response['data'];
         }
         if (isset($this->features[$feature])) {
@@ -120,7 +129,10 @@ class Organization extends TerminusModel implements
     {
         if (empty($this->site_memberships)) {
             $nickname = \uniqid(__FUNCTION__ . '-');
-            $this->getContainer()->add($nickname, OrganizationSiteMemberships::class)
+            $this->getContainer()->add(
+                $nickname,
+                OrganizationSiteMemberships::class
+            )
                 ->addArgument(['organization' => $this]);
             $this->site_memberships = $this->getContainer()
                 ->get($nickname);
@@ -149,7 +161,10 @@ class Organization extends TerminusModel implements
     {
         if (empty($this->user_memberships)) {
             $nickname = \uniqid(__FUNCTION__ . '-');
-            $this->getContainer()->add($nickname, OrganizationUserMemberships::class)
+            $this->getContainer()->add(
+                $nickname,
+                OrganizationUserMemberships::class
+            )
                 ->addArgument(['organization' => $this]);
             $this->user_memberships = $this->getContainer()
                 ->get($nickname);
@@ -181,6 +196,10 @@ class Organization extends TerminusModel implements
      */
     public function serialize()
     {
-        return ['id' => $this->id, 'name' => $this->getName(), 'label' => $this->getLabel(),];
+        return [
+            'id' => $this->id,
+            'name' => $this->getName(),
+            'label' => $this->getLabel(),
+        ];
     }
 }

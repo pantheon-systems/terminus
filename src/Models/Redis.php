@@ -4,16 +4,19 @@ namespace Pantheon\Terminus\Models;
 
 /**
  * Class Redis
+ *
  * @package Pantheon\Terminus\Models
  */
 class Redis extends AddOnModel
 {
-    const PRETTY_NAME = 'Redis';
+    public const PRETTY_NAME = 'Redis';
 
     /**
      * Clears the Redis cache on the named environment
      *
-     * @param Environment $env An object representing the environment on which to clear the Redis cache
+     * @param Environment $env An object representing the environment on which
+     *     to clear the Redis cache
+     *
      * @return Workflow
      */
     public function clear($env)
@@ -33,7 +36,7 @@ class Redis extends AddOnModel
         return $site->getWorkflows()->create('disable_addon', [
             'params' => [
                 'addon' => 'cacheserver',
-            ]
+            ],
         ]);
     }
 
@@ -48,7 +51,7 @@ class Redis extends AddOnModel
         return $site->getWorkflows()->create('enable_addon', [
             'params' => [
                 'addon' => 'cacheserver',
-            ]
+            ],
         ]);
     }
 }

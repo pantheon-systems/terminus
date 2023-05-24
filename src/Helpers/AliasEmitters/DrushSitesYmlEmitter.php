@@ -80,7 +80,8 @@ class DrushSitesYmlEmitter implements AliasEmitterInterface
      */
     protected function filterForSites($line)
     {
-        if (strpos($line ?? '', 'pantheon') !== false
+        if (
+            strpos($line ?? '', 'pantheon') !== false
             || strpos($line ?? '', '/.drush/sites') !== false
         ) {
             return false;

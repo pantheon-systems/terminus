@@ -14,7 +14,7 @@ class SiteUpstream extends TerminusModel implements SiteInterface
 {
     use SiteTrait;
 
-    const PRETTY_NAME = 'upstream';
+    public const PRETTY_NAME = 'upstream';
 
     /**
      * @inheritdoc
@@ -51,17 +51,27 @@ class SiteUpstream extends TerminusModel implements SiteInterface
      */
     protected function parseAttributes($data)
     {
-        if (!property_exists($data, 'id') && property_exists($data, 'product_id')) {
+        if (
+            !property_exists($data, 'id') && property_exists(
+                $data,
+                'product_id'
+            )
+        ) {
             $data->id = $data->product_id;
         }
         return $data;
     }
 
-     /**
+    /**
      * @return string[]
      */
     public function getReferences()
     {
-        return [$this->id, $this->get('product_id'), $this->get('label'), $this->get('machine_name'),];
+        return [
+            $this->id,
+            $this->get('product_id'),
+            $this->get('label'),
+            $this->get('machine_name'),
+        ];
     }
 }

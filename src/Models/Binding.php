@@ -4,11 +4,12 @@ namespace Pantheon\Terminus\Models;
 
 /**
  * Class Binding
+ *
  * @package Pantheon\Terminus\Models
  */
 class Binding extends TerminusModel
 {
-    const PRETTY_NAME = 'binding';
+    public const PRETTY_NAME = 'binding';
 
     /**
      * Used for connecting to a binding. It returns the legacy_username
@@ -18,6 +19,8 @@ class Binding extends TerminusModel
      */
     public function getUsername()
     {
-        return $this->has('legacy_username') ? $this->get('legacy_username') : $this->get('username');
+        return $this->has('legacy_username') ? $this->get(
+            'legacy_username'
+        ) : $this->get('username');
     }
 }

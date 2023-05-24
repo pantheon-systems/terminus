@@ -39,7 +39,7 @@ class FilesCommandTest extends CommandTestCase
         $this->command->setInput($this->input);
         $this->expectWorkflowProcessing();
     }
-    
+
     /**
      * Exercises import:files command with a valid URL
      */

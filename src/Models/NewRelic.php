@@ -4,12 +4,13 @@ namespace Pantheon\Terminus\Models;
 
 /**
  * Class NewRelic
+ *
  * @package Pantheon\Terminus\Models
  */
 class NewRelic extends AddOnModel
 {
+    public const PRETTY_NAME = 'New Relic';
 
-    const PRETTY_NAME = 'New Relic';
     /**
      * @var string
      */

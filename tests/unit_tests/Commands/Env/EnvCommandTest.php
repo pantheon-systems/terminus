@@ -3,7 +3,6 @@
 namespace Pantheon\Terminus\UnitTests\Commands\Env;
 
 use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
-
 use Pantheon\Terminus\Models\Workflow;
 
 /**

@@ -4,11 +4,12 @@ namespace Pantheon\Terminus\Models;
 
 /**
  * Class DNSRecord
+ *
  * @package Pantheon\Terminus\Models
  */
 class DNSRecord extends TerminusModel
 {
-    const PRETTY_NAME = 'DNS record';
+    public const PRETTY_NAME = 'DNS record';
 
     /**
      * @inheritdoc

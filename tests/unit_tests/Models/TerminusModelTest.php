@@ -40,7 +40,7 @@ class TerminusModelTest extends ModelTestCase
         $model->expects($this->once())
             ->method('getUrl')
             ->willReturn('TESTURL');
-        
+
         $this->request->expects($this->once())
             ->method('request')
             ->with('TESTURL', ['options' => ['method' => 'get',], 'foo' => 'bar'])

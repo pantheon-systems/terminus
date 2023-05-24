@@ -10,7 +10,6 @@ use Pantheon\Terminus\Commands\TerminusCommand;
  */
 class AddCommand extends TerminusCommand
 {
-
     /**
      * Associates a SSH public key with the currently logged-in user.
      *

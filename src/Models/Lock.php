@@ -7,13 +7,14 @@ use Pantheon\Terminus\Friends\EnvironmentTrait;
 
 /**
  * Class Lock
+ *
  * @package Pantheon\Terminus\Models
  */
 class Lock extends TerminusModel implements EnvironmentInterface
 {
     use EnvironmentTrait;
 
-    const PRETTY_NAME = 'lock';
+    public const PRETTY_NAME = 'lock';
 
     /**
      * @inheritdoc
@@ -30,11 +31,15 @@ class Lock extends TerminusModel implements EnvironmentInterface
      * @param array $params Elements as follow:
      *        string username
      *        string password
+     *
      * @return Workflow
      */
     public function enable($params)
     {
-        return $this->getEnvironment()->getWorkflows()->create('lock_environment', compact('params'));
+        return $this->getEnvironment()->getWorkflows()->create(
+            'lock_environment',
+            compact('params')
+        );
     }
 
     /**
@@ -44,7 +49,7 @@ class Lock extends TerminusModel implements EnvironmentInterface
      */
     public function isLocked()
     {
-        return (boolean)$this->get('locked');
+        return (bool)$this->get('locked');
     }
 
     /**
@@ -66,6 +71,8 @@ class Lock extends TerminusModel implements EnvironmentInterface
      */
     public function disable()
     {
-        return $this->getEnvironment()->getWorkflows()->create('unlock_environment');
+        return $this->getEnvironment()->getWorkflows()->create(
+            'unlock_environment'
+        );
     }
 }

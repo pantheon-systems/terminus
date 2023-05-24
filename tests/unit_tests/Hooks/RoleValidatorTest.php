@@ -16,9 +16,9 @@ use Symfony\Component\Console\Input\InputInterface;
  */
 class RoleValidatorTest extends \PHPUnit_Framework_TestCase
 {
-    const ORG_ROLES = 'admin, developer, team_member, or unprivileged';
-    const PARAM_NAME = 'role';
-    const SITE_ROLES = 'developer or team_member';
+    public const ORG_ROLES = 'admin, developer, team_member, or unprivileged';
+    public const PARAM_NAME = 'role';
+    public const SITE_ROLES = 'developer or team_member';
     /**
      * @var AnnotationData
      */

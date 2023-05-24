@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Pantheon\Terminus\Helpers\Traits;
 
 use Pantheon\Terminus\Exceptions\TerminusException;

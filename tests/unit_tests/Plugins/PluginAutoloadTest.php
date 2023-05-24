@@ -3,7 +3,6 @@
 namespace Pantheon\Terminus\UnitTests\Plugins;
 
 use Pantheon\Terminus\Plugins\PluginAutoloadDependencies;
-
 use Pantheon\Terminus\UnitTests\TerminusTestCase;
 use Psr\Log\NullLogger;
 

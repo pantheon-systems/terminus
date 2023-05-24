@@ -52,7 +52,7 @@ class SSHKeysTest extends UserOwnedCollectionTest
 
         $this->collection->deleteAll();
     }
-    
+
     public function testFetch()
     {
         $data = [

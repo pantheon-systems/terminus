@@ -15,6 +15,7 @@ use Pantheon\Terminus\UnitTests\Commands\WorkflowProgressTrait;
 class RemoveCommandTest extends CommandTestCase
 {
     use WorkflowProgressTrait;
+
     /**
      * @inheritdoc
      */

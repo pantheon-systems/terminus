@@ -62,7 +62,7 @@ class MachineTokenDeleteCommandTest extends MachineTokenCommandTest
         $this->machine_tokens->expects($this->once())
             ->method('get')
             ->with($this->equalTo('123'))
-            ->will($this->throwException(new TerminusException));
+            ->will($this->throwException(new TerminusException()));
         $this->token->expects($this->never())
             ->method('delete');
 

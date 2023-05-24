@@ -11,23 +11,28 @@ use Pantheon\Terminus\Exceptions\TerminusException;
 
 /**
  * Class Workflow
+ *
  * @package Pantheon\Terminus\Models
  */
-class Workflow extends TerminusModel implements ContainerAwareInterface, SessionAwareInterface
+class Workflow extends TerminusModel implements
+    ContainerAwareInterface,
+    SessionAwareInterface
 {
     use ContainerAwareTrait;
     use SessionAwareTrait;
 
-    const PRETTY_NAME = 'workflow';
+    public const PRETTY_NAME = 'workflow';
 
     /**
      * @var array
      */
     public static $date_attributes = ['started_at', 'finished_at',];
+
     /**
      * @var TerminusModel
      */
     private $owner;
+
     /**
      * @var WorkflowOperations
      */
@@ -38,6 +43,7 @@ class Workflow extends TerminusModel implements ContainerAwareInterface, Session
      *
      * @param object $attributes Attributes of this model
      * @param array $options Options with which to configure this model
+     *
      * @return Workflow
      * @throws TerminusException
      */
@@ -59,7 +65,9 @@ class Workflow extends TerminusModel implements ContainerAwareInterface, Session
 
 
     /**
-     * Check on the progress of a workflow. There is no check to prevent API flooding.
+     * Check on the progress of a workflow. There is no check to prevent API
+     * flooding.
+     *
      * @DEPRECATED 2.3.1-dev Will be removed at next major release.
      *  Please use the constituent logic or the WorkflowProcessingTrait
      *
@@ -132,7 +140,7 @@ class Workflow extends TerminusModel implements ContainerAwareInterface, Session
      */
     public function getStartedAt(): int
     {
-        return (int) $this->get('started_at');
+        return (int)$this->get('started_at');
     }
 
     /**
@@ -142,7 +150,7 @@ class Workflow extends TerminusModel implements ContainerAwareInterface, Session
      */
     public function getFinishedAt(): int
     {
-        return (int) $this->get('finished_at');
+        return (int)$this->get('finished_at');
     }
 
     /**
@@ -158,7 +166,8 @@ class Workflow extends TerminusModel implements ContainerAwareInterface, Session
     }
 
     /**
-     * Get the success message of a workflow or throw an exception of the workflow failed.
+     * Get the success message of a workflow or throw an exception of the
+     * workflow failed.
      *
      * @return string The message to output to the user
      * @throws \Pantheon\Terminus\Exceptions\TerminusException
@@ -245,7 +254,8 @@ class Workflow extends TerminusModel implements ContainerAwareInterface, Session
      * Returns a list of WorkflowOperations for this workflow
      *
      * @return WorkflowOperation[]
-     * @deprecated 1.5.1-dev Use $this->getOperations->all() for equivalent functionality
+     * @deprecated 1.5.1-dev Use $this->getOperations->all() for equivalent
+     *     functionality
      */
     public function operations()
     {
@@ -284,6 +294,7 @@ class Workflow extends TerminusModel implements ContainerAwareInterface, Session
      * Determines whether this workflow was created after a given datetime
      *
      * @param string $timestamp
+     *
      * @return boolean
      */
     public function wasCreatedAfter($timestamp)
@@ -295,6 +306,7 @@ class Workflow extends TerminusModel implements ContainerAwareInterface, Session
      * Determines whether this workflow finished after a given datetime
      *
      * @param string $timestamp
+     *
      * @return boolean
      */
     public function wasFinishedAfter($timestamp)

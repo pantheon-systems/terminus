@@ -7,13 +7,15 @@ use Pantheon\Terminus\Friends\OrganizationTrait;
 
 /**
  * Class Upstream
+ *
  * @package Pantheon\Terminus\Models
  */
 class Upstream extends TerminusModel implements OrganizationInterface
 {
     use OrganizationTrait;
 
-    const PRETTY_NAME = 'upstream';
+    public const PRETTY_NAME = 'upstream';
+
     /**
      * @var string
      */
@@ -32,7 +34,12 @@ class Upstream extends TerminusModel implements OrganizationInterface
      */
     public function getReferences()
     {
-        return [$this->id, $this->get('product_id'), $this->get('label'), $this->get('machine_name'),];
+        return [
+            $this->id,
+            $this->get('product_id'),
+            $this->get('label'),
+            $this->get('machine_name'),
+        ];
     }
 
     /**
@@ -41,7 +48,9 @@ class Upstream extends TerminusModel implements OrganizationInterface
     public function serialize()
     {
         $data = (array)$this->attributes;
-        $data['organization'] = is_null($org = $this->getOrganization()) ? null : $org->getLabel();
+        $data['organization'] = is_null(
+            $org = $this->getOrganization()
+        ) ? null : $org->getLabel();
         return $data;
     }
 }

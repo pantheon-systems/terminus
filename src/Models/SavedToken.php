@@ -10,14 +10,17 @@ use Pantheon\Terminus\Exceptions\TerminusException;
 
 /**
  * Class SavedToken
+ *
  * @package Pantheon\Terminus\Models
  */
-class SavedToken extends TerminusModel implements SessionAwareInterface, DataStoreAwareInterface
+class SavedToken extends TerminusModel implements
+    SessionAwareInterface,
+    DataStoreAwareInterface
 {
     use SessionAwareTrait;
     use DataStoreAwareTrait;
 
-    const PRETTY_NAME = 'saved token';
+    public const PRETTY_NAME = 'saved token';
 
     /**
      * Delete the token.
@@ -43,10 +46,16 @@ class SavedToken extends TerminusModel implements SessionAwareInterface, DataSto
     public function logIn()
     {
         $options = [
-            'form_params' => ['machine_token' => $this->get('token'), 'client' => 'terminus',],
+            'form_params' => [
+                'machine_token' => $this->get('token'),
+                'client' => 'terminus',
+            ],
             'method' => 'post',
         ];
-        $response = $this->request->request('authorize/machine-token', $options);
+        $response = $this->request->request(
+            'authorize/machine-token',
+            $options
+        );
         $this->session()->setData((array)$response['data']);
         return $this->session->getUser();
     }
@@ -57,7 +66,9 @@ class SavedToken extends TerminusModel implements SessionAwareInterface, DataSto
     public function saveToDir()
     {
         if (!$this->id) {
-            throw new TerminusException('Could not save the machine token because it is missing an ID');
+            throw new TerminusException(
+                'Could not save the machine token because it is missing an ID'
+            );
         }
 
         $this->set('date', time());

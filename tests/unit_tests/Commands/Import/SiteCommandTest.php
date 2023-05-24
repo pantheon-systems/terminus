@@ -40,7 +40,7 @@ class SiteCommandTest extends CommandTestCase
         $this->command->setInput($this->input);
         $this->expectWorkflowProcessing();
     }
-    
+
     /**
      * Exercises site:import command with a valid URL
      */

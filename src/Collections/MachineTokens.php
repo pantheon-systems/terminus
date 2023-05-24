@@ -10,7 +10,7 @@ use Pantheon\Terminus\Models\MachineToken;
  */
 class MachineTokens extends UserOwnedCollection
 {
-    const PRETTY_NAME = 'machine tokens';
+    public const PRETTY_NAME = 'machine tokens';
     /**
      * @var string
      */

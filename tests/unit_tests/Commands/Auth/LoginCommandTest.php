@@ -58,7 +58,7 @@ class LoginCommandTest extends AuthTest
         $this->tokens->expects($this->once())
             ->method('get')
             ->with($this->equalTo($token_string))
-            ->will($this->throwException(new \Exception));
+            ->will($this->throwException(new \Exception()));
         $this->logger->expects($this->once())
             ->method('log')
             ->with(

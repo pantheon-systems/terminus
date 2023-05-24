@@ -7,11 +7,12 @@ use Pantheon\Terminus\Plugins\PluginInfo;
 
 /**
  * Lists installed Terminus plugins
+ *
  * @package Pantheon\Terminus\Commands\Self\Plugin
  */
 class ListCommand extends PluginBaseCommand
 {
-    const NO_PLUGINS_MESSAGE = 'You have no plugins installed.';
+    public const NO_PLUGINS_MESSAGE = 'You have no plugins installed.';
 
     /**
      * List all installed Terminus plugins.
@@ -40,7 +41,8 @@ class ListCommand extends PluginBaseCommand
                     'description' => $plugin->getInfo()['description'],
                     'installed_version' => $plugin->getInstalledVersion(),
                     'latest_version' => $plugin->getLatestVersion(),
-                    'compatible_versions' => $plugin->getCompatibleTerminusVersion(),
+                    'compatible_versions' => $plugin->getCompatibleTerminusVersion(
+                    ),
                 ];
             },
             $this->getPluginProjects()

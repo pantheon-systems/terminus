@@ -20,7 +20,7 @@ class Workflows extends APICollection implements SessionAwareInterface
 {
     use SessionAwareTrait;
 
-    const PRETTY_NAME = 'workflows';
+    public const PRETTY_NAME = 'workflows';
     /**
      * @var string
      */

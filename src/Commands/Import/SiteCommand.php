@@ -39,10 +39,12 @@ class SiteCommand extends TerminusCommand implements SiteAwareInterface
         $site = $this->getSiteById($site_name);
         $env = $site->getEnvironments()->get('dev');
 
-        if (!$this->confirm(
-            'Are you sure you overwrite the code, database and files for {env} on {site}?',
-            ['site' => $site->getName(), 'env' => $env->getName()]
-        )) {
+        if (
+            !$this->confirm(
+                'Are you sure you overwrite the code, database and files for {env} on {site}?',
+                ['site' => $site->getName(), 'env' => $env->getName()]
+            )
+        ) {
             return;
         }
 

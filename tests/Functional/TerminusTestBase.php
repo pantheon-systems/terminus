@@ -12,7 +12,6 @@ use PHPUnit\Framework\TestCase;
  */
 abstract class TerminusTestBase extends TestCase
 {
-
     /**
      * @var \Monolog\Logger $logger
      */
@@ -195,7 +194,7 @@ abstract class TerminusTestBase extends TestCase
     protected function assertTerminusCommandSucceedsInAttempts(string $command, int $attempts = 3): void
     {
         $this->assertTerminusCommandResultEqualsInAttempts(
-            fn() => static::callTerminus(sprintf('%s --yes', $command))[1],
+            fn () => static::callTerminus(sprintf('%s --yes', $command))[1],
             0,
             $attempts
         );

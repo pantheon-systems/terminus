@@ -16,7 +16,7 @@ trait DataStoreAwareTrait
     /**
      * @return DataStoreInterface
      */
-    public function getDataStore() : DataStoreInterface
+    public function getDataStore(): DataStoreInterface
     {
         return $this->data_store;
     }

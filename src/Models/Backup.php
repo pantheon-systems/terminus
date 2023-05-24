@@ -8,14 +8,16 @@ use Pantheon\Terminus\Exceptions\TerminusException;
 
 /**
  * Class Backup
+ *
  * @package Pantheon\Terminus\Models
  */
 class Backup extends TerminusModel implements EnvironmentInterface
 {
     use EnvironmentTrait;
 
-    const PRETTY_NAME = 'backup';
-    const DEFAULT_TTL = 365;
+    public const PRETTY_NAME = 'backup';
+
+    public const DEFAULT_TTL = 365;
 
     /**
      * @var array
@@ -52,7 +54,10 @@ class Backup extends TerminusModel implements EnvironmentInterface
                 $this->get('type')
             );
             // The API makes this is necessary.
-            $options = ['method' => 'post', 'form_params' => ['method' => 'get',],];
+            $options = [
+                'method' => 'post',
+                'form_params' => ['method' => 'get',],
+            ];
             $response = $this->request()->request($path, $options);
             $this->set('archive_url', $response['data']->url);
         }
@@ -160,7 +165,9 @@ class Backup extends TerminusModel implements EnvironmentInterface
                 $wf_name = 'restore_database';
                 break;
             default:
-                throw new TerminusException('This backup has no archive to restore.');
+                throw new TerminusException(
+                    'This backup has no archive to restore.'
+                );
                 break;
         }
         $modified_id = str_replace("_$type", '', $this->id ?? '');
@@ -182,13 +189,13 @@ class Backup extends TerminusModel implements EnvironmentInterface
     public function serialize()
     {
         return [
-            'file'      => $this->get('filename'),
-            'size'      => $this->getSizeInMb(),
-            'date'      => $this->getDate(),
-            'expiry'    => $this->getExpiry(),
+            'file' => $this->get('filename'),
+            'size' => $this->getSizeInMb(),
+            'date' => $this->getDate(),
+            'expiry' => $this->getExpiry(),
             'initiator' => $this->getInitiator(),
-            'url'       => $this->get('archive_url'),
-            'type'      => $this->get('type'),
+            'url' => $this->get('archive_url'),
+            'type' => $this->get('type'),
         ];
     }
 
@@ -197,7 +204,10 @@ class Backup extends TerminusModel implements EnvironmentInterface
      */
     protected function parseAttributes($data)
     {
-        list($data->scheduled_for, $data->archive_type, $data->type) = explode('_', $data->id);
+        [$data->scheduled_for, $data->archive_type, $data->type] = explode(
+            '_',
+            $data->id
+        );
         return $data;
     }
 }

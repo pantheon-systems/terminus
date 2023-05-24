@@ -11,18 +11,23 @@ use Pantheon\Terminus\Friends\UserJoinTrait;
 
 /**
  * Class SiteUserMembership
+ *
  * @package Pantheon\Terminus\Models
  */
-class SiteUserMembership extends TerminusModel implements ContainerAwareInterface, SiteInterface, UserJoinInterface
+class SiteUserMembership extends TerminusModel implements
+    ContainerAwareInterface,
+    SiteInterface,
+    UserJoinInterface
 {
     use ContainerAwareTrait;
     use SiteTrait;
     use UserJoinTrait;
 
-    const PRETTY_NAME = 'site-user membership';
+    public const PRETTY_NAME = 'site-user membership';
 
-    const ROLE_DEVELOPER = 'developer';
-    const ROLE_TEAM_MEMBER = 'team_member';
+    public const ROLE_DEVELOPER = 'developer';
+
+    public const ROLE_TEAM_MEMBER = 'team_member';
 
     /**
      * Remove membership, either org or user
@@ -33,7 +38,7 @@ class SiteUserMembership extends TerminusModel implements ContainerAwareInterfac
     {
         return $this->getSite()->getWorkflows()->create(
             'remove_site_user_membership',
-            ['params' => ['user_id' =>  $this->getUser()->id,],]
+            ['params' => ['user_id' => $this->getUser()->id,],]
         );
     }
 
@@ -54,22 +59,23 @@ class SiteUserMembership extends TerminusModel implements ContainerAwareInterfac
     {
         $user = $this->getUser()->serialize();
         return $user + [
-            'is_owner' => $this->isOwner(),
-            'role'  => $this->get('role'),
-        ];
+                'is_owner' => $this->isOwner(),
+                'role' => $this->get('role'),
+            ];
     }
 
     /**
      * Changes the role of the given member
      *
      * @param string $role Desired role for this member
+     *
      * @return Workflow
      */
     public function setRole($role)
     {
         return $this->getSite()->getWorkflows()->create(
             'update_site_user_membership',
-            ['params' => ['user_id' =>  $this->getUser()->id, 'role' => $role,],]
+            ['params' => ['user_id' => $this->getUser()->id, 'role' => $role,],]
         );
     }
 }

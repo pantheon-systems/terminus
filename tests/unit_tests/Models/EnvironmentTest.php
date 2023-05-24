@@ -899,7 +899,7 @@ class EnvironmentTest extends ModelTestCase
         $domain->id = 'domain.ext';
         $response = [
             'status_code' => 200,
-            'headers'=> ['X-Pantheon-Styx-Hostname' => 'styx domain',]
+            'headers' => ['X-Pantheon-Styx-Hostname' => 'styx domain',]
         ];
         $expected = [
             'success' => true,

@@ -4,11 +4,12 @@ namespace Pantheon\Terminus\Models;
 
 /**
  * Class WorkflowOperation
+ *
  * @package Pantheon\Terminus\Models
  */
 class WorkflowOperation extends TerminusModel
 {
-    const PRETTY_NAME = 'workflow operation';
+    public const PRETTY_NAME = 'workflow operation';
 
     /**
      * @inheritdoc

@@ -12,7 +12,7 @@ use Pantheon\Terminus\Models\Tag;
  */
 class Tags extends APICollection
 {
-    const PRETTY_NAME = 'tags';
+    public const PRETTY_NAME = 'tags';
 
     /**
      * @var string

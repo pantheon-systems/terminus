@@ -10,7 +10,7 @@ use Pantheon\Terminus\Models\OrganizationUpstream;
  */
 class OrganizationUpstreams extends OrganizationOwnedCollection
 {
-    const PRETTY_NAME = 'upstreams';
+    public const PRETTY_NAME = 'upstreams';
     /**
      * @var string
      */

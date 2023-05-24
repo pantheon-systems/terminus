@@ -23,7 +23,7 @@ class ListCommandTest extends CommandTestCase
             'master' => ['id' => 'master', 'sha' => 'xxx'],
             'another' => ['id' => 'another', 'sha' => 'yyy'],
         ];
-        
+
         $branches_collection = $this->getMockBuilder(Branches::class)
             ->disableOriginalConstructor()
             ->getMock();

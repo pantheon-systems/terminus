@@ -4,11 +4,12 @@ namespace Pantheon\Terminus\Models;
 
 /**
  * Class Tag
+ *
  * @package Pantheon\Terminus\Models
  */
 class Tag extends TerminusModel
 {
-    const PRETTY_NAME = 'tag';
+    public const PRETTY_NAME = 'tag';
 
     /**
      * Removes a tag from the organization/site membership

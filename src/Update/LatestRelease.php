@@ -15,6 +15,7 @@ use Psr\Log\LoggerAwareTrait;
 
 /**
  * Class LatestRelease
+ *
  * @package Pantheon\Terminus\Update
  */
 class LatestRelease implements
@@ -33,9 +34,11 @@ class LatestRelease implements
      */
     private $attributes;
 
-    const SAVE_FILE = 'latest_release';
-    const TIME_BETWEEN_CHECKS = '7 days';
-    const UPDATE_URL = 'https://api.github.com/repos/pantheon-systems/terminus/releases/latest';
+    public const SAVE_FILE = 'latest_release';
+
+    public const TIME_BETWEEN_CHECKS = '7 days';
+
+    public const UPDATE_URL = 'https://api.github.com/repos/pantheon-systems/terminus/releases/latest';
 
     /**
      * @param DataStoreInterface $data_store
@@ -47,6 +50,7 @@ class LatestRelease implements
 
     /**
      * @param string $id Key of the attribute to retrieve
+     *
      * @return string
      * @throws TerminusNotFoundException
      */
@@ -56,18 +60,25 @@ class LatestRelease implements
         if (isset($attributes->$id)) {
             return $attributes->$id;
         }
-        throw new TerminusNotFoundException('There is no attribute called {id}.', compact('id'));
+        throw new TerminusNotFoundException(
+            'There is no attribute called {id}.',
+            compact('id')
+        );
     }
 
     /**
-     * Retrieves release data. If it is time to check for an update, it will do that.
+     * Retrieves release data. If it is time to check for an update, it will do
+     * that.
      */
     private function fetch()
     {
         $saved_data = (object)$this->getSavedReleaseFromFile();
 
-        if (!isset($saved_data->check_date)
-            || (int)$saved_data->check_date < strtotime('-' . self::TIME_BETWEEN_CHECKS)
+        if (
+            !isset($saved_data->check_date)
+            || (int)$saved_data->check_date < strtotime(
+                '-' . self::TIME_BETWEEN_CHECKS
+            )
         ) {
             try {
                 $this->attributes = $this->getLatestReleaseFromGithub();
@@ -101,7 +112,9 @@ class LatestRelease implements
     private function getLatestReleaseFromGithub()
     {
         return (object)[
-            'version' => $this->request()->request(self::UPDATE_URL)['data']->name,
+            'version' => $this->request()->request(
+                self::UPDATE_URL
+            )['data']->name,
             'check_date' => time(),
         ];
     }

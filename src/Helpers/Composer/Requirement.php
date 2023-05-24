@@ -9,7 +9,6 @@ use Composer\Semver\Comparator;
  */
 class Requirement
 {
-
     /**
      * @var string
      */
@@ -82,7 +81,7 @@ class Requirement
     /**
      * @return string
      */
-    public function __toString() : string
+    public function __toString(): string
     {
         return $this->getVersion();
     }

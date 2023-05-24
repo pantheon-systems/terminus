@@ -214,7 +214,7 @@ class WorkflowsTest extends CollectionTestCase
             ->willReturn('TESTURL');
 
         foreach ($data as $i => $model_data) {
-            $workflows->expects($this->at($i+1))
+            $workflows->expects($this->at($i + 1))
                 ->method('add')
                 ->with($model_data);
         }

@@ -112,7 +112,7 @@ class Session implements ContainerAwareInterface, ConfigAwareInterface, DataStor
     {
         return (
             isset($this->data->session)
-            && ($this->data->expires_at >= time() || (boolean)$this->config->get('test_mode'))
+            && ($this->data->expires_at >= time() || (bool)$this->config->get('test_mode'))
         );
     }
 

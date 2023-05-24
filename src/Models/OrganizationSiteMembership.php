@@ -12,6 +12,7 @@ use Pantheon\Terminus\Friends\SiteJoinTrait;
 
 /**
  * Class OrganizationSiteMembership
+ *
  * @package Pantheon\Terminus\Models
  */
 class OrganizationSiteMembership extends TerminusModel implements
@@ -23,7 +24,8 @@ class OrganizationSiteMembership extends TerminusModel implements
     use OrganizationTrait;
     use SiteJoinTrait;
 
-    const PRETTY_NAME = 'organization-site membership';
+    public const PRETTY_NAME = 'organization-site membership';
+
     /**
      * @var Tags
      */
@@ -57,7 +59,7 @@ class OrganizationSiteMembership extends TerminusModel implements
     public function getSite()
     {
         if (empty($this->site)) {
-            $nickname =  \uniqid(__FUNCTION__ . '-');
+            $nickname = \uniqid(__FUNCTION__ . '-');
             $this->getContainer()->add($nickname, Site::class)
                 ->addArgument($this->get('site'));
             $site = $this->getContainer()->get($nickname);
@@ -74,7 +76,7 @@ class OrganizationSiteMembership extends TerminusModel implements
     public function getTags()
     {
         if (!$this->tags) {
-            $nickname =  \uniqid(__FUNCTION__ . '-');
+            $nickname = \uniqid(__FUNCTION__ . '-');
             $this->getContainer()->add($nickname, Tags::class)
                 ->addArgument(['org_site_membership' => $this]);
             $this->tags = $this->getContainer()->get($nickname);
