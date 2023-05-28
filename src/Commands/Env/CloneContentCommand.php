@@ -17,7 +17,6 @@ use Pantheon\Terminus\Site\SiteAwareTrait;
  */
 class CloneContentCommand extends TerminusCommand implements SiteAwareInterface
 {
-
     use SiteAwareTrait;
     use WorkflowProcessingTrait;
 
