@@ -102,7 +102,7 @@ class EnvCommandsTest extends TerminusTestBase
         );
         $this->terminus(
             sprintf(
-                'env:clone-content %s.%s %s',
+                'env:clone-content %1$s.%2$s %3$s',
                 $this->getSiteName("wordpress"),
                 'dev',
                 $this->getMdEnv()
