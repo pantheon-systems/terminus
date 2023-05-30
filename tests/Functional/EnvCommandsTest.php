@@ -15,9 +15,13 @@ class EnvCommandsTest extends TerminusTestBase
      *
      * @return string|null
      */
-    protected function ensureSiteEnvironment(string $siteName, string $envName): ?string
-    {
-        return $this->terminus(sprintf('multidev:create %s.dev %s', $siteName, $envName));
+    protected function ensureSiteEnvironment(
+        string $siteName,
+        string $envName
+    ): ?string {
+        return $this->terminus(
+            sprintf('multidev:create %s.dev %s', $siteName, $envName)
+        );
     }
 
     /**
@@ -26,9 +30,13 @@ class EnvCommandsTest extends TerminusTestBase
      *
      * @return string|null
      */
-    protected function deleteSiteEnvironment(string $siteName, string $envName): ?string
-    {
-        return $this->terminus(sprintf('multidev:delete %s.%s', $siteName, $envName));
+    protected function deleteSiteEnvironment(
+        string $siteName,
+        string $envName
+    ): ?string {
+        return $this->terminus(
+            sprintf('multidev:delete %s.%s', $siteName, $envName)
+        );
     }
 
 
@@ -53,7 +61,9 @@ class EnvCommandsTest extends TerminusTestBase
      */
     public function testDeployCommand()
     {
-        $this->terminus(sprintf('env:deploy %s.%s', $this->getSiteName(), 'live'));
+        $this->terminus(
+            sprintf('env:deploy %s.%s', $this->getSiteName(), 'live')
+        );
     }
 
     /**
@@ -65,7 +75,14 @@ class EnvCommandsTest extends TerminusTestBase
      */
     public function testCloneContentCommand()
     {
-        $this->terminus(sprintf('env:clone-content %s.%s %s', $this->getSiteName(), 'dev', $this->getMdEnv()));
+        $this->terminus(
+            sprintf(
+                'env:clone-content %s.%s %s',
+                $this->getSiteName(),
+                'dev',
+                $this->getMdEnv()
+            )
+        );
     }
 
     /**
@@ -74,13 +91,56 @@ class EnvCommandsTest extends TerminusTestBase
      *
      * @group env
      * @group long
+     * @group wordpress
      */
     public function testCloneContentForWordpressCommand()
     {
         // 1. Ensure that the multidev environment exists
-        $this->ensureSiteEnvironment($this->getSiteName("wordpress"), $this->getMdEnv());
-        $this->terminus(sprintf('env:clone-content %s.%s %s', $this->getSiteName(), 'dev', $this->getMdEnv()));
-        $this->deleteSiteEnvironment($this->getSiteName("wordpress"), $this->getMdEnv());
+        $this->ensureSiteEnvironment(
+            $this->getSiteName("wordpress"),
+            $this->getMdEnv()
+        );
+        $this->terminus(
+            sprintf(
+                'env:clone-content %1$s.%2$s %3$s',
+                $this->getSiteName("wordpress"),
+                'dev',
+                $this->getMdEnv()
+            )
+        );
+        $this->deleteSiteEnvironment(
+            $this->getSiteName("wordpress"),
+            $this->getMdEnv()
+        );
+    }
+
+    /**
+     * @test
+     * @covers \Pantheon\Terminus\Commands\Env\CloneContentCommand
+     *
+     * @group env
+     * @group long
+     * @group wordpress
+     */
+    public function testCloneContentForWordpressNetworkCommand()
+    {
+        // 1. Ensure that the multidev environment exists
+        $this->ensureSiteEnvironment(
+            $this->getSiteName("wordpress_network"),
+            $this->getMdEnv()
+        );
+        $this->terminus(
+            sprintf(
+                'env:clone-content %s.%s %s',
+                $this->getSiteName("wordpress_network"),
+                'dev',
+                $this->getMdEnv()
+            )
+        );
+        $this->deleteSiteEnvironment(
+            $this->getSiteName("wordpress_network"),
+            $this->getMdEnv()
+        );
     }
 
     /**
@@ -92,7 +152,9 @@ class EnvCommandsTest extends TerminusTestBase
      */
     public function testCodelogCommand()
     {
-        $codeLogs = $this->terminusJsonResponse(sprintf('env:code-log %s', $this->getSiteEnv()));
+        $codeLogs = $this->terminusJsonResponse(
+            sprintf('env:code-log %s', $this->getSiteEnv())
+        );
         $this->assertIsArray($codeLogs);
         $this->assertNotEmpty($codeLogs);
         $codeLog = array_shift($codeLogs);
@@ -143,7 +205,9 @@ class EnvCommandsTest extends TerminusTestBase
         sleep(60);
 
         // Check the diff - no diff is expected.
-        $diff = $this->terminusJsonResponse(sprintf('env:diffstat %s', $siteEnv));
+        $diff = $this->terminusJsonResponse(
+            sprintf('env:diffstat %s', $siteEnv)
+        );
         $this->assertEquals([], $diff);
 
         // Upload a test file to the site.
@@ -158,9 +222,14 @@ class EnvCommandsTest extends TerminusTestBase
                 'additions' => '1',
             ],
         ];
-        $this->assertTerminusCommandResultEqualsInAttempts(function () use ($siteEnv) {
-            return $this->terminusJsonResponse(sprintf('env:diffstat %s', $siteEnv));
-        }, $expectedDiff);
+        $this->assertTerminusCommandResultEqualsInAttempts(
+            function () use ($siteEnv) {
+                return $this->terminusJsonResponse(
+                    sprintf('env:diffstat %s', $siteEnv)
+                );
+            },
+            $expectedDiff
+        );
 
         // Commit the changes.
         $this->terminus(
@@ -173,9 +242,14 @@ class EnvCommandsTest extends TerminusTestBase
         sleep(60);
 
         // Check the diff - no diff is expected.
-        $this->assertTerminusCommandResultEqualsInAttempts(function () use ($siteEnv) {
-            return $this->terminusJsonResponse(sprintf('env:diffstat %s', $siteEnv));
-        }, []);
+        $this->assertTerminusCommandResultEqualsInAttempts(
+            function () use ($siteEnv) {
+                return $this->terminusJsonResponse(
+                    sprintf('env:diffstat %s', $siteEnv)
+                );
+            },
+            []
+        );
     }
 
     /**
@@ -187,7 +261,9 @@ class EnvCommandsTest extends TerminusTestBase
      */
     public function testInfoCommand()
     {
-        $envInfo = $this->terminusJsonResponse(sprintf('env:info %s', $this->getSiteEnv()));
+        $envInfo = $this->terminusJsonResponse(
+            sprintf('env:info %s', $this->getSiteEnv())
+        );
         $this->assertIsArray($envInfo);
         $this->assertArrayHasKey(
             'id',
@@ -220,10 +296,16 @@ class EnvCommandsTest extends TerminusTestBase
      */
     public function testMetricsCommand()
     {
-        $metrics = $this->terminusJsonResponse(sprintf('env:metrics %s', $this->getSiteEnv()));
+        $metrics = $this->terminusJsonResponse(
+            sprintf('env:metrics %s', $this->getSiteEnv())
+        );
         $this->assertIsArray($metrics);
         $this->assertNotEmpty($metrics);
-        $this->assertArrayHasKey('timeseries', $metrics, 'Metrics should have "timeseries" field.');
+        $this->assertArrayHasKey(
+            'timeseries',
+            $metrics,
+            'Metrics should have "timeseries" field.'
+        );
         $metric = array_shift($metrics['timeseries']);
         $this->assertIsArray($metric);
         $this->assertNotEmpty($metric);
@@ -268,7 +350,9 @@ class EnvCommandsTest extends TerminusTestBase
      */
     public function testListCommand()
     {
-        $envs = $this->terminusJsonResponse(sprintf('env:list %s', $this->getSiteName()));
+        $envs = $this->terminusJsonResponse(
+            sprintf('env:list %s', $this->getSiteName())
+        );
         $this->assertIsArray($envs);
         $env = array_shift($envs);
 
@@ -298,8 +382,14 @@ class EnvCommandsTest extends TerminusTestBase
      */
     public function testViewCommand()
     {
-        $url = $this->terminus(sprintf('env:view %s --print', $this->getSiteEnv()));
-        $expectedUrl = sprintf('https://%s-%s.pantheonsite.io/', $this->getMdEnv(), $this->getSiteName());
+        $url = $this->terminus(
+            sprintf('env:view %s --print', $this->getSiteEnv())
+        );
+        $expectedUrl = sprintf(
+            'https://%s-%s.pantheonsite.io/',
+            $this->getMdEnv(),
+            $this->getSiteName()
+        );
         $this->assertEquals($expectedUrl, $url);
     }
 }
