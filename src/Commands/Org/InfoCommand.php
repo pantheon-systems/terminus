@@ -13,7 +13,6 @@ class InfoCommand extends OrgCommand
     public function __construct()
     {
         parent::__construct();
-
     }
 
     /**

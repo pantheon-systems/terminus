@@ -96,7 +96,8 @@
       "\\Terminus\\UpdateClassLists::update"
     ],
     "code:fix": [
-      "@php-cs-fixer"
+      "@php-cs-fixer",
+      "vendor/bin/phpcbf ./src ./tests/Functional ./tests/unit_tests --standard=psr12 -v"
     ],
     "cs": [
       "vendor/bin/phpcs --standard=phpcs_ruleset.xml src tests/Functional tests/unit_tests"
