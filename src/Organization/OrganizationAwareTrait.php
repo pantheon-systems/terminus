@@ -7,7 +7,6 @@ use Pantheon\Terminus\Models\Organization;
 
 trait OrganizationAwareTrait
 {
-
     /**
      * @var Organizations
      */

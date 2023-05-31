@@ -12,18 +12,6 @@ use PHPUnit\Framework\TestCase;
  */
 abstract class TerminusTestBase extends TestCase
 {
-
-    /**
-     * @var \Monolog\Logger $logger
-     */
-    protected Logger $logger;
-
-    protected function setUp(): void
-    {
-        parent::setUp();
-        $this->logger = $GLOBALS['LOGGER'];
-    }
-
     /**
      * @var \Monolog\Logger $logger
      */
@@ -46,8 +34,10 @@ abstract class TerminusTestBase extends TestCase
      * @return array
      *   The execution's stdout [0], exit code [1] and stderr [2].
      */
-    protected static function callTerminus(string $command, ?string $pipeInput = null): array
-    {
+    protected static function callTerminus(
+        string $command,
+        ?string $pipeInput = null
+    ): array {
         $procCommand = sprintf('%s %s', TERMINUS_BIN_FILE, $command);
         if (null !== $pipeInput) {
             $procCommand = sprintf('%s | %s', $pipeInput, $procCommand);
@@ -64,7 +54,11 @@ abstract class TerminusTestBase extends TestCase
         );
 
         if (!is_resource($process)) {
-            return ['', 1, sprintf('Failed executing command "%s"', $procCommand)];
+            return [
+                '',
+                1,
+                sprintf('Failed executing command "%s"', $procCommand),
+            ];
         }
 
         $stdout = trim(stream_get_contents($pipes[1]));
@@ -88,10 +82,17 @@ abstract class TerminusTestBase extends TestCase
      * @param bool $assertExitCode
      *   If set to TRUE, assert the exit code equals to zero.
      */
-    protected function terminus(string $command, array $suffixParts = [], bool $assertExitCode = true): ?string
-    {
+    protected function terminus(
+        string $command,
+        array $suffixParts = [],
+        bool $assertExitCode = true
+    ): ?string {
         if (count($suffixParts) > 0) {
-            $command = sprintf('%s --yes %s', $command, implode(' ', $suffixParts));
+            $command = sprintf(
+                '%s --yes %s',
+                $command,
+                implode(' ', $suffixParts)
+            );
         } else {
             $command = sprintf('%s --yes', $command);
         }
@@ -165,10 +166,12 @@ abstract class TerminusTestBase extends TestCase
     }
 
     /**
-     * Asserts terminus command execution result is equal to the expected in multiple attempts.
+     * Asserts terminus command execution result is equal to the expected in
+     * multiple attempts.
      *
      * @param callable $callable
-     *   The callable which provides the actual terminus command execution result.
+     *   The callable which provides the actual terminus command execution
+     *     result.
      * @param mixed $expected
      *   The expected result.
      * @param int $attempts
@@ -203,8 +206,10 @@ abstract class TerminusTestBase extends TestCase
      * @param int $attempts
      *   The maximum number of attempts.
      */
-    protected function assertTerminusCommandSucceedsInAttempts(string $command, int $attempts = 3): void
-    {
+    protected function assertTerminusCommandSucceedsInAttempts(
+        string $command,
+        int $attempts = 3
+    ): void {
         $this->assertTerminusCommandResultEqualsInAttempts(
             fn () => static::callTerminus(sprintf('%s --yes', $command))[1],
             0,
@@ -311,7 +316,12 @@ abstract class TerminusTestBase extends TestCase
         $site_info = $this->getSiteInfo();
 
         if (!isset($site_info['framework'])) {
-            throw new \Exception(sprintf('Failed to get framework for test site %s', $this->getSiteName()));
+            throw new \Exception(
+                sprintf(
+                    'Failed to get framework for test site %s',
+                    $this->getSiteName()
+                )
+            );
         }
 
         return $site_info['framework'];
@@ -329,7 +339,12 @@ abstract class TerminusTestBase extends TestCase
         $site_info = $this->getSiteInfo();
 
         if (!isset($site_info['id'])) {
-            throw new \Exception(sprintf('Failed to get id for test site %s', $this->getSiteName()));
+            throw new \Exception(
+                sprintf(
+                    'Failed to get id for test site %s',
+                    $this->getSiteName()
+                )
+            );
         }
 
         return $site_info['id'];
@@ -352,7 +367,7 @@ abstract class TerminusTestBase extends TestCase
      */
     protected function isCiEnv(): bool
     {
-        return (bool) getenv('CI');
+        return (bool)getenv('CI');
     }
 
     /**
@@ -364,7 +379,9 @@ abstract class TerminusTestBase extends TestCase
     {
         static $site_info;
         if (is_null($site_info)) {
-            $site_info = $this->terminusJsonResponse(sprintf('site:info %s', $this->getSiteName()));
+            $site_info = $this->terminusJsonResponse(
+                sprintf('site:info %s', $this->getSiteName())
+            );
         }
 
         return $site_info;
@@ -389,7 +406,8 @@ abstract class TerminusTestBase extends TestCase
     }
 
     /**
-     * Returns site and environment in a form of "<site>.<env>" string which used in most commands.
+     * Returns site and environment in a form of "<site>.<env>" string which
+     * used in most commands.
      *
      * @return string
      */
@@ -405,7 +423,10 @@ abstract class TerminusTestBase extends TestCase
      */
     protected function getLocalTestSiteDir(): string
     {
-        return implode(DIRECTORY_SEPARATOR, [$_SERVER['HOME'], 'pantheon-local-copies', self::getSiteName()]);
+        return implode(
+            DIRECTORY_SEPARATOR,
+            [$_SERVER['HOME'], 'pantheon-local-copies', self::getSiteName()]
+        );
     }
 
     /**
@@ -417,8 +438,10 @@ abstract class TerminusTestBase extends TestCase
      * @return string
      *   The name of the test file.
      */
-    protected function uploadTestFileToSite(string $siteEnv, string $filePath): string
-    {
+    protected function uploadTestFileToSite(
+        string $siteEnv,
+        string $filePath
+    ): string {
         if (!extension_loaded('ssh2')) {
             $this->markTestSkipped(
                 'PECL SSH2 extension for PHP is required.'
@@ -427,7 +450,10 @@ abstract class TerminusTestBase extends TestCase
 
         // Get SFTP connection information.
         $siteInfo = $this->terminusJsonResponse(
-            sprintf('connection:info %s --fields=sftp_username,sftp_host', $siteEnv)
+            sprintf(
+                'connection:info %s --fields=sftp_username,sftp_host',
+                $siteEnv
+            )
         );
         $this->assertNotEmpty($siteInfo);
         $this->assertTrue(
@@ -450,14 +476,25 @@ abstract class TerminusTestBase extends TestCase
         $uniqueId = md5(mt_rand());
         $fileName = sprintf('terminus-functional-test-file-%s.txt', $uniqueId);
         $stream = fopen(
-            sprintf('ssh2.sftp://%d/%s/%s', intval($sftp), $filePath, $fileName),
+            sprintf(
+                'ssh2.sftp://%d/%s/%s',
+                intval($sftp),
+                $filePath,
+                $fileName
+            ),
             'w'
         );
-        $this->assertNotFalse($stream, 'Failed to open a test file for writing');
+        $this->assertNotFalse(
+            $stream,
+            'Failed to open a test file for writing'
+        );
         $this->assertNotFalse(
             fwrite(
                 $stream,
-                sprintf('This is a test file (%s) to use in Terminus functional testing assertions.', $uniqueId)
+                sprintf(
+                    'This is a test file (%s) to use in Terminus functional testing assertions.',
+                    $uniqueId
+                )
             ),
             'Failed to write a test file'
         );

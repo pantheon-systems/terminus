@@ -10,7 +10,6 @@ use Pantheon\Terminus\Models\Organization;
  */
 interface OrganizationAwareInterface
 {
-
     /**
      * @param \Pantheon\Terminus\Organization\Organizations $organizations
      *

@@ -180,7 +180,7 @@ class Request implements
             $maxRetries,
             $logWarning
         ) {
-            $logWarningOnRetry = fn(string $reason) => 0 === $retry
+            $logWarningOnRetry = fn (string $reason) => 0 === $retry
                 ? $logWarning(
                     sprintf(
                         'HTTP request %s %s has failed: %s',
