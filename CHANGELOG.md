@@ -1,7 +1,11 @@
 # Change Log
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org)
 
-## 3.2.1-dev -
+## 3.2.1 - 2023-06-01
+
+### Fixed
+- Fix bug where `env:clone-content` command was not working Drupal sites (#2469)
+- Fix bug where `env:clone-content` command was not working WordPress sites (#2471)
 
 ## 3.2.0 - 2023-05-22
 
