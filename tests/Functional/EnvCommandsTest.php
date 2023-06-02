@@ -9,7 +9,6 @@ namespace Pantheon\Terminus\Tests\Functional;
  */
 class EnvCommandsTest extends TerminusTestBase
 {
-
     /**
      * @param string $siteName
      * @param string $envName
