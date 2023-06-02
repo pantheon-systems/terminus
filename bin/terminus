@@ -32,7 +32,7 @@ if (!getenv('TERMINUS_ALLOW_UNSUPPORTED_NEWER_PHP') && version_compare(PHP_VERSI
 
 // This variable is automatically managed via updateDependenciesversion() in /RoboFile.php,
 // which is run after every call to composer update.
-$terminusPluginsDependenciesVersion = '27a446d993';
+$terminusPluginsDependenciesVersion = 'a5f0d45fe5';
 
 // Cannot use $_SERVER superglobal since that's empty during phpunit testing
 // getenv('HOME') isn't set on Windows and generates a Notice.
@@ -70,7 +70,7 @@ $home_tokens_folder = '.terminus' . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SE
 $tokens_dir = $home . DIRECTORY_SEPARATOR . $home_tokens_folder;
 if (!is_dir($tokens_dir)) {
     mkdir(
-            $tokens_dir,
+        $tokens_dir,
         0700,
         true
     );

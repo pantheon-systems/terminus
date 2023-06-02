@@ -4,9 +4,10 @@ namespace Pantheon\Terminus\Collections;
 
 use Pantheon\Terminus\Models\Organization;
 use Pantheon\Terminus\Models\UserOrganizationMembership;
+use Pantheon\Terminus\Session\SessionAwareInterface;
 use Pantheon\Terminus\Session\SessionAwareTrait;
 
-class Organizations extends UserOwnedCollection
+class Organizations extends APICollection implements SessionAwareInterface
 {
     use SessionAwareTrait;
 

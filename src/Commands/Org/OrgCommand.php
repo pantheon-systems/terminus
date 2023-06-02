@@ -9,7 +9,8 @@ use Pantheon\Terminus\Organization\OrganizationAwareTrait;
 /**
  * Class OrgCommand
  */
-abstract class OrgCommand extends TerminusCommand implements OrganizationAwareInterface
+abstract class OrgCommand extends TerminusCommand implements
+    OrganizationAwareInterface
 {
     use OrganizationAwareTrait;
 }

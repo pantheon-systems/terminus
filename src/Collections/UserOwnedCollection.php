@@ -2,9 +2,9 @@
 
 namespace Pantheon\Terminus\Collections;
 
-use Pantheon\Terminus\Exceptions\TerminusException;
 use Pantheon\Terminus\Friends\UserInterface;
 use Pantheon\Terminus\Friends\UserTrait;
+use Pantheon\Terminus\Session\SessionAwareTrait;
 
 /**
  * Class UserOwnedCollection
@@ -22,11 +22,6 @@ abstract class UserOwnedCollection extends APICollection implements
     public function __construct($options = [])
     {
         parent::__construct($options);
-        if (!isset($options['user'])) {
-            throw new TerminusException(
-                "Cannot find user or value was not in the incoming payload."
-            );
-        }
         $this->setUser($options['user']);
     }
 

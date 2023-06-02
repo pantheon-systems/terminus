@@ -2,10 +2,12 @@
 
 namespace Pantheon\Terminus\Friends;
 
+use Pantheon\Terminus\Collections\Organizations;
 use Pantheon\Terminus\Collections\UserOrganizationMemberships;
 
 /**
  * Interface OrganizationsInterface
+ *
  * @package Pantheon\Terminus\Friends
  */
 interface OrganizationsInterface
@@ -16,9 +18,10 @@ interface OrganizationsInterface
     public function getOrganizationMemberships();
 
     /**
-     * @return Organization[] Returns an array of organizations to which this model belongs
+     * @return Organization[] Returns an array of organizations to which this
+     *     model belongs
      */
-    public function getOrganizations();
+    public function getOrganizations(): Organizations;
 
     /**
      * @return array

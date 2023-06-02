@@ -18,7 +18,10 @@ use Robo\Contract\ConfigAwareInterface;
  *
  * @package Pantheon\Terminus\Session
  */
-class Session implements ContainerAwareInterface, ConfigAwareInterface, DataStoreAwareInterface
+class Session implements
+    ContainerAwareInterface,
+    ConfigAwareInterface,
+    DataStoreAwareInterface
 {
     use ConfigAwareTrait;
     use ContainerAwareTrait;
@@ -28,15 +31,18 @@ class Session implements ContainerAwareInterface, ConfigAwareInterface, DataStor
      * @var SavedTokens
      */
     public $tokens;
+
     /**
      * @var object
      */
     protected $data;
 
     /**
-     * Instantiates object, sets session data, instantiates a SavedTokens instance
+     * Instantiates object, sets session data, instantiates a SavedTokens
+     * instance
      *
-     * @param DataStoreInterface $data_store An object to persist the session data.
+     * @param DataStoreInterface $data_store An object to persist the session
+     *     data.
      */
     public function __construct(DataStoreInterface $data_store)
     {
@@ -66,7 +72,7 @@ class Session implements ContainerAwareInterface, ConfigAwareInterface, DataStor
      *
      * @return \Pantheon\Terminus\Models\User [user] $session user
      */
-    public function getUser()
+    public function getUser(): User
     {
         $user_id = $this->get('user_id');
         if (empty($user_id)) {
@@ -104,7 +110,8 @@ class Session implements ContainerAwareInterface, ConfigAwareInterface, DataStor
     }
 
     /**
-     * Responds with the status of this session (i.e. whether the client is logged in)
+     * Responds with the status of this session (i.e. whether the client is
+     * logged in)
      *
      * @return boolean
      */
@@ -112,7 +119,9 @@ class Session implements ContainerAwareInterface, ConfigAwareInterface, DataStor
     {
         return (
             isset($this->data->session)
-            && ($this->data->expires_at >= time() || (bool)$this->config->get('test_mode'))
+            && ($this->data->expires_at >= time() || (bool)$this->config->get(
+                'test_mode'
+            ))
         );
     }
 
