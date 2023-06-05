@@ -4,6 +4,14 @@ namespace Pantheon\Terminus\Tests\Functional;
 
 class OrgCommandsTest extends TerminusTestBase
 {
+
+/**
+ * Test org:info command
+ * 
+ * @test
+ * 
+ */
+
     /**
      * @test
      * @covers \Pantheon\Terminus\Commands\Org\ListCommand
