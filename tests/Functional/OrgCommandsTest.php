@@ -5,12 +5,29 @@ namespace Pantheon\Terminus\Tests\Functional;
 class OrgCommandsTest extends TerminusTestBase
 {
 
-/**
- * Test org:info command
- * 
- * @test
- * 
- */
+    /**
+     * Test org:info command
+     *
+     * @test
+     * @group org
+     * @group short
+     */
+    public function testOrgInfoCommand()
+    {
+        $org = $this->terminusJsonResponse("org:info " . $this->getOrg());
+        $this->assertIsArray(
+            $org,
+            "Response from org info should be an array"
+        );
+        $this->assertArrayHasKey('id', $org, "Orgs from org info should have an id property");
+        $this->assertNotEmpty($org['id'], 'Orgs ID should not be empty');
+
+        $this->assertArrayHasKey('name', $org, "Orgs from org info should have a name property");
+        $this->assertNotEmpty($org['name'], 'Orgs Name should not be empty');
+
+        $this->assertArrayHasKey('label', $org, "Orgs from org info should have a label property");
+        $this->assertNotEmpty($org['label'], 'Orgs Label should not be empty');
+    }
 
     /**
      * @test
