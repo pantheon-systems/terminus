@@ -4,7 +4,6 @@ namespace Pantheon\Terminus\Tests\Functional;
 
 class OrgCommandsTest extends TerminusTestBase
 {
-
     /**
      * Test org:info command
      *
@@ -19,13 +18,25 @@ class OrgCommandsTest extends TerminusTestBase
             $org,
             "Response from org info should be an array"
         );
-        $this->assertArrayHasKey('id', $org, "Orgs from org info should have an id property");
+        $this->assertArrayHasKey(
+            'id',
+            $org,
+            "Orgs from org info should have an id property"
+        );
         $this->assertNotEmpty($org['id'], 'Orgs ID should not be empty');
 
-        $this->assertArrayHasKey('name', $org, "Orgs from org info should have a name property");
+        $this->assertArrayHasKey(
+            'name',
+            $org,
+            "Orgs from org info should have a name property"
+        );
         $this->assertNotEmpty($org['name'], 'Orgs Name should not be empty');
 
-        $this->assertArrayHasKey('label', $org, "Orgs from org info should have a label property");
+        $this->assertArrayHasKey(
+            'label',
+            $org,
+            "Orgs from org info should have a label property"
+        );
         $this->assertNotEmpty($org['label'], 'Orgs Label should not be empty');
     }
 
@@ -49,13 +60,25 @@ class OrgCommandsTest extends TerminusTestBase
             $org,
             "row from org list array of orgs should be an org item"
         );
-        $this->assertArrayHasKey('id', $org, "Orgs from org list should have an id property");
+        $this->assertArrayHasKey(
+            'id',
+            $org,
+            "Orgs from org list should have an id property"
+        );
         $this->assertNotEmpty($org['id'], 'Orgs ID should not be empty');
 
-        $this->assertArrayHasKey('name', $org, "Orgs from org list should have a name property");
+        $this->assertArrayHasKey(
+            'name',
+            $org,
+            "Orgs from org list should have a name property"
+        );
         $this->assertNotEmpty($org['name'], 'Orgs Name should not be empty');
 
-        $this->assertArrayHasKey('label', $org, "Orgs from org list should have a label property");
+        $this->assertArrayHasKey(
+            'label',
+            $org,
+            "Orgs from org list should have a label property"
+        );
         $this->assertNotEmpty($org['label'], 'Orgs Label should not be empty');
     }
 
@@ -68,7 +91,9 @@ class OrgCommandsTest extends TerminusTestBase
      */
     public function testOrgPeopleListCommand()
     {
-        $people = $this->terminusJsonResponse("org:people:list " . $this->getOrg());
+        $people = $this->terminusJsonResponse(
+            "org:people:list " . $this->getOrg()
+        );
         $this->assertIsArray(
             $people,
             'Response from org:people:list should be an array'
@@ -82,8 +107,15 @@ class OrgCommandsTest extends TerminusTestBase
 
             $this->assertArrayHasKey('id', $user, 'User should contain an ID');
             $this->assertNotEmpty($user['id'], 'User ID should not be empty');
-            $this->assertArrayHasKey('email', $user, 'User should contain an email');
-            $this->assertNotEmpty($user['email'], 'User email should not be empty');
+            $this->assertArrayHasKey(
+                'email',
+                $user,
+                'User should contain an email'
+            );
+            $this->assertNotEmpty(
+                $user['email'],
+                'User email should not be empty'
+            );
         }
     }
 
@@ -96,7 +128,9 @@ class OrgCommandsTest extends TerminusTestBase
      */
     public function testOrgSiteListCommand()
     {
-        $orgSites = $this->terminusJsonResponse("org:site:list " . $this->getOrg());
+        $orgSites = $this->terminusJsonResponse(
+            "org:site:list " . $this->getOrg()
+        );
         $this->assertIsArray(
             $orgSites,
             "Response from org list should be an array of orgs"
@@ -107,8 +141,16 @@ class OrgCommandsTest extends TerminusTestBase
             $site,
             "row from org list array of orgs should be an org item"
         );
-        $this->assertArrayHasKey('id', $site, "Sites from org list should have an id property");
-        $this->assertArrayHasKey('name', $site, "Sites from org list should have a name property");
+        $this->assertArrayHasKey(
+            'id',
+            $site,
+            "Sites from org list should have an id property"
+        );
+        $this->assertArrayHasKey(
+            'name',
+            $site,
+            "Sites from org list should have a name property"
+        );
     }
 
     /**
@@ -120,7 +162,9 @@ class OrgCommandsTest extends TerminusTestBase
      */
     public function testOrgUpstreamList()
     {
-        $upstreams = $this->terminusJsonResponse("org:upstream:list " . $this->getOrg());
+        $upstreams = $this->terminusJsonResponse(
+            "org:upstream:list " . $this->getOrg()
+        );
         $this->assertIsArray(
             $upstreams,
             "Response from org list should be an array of orgs"
