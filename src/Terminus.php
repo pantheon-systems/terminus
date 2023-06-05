@@ -366,7 +366,6 @@ EOD;
             'Pantheon\\Terminus\\Commands\\NewRelic\\InfoCommand',
             'Pantheon\\Terminus\\Commands\\Org\\InfoCommand',
             'Pantheon\\Terminus\\Commands\\Org\\ListCommand',
-            'Pantheon\\Terminus\\Commands\\Org\\OrgCommand',
             'Pantheon\\Terminus\\Commands\\Org\\People\\AddCommand',
             'Pantheon\\Terminus\\Commands\\Org\\People\\ListCommand',
             'Pantheon\\Terminus\\Commands\\Org\\People\\RemoveCommand',

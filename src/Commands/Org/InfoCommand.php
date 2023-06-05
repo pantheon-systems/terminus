@@ -4,10 +4,14 @@ namespace Pantheon\Terminus\Commands\Org;
 
 use Consolidation\OutputFormatters\StructuredData\PropertyList;
 use Pantheon\Terminus\Commands\StructuredListTrait;
+use Pantheon\Terminus\Commands\TerminusCommand;
+use Pantheon\Terminus\Organization\OrganizationAwareInterface;
+use Pantheon\Terminus\Organization\OrganizationAwareTrait;
 
-class InfoCommand extends OrgCommand
+class InfoCommand extends TerminusCommand implements OrganizationAwareInterface
 {
     use StructuredListTrait;
+    use OrganizationAwareTrait;
 
     public function __construct()
     {
@@ -24,8 +28,6 @@ class InfoCommand extends OrgCommand
      *     id: ID
      *     name: Name
      *     label: Label
-     *     created: Created
-     *     region: Region
      *
      * @param string $organization Organization name, label, or ID
      *
