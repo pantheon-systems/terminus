@@ -9,6 +9,7 @@ All notable changes to this project will be documented in this file. This projec
 ### Fixed
 - Fix bug where `env:clone-content` command was not working Drupal sites (#2469)
 - Fix bug where `env:clone-content` command was not working WordPress sites (#2471)
+- Fix passthrough exit code from drush and wp-cli (#2470)
 
 ## 3.2.0 - 2023-05-22
 
