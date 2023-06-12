@@ -5,6 +5,7 @@ namespace Pantheon\Terminus\Commands\Auth;
 use Consolidation\OutputFormatters\StructuredData\PropertyList;
 use Pantheon\Terminus\Commands\TerminusCommand;
 use Pantheon\Terminus\Commands\StructuredListTrait;
+use Pantheon\Terminus\Exceptions\TerminusException;
 
 /**
  * Class WhoamiCommand
@@ -37,7 +38,7 @@ class WhoamiCommand extends TerminusCommand
             $user = $this->session()->getUser();
             return $this->getPropertyList($user->fetch());
         } else {
-            $this->log()->notice('You are not logged in.');
+            throw new TerminusException('You are not logged in.');
         }
     }
 }
