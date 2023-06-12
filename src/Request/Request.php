@@ -66,7 +66,13 @@ class Request implements
     . "Data: {data}\n"
     . "Status Code: {status_code}";
 
-    const SENSITIVE_COMMANDS = ["auth:login", "lock:enable",];
+    private static $TRACE_ID = null;
+
+    public static function GenerateTraceId()
+    {
+        self::$TRACE_ID = vsprintf('%s%s-%s-%s-%s-%s%s%s', str_split(bin2hex(random_bytes(16)), 4));
+    }
+
 
     protected ClientInterface $client;
 
@@ -425,7 +431,7 @@ class Request implements
         return [
             'User-Agent' => $this->userAgent(),
             'Accept' => 'application/json',
-            'X-Pantheon-Trace-Id' => $GLOBALS['PANTHEON_TRACE_ID'],
+            'X-Pantheon-Trace-Id' => self::$TRACE_ID,
             'X-Pantheon-Terminus-Command' => $this->terminusCommand(),
         ];
     }
@@ -453,13 +459,7 @@ class Request implements
      */
     private function terminusCommand()
     {
-        $argv = $GLOBALS['argv'];
-        $command = $argv[1];
-        if (in_array($command, self::SENSITIVE_COMMANDS)) {
-            return $command;
-        } else {
-            return implode(" ", array_slice($argv, 1));
-        }
+        return implode(' ', array_slice($GLOBALS['argv'], 1));
     }
 
     /**
@@ -480,4 +480,4 @@ class Request implements
         }
         return $data;
     }
-}
+} Request::GenerateTraceId();
