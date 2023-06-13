@@ -66,6 +66,8 @@ class Request implements
     . "Data: {data}\n"
     . "Status Code: {status_code}";
 
+    public const MAX_HEADER_LENGTH = 4096;
+
     private static $TRACE_ID = null;
 
     public static function generateTraceId()
@@ -453,13 +455,28 @@ class Request implements
     }
 
     /**
-     * Gives the terminus command.
+     * Gives the terminus command as json, truncated if necessary.
      *
      * @return string
      */
     private function terminusCommand()
     {
-        return implode(' ', array_slice($GLOBALS['argv'], 1));
+        $input = $this->getContainer()->get('input');
+        $candidate = json_encode([
+            'command' => $input->getFirstArgument(),
+            'arguments' => $input->getArguments(),
+            'options' => $input->getOptions(),
+            'truncated' => false,
+        ]);
+
+        if (strlen($candidate) > MAX_HEADER_LENGTH) {
+            return json_encode([
+                'command' => $input->getFirstArgument(),
+                'truncated' => true,
+            ]);
+        }
+
+        return $candidate;
     }
 
     /**
