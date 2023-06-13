@@ -480,4 +480,4 @@ class Request implements
         }
         return $data;
     }
-} Request::generateTraceId();
+}
