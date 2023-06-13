@@ -68,7 +68,7 @@ class Request implements
 
     private static $TRACE_ID = null;
 
-    public static function GenerateTraceId()
+    public static function generateTraceId()
     {
         self::$TRACE_ID = vsprintf('%s%s-%s-%s-%s-%s%s%s', str_split(bin2hex(random_bytes(16)), 4));
     }
@@ -480,4 +480,4 @@ class Request implements
         }
         return $data;
     }
-} Request::GenerateTraceId();
+} Request::generateTraceId();
