@@ -469,7 +469,7 @@ class Request implements
             'truncated' => false,
         ]);
 
-        if (strlen($candidate) > MAX_HEADER_LENGTH) {
+        if (strlen($candidate) > self::MAX_HEADER_LENGTH) {
             return json_encode([
                 'command' => $input->getFirstArgument(),
                 'truncated' => true,
