@@ -168,6 +168,7 @@ EOD;
         // Add the services
         // Request
 
+        Request::generateTraceId();
         $container->share('request', Request::class);
         $container->inflector(RequestAwareInterface::class)
             ->invokeMethod('setRequest', ['request']);

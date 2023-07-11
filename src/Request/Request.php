@@ -66,6 +66,19 @@ class Request implements
     . "Data: {data}\n"
     . "Status Code: {status_code}";
 
+    public const MAX_HEADER_LENGTH = 4096;
+
+    private static $TRACE_ID = null;
+
+     /**
+     * Generate UUID for use as distributed tracing ID and assign to static class variable
+     */
+    public static function generateTraceId()
+    {
+        self::$TRACE_ID = vsprintf('%s%s-%s-%s-%s-%s%s%s', str_split(bin2hex(random_bytes(16)), 4));
+    }
+
+
     protected ClientInterface $client;
 
     /**
@@ -423,6 +436,8 @@ class Request implements
         return [
             'User-Agent' => $this->userAgent(),
             'Accept' => 'application/json',
+            'X-Pantheon-Trace-Id' => self::$TRACE_ID,
+            'X-Pantheon-Terminus-Command' => $this->terminusCommand(),
         ];
     }
 
@@ -440,6 +455,31 @@ class Request implements
             $config->get('php_version'),
             $config->get('script')
         );
+    }
+
+    /**
+     * Gives the terminus command as json, truncated if necessary.
+     *
+     * @return string
+     */
+    private function terminusCommand()
+    {
+        $input = $this->getContainer()->get('input');
+        $candidate = json_encode([
+            'command' => $input->getFirstArgument(),
+            'arguments' => $input->getArguments(),
+            'options' => $input->getOptions(),
+            'truncated' => false,
+        ]);
+
+        if (strlen($candidate) > self::MAX_HEADER_LENGTH) {
+            return json_encode([
+                'command' => $input->getFirstArgument(),
+                'truncated' => true,
+            ]);
+        }
+
+        return $candidate;
     }
 
     /**
