@@ -41,7 +41,10 @@ class WaitWorkflowsCommand extends TerminusCommand implements SiteAwareInterface
         $site = $this->getSite($site_env);
         $env = $this->getEnv($site_env);
 
-        $workflows = $site->getWorkflows()->setPaging(false)->fetch()->allByEnvironmentIdAndStatus($env->id, 'unfinished');
+        $workflows = $site->getWorkflows()->setPaging(false)->fetch()->allByEnvironmentIdAndStatus(
+            $env->id,
+            'unfinished'
+        );
         $this->log()->notice('Waiting for {number} workflow(s).', ['number' => count($workflows)]);
 
         $startWaiting = time();
