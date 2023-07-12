@@ -68,6 +68,20 @@ class EnvCommandsTest extends TerminusTestBase
 
     /**
      * @test
+     * @covers \Pantheon\Terminus\Commands\Env\WaitWorkflowsCommand
+     *
+     * @group env
+     * @group short
+     */
+    public function testWaitWorkflowsCommand()
+    {
+        $this->terminus(
+            sprintf('env:wait-workflows %s.%s', $this->getSiteName(), 'dev')
+        );
+    }
+
+    /**
+     * @test
      * @covers \Pantheon\Terminus\Commands\Env\CloneContentCommand
      *
      * @group env
