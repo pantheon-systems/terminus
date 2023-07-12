@@ -337,6 +337,7 @@ EOD;
             'Pantheon\\Terminus\\Commands\\Env\\MetricsCommand',
             'Pantheon\\Terminus\\Commands\\Env\\RotateRandomSeedCommand',
             'Pantheon\\Terminus\\Commands\\Env\\ViewCommand',
+            'Pantheon\\Terminus\\Commands\\Env\\WaitWorkflowsCommand',
             'Pantheon\\Terminus\\Commands\\Env\\WakeCommand',
             'Pantheon\\Terminus\\Commands\\Env\\WipeCommand',
             'Pantheon\\Terminus\\Commands\\HTTPS\\InfoCommand',
