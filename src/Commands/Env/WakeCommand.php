@@ -36,14 +36,6 @@ class WakeCommand extends TerminusCommand implements SiteAwareInterface
         $env = $this->getEnv($site_env);
         $wakeStatus = $env->wake();
 
-        // @TODO: Move the exceptions up the chain to the `wake` function. (One env is ported over).
-        if (empty($wakeStatus['success'])) {
-            throw new TerminusException('Could not reach {target}', $wakeStatus);
-        }
-        if (empty($wakeStatus['styx'])) {
-            throw new TerminusException('Pantheon headers missing, which is not quite right.');
-        }
-
         $this->log()->notice('OK >> {target} responded', $wakeStatus);
     }
 }
