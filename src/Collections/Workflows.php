@@ -50,6 +50,46 @@ class Workflows extends APICollection implements SessionAwareInterface
     }
 
     /**
+     * Returns all existing workflows that match given environment id and status.
+     *
+     * @return Workflow[]
+     */
+    public function allByEnvironmentIdAndStatus($environment_id, $status)
+    {
+        $status_map = [
+            'finished' => 'isFinished',
+            'unfinished' => 'isUnfinished',
+            'successful' => 'isSuccessful',
+            'failed' => 'isFailed',
+        ];
+        if (!isset($status_map[$status])) {
+            throw new TerminusException('Invalid status "{status}".', compact('status'));
+        }
+        $status_method = $status_map[$status];
+        return array_filter(
+            $this->all(),
+            function ($workflow) use ($environment_id, $status_method) {
+                return $workflow->getEnvironmentId() == $environment_id && $workflow->$status_method();
+            }
+        );
+    }
+
+    /**
+     * Returns all existing workflows that match given environment id.
+     *
+     * @return Workflow[]
+     */
+    public function allByEnvironmentId($environment_id)
+    {
+        return array_filter(
+            $this->all(),
+            function ($workflow) use ($environment_id) {
+                return $workflow->getEnvironmentId() == $environment_id;
+            }
+        );
+    }
+
+    /**
      * Returns all existing workflows that have finished
      *
      * @return Workflow[]
@@ -60,6 +100,51 @@ class Workflows extends APICollection implements SessionAwareInterface
             $this->all(),
             function ($workflow) {
                 return $workflow->isFinished();
+            }
+        );
+    }
+
+    /**
+     * Returns all existing workflows that have not finished
+     *
+     * @return Workflow[]
+     */
+    public function allUnfinished()
+    {
+        return array_filter(
+            $this->all(),
+            function ($workflow) {
+                return $workflow->isUnfinished();
+            }
+        );
+    }
+
+    /**
+     * Returns all existing workflows that have succeeded
+     *
+     * @return Workflow[]
+     */
+    public function allSuccessful()
+    {
+        return array_filter(
+            $this->all(),
+            function ($workflow) {
+                return $workflow->isSuccessful();
+            }
+        );
+    }
+
+    /**
+     * Returns all existing workflows that have failed
+     *
+     * @return Workflow[]
+     */
+    public function allFailed()
+    {
+        return array_filter(
+            $this->all(),
+            function ($workflow) {
+                return $workflow->isFailed();
             }
         );
     }
