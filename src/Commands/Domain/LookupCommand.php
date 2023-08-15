@@ -41,8 +41,8 @@ class LookupCommand extends TerminusCommand implements SiteAwareInterface
     {
         $this->log()->notice('This operation may take a long time to run.');
         $sites = $this->sites()->all();
-        $environments = ['dev', 'test', 'live'];
         foreach ($sites as $site) {
+            $environments = $site->getEnvironments()->ids();
             foreach ($environments as $env_name) {
                 try {
                     $env = $site->getEnvironments()->get($env_name);
