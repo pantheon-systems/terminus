@@ -48,7 +48,21 @@ class WaitWorkflowsCommand extends TerminusCommand implements SiteAwareInterface
         $this->log()->notice('Waiting for {number} workflow(s).', ['number' => count($workflows)]);
 
         $startWaiting = time();
+        $wf_types_to_wait = [
+            'sync_code',
+            'sync_code_with_build',
+            'sync_code_external_vcs',
+            'environment_update_pantheon_yml',
+            'check_database_version',
+            'change_database_version',
+            'change_object_cache_version',
+            'change_search_version',
+        ];
         foreach ($workflows as $workflow) {
+            $type = $workflow->get('type');
+            if (!in_array($type, $wf_types_to_wait)) {
+                continue;
+            }
             $description = $workflow->get('description');
             $workflow->fetch();
             while ($workflow->isUnfinished()) {
