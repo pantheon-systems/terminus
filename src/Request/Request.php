@@ -244,12 +244,20 @@ class Request implements
                 }
             }
 
+            if (is_object($response) && is_object($response->getBody()) && $response->getBody()->getContents() !== '') {
+                $error = $response->getBody()->getContents();
+            } elseif (null !== $exception && '' != $exception->getMessage()) {
+                $error = $exception->getMessage();
+            } else {
+                $error = "Undefined";
+            }
+
             $this->logger->error(
                 "HTTP request {method} {uri} has failed with error {error}.",
                 [
                     'method' => $request->getMethod(),
                     'uri' => $request->getUri(),
-                    'error' => $response->getBody()->getContents(),
+                    'error' => $error,
                 ]
             );
 

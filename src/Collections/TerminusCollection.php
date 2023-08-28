@@ -9,15 +9,18 @@ use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
 use Pantheon\Terminus\Models\TerminusModel;
 use Pantheon\Terminus\Request\RequestAwareInterface;
 use Pantheon\Terminus\Request\RequestAwareTrait;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareTrait;
 
 /**
  * Class TerminusCollection
  * @package Pantheon\Terminus\Collections
  */
-abstract class TerminusCollection implements ContainerAwareInterface, RequestAwareInterface
+abstract class TerminusCollection implements ContainerAwareInterface, RequestAwareInterface, LoggerAwareInterface
 {
     use ContainerAwareTrait;
     use RequestAwareTrait;
+    use LoggerAwareTrait;
 
     /**
      * @var array
@@ -91,6 +94,22 @@ abstract class TerminusCollection implements ContainerAwareInterface, RequestAwa
     public function fetch()
     {
         foreach ($this->getData() as $id => $model_data) {
+            if (!is_object($model_data)) {
+                // For some reason I can't replicate, occasionally $model_data is just a string here.
+                $trace = debug_backtrace();
+                $error_message = "Fetch failed {file}:{line} model_data expected as object but returned as {type}.";
+                $context = [
+                    'file' => $trace[0]['file'],
+                    'line' => $trace[0]['line'],
+                    'type' => gettype($model_data),
+                ];
+                if (is_string($model_data)) {
+                    $error_message .= " String value: {string}";
+                    $context['string'] = strlen($model_data) > 250 ? substr($model_data, 0, 250) . '...' : $model_data;
+                }
+                $this->logger->error($error_message, $context);
+                break;
+            }
             if (!isset($model_data->id)) {
                 $model_data->id = $id;
             }
