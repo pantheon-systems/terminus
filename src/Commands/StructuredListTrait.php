@@ -93,6 +93,9 @@ trait StructuredListTrait
         $list->addRendererFunction(
             function ($key, $cell_data) use ($config, $date_attributes) {
                 if (!is_numeric($key) && in_array($key, $date_attributes)) {
+                    if (empty($cell_data)) {
+                        return '-';
+                    }
                     return $config->formatDatetime($cell_data);
                 }
                 return $cell_data;
