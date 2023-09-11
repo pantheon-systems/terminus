@@ -96,17 +96,19 @@ abstract class TerminusCollection implements ContainerAwareInterface, RequestAwa
         foreach ($this->getData() as $id => $model_data) {
             if (!is_object($model_data)) {
                 // For some reason I can't replicate, occasionally $model_data is just a string here.
-                $trace = debug_backtrace();
+                $bad_data = print_r($model_data, true);
+                if (is_string($bad_data) && strlen($bad_data) > 250) {
+                    $bad_data = substr($bad_data, 0, 250) . ' ...';
+                }
                 $error_message = "Fetch failed {file}:{line} model_data expected as object but returned as {type}.";
+                $error_message .= "\nUnexpected value: {bad_data}";
+                $trace = debug_backtrace();
                 $context = [
                     'file' => $trace[0]['file'],
                     'line' => $trace[0]['line'],
                     'type' => gettype($model_data),
+                    'bad_data' => $bad_data
                 ];
-                if (is_string($model_data)) {
-                    $error_message .= " String value: {string}";
-                    $context['string'] = strlen($model_data) > 250 ? substr($model_data, 0, 250) . '...' : $model_data;
-                }
                 $this->logger->error($error_message, $context);
                 break;
             }
