@@ -296,6 +296,7 @@ EOD;
     {
         // List of all hooks and commands. Update via 'composer update-class-lists'
         $this->commands = [
+            'Consolidation\\Filter\\Hooks\\FilterHooks',
             'Pantheon\\Terminus\\Hooks\\Authorizer',
             'Pantheon\\Terminus\\Hooks\\RoleValidator',
             'Pantheon\\Terminus\\Hooks\\SiteEnvLookup',
