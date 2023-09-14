@@ -168,10 +168,15 @@ class Environment extends TerminusModel implements
         if (isset($options['updatedb'])) {
             $options['updatedb'] = (int)$options['updatedb'];
         }
-        $params = array_merge(
-            ['from_environment' => $from_env->getName(),],
-            $options
-        );
+        $params = [
+            'from_environment' => $from_env->getName(),
+            'updatedb' => $options['updatedb'] ?? 0,
+            'clear_cache' => $options['clear_cache'] ?? false,
+        ];
+        if (!empty($options['from_url']) && !empty($options['to_url'])) {
+            $params['wp_replace_siteurl']['from_url'] = $options['from_url'];
+            $params['wp_replace_siteurl']['to_url'] = $options['to_url'];
+        }
         return $this->getWorkflows()->create(
             'clone_database',
             compact('params')
