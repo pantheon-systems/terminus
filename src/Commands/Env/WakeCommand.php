@@ -38,22 +38,27 @@ class WakeCommand extends TerminusCommand implements SiteAwareInterface
         'delay' => 3,
     ])
     {
-        $attempt = 0;
+        $attempt = 1;
         $this->requireSiteIsNotFrozen($site_env);
         $env = $this->getEnv($site_env);
 
-        while ($attempt < $options['retry']) {
+        while ($attempt <= $options['retry']) {
             $wakeStatus = $env->wake();
             if (empty($wakeStatus['success'])) {
-                $this->log()->notice('{target} is not awake, retrying in {delay} seconds', [
+                $this->log()->notice('{target} is not awake (attempt {attempt}/{max})...', [
                     'target' => $site_env,
-                    'delay' => $options['delay'],
+                    'attempt' => $attempt,
+                    'max' => $options['retry'],
                 ]);
-                sleep($options['delay']);
+                // If there is any attempt remaining, sleep for the delay period.
+                if ($attempt <= $options['retry'] - 1) {
+                    $this->log()->notice('Sleeping for {delay} seconds...', ['delay' => $options['delay']]);
+                    sleep($options['delay']);
+                }
                 $attempt++;
-            } else {
-                break;
+                continue;
             }
+            break;
         }
 
         // @TODO: Move the exceptions up the chain to the `wake` function. (One env is ported over).
