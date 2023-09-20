@@ -109,8 +109,16 @@ abstract class TerminusCollection implements ContainerAwareInterface, RequestAwa
                     'type' => gettype($model_data),
                     'bad_data' => $bad_data
                 ];
-                $this->logger->error($error_message, $context);
-                break;
+
+                // verbose logging for debugging
+                $this->logger->debug($error_message, $context);
+
+                // less information for more user-facing messages, but a problem has occurred and we're skipping this
+                // item so we should still surface a user-facing message
+                $this->logger->warn("Model data missing for {id}", ['id' => $id,]);
+
+                // skip this item since it lacks useful data
+                continue;
             }
             if (!isset($model_data->id)) {
                 $model_data->id = $id;
