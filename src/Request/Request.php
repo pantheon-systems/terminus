@@ -244,7 +244,7 @@ class Request implements
                 }
             }
 
-            // It's been observed in the wild that sometimes $response is null.  Get a different error message in that case.
+            // Response can be null if there is a network disconnect.  Get a different error message in that case.
             if (is_object($response) && is_object($response->getBody()) && $response->getBody()->getContents() !== '') {
                 $error = $response->getBody()->getContents();
             } elseif (null !== $exception && '' != $exception->getMessage()) {

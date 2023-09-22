@@ -95,19 +95,21 @@ abstract class TerminusCollection implements ContainerAwareInterface, RequestAwa
     {
         foreach ($this->getData() as $id => $model_data) {
             if (!is_object($model_data)) {
-                // For some reason I can't replicate, occasionally $model_data is just a string here.
-                $bad_data = print_r($model_data, true);
-                if (is_string($bad_data) && strlen($bad_data) > 250) {
-                    $bad_data = substr($bad_data, 0, 250) . ' ...';
+                // This should always be an object, however occasionally it is returning as a string
+                // We need more information about what it is and to handle the error
+                $model_data_str = print_r($model_data, true);
+                $error_maxlength = 250;
+                if (is_string($model_data_str) && strlen($model_data_str) > $error_maxlength) {
+                    $model_data_str = substr($model_data_str, 0, $error_maxlength) . ' ...';
                 }
-                $error_message = "Fetch failed {file}:{line} model_data expected as object but returned as {type}.";
-                $error_message .= "\nUnexpected value: {bad_data}";
+                $error_message = "Fetch failed {file}:{line} \$model_data expected as object but returned as {type}.";
+                $error_message .= "\nUnexpected value: {model_data_str}";
                 $trace = debug_backtrace();
                 $context = [
                     'file' => $trace[0]['file'],
                     'line' => $trace[0]['line'],
                     'type' => gettype($model_data),
-                    'bad_data' => $bad_data
+                    'model_data_str' => $model_data_str
                 ];
 
                 // verbose logging for debugging
@@ -115,7 +117,7 @@ abstract class TerminusCollection implements ContainerAwareInterface, RequestAwa
 
                 // less information for more user-facing messages, but a problem has occurred and we're skipping this
                 // item so we should still surface a user-facing message
-                $this->logger->warn("Model data missing for {id}", ['id' => $id,]);
+                $this->logger->warning("Model data missing for {id}", ['id' => $id,]);
 
                 // skip this item since it lacks useful data
                 continue;
