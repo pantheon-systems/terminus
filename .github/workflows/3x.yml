@@ -135,7 +135,7 @@ jobs:
         with:
           files: terminus.phar
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.HOMEBREW_GITHUB_API_TOKEN }}
 
   package_macos:
     runs-on: macos-latest
