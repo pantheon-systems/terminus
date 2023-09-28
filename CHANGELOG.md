@@ -1,7 +1,22 @@
 # Change Log
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org)
 
-## 3.2.2-dev
+## 3.2.2 - 2023-09-28
+
+### Fixed
+
+- Return empty string on zero dates (#2494)
+- Catch down network exception and non-object responses in fetch (#2492)
+
+### Added
+
+- New org:info command (#2472)
+- Commands trace metadata (#2461)
+
+### Changed
+
+- Add retry and delay options for env:wake command (#2498)
+- More specific description in env:code-rebuild (#2488)
 
 
 ## 3.2.1 - 2023-06-01
