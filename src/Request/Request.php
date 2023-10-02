@@ -227,8 +227,8 @@ class Request implements
                     ['error' => $exception->getMessage()]
                 );
             } else {
-                if (preg_match('/[2,4]0\d/', $response->getStatusCode()) || $response->getStatusCode() == 410) {
-                    // Do not retry on 20x, 40x or 410 responses.
+                if (preg_match('/[2,4]0\d/', $response->getStatusCode())) {
+                    // Do not retry on 20x or 40x responses.
                     return false;
                 }
 
@@ -428,7 +428,7 @@ class Request implements
             $this->logger->debug($jsonException->getMessage());
         }
 
-        if ($response->getStatusCode() == 410 && $body == "icr_site") {
+        if ($response->getStatusCode() == 409 && $body == "icr_site") {
             // This request is expected to fail for an ICR site, throw exception that will be catched down the road.
             throw new TerminusIcrSiteException("This is an ICR site.");
         }
