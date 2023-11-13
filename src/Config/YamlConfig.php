@@ -10,9 +10,8 @@ use Symfony\Component\Yaml\Yaml;
  */
 class YamlConfig extends TerminusConfig
 {
-  
-  protected $defaults = [];
-  
+    protected $defaults = [];
+
     /**
      * YamlConfig constructor.
      * @param string $yml_path The path to the yaml file.
