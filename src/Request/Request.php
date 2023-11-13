@@ -70,9 +70,9 @@ class Request implements
 
     private static $TRACE_ID = null;
 
-     /**
-     * Generate UUID for use as distributed tracing ID and assign to static class variable
-     */
+    /**
+    * Generate UUID for use as distributed tracing ID and assign to static class variable
+    */
     public static function generateTraceId()
     {
         self::$TRACE_ID = vsprintf('%s%s-%s-%s-%s-%s%s%s', str_split(bin2hex(random_bytes(16)), 4));
@@ -193,7 +193,7 @@ class Request implements
             $maxRetries,
             $logWarning
         ) {
-            $logWarningOnRetry = fn(string $reason) => 0 === $retry
+            $logWarningOnRetry = fn (string $reason) => 0 === $retry
                 ? $logWarning(
                     sprintf(
                         'HTTP request %s %s has failed: %s',

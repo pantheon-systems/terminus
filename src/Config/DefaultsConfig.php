@@ -15,6 +15,8 @@ class DefaultsConfig extends TerminusConfig
      */
     protected $source_name = 'Default';
 
+    protected $defaults = [];
+
     /**
      * DefaultsConfig constructor.
      */
