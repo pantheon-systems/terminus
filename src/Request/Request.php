@@ -15,6 +15,7 @@ use League\Container\ContainerAwareInterface;
 use League\Container\ContainerAwareTrait;
 use Pantheon\Terminus\Config\ConfigAwareTrait;
 use Pantheon\Terminus\Exceptions\TerminusException;
+use Pantheon\Terminus\Exceptions\TerminusIcrSiteException;
 use Pantheon\Terminus\Helpers\LocalMachineHelper;
 use Pantheon\Terminus\Session\SessionAwareInterface;
 use Pantheon\Terminus\Session\SessionAwareTrait;
@@ -227,7 +228,7 @@ class Request implements
                 );
             } else {
                 if (preg_match('/[2,4]0\d/', $response->getStatusCode())) {
-                    // Do not retry on 20x and 40x responses.
+                    // Do not retry on 20x or 40x responses.
                     return false;
                 }
 
@@ -425,6 +426,11 @@ class Request implements
             );
         } catch (\JsonException $jsonException) {
             $this->logger->debug($jsonException->getMessage());
+        }
+
+        if ($response->getStatusCode() == 409 && $body == "icr_site") {
+            // This request is expected to fail for an ICR site, throw exception that will be catched down the road.
+            throw new TerminusIcrSiteException("This is an ICR site.");
         }
 
         return new RequestOperationResult([
