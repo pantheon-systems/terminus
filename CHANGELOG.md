@@ -1,7 +1,11 @@
 # Change Log
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org)
 
-## 3.2.3-dev
+## 3.3.0 - 2023-11-28
+
+- PHP 8.3 compatibility (#2555)
+- Misc 8.2 deprecations
+
 
 ## 3.2.2 - 2023-09-28
 
