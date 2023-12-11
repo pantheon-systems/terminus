@@ -3,11 +3,14 @@
 namespace Terminus;
 
 use Consolidation\AnnotatedCommand\CommandFileDiscovery;
+use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Finder\Finder;
+use Symfony\Component\Console\Output\ConsoleOutput;
+
 
 class UpdateClassLists
 {
-    static function update()
+    public static function update()
     {
         $base = dirname(__DIR__) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR;
         $commands = static::getCommands(
@@ -56,7 +59,7 @@ __EOT__;
         file_put_contents($srcPath, $contents);
     }
 
-    static function generateAddToContainerCode($what, $classList)
+    public static function generateAddToContainerCode($what, $classList)
     {
         sort($classList);
 
@@ -82,7 +85,7 @@ __EOT__;
      *        string namespace The full namespace associated with given the command directory
      * @return TerminusCommand[] An array of TerminusCommand instances
      */
-    static function getCommands($path, $baseNamespace)
+    public static function getCommands($path, $baseNamespace)
     {
         $discovery = new CommandFileDiscovery();
         $discovery->setSearchPattern('*Command.php')->setSearchLocations([]);
@@ -97,7 +100,7 @@ __EOT__;
      *        string namespace The full namespace associated with given the hooks directory
      * @return array An array of hook instances
      */
-    static function getHooks($path, $baseNamespace)
+    public static function getHooks($path, $baseNamespace)
     {
         $discovery = new CommandFileDiscovery();
         $discovery->setSearchPattern('*.php')->setSearchLocations([]);
@@ -109,7 +112,7 @@ __EOT__;
      *
      * @param string $path
      */
-    static function getClassesInDir($path)
+    public static function getClassesInDir($path)
     {
         $result = [];
         $files = Finder::create()->files()->in($path)->name('*.php');
@@ -122,6 +125,51 @@ __EOT__;
             }
         }
         return $result;
+    }
+
+    public static function getCommandModelsAndCollections()
+    {
+        $base = dirname(__DIR__) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR;
+        $commands = static::getCommands(
+            $base . 'Commands',
+            'Pantheon\Terminus\Commands'
+        );
+        $hooks = static::getHooks(
+            $base . 'Hooks',
+            'Pantheon\Terminus\Hooks'
+        );
+        $models = static::getClassesInDir($base . 'Models');
+        $collections = static::getClassesInDir($base . 'Collections');
+
+        $output = new ConsoleOutput();
+        $output->setDecorated(true);
+        $commandTable = new Table($output);
+        $commandTable->setHeaders(["Commands"]);
+        $commandTable->setRows(array_map(
+            function ($item) {
+                return [ str_replace("Pantheon\Terminus\Commands", "", $item) ];
+            },
+            $commands
+        ));
+        $modelsTable = new Table($output);
+        $modelsTable->setHeaders(["Models"]);
+        $modelsTable->setRows(array_map(
+            function ($item) {
+                return [str_replace("\Pantheon\Terminus\Models", "", $item)];
+            },
+            $models
+        ));
+        $collectionsTable = new Table($output);
+        $collectionsTable->setHeaders(["Collections"]);
+        $collectionsTable->setRows(array_map(
+            function ($item) {
+                return [str_replace("\Pantheon\Terminus\Collections", "", $item)];
+            },
+            $collections
+        ));
+        $commandTable->render();
+        $modelsTable->render();
+        $collectionsTable->render();
     }
 
 }
