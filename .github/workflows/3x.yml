@@ -13,14 +13,6 @@ on:
         description: Enable tmate debugging
         required: true
         default: "0"
-      terminus_host:
-        description: Terminus host to use
-        required: true
-        default: terminus.pantheon.io
-      terminus_verify_host_cert:
-        description: Terminus verify host cert to use
-        required: true
-        default: "1"
 
 jobs:
   # Checkout in separate job because docker image is alpine based and checkout action doesn't work.
@@ -74,8 +66,8 @@ jobs:
       TERMINUS_PLUGINS2_DIR: ${{ secrets.TERMINUS_PLUGINS2_DIR }}
       TERMINUS_DEPENDENCIES_BASE_DIR: ${{ secrets.TERMINUS_DEPENDENCIES_BASE_DIR }}
       TERMINUS_USER: ${{ secrets.TERMINUS_USER }}
-      TERMINUS_HOST: ${{ github.event.inputs.terminus_host }}
-      TERMINUS_VERIFY_HOST_CERT: ${{ github.event.inputs.terminus_verify_host_cert }}
+      TERMINUS_HOST: ${{ secrets.TERMINUS_HOST }}
+      TERMINUS_VERIFY_HOST_CERT: ${{ secrets.TERMINUS_VERIFY_HOST_CERT }}
     needs: [ checkout_build ]
     steps:
       - name: Install SSH key
