@@ -25,9 +25,12 @@ trait WorkflowProcessingTrait
             return $progressBar->cycle();
         }
         $retry_interval = $this->getConfig()->get('http_retry_delay_ms', 100);
+        $retry_count = 1;
         do {
             $workflow->fetch();
-            usleep($retry_interval * 1000);
+            $sleep = $retry_interval * $retry_count * 1000;
+            usleep($sleep);
+            $retry_count++;
         } while (!$workflow->isFinished());
         return $workflow;
     }
