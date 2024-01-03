@@ -176,8 +176,12 @@ class Request implements
     private function createRetryDecider(): callable
     {
         $config = $this->getConfig();
-        $maxRetries = $config->get('http_max_retries', 5);
+        $maxRetries = $config->get('http_max_retries', $defaultMaxRetries);
+        // Cap max retries at 10.
+        $maxRetries = $maxRetries > 10 ? 10 : $maxRetries;
         $retryBackoff = $config->get('http_retry_backoff', 5);
+        // Retry backoff should be at least 3.
+        $retryBackoff = $retryBackoff < 3 ? 3 : $retryBackoff;
         $logger = $this->logger;
         $logWarning = function (string $message) use ($logger) {
             if ($this->output()->isVerbose()) {
