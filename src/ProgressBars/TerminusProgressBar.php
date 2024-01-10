@@ -32,10 +32,9 @@ abstract class TerminusProgressBar implements ConfigAwareInterface
     /**
      * Sleeps to prevent spamming the API.
      */
-    protected function sleep($invocation_count = 1)
+    protected function sleep()
     {
         $retry_interval = $this->getConfig()->get('http_retry_delay_ms', 100);
-        $retry_interval = $retry_interval * $invocation_count;
         usleep($retry_interval * 1000);
     }
 

@@ -50,6 +50,19 @@ class WorkflowProgressBar extends TerminusProgressBar
     }
 
     /**
+     * Sleeps to prevent spamming the API.
+     */
+    protected function sleep()
+    {
+        $retry_interval = $this->getConfig()->get('workflow_polling_delay_ms', 5000);
+        if ($retry_interval < 1000) {
+            // The API will not allow polling faster than once per second.
+            $retry_interval = 1000;
+        }
+        usleep($retry_interval * 1000);
+    }
+
+    /**
      * Runs a single iteration of the progress bar.
      * @return bool
      * @throws TerminusException

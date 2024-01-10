@@ -24,13 +24,14 @@ trait WorkflowProcessingTrait
             $progressBar = $this->getContainer()->get($nickname);
             return $progressBar->cycle();
         }
-        $retry_interval = $this->getConfig()->get('http_retry_delay_ms', 100);
-        $retry_count = 1;
+        $retry_interval = $this->getConfig()->get('workflow_polling_delay_ms', 5000);
+        if ($retry_interval < 1000) {
+            // The API will not allow polling faster than once per second.
+            $retry_interval = 1000;
+        }
         do {
             $workflow->fetch();
-            $sleep = $retry_interval * $retry_count * 1000;
-            usleep($sleep);
-            $retry_count++;
+            usleep($retry_interval * 1000);
         } while (!$workflow->isFinished());
         return $workflow;
     }
