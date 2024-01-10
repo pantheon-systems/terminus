@@ -42,10 +42,8 @@ class WorkflowProgressBar extends TerminusProgressBar
      */
     public function cycle()
     {
-        $invocation_count = 0;
         while ($this->update()) {
-            $invocation_count++;
-            $this->sleep($invocation_count);
+            $this->sleep();
         }
     }
 
