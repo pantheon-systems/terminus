@@ -176,7 +176,7 @@ class Request implements
     private function createRetryDecider(): callable
     {
         $config = $this->getConfig();
-        $maxRetries = $config->get('http_max_retries', $defaultMaxRetries);
+        $maxRetries = $config->get('http_max_retries', 5);
         // Cap max retries at 10.
         $maxRetries = $maxRetries > 10 ? 10 : $maxRetries;
         $retryBackoff = $config->get('http_retry_backoff', 5);
