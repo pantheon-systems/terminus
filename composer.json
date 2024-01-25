@@ -75,6 +75,7 @@
   "scripts": {
     "build": "@phar:build",
     "test": "@test:functional",
+    "test:filter": "./scripts/test_filter.sh",
     "phar:build": [
       "./scripts/phar_build.sh"
     ],

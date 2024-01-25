@@ -52,6 +52,7 @@ class EnvCommandsTest extends TerminusTestBase
     public function cleanUpMultidevs()
         {
             if ($this->multidevCreated['drupal']) {
+                echo "Deleting multidev environment for Drupal site\n";
                 $this->deleteSiteEnvironment(
                     $this->getSiteName(),
                     $this->getMdEnv()
@@ -59,6 +60,7 @@ class EnvCommandsTest extends TerminusTestBase
                 $multidevCreated['drupal'] = false;
             }
             if ($this->multidevCreated['wordpress']) {
+                echo "Deleting multidev environment for WordPress site\n";
                 $this->deleteSiteEnvironment(
                     $this->getSiteName("wordpress"),
                     $this->getMdEnv()
