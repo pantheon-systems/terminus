@@ -9,6 +9,11 @@ namespace Pantheon\Terminus\Tests\Functional;
  */
 class EnvCommandsTest extends TerminusTestBase
 {
+    protected $multidevCreated = [
+        'drupal' => false,
+        'wordpress' => false,
+    ];
+
     /**
      * @param string $siteName
      * @param string $envName
@@ -39,6 +44,28 @@ class EnvCommandsTest extends TerminusTestBase
         );
     }
 
+    /**
+     * @after
+     * 
+     * Deletes multidevs created during tests
+     */
+    public function cleanUpMultidevs()
+        {
+            if ($this->multidevCreated['drupal']) {
+                $this->deleteSiteEnvironment(
+                    $this->getSiteName(),
+                    $this->getMdEnv()
+                );
+                $multidevCreated['drupal'] = false;
+            }
+            if ($this->multidevCreated['wordpress']) {
+                $this->deleteSiteEnvironment(
+                    $this->getSiteName("wordpress"),
+                    $this->getMdEnv()
+                );
+                $multidevCreated['wordpress'] = false;
+            }
+        }
 
     /**
      * @test
@@ -75,6 +102,10 @@ class EnvCommandsTest extends TerminusTestBase
      */
     public function testCloneContentCommand()
     {
+        $this->ensureSiteEnvironment(
+            $this->getSiteName(),
+            $this->getMdEnv()
+        );
         $this->terminus(
             sprintf(
                 'env:clone-content %s.%s %s',
@@ -83,6 +114,7 @@ class EnvCommandsTest extends TerminusTestBase
                 $this->getMdEnv()
             )
         );
+        $multidevCreated['drupal'] = true;
     }
 
     /**
@@ -107,10 +139,7 @@ class EnvCommandsTest extends TerminusTestBase
                 $this->getMdEnv()
             )
         );
-        $this->deleteSiteEnvironment(
-            $this->getSiteName("wordpress"),
-            $this->getMdEnv()
-        );
+        $multidevCreated['wordpress'] = true;
     }
 
     /**
@@ -141,10 +170,7 @@ class EnvCommandsTest extends TerminusTestBase
                 ) . '.pantheonsite.io'
             )
         );
-        $this->deleteSiteEnvironment(
-            $this->getSiteName("wordpress"),
-            $this->getMdEnv()
-        );
+        $multidevCreated['wordpress'] = true;
     }
 
 
