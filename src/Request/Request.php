@@ -177,6 +177,11 @@ class Request implements
     {
         $config = $this->getConfig();
         $maxRetries = $config->get('http_max_retries', 5);
+        // Cap max retries at 10.
+        $maxRetries = $maxRetries > 10 ? 10 : $maxRetries;
+        $retryBackoff = $config->get('http_retry_backoff', 5);
+        // Retry backoff should be at least 3.
+        $retryBackoff = $retryBackoff < 3 ? 3 : $retryBackoff;
         $logger = $this->logger;
         $logWarning = function (string $message) use ($logger) {
             if ($this->output()->isVerbose()) {
@@ -191,7 +196,8 @@ class Request implements
             ?Exception $exception = null
         ) use (
             $maxRetries,
-            $logWarning
+            $logWarning,
+            $retryBackoff
         ) {
             $logWarningOnRetry = fn (string $reason) => 0 === $retry
                 ? $logWarning(
@@ -217,6 +223,8 @@ class Request implements
                 // Retry on connection-related exceptions such as "Connection refused" and "Operation timed out".
                 if ($retry !== $maxRetries) {
                     $logWarningOnRetry($exception->getMessage());
+                    $logWarning(sprintf("Retrying in %s seconds.", $retryBackoff * ($retry + 1)));
+                    sleep($retryBackoff * ($retry + 1));
 
                     return true;
                 }
@@ -239,6 +247,9 @@ class Request implements
                         'Response body: {body}',
                         ['body' => $response->getBody()->getContents()]
                     );
+
+                    $logWarning(sprintf("Retrying in %s seconds.", $retryBackoff * ($retry + 1)));
+                    sleep($retryBackoff * ($retry + 1));
 
                     return true;
                 }
