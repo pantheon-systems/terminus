@@ -37,6 +37,7 @@
   },
   "require-dev": {
     "ext-pcov": "*",
+    "ext-ssh2": "*",
     "behat/behat": "^3.2.2",
     "erusev/parsedown": "^1.7",
     "friendsofphp/php-cs-fixer": "^3.17",
