@@ -36,7 +36,8 @@ abstract class TerminusTestBase extends TestCase
      */
     protected static function callTerminus(
         string $command,
-        ?string $pipeInput = null
+        ?string $pipeInput = null,
+        $envVars = []
     ): array {
         $procCommand = sprintf('%s %s', TERMINUS_BIN_FILE, $command);
         if (null !== $pipeInput) {
@@ -50,7 +51,8 @@ abstract class TerminusTestBase extends TestCase
                 2 => ['pipe', 'w'],
             ],
             $pipes,
-            dirname(__DIR__, 2)
+            dirname(__DIR__, 2),
+            $envVars,
         );
 
         if (!is_resource($process)) {
@@ -85,7 +87,8 @@ abstract class TerminusTestBase extends TestCase
     protected function terminus(
         string $command,
         array $suffixParts = [],
-        bool $assertExitCode = true
+        bool $assertExitCode = true,
+        $envVars = []
     ): ?string {
         if (count($suffixParts) > 0) {
             $command = sprintf(
@@ -97,7 +100,11 @@ abstract class TerminusTestBase extends TestCase
             $command = sprintf('%s --yes', $command);
         }
 
-        [$output, $exitCode, $error] = static::callTerminus($command);
+        [$output, $exitCode, $error] = static::callTerminus(
+            $command,
+            null,
+            $envVars
+        );
         if (true === $assertExitCode) {
             $this->assertEquals(0, $exitCode, $error);
         }

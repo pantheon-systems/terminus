@@ -373,7 +373,10 @@ class Request implements
         if (isset($options['headers'])) {
             $headers = array_merge($headers, $options['headers']);
         }
-
+        $ttsc = getenv('TERMINUS_TESTING_STATUS');
+        if (intval($ttsc) > 0) {
+            $headers['X-Testing-Status'] = $ttsc;
+        }
         if (strpos($path ?? '', '://') === false) {
             $uri = "{$this->getBaseURI()}/api/$path";
             if ($part !== 'machine-token') {
