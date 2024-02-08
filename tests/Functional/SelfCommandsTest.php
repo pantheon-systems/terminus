@@ -48,7 +48,7 @@ class SelfCommandsTest extends TerminusTestBase
             0 !== $exitCode
             && false !== strpos($error, 'rate limit exceeded')
         ) {
-            $this->markTestSkipped(sprintf('Failed executing %s command: %s', self::SELF_UPDATE_COMMAND, $error));
+            $this->markTestSkipped(sprintf('Skipping %s due to rate limiting: %s', self::SELF_UPDATE_COMMAND, $error));
         }
 
         $this->assertEquals('No update available', $output);
