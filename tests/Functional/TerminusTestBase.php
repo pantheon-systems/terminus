@@ -183,7 +183,7 @@ abstract class TerminusTestBase extends TestCase
         callable $callable,
         $expected,
         int $attempts = 24,
-        int $intervalSeconds = 10
+        int $intervalSeconds = 30
     ): void {
         do {
             $actual = $callable();
