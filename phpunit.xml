@@ -1,16 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd"
-         bootstrap="./tests/config/bootstrap.php"
-         colors="true">
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd" bootstrap="./tests/config/bootstrap.php" colors="true">
     <testsuites>
         <testsuite name="functional">
             <directory suffix="Test.php">tests/Functional/</directory>
         </testsuite>
     </testsuites>
-    <coverage
-            processUncoveredFiles="true"
-            cacheDirectory="reports">
+    <coverage processUncoveredFiles="true" cacheDirectory="reports">
         <include>
             <directory suffix="Command.php">src/Commands</directory>
         </include>
@@ -19,10 +14,15 @@
         <testdoxXml outputFile="reports/logfile.xml"/>
     </logging>
     <php>
-        <server   name="TERMINUS_TOKEN"           value="${TERMINUS_TOKEN}" />
-        <server   name="TERMINUS_SITE"            value="${TERMINUS_SITE}" />
-        <server   name="TERMINUS_SITE_WP"         value="${TERMINUS_SITE}" />
-        <server   name="TERMINUS_SITE_WP_NETWORK" value="${TERMINUS_SITE}" />
-        <server   name="TERMINUS_ORG"             value="${TERMINUS_ORG}" />
+        <server name="TERMINUS_TOKEN" value="${TERMINUS_TOKEN}" />
+        <server name="TERMINUS_SITE" value="${TERMINUS_SITE}" />
+        <server name="TERMINUS_SITE_WP" value="${TERMINUS_SITE}" />
+        <server name="TERMINUS_SITE_WP_NETWORK" value="${TERMINUS_SITE}" />
+        <server name="TERMINUS_ORG" value="${TERMINUS_ORG}" />
+        <server name="TERMINUS_HOST" value="${TERMINUS_HOST}" />
+        <server name="TERMINUS_PORT" value="${TERMINUS_PORT}" />
+        <server name="PANTHEON_CERT" value="${PANTHEON_CERT}" />
+        <server name="TERMINUS_VERIFY_HOST_CERT" value="${TERMINUS_VERIFY_HOST_CERT}" />
+        <server name="TERMINUS_CACHE_DIR" value="${TERMINUS_CACHE_DIR}" />
     </php>
 </phpunit>
