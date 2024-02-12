@@ -38,7 +38,8 @@ abstract class TerminusTestBase extends TestCase
         string $command,
         ?string $pipeInput = null
     ): array {
-        $procCommand = sprintf('TERMINUS_HOST=%s %s %s', getEnv("TERMINUS_HOST"), TERMINUS_BIN_FILE, $command);
+        $terminusHost = isset($_ENV['TERMINUS_HOST']) ? "TERMINUS_HOST=" . $_ENV['TERMINUS_HOST'] : "";
+        $procCommand = sprintf('%s %s %s', $terminusHost, TERMINUS_BIN_FILE, $command);
         if (null !== $pipeInput) {
             $procCommand = sprintf('%s | %s', $pipeInput, $procCommand);
         }
