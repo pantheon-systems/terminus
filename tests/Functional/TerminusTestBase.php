@@ -38,21 +38,7 @@ abstract class TerminusTestBase extends TestCase
         string $command,
         ?string $pipeInput = null
     ): array {
-        $preamble = '';
-        foreach (
-            [
-                'TERMINUS_HOST',
-                'TERMINUS_PORT',
-                'TERMINUS_VERIFY_HOST_CERT',
-                'TERMINUS_CACHE_DIR',
-                'PANTHEON_CERT'
-            ] as $envVar
-        ) {
-            if (false !== getenv($envVar)) {
-                $preamble .= sprintf('%s=%s ', $envVar, getenv($envVar));
-            }
-        }
-        $procCommand = sprintf('%s %s %s', $preamble, TERMINUS_BIN_FILE, $command);
+        $procCommand = sprintf('TERMINUS_HOST=%s %s %s', getEnv("TERMINUS_HOST"), TERMINUS_BIN_FILE, $command);
         if (null !== $pipeInput) {
             $procCommand = sprintf('%s | %s', $pipeInput, $procCommand);
         }
