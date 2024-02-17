@@ -231,6 +231,29 @@ class Workflow extends TerminusModel implements
     }
 
     /**
+     * Returns the environment_id of this workflow
+     *
+     * @return string
+     */
+    public function getEnvironmentId()
+    {
+        if ($this->has('environment_id')) {
+            return $this->get('environment_id');
+        }
+        return null;
+    }
+
+    /**
+     * Detects if the workflow has not finished
+     *
+     * @return bool True if workflow has not finished
+     */
+    public function isUnfinished()
+    {
+        return !$this->has('result');
+    }
+
+    /**
      * Detects if the workflow has finished
      *
      * @return bool True if workflow has finished
@@ -248,6 +271,16 @@ class Workflow extends TerminusModel implements
     public function isSuccessful()
     {
         return $this->get('result') == 'succeeded';
+    }
+
+    /**
+     * Detects if the workflow was failed
+     *
+     * @return bool True if workflow failed
+     */
+    public function isFailed()
+    {
+        return $this->get('result') != 'succeeded';
     }
 
     /**
