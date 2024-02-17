@@ -15,6 +15,7 @@
   "require": {
     "php": ">=7.4",
     "ext-json": "*",
+    "ext-xml": "*",
     "composer/semver": "^3",
     "consolidation/comments": "^1.0.2",
     "consolidation/filter-via-dot-access-data": "^2.0",
