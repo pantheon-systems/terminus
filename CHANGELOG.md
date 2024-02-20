@@ -1,7 +1,29 @@
 # Change Log
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org)
 
-## 3.3.0 - 2023-11-28
+## 3.3.4-dev
+
+## 3.3.3 - 2024-01-11
+
+### Fixed
+
+- Undefined variable notice for defaultMaxRetries (#2529)
+
+## 3.3.2 - 2024-01-11
+
+### Fixed
+
+- Fix fatal error on payment methods (#2522)
+
+### Changed
+
+- Avoid hitting APIs so hard (#2523)
+
+## 3.3.1 - 2023-11-30
+
+- No changes, just retagged because of improper version numbering.
+
+## 3.3.0 - 2023-11-29
 
 - PHP 8.3 compatibility (#2555)
 - Misc 8.2 deprecations

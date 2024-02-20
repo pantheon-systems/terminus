@@ -38,7 +38,21 @@ abstract class TerminusTestBase extends TestCase
         string $command,
         ?string $pipeInput = null
     ): array {
-        $procCommand = sprintf('%s %s', TERMINUS_BIN_FILE, $command);
+        $preamble = '';
+        foreach (
+            [
+                'TERMINUS_HOST',
+                'TERMINUS_PORT',
+                'TERMINUS_VERIFY_HOST_CERT',
+                'TERMINUS_CACHE_DIR',
+                'PANTHEON_CERT'
+            ] as $envVar
+        ) {
+            if (false !== getenv($envVar)) {
+                $preamble .= sprintf('%s=%s ', $envVar, getenv($envVar));
+            }
+        }
+        $procCommand = sprintf('%s %s %s', $preamble, TERMINUS_BIN_FILE, $command);
         if (null !== $pipeInput) {
             $procCommand = sprintf('%s | %s', $pipeInput, $procCommand);
         }
@@ -183,7 +197,7 @@ abstract class TerminusTestBase extends TestCase
         callable $callable,
         $expected,
         int $attempts = 24,
-        int $intervalSeconds = 10
+        int $intervalSeconds = 30
     ): void {
         do {
             $actual = $callable();
@@ -211,7 +225,7 @@ abstract class TerminusTestBase extends TestCase
         int $attempts = 3
     ): void {
         $this->assertTerminusCommandResultEqualsInAttempts(
-            fn () => static::callTerminus(sprintf('%s --yes', $command))[1],
+            fn() => static::callTerminus(sprintf('%s --yes', $command))[1],
             0,
             $attempts
         );
