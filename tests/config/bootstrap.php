@@ -11,9 +11,17 @@ use Pantheon\Terminus\Tests\Functional\TerminusTestBase;
 // create a log channel
 global $log;
 
-
-$log =& $GLOBALS['LOGGER'];
+$log = &$GLOBALS['LOGGER'];
 $log = new Logger('PHPUNIT');
+
+global $preamble;
+
+$preamble = "";
+if (getenv('TERMINUS_VERBOSE')) {
+    $preamble .= sprintf('%s --verbose ', $preamble);
+}
+
+
 $tokens_dir = implode(DIRECTORY_SEPARATOR, [$_SERVER['HOME'], '.terminus', 'cache', 'tokens']);
 if (!is_dir($tokens_dir)) {
     mkdir(
@@ -91,32 +99,47 @@ if (!file_exists($cache_dir . '/session')) {
     }
     exec(
         sprintf(
-            '%s auth:login --machine-token=%s',
+            '%s auth:login %s --machine-token=%s',
             TERMINUS_BIN_FILE,
+            $preamble,
             $token
         )
     );
 }
 
+// Read a Pants JSON file to set fixtures created for this testing cycle
+if (file_exists($cache_dir . "/fixtures.json")) {
+    try {
+        $fixtures = json_decode(
+            file_get_contents($cache_dir . "/fixtures.json"),
+            true,
+            512,
+            JSON_THROW_ON_ERROR
+        );
+    } catch (JsonException $e) {
+        $log->warning('Could not read fixtures.json: %s', [$e->getMessage()]);
+    }
+    foreach ($fixtures as $key => $value) {
+        // site_wp becomes env var TERMINUS_SITE_WP, etc
+        putenv(sprintf('%s=%s', "TERMINUS_" . strtoupper($key), $value));
+    }
+}
 
 if (!getenv('TERMINUS_TESTING_RUNTIME_ENV')) {
     // Create a testing runtime multidev environment.
     $sitename = TerminusTestBase::getSiteName();
 
     $multidev = sprintf('test-%s', substr(uniqid(), -6, 6));
-    $createMdCommand = sprintf('multidev:create %s.dev %s', $sitename, $multidev);
-
-    exec(
-        sprintf('%s %s', TERMINUS_BIN_FILE, $createMdCommand),
-        $output,
-        $code
-    );
+    $createMdCommand = sprintf('multidev:create %s %s.dev %s', $preamble, $sitename, $multidev);
+    $command = sprintf('%s %s', TERMINUS_BIN_FILE, $createMdCommand);
+    $log->debug('Creating multidev environment: %s', [$command]);
+    exec($command, $output, $code);
     if (0 !== $code) {
         /** @noinspection PhpUnhandledExceptionInspection */
         throw new Exception(
             sprintf(
                 'Command "%s" exited with non-zero code (%d). Output: %s',
-                $createMdCommand,
+                $command,
                 $code,
                 implode("\n", $output)
             )
@@ -126,10 +149,13 @@ if (!getenv('TERMINUS_TESTING_RUNTIME_ENV')) {
     TerminusTestBase::setMdEnv($multidev);
 
     register_shutdown_function(function () use ($sitename, $multidev) {
+        global $preamble, $log;
         // Delete a testing runtime multidev environment.
-        $deleteMdCommand = sprintf('multidev:delete %s.%s --delete-branch --yes', $sitename, $multidev);
+        $deleteMdCommand = sprintf('multidev:delete %s %s.%s --delete-branch --yes', $preamble, $sitename, $multidev);
+        $command = sprintf('%s %s', TERMINUS_BIN_FILE, $deleteMdCommand);
+        $log->debug('Deleting multidev environment: %s', [$command]);
         exec(
-            sprintf('%s %s', TERMINUS_BIN_FILE, $deleteMdCommand),
+            $command,
             $output,
             $code
         );

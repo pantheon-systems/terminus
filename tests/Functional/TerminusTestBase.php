@@ -17,6 +17,9 @@ abstract class TerminusTestBase extends TestCase
      */
     protected Logger $logger;
 
+    /**
+     * @return void
+     */
     protected function setUp(): void
     {
         parent::setUp();
@@ -38,6 +41,15 @@ abstract class TerminusTestBase extends TestCase
         string $command,
         ?string $pipeInput = null
     ): array {
+        if (self::isDebug()) {
+            $command = sprintf('%s --debug', $command);
+            echo "Running command: $command\n";
+        }
+        if (self::isVerbose()) {
+            $command = sprintf('%s --verbose', $command);
+        }
+        print_r($_SERVER['env']);
+        exit(1);
         $env = [];
         foreach (
             [
@@ -112,7 +124,11 @@ abstract class TerminusTestBase extends TestCase
             $command = sprintf('%s --yes', $command);
         }
 
+
+        // Do the thing
         [$output, $exitCode, $error] = static::callTerminus($command);
+
+        // Did we do the thing or did we not do the thing?
         if (true === $assertExitCode) {
             $this->assertEquals(0, $exitCode, $error);
         }
@@ -540,5 +556,31 @@ abstract class TerminusTestBase extends TestCase
     {
         $commandList = $this->terminus('list');
         $this->assertStringNotContainsString($commandName, $commandList);
+    }
+
+    /**
+     * Check if '--verbose' or '-v' is in the command-line arguments
+     *
+     * @return bool
+     */
+    public static function isVerbose(): bool
+    {
+        if (getenv('TERMINUS_VERBOSE')) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Check if '--debug' or '-d' is in the command-line arguments
+     *
+     * @return bool
+     */
+    public static function isDebug(): bool
+    {
+        if (getenv('TERMINUS_DEBUG')) {
+            return true;
+        }
+        return false;
     }
 }
