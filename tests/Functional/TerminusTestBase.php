@@ -41,13 +41,6 @@ abstract class TerminusTestBase extends TestCase
         string $command,
         ?string $pipeInput = null
     ): array {
-        if (self::isDebug()) {
-            $command = sprintf('%s --debug', $command);
-            echo "Running command: $command\n";
-        }
-        if (self::isVerbose()) {
-            $command = sprintf('%s --verbose', $command);
-        }
         $env = [];
         foreach (
             [
@@ -68,7 +61,9 @@ abstract class TerminusTestBase extends TestCase
         if (null !== $pipeInput) {
             $procCommand = sprintf('%s | %s', $pipeInput, $procCommand);
         }
-
+        if (self::isDebug()) {
+            echo sprintf("Environment: %s => %s => COMMAND: %s", PHP_EOL, print_r($env, true), $procCommand);
+        }
         $process = proc_open(
             $procCommand,
             [
