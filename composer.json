@@ -117,10 +117,10 @@
       "SHELL_INTERACTIVE=true TERMINUS_TEST_MODE=1 behat --colors --config tests/config/behat.yml --stop-on-failure --suite=default"
     ],
     "test:short": [
-      "TERMINUS_DEBUG=${TERMINUS_DEBUG} TERMINUS_VERBOSE=${TERMINUS_VERBOSE} XDEBUG_MODE=coverage vendor/bin/phpunit --colors=always -c ./phpunit.xml --debug --group=short --do-not-cache-result --verbose --stop-on-failure"
+      "TERMINUS_PORT=${TERMINUS_PORT} TERMINUS_HOST=${TERMINUS_HOST} TERMINUS_DEBUG=${TERMINUS_DEBUG} TERMINUS_VERBOSE=${TERMINUS_VERBOSE} XDEBUG_MODE=coverage vendor/bin/phpunit --colors=always -c ./phpunit.xml --debug --group=short --do-not-cache-result --verbose --stop-on-failure"
     ],
     "test:long": [
-      "XDEBUG_MODE=coverage vendor/bin/phpunit --colors=always -c ./phpunit.xml --debug --group=long --do-not-cache-result --verbose"
+      "TERMINUS_PORT=${TERMINUS_PORT} TERMINUS_HOST=${TERMINUS_HOST} TERMINUS_DEBUG=${TERMINUS_DEBUG} TERMINUS_VERBOSE=${TERMINUS_VERBOSE} XDEBUG_MODE=coverage vendor/bin/phpunit --colors=always -c ./phpunit.xml --debug --group=long --do-not-cache-result --verbose"
     ],
     "test:functional": [
       "XDEBUG_MODE=coverage vendor/bin/phpunit --colors=always -c ./phpunit.xml --debug --group=short,long --do-not-cache-result --verbose",

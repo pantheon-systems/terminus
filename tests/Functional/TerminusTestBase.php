@@ -48,8 +48,6 @@ abstract class TerminusTestBase extends TestCase
         if (self::isVerbose()) {
             $command = sprintf('%s --verbose', $command);
         }
-        print_r($_SERVER['env']);
-        exit(1);
         $env = [];
         foreach (
             [
@@ -57,6 +55,8 @@ abstract class TerminusTestBase extends TestCase
                 'TERMINUS_PORT',
                 'TERMINUS_VERIFY_HOST_CERT',
                 'TERMINUS_CACHE_DIR',
+                'TERMINUS_VERBOSE',
+                'TERMINUS_DEBUG',
                 'PANTHEON_CERT'
             ] as $envVar
         ) {
