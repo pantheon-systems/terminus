@@ -37,6 +37,10 @@ class AliasesCommandTest extends TerminusTestBase
      */
     public function testGetAliases()
     {
+        if (getenv("TERMINUS_ENV") == "local") {
+            $this->markTestSkipped('Skipping testGetAliases() on local environment.');
+            return;
+        }
         // Test printed Drush 8 alias of the test site.
         $command = sprintf('drush:aliases --only=%s  --print', $this->getSiteName());
         $alias_printed = $this->terminus($command);

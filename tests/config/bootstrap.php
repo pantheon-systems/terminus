@@ -130,22 +130,19 @@ if (!getenv('TERMINUS_TESTING_RUNTIME_ENV')) {
     $sitename = TerminusTestBase::getSiteName();
 
     $multidev = sprintf('test-%s', substr(uniqid(), -6, 6));
-    $createMdCommand = sprintf('multidev:create %s %s.dev %s', $preamble, $sitename, $multidev);
-    $command = sprintf('%s %s', TERMINUS_BIN_FILE, $createMdCommand);
-    $log->debug('Creating multidev environment: %s', [$command]);
-    exec($command, $output, $code);
+    $createMdCommand = sprintf('%s multidev:create %s %s.dev %s', TERMINUS_BIN_FILE, $preamble, $sitename, $multidev);
+    $log->debug('Creating multidev environment: %s', [$createMdCommand]);
+    exec($createMdCommand, $output, $code);
+    // Many times this process will result in a database error that is not fatal.
+    // we will actually get info on the created environment to ensure it exists.
+    $envInfoCommand = sprintf('%s env:info %s %s.%s --format=json', TERMINUS_BIN_FILE, $preamble, $sitename, $multidev);
+    $log->debug('Creating multidev environment: %s', [$envInfoCommand]);
+    exec($envInfoCommand, $output, $code);
     if (0 !== $code) {
         /** @noinspection PhpUnhandledExceptionInspection */
-        throw new Exception(
-            sprintf(
-                'Command "%s" exited with non-zero code (%d). Output: %s',
-                $command,
-                $code,
-                implode("\n", $output)
-            )
-        );
+        throw new Exception(sprintf('Command "%s" exited with non-zero code (%d)', $envInfoCommand, $code));
     }
-
+    $log->info('Verified environment: %s', [$output, true]);
     TerminusTestBase::setMdEnv($multidev);
 
     register_shutdown_function(function () use ($sitename, $multidev) {
