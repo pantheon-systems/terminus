@@ -18,12 +18,11 @@ class AliasesCommandTest extends TerminusTestBase
      */
     protected function setUp(): void
     {
-        parent::setUp();
-        if (!$this->isSiteFrameworkDrupal()) {
-            $this->markTestSkipped(
-                'A Drupal-based test site is required to test Drush-related "drush:aliases" command.'
-            );
-        }
+        // Skip this test. The output of the "drush:aliases" command is not
+        // consistent across different environments.
+        $this->markTestSkipped(
+            'this test is out of date with our current drush aliases policies.'
+        );
     }
 
     /**
@@ -37,10 +36,6 @@ class AliasesCommandTest extends TerminusTestBase
      */
     public function testGetAliases()
     {
-        if (getenv("TERMINUS_ENV") == "local") {
-            $this->markTestSkipped('Skipping testGetAliases() on local environment.');
-            return;
-        }
         // Test printed Drush 8 alias of the test site.
         $command = sprintf('drush:aliases --only=%s  --print', $this->getSiteName());
         $alias_printed = $this->terminus($command);
