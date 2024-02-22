@@ -69,10 +69,10 @@ $home_tokens_folder = '.terminus' . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SE
 
 $tokens_dir = $home . DIRECTORY_SEPARATOR . $home_tokens_folder;
 if (!is_dir($tokens_dir)) {
-    mkdir(
-            $tokens_dir,
-            0700,
-            true
+    @mkdir(
+        $tokens_dir,
+        0700,
+        true
     );
 }
 

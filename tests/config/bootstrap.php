@@ -58,6 +58,12 @@ if (!is_dir($cache_dir)) {
 
 // If the bin file doesn't exist, build it.
 const TERMINUS_BIN_FILE = './terminus.phar';
+if (getenv('TERMINUS_ENV') == 'local') {
+    $log->info('Running in local environment. Reloading plugins to avoid warnings.');
+    exec(
+        "./terminus.phar self:plugin:reload --yes"
+    );
+}
 $version = exec(sprintf('%s --version', TERMINUS_BIN_FILE));
 if (!file_exists(TERMINUS_BIN_FILE)) {
     exec(

@@ -15,6 +15,9 @@
     </logging>
     <php>
         <server name="PANTHEON_CERT" value="${PANTHEON_CERT}" />
+        <server name="PATH" value="${PATH}" />
+        <server name="HOME" value="${HOME}" />
+        <server name="PROJECT_PATH" value="${PROJECT_PATH}" />
         <server name="TERMINUS_CACHE_DIR" value="${TERMINUS_CACHE_DIR}" />
         <server name="TERMINUS_DEBUG" value="${TERMINUS_DEBUG}" />
         <server name="TERMINUS_ENV" value="${TERMINUS_ENV}" />
