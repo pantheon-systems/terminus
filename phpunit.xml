@@ -14,10 +14,10 @@
         <testdoxXml outputFile="reports/logfile.xml"/>
     </logging>
     <php>
-        <server name="TERMINUS_ENV" value="${TERMINUS_ENV}" />
         <server name="PANTHEON_CERT" value="${PANTHEON_CERT}" />
         <server name="TERMINUS_CACHE_DIR" value="${TERMINUS_CACHE_DIR}" />
         <server name="TERMINUS_DEBUG" value="${TERMINUS_DEBUG}" />
+        <server name="TERMINUS_ENV" value="${TERMINUS_ENV}" />
         <server name="TERMINUS_HOST" value="${TERMINUS_HOST}" />
         <server name="TERMINUS_ORG" value="${TERMINUS_ORG}" />
         <server name="TERMINUS_PORT" value="${TERMINUS_PORT}" />

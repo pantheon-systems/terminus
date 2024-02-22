@@ -67,7 +67,7 @@ class PlanCommandsTest extends TerminusTestBase
     public function testSetPlanCommand()
     {
         $plans = $this->terminusJsonResponse(sprintf('plan:list %s', $this->getSiteName()));
-        $smallPlans = array_filter($plans, fn ($plan) => false !== strpos($plan['sku'], 'small'));
+        $smallPlans = array_filter($plans, fn ($plan) => false !== strpos($plan['sku'], 'performance_small'));
         $targetPlanSku = reset($smallPlans)['sku'];
 
         $this->terminus(sprintf('plan:set %s %s', $this->getSiteName(), $targetPlanSku));
