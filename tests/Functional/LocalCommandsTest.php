@@ -9,13 +9,17 @@ namespace Pantheon\Terminus\Tests\Functional;
  */
 class LocalCommandsTest extends TerminusTestBase
 {
+    public function setUp(): void
+    {
+        ## test skipped... see https://getpantheon.atlassian.net/browse/LOPS-2081
+        $this->markTestSkipped('Skipping test due to LOPS-2081');
+    }
+
     /**
      * @inheritdoc
      */
     public function tearDown(): void
     {
-        ## test skipped... see https://getpantheon.atlassian.net/browse/LOPS-2081
-        $this->markTestSkipped('Skipping test due to LOPS-2081');
         ## parent::tearDown();
         ## $this->cleanUpTestSiteDir();
     }
