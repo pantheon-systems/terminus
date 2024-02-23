@@ -20,8 +20,8 @@ class LocalCommandsTest extends TerminusTestBase
      */
     public function tearDown(): void
     {
-        ## parent::tearDown();
-        ## $this->cleanUpTestSiteDir();
+        parent::tearDown();
+        $this->cleanUpTestSiteDir();
     }
 
     /**
