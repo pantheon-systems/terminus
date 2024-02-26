@@ -75,6 +75,8 @@ jobs:
         uses: webfactory/ssh-agent@v0.5.3
         with:
           ssh-private-key: ${{ secrets.TERMINUS_SITE_OWNER_SSH_PRIVATE_KEY }}
+      - run: brew update && brew upgrade icu4c
+        if: runner.os == 'macOS'
       - name: Setup PHP with PECL extension
         uses: shivammathur/setup-php@v2
         with:
