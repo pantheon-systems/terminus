@@ -45,7 +45,7 @@ $log->info(print_r($GLOBALS, true));
 // the user's real cache and session.
 if (!getenv('TERMINUS_CACHE_DIR')) {
     // Set the terminus cache directory if not already set
-    putenv(sprintf('TERMINUS_CACHE_DIR=%s/.terminus/testcache', getenv('HOME')));
+    putenv(sprintf('TERMINUS_CACHE_DIR=%s/.terminus/testcache', $_SERVER['HOME']));
 }
 $cache_dir = getenv('TERMINUS_CACHE_DIR');
 if (!is_dir($cache_dir)) {

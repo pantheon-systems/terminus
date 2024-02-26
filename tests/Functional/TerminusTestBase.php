@@ -45,8 +45,8 @@ abstract class TerminusTestBase extends TestCase
     ): array {
         global $log;
         $env = [
-            "PATH" => getenv("PATH"),
-            "HOME" => getenv("HOME"),
+            "PATH" => $_SERVER['PATH'],
+            "HOME" => $_SERVER['HOME'],
         ];
         foreach (
             [
