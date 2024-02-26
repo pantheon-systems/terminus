@@ -34,6 +34,7 @@ class AuthCommandsTest extends TerminusTestBase
     public function testAuthWhoAmI()
     {
         $result = $this->terminusJsonResponse("auth:whoami");
+        $this->logger->info(print_r($result, true));
         $this->assertIsArray($result, "Response from auth:whoami should be an array.");
         $this->assertArrayHasKey("id", $result, "Response from whoami should include a user ID");
         $this->assertArrayHasKey(

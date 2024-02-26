@@ -57,14 +57,14 @@ abstract class TerminusTestBase extends TestCase
                 'PANTHEON_CERT'
             ] as $envVar
         ) {
-            if (false !== getenv($envVar)) {
-                $env[$envVar] = getenv($envVar);
+            if ($_SERVER[$envVar] ?? false) {
+                $env[$envVar] = $_SERVER[$envVar];
             }
         }
         if (!str_contains($command, '--format=json')) {
             // adding these and expecting a json response will cause the test to error un-serializing the json
-            $env['TERMINUS_DEBUG'] = getenv('TERMINUS_DEBUG');
-            $env['TERMINUS_VERBOSE'] = getenv('TERMINUS_VERBOSE');
+            $env['TERMINUS_DEBUG'] = $_SERVER['TERMINUS_DEBUG'];
+            $env['TERMINUS_VERBOSE'] = $_SERVER['TERMINUS_VERBOSE'];
         }
         $procCommand = sprintf('%s %s', TERMINUS_BIN_FILE, $command);
         if (null !== $pipeInput) {
