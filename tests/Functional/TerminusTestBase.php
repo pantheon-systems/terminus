@@ -38,7 +38,7 @@ abstract class TerminusTestBase extends TestCase
         string $command,
         ?string $pipeInput = null
     ): array {
-        $preamble = '';
+        $env = [];
         foreach (
             [
                 'TERMINUS_HOST',
@@ -49,10 +49,11 @@ abstract class TerminusTestBase extends TestCase
             ] as $envVar
         ) {
             if (false !== getenv($envVar)) {
-                $preamble .= sprintf('%s=%s ', $envVar, getenv($envVar));
+                $env[] = sprintf('%s=%s ', $envVar, getenv($envVar));
             }
         }
-        $procCommand = sprintf('%s %s %s', $preamble, TERMINUS_BIN_FILE, $command);
+        $preamble = implode(' ', $env);
+        $procCommand = sprintf('%s %s -v %s', $preamble, TERMINUS_BIN_FILE, $command);
         if (null !== $pipeInput) {
             $procCommand = sprintf('%s | %s', $pipeInput, $procCommand);
         }
