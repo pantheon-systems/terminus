@@ -4,6 +4,7 @@ namespace Pantheon\Terminus\Commands;
 
 use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
 use Pantheon\Terminus\Helpers\LocalMachineHelper;
+use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
 
 /**
  * Class ArtCommand
@@ -11,10 +12,37 @@ use Pantheon\Terminus\Helpers\LocalMachineHelper;
  */
 class ArtCommand extends TerminusCommand
 {
+    use StructuredListTrait;
+
     /**
      * @var array
      */
-    protected $available_art = ['druplicon', 'fist', 'hello', 'rocket', 'unicorn', 'wordpress',];
+    protected $available_art = [
+        'druplicon' => [
+            'name' => 'druplicon',
+            'description' => 'The mascot of Drupal'
+        ],
+        'fist' => [
+            'name' => 'fist',
+            'description' => 'The fist of Zeus',
+        ],
+        'hello' => [
+            'name' => 'hello',
+            'description' => 'A welcome from Terminus',
+        ],
+        'rocket' => [
+            'name' => 'rocket',
+            'description' => 'A rocket ship',
+        ],
+        'unicorn' => [
+            'name' => 'unicorn',
+            'description' => 'A wonderful unicorn',
+        ],
+        'wordpress' => [
+            'name' => 'wordPress',
+            'description' => 'The WordPress logo',
+        ],
+    ];
 
     /**
      * Displays Pantheon ASCII artwork.
@@ -23,7 +51,6 @@ class ArtCommand extends TerminusCommand
      *
      * @param string $name Artwork name
      *
-     * @usage Displays the list of available artwork.
      * @usage <artwork> Displays the <artwork> artwork.
      */
     public function art($name = 'random')
@@ -32,6 +59,26 @@ class ArtCommand extends TerminusCommand
             $name = $this->randomArtName();
         }
         return $this->retrieveArt($name);
+    }
+
+    /**
+     * Lists available Pantheon ASCII artwork.
+     *
+     * @command art:list
+     *
+     * @field-labels
+     *     name: Name
+     *     description: Description
+     *
+     * @default-fields name,description
+     * 
+     * @usage Displays the list of available artwork.
+     * 
+     * @return RowsOfFields
+     */
+    public function listArt()
+    {
+        return new RowsOfFields($this->available_art);
     }
 
     /**
@@ -52,7 +99,7 @@ class ArtCommand extends TerminusCommand
      */
     protected function randomArtName()
     {
-        return $this->available_art[array_rand($this->available_art)];
+        return $this->available_art[array_rand($this->available_art, 1)];
     }
 
     /**
@@ -68,7 +115,7 @@ class ArtCommand extends TerminusCommand
         $local_machine_helper = $this->getContainer()->get(LocalMachineHelper::class);
         if (!$local_machine_helper->getFilesystem()->exists($filename)) {
             throw new TerminusNotFoundException(
-                'There is no source for the requested {name} artwork.',
+                'There is no source for the requested "{name}" artwork.',
                 compact('name')
             );
         }
