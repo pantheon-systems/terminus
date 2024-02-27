@@ -4,10 +4,10 @@
 ## 2. `direnv allow`
 
 ## a string MACHINE TOKEN allowing access to a pantheon platform user
-export TERMINUS_TOKEN=1234567890ABCDEFGHIJKL
+## export TERMINUS_TOKEN=1234567890ABCDEFGHIJKL
 
 ## a string of the Pantheon platform user uuid
-export TERMINUS_USER=12345678-1234-1234-1234-1234567890ab
+export TERMINUS_USER=$(terminus auth:whoami --format=json | jq -r .id)
 
 ## a string of the Drupal site that will be tested. The user above
 ## must have access to this site.

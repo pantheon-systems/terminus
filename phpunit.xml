@@ -24,5 +24,6 @@
         <server name="PANTHEON_CERT" value="${PANTHEON_CERT}" />
         <server name="TERMINUS_VERIFY_HOST_CERT" value="${TERMINUS_VERIFY_HOST_CERT}" />
         <server name="TERMINUS_CACHE_DIR" value="${TERMINUS_CACHE_DIR}" />
+        <server name="TERMINUS_DEBUG" value="${TERMINUS_DEBUG}" />
     </php>
 </phpunit>
