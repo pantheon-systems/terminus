@@ -25,7 +25,7 @@ class ListCommand extends TerminusCommand implements SiteAwareInterface
      * @command workflow:list
      * @aliases workflows
      *
-     * @option bool $all Whether to return all available workflows, not just the most recent 100
+     * @option bool $all Return all of the available workflows, not just the most recent 100
      *
      * @field-labels
      *     id: Workflow ID
