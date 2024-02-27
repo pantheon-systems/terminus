@@ -76,7 +76,7 @@ class SiteTeamCommandsTest extends TerminusTestBase
      * @covers \Pantheon\Terminus\Commands\Site\Team\RoleCommand
      *
      * @group site-team
-     * @group long
+     * @group short
      */
     public function testSiteTeamRoleCommand(): void
     {
