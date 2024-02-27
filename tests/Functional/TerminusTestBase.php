@@ -133,7 +133,7 @@ abstract class TerminusTestBase extends TestCase
             $error,
             'Command error must not contain PHP deprecation notices'
         );
-        if (isset($this->env['TERMINUS_DEBUG']) && $this->env['TERMINUS_DEBUG']) {
+        if (boolval(getenv('TERMINUS_DEBUG')) === true) {
             $this->logger->debug(
                 sprintf(
                     'Terminus command: %s',
