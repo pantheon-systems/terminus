@@ -76,20 +76,13 @@ class SiteTeamCommandsTest extends TerminusTestBase
      * @covers \Pantheon\Terminus\Commands\Site\Team\RoleCommand
      *
      * @group site-team
-     * @group short
+     * @group long
      */
     public function testSiteTeamRoleCommand(): void
     {
-        self::callTerminus(
-            sprintf('site:team:add %s %s', $this->getSiteName(), $this->getUserEmail())
-        );
-
         [$stdout, $exitCode, $stderr] = self::callTerminus(
             sprintf('site:team:role %s %s team_member', $this->getSiteName(), $this->getUserEmail())
         );
-
-        printf("stdout: %s\n", $stdout);
-        printf("stderr: %s\n", $stderr);
 
         $this->assertEquals(0, $exitCode);
     }
