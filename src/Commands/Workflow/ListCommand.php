@@ -25,6 +25,8 @@ class ListCommand extends TerminusCommand implements SiteAwareInterface
      * @command workflow:list
      * @aliases workflows
      *
+     * @option bool $all Whether to return all available workflows, not just the most recent 100
+     *
      * @field-labels
      *     id: Workflow ID
      *     env: Environment
@@ -40,11 +42,14 @@ class ListCommand extends TerminusCommand implements SiteAwareInterface
      *
      * @usage <site> Displays the list of the workflows for <site>.
      */
-    public function wfList($site_id)
+    public function wfList($site_id, $options = [
+        'all' => false,
+    ])
     {
+        $paging = (bool) $options['all'];
         $site = $this->getSiteById($site_id);
         return $this->getRowsOfFields(
-            $site->getWorkflows()->setPaging(true)->fetch(),
+            $site->getWorkflows()->setPaging($paging)->fetch(),
             [
                 'message' => 'No workflows have been run on {site}.',
                 'message_options' => ['site' => $site->getName()],
