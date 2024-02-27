@@ -1,7 +1,11 @@
 # Change Log
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org)
 
-## 3.3.4-dev
+## 3.3.4 - 2024-02-27
+
+### Changed
+
+- Added `--all` option to workflow:list to get all of the available workflows instead of last 100 (#2543)
 
 ## 3.3.3 - 2024-01-11
 
