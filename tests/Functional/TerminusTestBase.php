@@ -52,8 +52,7 @@ abstract class TerminusTestBase extends TestCase
                 $env[] = sprintf('%s=%s ', $envVar, getenv($envVar));
             }
         }
-        $preamble = implode(' ', $env);
-        $procCommand = sprintf('%s %s -v %s', $preamble, TERMINUS_BIN_FILE, $command);
+        $procCommand = sprintf('%s %s', TERMINUS_BIN_FILE, $command);
         if (null !== $pipeInput) {
             $procCommand = sprintf('%s | %s', $pipeInput, $procCommand);
         }
@@ -65,7 +64,8 @@ abstract class TerminusTestBase extends TestCase
                 2 => ['pipe', 'w'],
             ],
             $pipes,
-            dirname(__DIR__, 2)
+            dirname(__DIR__, 2),
+            $env,
         );
 
         if (!is_resource($process)) {
@@ -127,7 +127,26 @@ abstract class TerminusTestBase extends TestCase
             $error,
             'Command error must not contain PHP deprecation notices'
         );
-
+        if (false !== getenv('TERMINUS_DEBUG')) {
+            $this->logger->debug(
+                sprintf(
+                    'Terminus command: %s',
+                    $command
+                )
+            );
+            $this->logger->debug(
+                sprintf(
+                    'Terminus output: %s',
+                    $output
+                )
+            );
+            $this->logger->debug(
+                sprintf(
+                    'Terminus error: %s',
+                    $error
+                )
+            );
+        }
         return $output;
     }
 
