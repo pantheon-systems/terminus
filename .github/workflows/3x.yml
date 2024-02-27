@@ -77,6 +77,7 @@ jobs:
           ssh-private-key: ${{ secrets.TERMINUS_SITE_OWNER_SSH_PRIVATE_KEY }}
       - run: brew update && brew upgrade icu4c
         if: runner.os == 'macOS'
+        continue-on-error: true
       - name: Setup PHP with PECL extension
         uses: shivammathur/setup-php@v2
         with:
