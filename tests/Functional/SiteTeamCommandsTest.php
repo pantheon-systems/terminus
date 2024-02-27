@@ -84,6 +84,9 @@ class SiteTeamCommandsTest extends TerminusTestBase
             sprintf('site:team:role %s %s team_member', $this->getSiteName(), $this->getUserEmail())
         );
 
+        printf("stdout: %s\n", $stdout);
+        printf("stderr: %s\n", $stderr);
+
         $this->assertEquals(0, $exitCode);
     }
 
