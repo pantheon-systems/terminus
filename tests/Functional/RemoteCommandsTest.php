@@ -22,7 +22,6 @@ class RemoteCommandsTest extends TerminusTestBase
                 'A Drupal-based test site is required to test remote Drush commands.'
             );
         }
-        $this->env['TERMINUS_DEBUG'] = true;
     }
 
     /**
