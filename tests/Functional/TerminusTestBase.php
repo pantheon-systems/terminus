@@ -155,7 +155,7 @@ abstract class TerminusTestBase extends TestCase
             $this->logger->debug(
                 sprintf(
                     'Terminus Env: %s',
-                    print_r($env, true),
+                    print_r($this->env, true),
                 )
             );
         }
@@ -175,6 +175,18 @@ abstract class TerminusTestBase extends TestCase
         $command = sprintf('%s --yes', $command);
 
         [$output, $status] = static::callTerminus($command, $pipeInput);
+        $this->logger->debug(
+            sprintf(
+                'Terminus command: %s',
+                $command
+            )
+        );
+        $this->logger->debug(
+            sprintf(
+                'Terminus output: %s',
+                $output
+            )
+        );
         $this->assertEquals(0, $status, $output);
 
         return $output;
@@ -264,7 +276,7 @@ abstract class TerminusTestBase extends TestCase
         int $attempts = 3
     ): void {
         $this->assertTerminusCommandResultEqualsInAttempts(
-            fn() => static::callTerminus(sprintf('%s --yes', $command))[1],
+            fn () => static::callTerminus(sprintf('%s --yes', $command))[1],
             0,
             $attempts
         );
