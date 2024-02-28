@@ -18,7 +18,7 @@ You can do that in several different ways:
 
 ## Methods for pointing terminus to PantheonAPI
 
-*   (best) edit (or create if doesn't exist) ~/.terminus/config.yml with the following:
+*   **Recommended:** Add `TERMINUS_HOST: api.pantheon.io` to the file `~/.terminus/config.yml` on your computer. You can simply paste the code below into your terminal and it will create teh file if it does not exist and add the line to it:
 
     ```bash
     mkdir -p ~/.terminus && echo "TERMINUS_HOST: api.pantheon.io" >> ~/.terminus/config.yml
@@ -35,6 +35,31 @@ You can do that in several different ways:
     ```bash
     export TERMINUS_HOST=api.pantheon.io
     ```
+
+
+To confirm that you are using the new API, run a terminus command with `-vvv` to see the API requests. The `URI` will normally use `terminus.pantheon.io`.  If your terminus is pointing to the new API, it will show `api.pantheon.io`.
+
+Normal (old) API:
+
+```bash
+$ terminus -vvv auth:whoami
+Headers: {"User-Agent":"Terminus/3.3.4 (php_version=8.3.3&script=bin/terminus)","Accept":"application/json","X-Pantheon-Trace-Id":"a2e3e3e3-3e3e-3e3e-3e3e-3e3e3e3e3e3e","X-Pantheon-Terminus-Command":"{\"command\":\"auth:whoami\",\"arguments\":{\"command\":\"auth:whoami\"},\"options\":{\"format\":\"string\",\"fields\":\"\",\"field\":\"\",\"help\":false,\"quiet\":false,\"verbose\":true,\"version\":false,\"ansi\":null,\"no-interaction\":false,\"define\":[],\"yes\":false},\"truncated\":false}","Authorization":"**HIDDEN**"}
+URI: https://terminus.pantheon.io:443/api/users/a2e3e3e3-3e3e-3e3e-3e3e-3e3e3e3e3e3e
+Method: GET
+Body: null
+```
+
+New API:
+
+```bash
+$ terminus -vvv auth:whoami
+Headers: {"User-Agent":"Terminus/3.3.4 (php_version=8.3.3&script=bin/terminus)","Accept":"application/json","X-Pantheon-Trace-Id":"a2e3e3e3-3e3e-3e3e-3e3e-3e3e3e3e3e3e","X-Pantheon-Terminus-Command":"{\"command\":\"auth:whoami\",\"arguments\":{\"command\":\"auth:whoami\"},\"options\":{\"format\":\"string\",\"fields\":\"\",\"field\":\"\",\"help\":false,\"quiet\":false,\"verbose\":true,\"version\":false,\"ansi\":null,\"no-interaction\":false,\"define\":[],\"yes\":false},\"truncated\":false}","Authorization":"**HIDDEN**"}
+URI: https://terminus.pantheon.io:443/api/users/a2e3e3e3-3e3e-3e3e-3e3e-3e3e3e3e3e3e
+Method: GET
+Body: null
+```
+
+You can switch back to the old API by undoing these changes.  If you used the recommended method and you haven't customized your `~/.terminus/config.yml` file, you can simply delete the file.
 
 ## Here are some configurations for common CI Systems:
 
