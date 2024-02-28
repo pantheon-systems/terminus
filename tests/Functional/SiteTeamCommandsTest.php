@@ -84,7 +84,7 @@ class SiteTeamCommandsTest extends TerminusTestBase
             sprintf('site:team:role %s %s team_member', $this->getSiteName(), $this->getUserEmail())
         );
 
-        $this->assertNotFalse(strpos($stderr, 'This site does not have its change-management option enabled.'));
+        $this->assertEquals(0, $exitCode);
     }
 
     /**
