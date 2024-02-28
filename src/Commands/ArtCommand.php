@@ -71,9 +71,9 @@ class ArtCommand extends TerminusCommand
      *     description: Description
      *
      * @default-fields name,description
-     * 
+     *
      * @usage Displays the list of available artwork.
-     * 
+     *
      * @return RowsOfFields
      */
     public function listArt()
