@@ -52,6 +52,8 @@ jobs:
       TERMINUS_HOST: "api.pantheon.io"
 
     steps:
+      - name: set var in environment
+        run: echo "export TERMINUS_HOST=api.pantheon.io" >> $BASH_ENV
       - checkout
       # Add your build steps here
 ```
