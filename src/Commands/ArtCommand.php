@@ -56,7 +56,7 @@ class ArtCommand extends TerminusCommand
     public function art($name = 'random')
     {
         if ($name == 'random') {
-            $name = $this->randomArtName();
+            $name = $this->randomArtName()['name'];
         }
         return $this->retrieveArt($name);
     }
