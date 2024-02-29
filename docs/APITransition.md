@@ -39,7 +39,7 @@ You can do that in several different ways:
 
 To confirm that you are using the new API, run a terminus command with `-vvv` to see the API requests. The `URI` will normally use `terminus.pantheon.io`.  If your terminus is pointing to the new API, it will show `api.pantheon.io`.
 
-Normal (old) API:
+Normal (old) API - URI shows "terminus.pantheon.io":
 
 ```bash
 $ terminus -vvv auth:whoami
@@ -49,7 +49,7 @@ Method: GET
 Body: null
 ```
 
-New API:
+New API - URI shows "api.pantheon.io":
 
 ```bash
 $ terminus -vvv auth:whoami
