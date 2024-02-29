@@ -43,7 +43,7 @@ Normal (old) API:
 
 ```bash
 $ terminus -vvv auth:whoami
-Headers: {"User-Agent":"Terminus/3.3.4 (php_version=8.3.3&script=bin/terminus)","Accept":"application/json","X-Pantheon-Trace-Id":"a2e3e3e3-3e3e-3e3e-3e3e-3e3e3e3e3e3e","X-Pantheon-Terminus-Command":"{\"command\":\"auth:whoami\",\"arguments\":{\"command\":\"auth:whoami\"},\"options\":{\"format\":\"string\",\"fields\":\"\",\"field\":\"\",\"help\":false,\"quiet\":false,\"verbose\":true,\"version\":false,\"ansi\":null,\"no-interaction\":false,\"define\":[],\"yes\":false},\"truncated\":false}","Authorization":"**HIDDEN**"}
+Headers: {"User-Agent":"Terminus/3.3.4 (php_version=8.3.3&........
 URI: https://terminus.pantheon.io:443/api/users/a2e3e3e3-3e3e-3e3e-3e3e-3e3e3e3e3e3e
 Method: GET
 Body: null
@@ -53,8 +53,8 @@ New API:
 
 ```bash
 $ terminus -vvv auth:whoami
-Headers: {"User-Agent":"Terminus/3.3.4 (php_version=8.3.3&script=bin/terminus)","Accept":"application/json","X-Pantheon-Trace-Id":"a2e3e3e3-3e3e-3e3e-3e3e-3e3e3e3e3e3e","X-Pantheon-Terminus-Command":"{\"command\":\"auth:whoami\",\"arguments\":{\"command\":\"auth:whoami\"},\"options\":{\"format\":\"string\",\"fields\":\"\",\"field\":\"\",\"help\":false,\"quiet\":false,\"verbose\":true,\"version\":false,\"ansi\":null,\"no-interaction\":false,\"define\":[],\"yes\":false},\"truncated\":false}","Authorization":"**HIDDEN**"}
-URI: https://terminus.pantheon.io:443/api/users/a2e3e3e3-3e3e-3e3e-3e3e-3e3e3e3e3e3e
+Headers: {"User-Agent":"Terminus/3.3.4 (php_version=8.3.3&........
+URI: https://api.pantheon.io:443/api/users/a2e3e3e3-3e3e-3e3e-3e3e-3e3e3e3e3e3e
 Method: GET
 Body: null
 ```
