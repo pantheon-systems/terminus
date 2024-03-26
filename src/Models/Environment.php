@@ -981,7 +981,6 @@ class Environment extends TerminusModel implements
             $username = "{$this->id}.{$site->id}";
             $domain = "appserver.{$this->id}.{$site->id}.drush.in";
         }
-        $password = 'Use your account password';
         $port = '2222';
         $url = "sftp://$username@$domain:$port";
         $command = "sftp -o Port=$port $username@$domain";
