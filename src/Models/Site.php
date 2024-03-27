@@ -119,6 +119,11 @@ class Site extends TerminusModel implements
     public $tags;
 
     /**
+     * @var SiteMetrics
+     */
+    public $site_metrics;
+
+    /**
      * Add a payment method to the given site
      *
      * @param string $payment_method_id UUID of new payment method

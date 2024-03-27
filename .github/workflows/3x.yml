@@ -69,6 +69,8 @@ jobs:
       TERMINUS_HOST: ${{ secrets.TERMINUS_HOST }}
       TERMINUS_PORT: ${{ secrets.TERMINUS_PORT }}
       TERMINUS_VERIFY_HOST_CERT: ${{ secrets.TERMINUS_VERIFY_HOST_CERT }}
+      HOMEBREW_NO_INSTALLED_DEPENDENTS_CHECK: 1
+      HOMBEBREW_NO_AUTO_UPDATE: 1
     needs: [ checkout_build ]
     steps:
       - name: Install SSH key
