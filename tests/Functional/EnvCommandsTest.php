@@ -299,10 +299,64 @@ class EnvCommandsTest extends TerminusTestBase
      * @group env
      * @group short
      */
-    public function testMetricsCommand()
+    public function testMetricsEnvCommand()
     {
         $metrics = $this->terminusJsonResponse(
             sprintf('env:metrics %s', $this->getSiteEnv())
+        );
+        $this->assertIsArray($metrics);
+        $this->assertNotEmpty($metrics);
+        $this->assertArrayHasKey(
+            'timeseries',
+            $metrics,
+            'Metrics should have "timeseries" field.'
+        );
+        $metric = array_shift($metrics['timeseries']);
+        $this->assertIsArray($metric);
+        $this->assertNotEmpty($metric);
+        $this->assertArrayHasKey(
+            'datetime',
+            $metric,
+            'A metric should have "datetime" field.'
+        );
+        $this->assertArrayHasKey(
+            'visits',
+            $metric,
+            'A metric should have "visits" field.'
+        );
+        $this->assertArrayHasKey(
+            'pages_served',
+            $metric,
+            'A metric should have "pages_served" field.'
+        );
+        $this->assertArrayHasKey(
+            'cache_hits',
+            $metric,
+            'A metric should have "cache_hits" field.'
+        );
+        $this->assertArrayHasKey(
+            'cache_misses',
+            $metric,
+            'A metric should have "cache_misses" field.'
+        );
+        $this->assertArrayHasKey(
+            'cache_hit_ratio',
+            $metric,
+            'A metric should have "cache_hit_ratio" field.'
+        );
+    }
+
+    /**
+     * @test
+     * @covers \Pantheon\Terminus\Commands\Env\MetricsCommand
+     *
+     * @group env
+     * @group short
+     */
+    public function testMetricsSiteCommand()
+    {
+        $metrics = $this->terminusJsonResponse(
+            sprintf('env:metrics %s', $this->getSiteName())
         );
         $this->assertIsArray($metrics);
         $this->assertNotEmpty($metrics);
