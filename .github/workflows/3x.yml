@@ -66,6 +66,8 @@ jobs:
       TERMINUS_PLUGINS2_DIR: ${{ secrets.TERMINUS_PLUGINS2_DIR }}
       TERMINUS_DEPENDENCIES_BASE_DIR: ${{ secrets.TERMINUS_DEPENDENCIES_BASE_DIR }}
       TERMINUS_USER: ${{ secrets.TERMINUS_USER }}
+      HOMEBREW_NO_INSTALLED_DEPENDENTS_CHECK: 1
+      HOMBEBREW_NO_AUTO_UPDATE: 1
     needs: [ checkout_build ]
     steps:
       - name: Install SSH key
