@@ -70,6 +70,9 @@ class SetCommand extends TerminusCommand implements SiteAwareInterface
                 $this->log()->notice($message);
                 return;
             }
+            if (strpos($message, "Bad Request") !== false && $mode == 'sftp') {
+                throw new TerminusException('Failed setting SFTP mode; this may mean that the environment is in a broken state. Please check your latest commit in the dashboard.');
+            }
             throw $e;
         }
 
