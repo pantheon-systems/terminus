@@ -73,6 +73,7 @@ class CreateCommand extends SiteCommand
             $this->log()->notice('Deploying CMS...');
             $this->processWorkflow($site->deployProduct($upstream->id));
             $this->log()->notice('Deployed CMS');
+            $site->getEnvironments()->get('dev')->wake();
         }
     }
 }
