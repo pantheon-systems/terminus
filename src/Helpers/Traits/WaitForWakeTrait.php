@@ -35,6 +35,6 @@ trait WaitForWakeTrait
             sleep(1);
             $waits++;
         } while (true);
-        $logger->notice('Your site has been created successfully!');
+        $logger->notice(sprintf('%s has been created successfully and is available for use.', $env->get('name')));
     }
 }
