@@ -72,8 +72,9 @@ class CreateCommand extends SiteCommand
         if ($site = $this->getSiteById($workflow->get('waiting_for_task')->site_id)) {
             $this->log()->notice('Deploying CMS...');
             $this->processWorkflow($site->deployProduct($upstream->id));
-            $this->log()->notice('Deployed CMS');
+            $this->log()->notice('Waiting for site availability...');
             $site->getEnvironments()->get('dev')->wake();
+            $this->log()->notice('Your site has been created successfully!');
         }
     }
 }
