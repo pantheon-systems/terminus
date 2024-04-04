@@ -73,7 +73,11 @@ class CreateCommand extends SiteCommand
             $this->log()->notice('Deploying CMS...');
             $this->processWorkflow($site->deployProduct($upstream->id));
             $this->log()->notice('Waiting for site availability...');
-            $site->getEnvironments()->get('dev')->wake();
+            do {
+                sleep(5);
+                $woke = $site->getEnvironments()->get('dev')->wake();
+                // if success is empty, then the site is still waking up.
+            } while (($woke['success'] ?? false) !== true);
             $this->log()->notice('Your site has been created successfully!');
         }
     }

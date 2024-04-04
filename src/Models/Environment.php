@@ -10,10 +10,10 @@ use Pantheon\Terminus\Collections\Commits;
 use Pantheon\Terminus\Collections\Domains;
 use Pantheon\Terminus\Collections\EnvironmentMetrics;
 use Pantheon\Terminus\Collections\Workflows;
-use Pantheon\Terminus\Helpers\LocalMachineHelper;
+use Pantheon\Terminus\Exceptions\TerminusException;
 use Pantheon\Terminus\Friends\SiteInterface;
 use Pantheon\Terminus\Friends\SiteTrait;
-use Pantheon\Terminus\Exceptions\TerminusException;
+use Pantheon\Terminus\Helpers\LocalMachineHelper;
 
 /**
  * Class Environment
@@ -1000,7 +1000,7 @@ class Environment extends TerminusModel implements
      *
      * @return array
      */
-    public function wake()
+    public function wake(): array
     {
         $domains = array_filter(
             $this->getDomains()->all(),
