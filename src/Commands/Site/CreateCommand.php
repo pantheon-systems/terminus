@@ -80,11 +80,11 @@ class CreateCommand extends SiteCommand
                 // if success is empty, then the site is still waking up.
                 $waits++;
                 // If we've waited more than 25 seconds, then something is wrong.
-            } while (($woke['success'] ?? false) !== true || $waits < 5);
-            if (($woke['success'] ?? false) !== true) {
-                $this->log()->error('There was a problem creating the site.');
-                exit(1);
-            }
+                if ($waits < 5) {
+                    $this->log()->error('There was a problem creating the site.');
+                    exit(1);
+                }
+            } while (($woke['success'] ?? false) !== true);
             $this->log()->notice('Your site has been created successfully!');
         }
     }
