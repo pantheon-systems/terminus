@@ -80,7 +80,7 @@ class CreateCommand extends SiteCommand
                 // if success is empty, then the site is still waking up.
                 $waits++;
                 // If we've waited more than 25 seconds, then something is wrong.
-                if ($waits < 5) {
+                if ($waits > 5) {
                     throw new \Exception('Could not confirm that the site is working; there might be a problem.');
                 }
             } while (($woke['success'] ?? false) !== true);
