@@ -81,7 +81,7 @@ class CreateCommand extends SiteCommand
                 $waits++;
                 // If we've waited more than 25 seconds, then something is wrong.
                 if ($waits < 5) {
-                    $this->log()->error('There was a problem creating the site.');
+                    $this->log()->error('Could not confirm that the site is working; there might be a problem.');
                     exit(1);
                 }
             } while (($woke['success'] ?? false) !== true);
