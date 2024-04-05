@@ -70,16 +70,20 @@ class SetCommand extends TerminusCommand implements SiteAwareInterface
                 $this->log()->notice($message);
                 return;
             }
-            if (strpos($message, "Bad Request") !== false && $mode == 'sftp') {
+            throw $e;
+        }
+
+        try {
+          $this->processWorkflow($workflow);
+        } catch (TerminusException $e) {
+            if (strpos($e->getMessage(), 'build_status is building') !== false){
                 throw new TerminusException(
-                    'Failed setting SFTP mode; this may mean that the environment is in a broken state. ' .
+                    'Failed setting connection mode due to the environment being either in a broken or building state. ' .
                     'Please check your latest commit in the dashboard.'
                 );
             }
             throw $e;
         }
-
-        $this->processWorkflow($workflow);
         $this->log()->notice($workflow->getMessage());
     }
 }
