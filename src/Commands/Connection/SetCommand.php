@@ -74,11 +74,12 @@ class SetCommand extends TerminusCommand implements SiteAwareInterface
         }
 
         try {
-          $this->processWorkflow($workflow);
+            $this->processWorkflow($workflow);
         } catch (TerminusException $e) {
-            if (strpos($e->getMessage(), 'build_status is building') !== false){
+            if (strpos($e->getMessage(), 'build_status is building') !== false) {
                 throw new TerminusException(
-                    'Failed setting connection mode due to the environment being either in a broken or building state. ' .
+                    'Failed setting connection mode due to the environment being either in a broken or ' .
+                    'building state. ' .
                     'Please check your latest commit in the dashboard.'
                 );
             }
