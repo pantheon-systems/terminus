@@ -73,3 +73,5 @@ TERMINUS_VCR_MODE:     null
 TERMINUS_CLIENT_OPTIONS:
   debug: false
   http_errors: false
+
+TERMINUS_WAIT_FOR_WAKE_REPEAT: 25
