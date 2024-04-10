@@ -35,6 +35,10 @@ trait WaitForWakeTrait
             sleep(1);
             $waits++;
         } while (true);
-        $logger->notice(sprintf('%s => %s has been created successfully and is available for use.', $env->getSite()->getName(), $env->get('name')));
+        $logger->notice(sprintf(
+            '%s => %s has been created successfully and is available for use.',
+            $env->getSite()->getName(),
+            $env->get('name')
+        ));
     }
 }
