@@ -73,8 +73,8 @@ class CreateCommand extends TerminusCommand implements SiteAwareInterface
 
         $workflow = $site->getEnvironments()->create($multidev, $env, $options);
         $this->processWorkflow($workflow);
-        $site->getEnvironments()->fetch();
-        $mdEnv = $site->getEnvironments()->get($multidev);
+        $envs = $site->getEnvironments()->fetch();
+        $mdEnv = $envs->get($multidev);
         if ($mdEnv instanceof Environment) {
             $this->waitForWake($mdEnv, $this->logger);
         }
