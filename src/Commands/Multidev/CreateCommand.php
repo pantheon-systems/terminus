@@ -73,11 +73,16 @@ class CreateCommand extends TerminusCommand implements SiteAwareInterface
 
         $workflow = $site->getEnvironments()->create($multidev, $env, $options);
         $this->processWorkflow($workflow);
-        $envs = $site->getEnvironments()->fetch();
-        $mdEnv = $envs->get($multidev);
+
+        $mdEnv = $site->getEnvironments(true)->fetch()->get($multidev);
         if ($mdEnv instanceof Environment) {
-            $this->waitForWake($mdEnv, $this->logger);
+            $this->waitForWake($mdEnv, $this->log());
+            $this->log()->notice($workflow->getMessage());
+            return;
         }
-        $this->log()->notice($workflow->getMessage());
+        $this->log()->notice(
+            'It cannot be determined if the multidev was successful or not because'
+            . 'information on the new multidev could not be retrieved.'
+        );
     }
 }
