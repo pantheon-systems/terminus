@@ -11,6 +11,10 @@ use League\Container\ContainerAwareTrait;
 use Pantheon\Terminus\Collections\SavedTokens;
 use Pantheon\Terminus\Collections\Sites;
 use Pantheon\Terminus\Config\ConfigAwareTrait;
+use Pantheon\Terminus\Config\DefaultsConfig;
+use Pantheon\Terminus\Config\DotEnvConfig;
+use Pantheon\Terminus\Config\EnvConfig;
+use Pantheon\Terminus\Config\YamlConfig;
 use Pantheon\Terminus\DataStore\FileStore;
 use Pantheon\Terminus\Helpers\LocalMachineHelper;
 use Pantheon\Terminus\Helpers\Traits\CommandExecutorTrait;
@@ -31,19 +35,15 @@ use Robo\Contract\ConfigAwareInterface;
 use Robo\Contract\IOAwareInterface;
 use Robo\Robo;
 use Robo\Runner as RoboRunner;
+use SelfUpdate\SelfUpdateCommand;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Input\ArgvInput;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\Console\Output\OutputInterface;
-use VCR\VCR;
-use Pantheon\Terminus\Config\DefaultsConfig;
-use Pantheon\Terminus\Config\DotEnvConfig;
-use Pantheon\Terminus\Config\EnvConfig;
-use Pantheon\Terminus\Config\YamlConfig;
 use Symfony\Component\Filesystem\Filesystem;
-use SelfUpdate\SelfUpdateCommand;
+use VCR\VCR;
 
 /**
  * Class Terminus
@@ -169,7 +169,7 @@ EOD;
         // Request
 
         Request::generateTraceId();
-        $container->share('request', Request::class);
+        $container->addShared('request', Request::class);
         $container->inflector(RequestAwareInterface::class)
             ->invokeMethod('setRequest', ['request']);
 
@@ -178,7 +178,7 @@ EOD;
             $this->getConfig()->get('cache_dir')
         );
         $session = new Session($session_store);
-        $container->share('session', $session);
+        $container->addShared('session', $session);
         $container->inflector(SessionAwareInterface::class)
             ->invokeMethod('setSession', ['session']);
 
@@ -200,7 +200,7 @@ EOD;
         $container->add(PluginDiscovery::class);
         $container->add(PluginInfo::class);
 
-        $container->share('sites', Sites::class);
+        $container->addShared('sites', Sites::class);
         $container->inflector(SiteAwareInterface::class)
             ->invokeMethod('setSites', ['sites']);
 
