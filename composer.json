@@ -27,7 +27,7 @@
     "justinrainbow/json-schema": "^5.2",
     "league/container": "^3",
     "monolog/monolog": "^2.2",
-    "psy/psysh": "^0.11.9",
+    "psy/psysh": "^0.12",
     "rogervila/array-diff-multidimensional": "^2.0",
     "symfony/console": "^5",
     "symfony/finder": "^5",
