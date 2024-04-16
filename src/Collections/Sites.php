@@ -3,7 +3,6 @@
 namespace Pantheon\Terminus\Collections;
 
 use Exception;
-use Pantheon\Terminus\Exceptions\TerminusException;
 use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
 use Pantheon\Terminus\Models\Site;
 use Pantheon\Terminus\Models\SiteOrganizationMembership;
@@ -11,6 +10,7 @@ use Pantheon\Terminus\Models\TerminusModel;
 use Pantheon\Terminus\Models\Workflow;
 use Pantheon\Terminus\Session\SessionAwareInterface;
 use Pantheon\Terminus\Session\SessionAwareTrait;
+use Pantheon\Terminus\Exceptions\TerminusException;
 
 /**
  * Class Sites.
