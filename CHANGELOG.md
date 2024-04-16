@@ -1,7 +1,12 @@
 # Change Log
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org)
 
-## 3.3.6-dev
+## 3.3.6 - 2024-04-16
+
+- Update `clone:content` command documentation [#2560](https://github.com/pantheon-systems/terminus/pull/2560)
+- New test for env:metrics command [#2562](https://github.com/pantheon-systems/terminus/pull/2562)
+- Fix bug where `site:create` would return before the site was fully awake [#2564](https://github.com/pantheon-systems/terminus/pull/2564)
+- Fix bug where `multidev:create` would return before the environment was fully awake [#2565](https://github.com/pantheon-systems/terminus/pull/2565)
 
 ## 3.3.5 - 2024-02-28
 
