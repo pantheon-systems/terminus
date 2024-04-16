@@ -78,8 +78,8 @@ class SetCommand extends TerminusCommand implements SiteAwareInterface
         } catch (TerminusException $e) {
             if (strpos($e->getMessage(), 'build_status is building') !== false) {
                 throw new TerminusException(
-                    'Failed setting connection mode due to the environment being either in a broken or ' .
-                    'building state. ' .
+                    'Cannot switch to SFTP mode because the most recent Integrated Composer build ' .
+                    'is either still running or encountered errrors.' .
                     'Please check your latest commit in the dashboard.'
                 );
             }
