@@ -4,9 +4,6 @@ namespace Pantheon\Terminus\Models;
 
 use League\Container\ContainerAwareInterface;
 use League\Container\ContainerAwareTrait;
-use Pantheon\Terminus\Friends\LocalCopiesTrait;
-use Pantheon\Terminus\Friends\OrganizationsInterface;
-use Pantheon\Terminus\Friends\OrganizationsTrait;
 use Pantheon\Terminus\Collections\Branches;
 use Pantheon\Terminus\Collections\Environments;
 use Pantheon\Terminus\Collections\Plans;
@@ -16,6 +13,9 @@ use Pantheon\Terminus\Collections\SiteOrganizationMemberships;
 use Pantheon\Terminus\Collections\SiteUserMemberships;
 use Pantheon\Terminus\Collections\Workflows;
 use Pantheon\Terminus\Exceptions\TerminusException;
+use Pantheon\Terminus\Friends\LocalCopiesTrait;
+use Pantheon\Terminus\Friends\OrganizationsInterface;
+use Pantheon\Terminus\Friends\OrganizationsTrait;
 use Pantheon\Terminus\Helpers\Utility\SiteFramework;
 
 /**
@@ -49,12 +49,12 @@ class Site extends TerminusModel implements
     /**
      * @var Branches
      */
-    protected $branches;
+    protected ?Branches $branches;
 
     /**
      * @var Environments
      */
-    protected $environments;
+    protected ?Environments $environments;
 
     /**
      * @var NewRelic
@@ -117,6 +117,11 @@ class Site extends TerminusModel implements
      * @var Pantheon\Terminus\Collections\Tags
      */
     public $tags;
+
+    /**
+     * @var SiteMetrics
+     */
+    public $site_metrics;
 
     /**
      * Add a payment method to the given site
@@ -225,9 +230,9 @@ class Site extends TerminusModel implements
     /**
      * @return Environments
      */
-    public function getEnvironments(): Environments
+    public function getEnvironments(bool $refresh = false): Environments
     {
-        if (empty($this->environments)) {
+        if (empty($this->environments) || $refresh) {
             $nickname = \uniqid(__FUNCTION__ . "-");
             $this->getContainer()->add($nickname, Environments::class)
                 ->addArgument(['site' => $this]);

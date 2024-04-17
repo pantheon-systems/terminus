@@ -86,6 +86,8 @@ This will take some time to complete and will produce a report at the end with a
 skipped tests. To run a specific test, find the test's group in the comments above the test and
 use the command specified in `composer.json` under `test:functional` with `--group=<the-group>`
 
+Tests are grouped by `short` and `long` tests. The `short` tests are those that can be run in about a minute or less and are run by on every push. The `long` tests are those that take longer to run and are only run on merge.
+
 Versioning
 ----------
 

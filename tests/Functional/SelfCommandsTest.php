@@ -27,8 +27,7 @@ class SelfCommandsTest extends TerminusTestBase
             0 !== $exitCode
             && false !== strpos($error, 'rate limit exceeded')
         ) {
-            // @todo: fix CMS-972
-            $this->markTestSkipped(sprintf('Failed executing %s command: %s', self::SELF_UPDATE_COMMAND, $error));
+            $this->markTestSkipped(sprintf('Skipping %s due to rate limiting: %s', self::SELF_UPDATE_COMMAND, $error));
         }
 
         $this->assertEquals('No update available', $output);
@@ -44,6 +43,14 @@ class SelfCommandsTest extends TerminusTestBase
             'Failed installing plugins to setup self:update command test.'
         );
         $output = $this->terminus(self::SELF_UPDATE_COMMAND);
+        [$output, $exitCode, $error] = static::callTerminus(self::SELF_UPDATE_COMMAND);
+        if (
+            0 !== $exitCode
+            && false !== strpos($error, 'rate limit exceeded')
+        ) {
+            $this->markTestSkipped(sprintf('Skipping %s due to rate limiting: %s', self::SELF_UPDATE_COMMAND, $error));
+        }
+
         $this->assertEquals('No update available', $output);
     }
 }

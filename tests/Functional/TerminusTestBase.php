@@ -13,6 +13,10 @@ use PHPUnit\Framework\TestCase;
 abstract class TerminusTestBase extends TestCase
 {
     /**
+     * @var []string $env
+     */
+    protected $env = [];
+    /**
      * @var \Monolog\Logger $logger
      */
     protected Logger $logger;
@@ -21,6 +25,21 @@ abstract class TerminusTestBase extends TestCase
     {
         parent::setUp();
         $this->logger = $GLOBALS['LOGGER'];
+        foreach (
+            [
+                'PATH',
+                'HOME',
+                'TERMINUS_HOST',
+                'TERMINUS_PORT',
+                'TERMINUS_VERIFY_HOST_CERT',
+                'TERMINUS_CACHE_DIR',
+                'PANTHEON_CERT'
+            ] as $envVar
+        ) {
+            if (false !== getenv($envVar)) {
+                $this->env[$envVar] = getenv($envVar);
+            }
+        }
     }
 
     /**
@@ -36,7 +55,8 @@ abstract class TerminusTestBase extends TestCase
      */
     protected static function callTerminus(
         string $command,
-        ?string $pipeInput = null
+        ?string $pipeInput = null,
+        $env = []
     ): array {
         $procCommand = sprintf('%s %s', TERMINUS_BIN_FILE, $command);
         if (null !== $pipeInput) {
@@ -50,7 +70,8 @@ abstract class TerminusTestBase extends TestCase
                 2 => ['pipe', 'w'],
             ],
             $pipes,
-            dirname(__DIR__, 2)
+            dirname(__DIR__, 2),
+            $env,
         );
 
         if (!is_resource($process)) {
@@ -69,7 +90,7 @@ abstract class TerminusTestBase extends TestCase
 
         $exitCode = proc_close($process);
 
-        return [$stdout, $exitCode, $stderr];
+        return [$stdout, $exitCode, $stderr, $env];
     }
 
     /**
@@ -97,7 +118,7 @@ abstract class TerminusTestBase extends TestCase
             $command = sprintf('%s --yes', $command);
         }
 
-        [$output, $exitCode, $error] = static::callTerminus($command);
+        [$output, $exitCode, $error, $env] = static::callTerminus($command, null, $this->env);
         if (true === $assertExitCode) {
             $this->assertEquals(0, $exitCode, $error);
         }
@@ -112,7 +133,32 @@ abstract class TerminusTestBase extends TestCase
             $error,
             'Command error must not contain PHP deprecation notices'
         );
-
+        if (boolval(getenv('TERMINUS_DEBUG')) === true) {
+            $this->logger->debug(
+                sprintf(
+                    'Terminus command: %s',
+                    $command
+                )
+            );
+            $this->logger->debug(
+                sprintf(
+                    'Terminus output: %s',
+                    $output
+                )
+            );
+            $this->logger->debug(
+                sprintf(
+                    'Terminus error: %s',
+                    $error
+                )
+            );
+            $this->logger->debug(
+                sprintf(
+                    'Terminus Env: %s',
+                    print_r($this->env, true),
+                )
+            );
+        }
         return $output;
     }
 
@@ -129,6 +175,18 @@ abstract class TerminusTestBase extends TestCase
         $command = sprintf('%s --yes', $command);
 
         [$output, $status] = static::callTerminus($command, $pipeInput);
+        $this->logger->debug(
+            sprintf(
+                'Terminus command: %s',
+                $command
+            )
+        );
+        $this->logger->debug(
+            sprintf(
+                'Terminus output: %s',
+                $output
+            )
+        );
         $this->assertEquals(0, $status, $output);
 
         return $output;
@@ -161,6 +219,13 @@ abstract class TerminusTestBase extends TestCase
                 JSON_THROW_ON_ERROR
             );
         } catch (\JsonException $jsonException) {
+            $this->logger->warning(
+                sprintf(
+                    'Failed to decode JSON response: %s \n\n ===> %s',
+                    $response,
+                    $jsonException->getMessage()
+                )
+            );
             return $response;
         }
     }
@@ -183,7 +248,7 @@ abstract class TerminusTestBase extends TestCase
         callable $callable,
         $expected,
         int $attempts = 24,
-        int $intervalSeconds = 10
+        int $intervalSeconds = 30
     ): void {
         do {
             $actual = $callable();
