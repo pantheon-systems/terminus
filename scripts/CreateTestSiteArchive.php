@@ -1,6 +1,6 @@
 <?php
 
-namespace Pantheon\Terminus\Scripts;
+namespace Pantheon\Terminus\Ci;
 
 // Set the "TERMINUS_TESTING_RUNTIME_ENV" env var to skip creating a runtime test multidev environment.
 putenv('TERMINUS_TESTING_RUNTIME_ENV=dev');

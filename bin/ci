@@ -1,0 +1,19 @@
+#!/usr/bin/env php
+<?php
+
+use Pantheon\Terminus\CI\CIApplication;
+
+$root = dirname(realpath(__FILE__), 2);
+include_once($root . '/vendor/autoload.php');
+
+
+
+
+$app = new CIApplication();
+
+try {
+    $app->run();
+} catch (Exception $e) {
+    echo $e->getMessage() . PHP_EOL;
+    exit(1);
+}

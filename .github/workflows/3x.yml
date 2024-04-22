@@ -19,7 +19,7 @@ jobs:
   checkout_build:
     runs-on: ubuntu-latest
     container:
-      image: quay.io/pantheon-public/php-ci:v7.4
+      image: quay.io/pantheon-public/php-ci:v8.2
     name: Checkout & build Phar
     steps:
       - name: Checkout
