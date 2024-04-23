@@ -126,7 +126,7 @@
       "@coverage"
     ],
     "test:all": [
-      "@test:functional",
+      "@test:functional"
     ],
     "test:create-site-archive": [
       "Pantheon\\Terminus\\Scripts\\CreateTestSiteArchive::do"
