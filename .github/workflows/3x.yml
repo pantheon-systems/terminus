@@ -94,7 +94,7 @@ jobs:
           name: terminus-phar
       - name: Install Composer Dependencies
         run: composer install --no-interaction --prefer-dist
-      - run: chmod +x ./bin/ci
+      - run: chmod +x ./bin/ci && chmod +x ./terminus.phar
       - name: Functional Tests (short)
         if: ${{ github.event_name == 'push' || github.event_name == 'schedule' || github.event.inputs.functional_tests_group == 'all' }}
         run: composer test:short
