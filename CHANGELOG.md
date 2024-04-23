@@ -1,7 +1,13 @@
 # Change Log
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org)
 
-## 3.3.6-dev
+## 3.4.0
+
+- Update clone:content command documentation #2560
+- New test for env:metrics command #2562
+- Handle error processing workflow in connection:set command. #2563
+- The site:create command now waits for a site to be fully awake before completing #2564
+- The multidev:create command now waits for the environment to be fully awake before completing #2565
 
 ## 3.3.5 - 2024-02-28
 
