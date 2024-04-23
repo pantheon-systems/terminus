@@ -63,7 +63,11 @@ class EnvCommandsTest extends TerminusTestBase
     {
 
         // Test that the command works when plugins are not installed.
-        [$output, $exitCode, $error] = static::callTerminus(sprintf('env:deploy %s.%s', $this->getSiteName(), $this->getMdEnv()), null, $this->env);
+        [$output, $exitCode, $error] = static::callTerminus(
+            sprintf('env:deploy %s.%s', $this->getSiteName(), $this->getMdEnv()),
+            null,
+            $this->env
+        );
 
         $this->assertNotEquals(
             0,
