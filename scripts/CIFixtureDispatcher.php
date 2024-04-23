@@ -5,6 +5,7 @@ namespace Pantheon\Terminus\CI;
 use Exception;
 use Kint\Kint;
 use Pantheon\Terminus\CI\Traits\TerminusBinaryTrait;
+use Pantheon\Terminus\Tests\Functional\TerminusTestBase;
 use Symfony\Component\Console\ConsoleEvents;
 use Symfony\Component\Console\Event\ConsoleCommandEvent;
 use Symfony\Component\EventDispatcher\EventDispatcher;
@@ -77,6 +78,8 @@ class CIFixtureDispatcher extends EventDispatcher
             }
             $input->setArgument('terminusSite' . ucwords($distroShort), $siteName);
         }
+        // No need to create a multidev to do testing. The site is disposable.
+        TerminusTestBase::setMdEnv('dev');
     }
 
     /**

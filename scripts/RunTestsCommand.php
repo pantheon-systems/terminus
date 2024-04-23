@@ -2,8 +2,8 @@
 
 namespace Pantheon\Terminus\CI;
 
-use DirectoryIterator;
 use Exception;
+use Pantheon\Terminus\Tests\Functional\TerminusTestBase;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -62,25 +62,25 @@ class RunTestsCommand extends CICommandBase
                 'terminusHost',
                 InputOption::VALUE_REQUIRED,
                 'The terminus host to run the tests on',
-                getenv('TERMINUS_HOST') ?? 'terminus.pantheon.io'
+                getenv('TERMINUS_HOST') ?? 'terminus.pantheon.io',
             )
             ->addArgument(
                 'terminusToken',
                 InputOption::VALUE_REQUIRED,
                 'The terminus token to run the tests on',
-                $this->getTokenDefaultValue()
+                $this->ci()->getMachineToken(),
             )
             ->addArgument(
                 'terminusVerifyHostCert',
                 InputOption::VALUE_REQUIRED,
                 'The terminus host to run the tests on',
-                getenv('TERMINUS_VERIFY_HOST_CERT') ?? 'true'
+                getenv('TERMINUS_VERIFY_HOST_CERT') ?? 'true',
             )
             ->addArgument(
                 'terminusPort',
                 InputOption::VALUE_REQUIRED,
                 'Port to use for terminus calls',
-                getenv('TERMINUS_PORT') ?? '443'
+                getenv('TERMINUS_PORT') ?? '443',
             );
 
         // Add the CI dispatcher to the application
@@ -112,6 +112,8 @@ class RunTestsCommand extends CICommandBase
             'TERMINUS_SITE_DRUPAL' => $input->getArgument('terminusSiteDrupal'),
             'TERMINUS_SITE_WP' => $input->getArgument('terminusSiteWordpress'),
             'TERMINUS_VERIFY_HOST_CERT' => $input->getArgument('terminusVerifyHostCert'),
+            'TERMINUS_TESTING_RUNTIME_ENV' => TerminusTestBase::getMdEnv(),
+            'TERMINUS_TESTING_CACHE_DIR' => TerminusTestBase::getCacheDir(),
         ], $input, null);
         $output->writeln(
             sprintf('Running tests command: %s', implode(' ', $proc->getCommandLine()))
@@ -123,23 +125,5 @@ class RunTestsCommand extends CICommandBase
         if ($test_status !== 0) {
             throw new Exception(sprintf('Tests failed: %s', $proc->getOutput()));
         }
-    }
-
-
-    private function getTokenDefaultValue()
-    {
-        if (!empty(getenv('TERMINUS_TOKEN'))) {
-            return getenv('TERMINUS_TOKEN');
-        }
-        if (is_dir(getenv('HOME') . '/.terminus/cache/tokens')) {
-            $dir = new DirectoryIterator(getenv('HOME')  . '/.terminus/cache/tokens');
-            foreach ($dir as $fileinfo) {
-                if (!$fileinfo->isDot()) {
-                    $userInfo = json_decode(file_get_contents($fileinfo->getPathname()));
-                    return $userInfo->token ?? '';
-                }
-            }
-        }
-        return '';
     }
 }

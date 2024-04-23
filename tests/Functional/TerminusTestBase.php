@@ -459,7 +459,7 @@ abstract class TerminusTestBase extends TestCase
      *
      * @return string
      */
-    protected static function getMdEnv(): string
+    public static function getMdEnv(): string
     {
         return getenv('TERMINUS_TESTING_RUNTIME_ENV');
     }

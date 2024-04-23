@@ -18,7 +18,7 @@ trait TerminusBinaryTrait
     /**
      * @return string
      */
-    final protected function getTerminusBinary(): string
+    final public function getTerminusBinary(): string
     {
         return $this->getProjectRoot() . DIRECTORY_SEPARATOR . 'terminus.phar';
     }

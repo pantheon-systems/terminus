@@ -10,6 +10,7 @@ include_once($root . '/vendor/autoload.php');
 
 
 $app = new CIApplication();
+$GLOBALS['APP'] = &$app;
 
 try {
     $app->run();
