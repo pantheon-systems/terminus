@@ -159,34 +159,34 @@ jobs:
           revision: ${{github.sha}}
           formula: terminus
 
-  package_linux:
-    runs-on: ubuntu-latest
-    name: Package .deb Release
-    container:
-      image: quay.io/pantheon-public/php-ci:v7.4
-    if: ${{ startsWith(github.ref, 'refs/tags/')  && github.repository_owner == 'pantheon-systems' }}
-    needs: [ release ]
-    steps:
-      - name: Download repo content from artifact
-        uses: actions/download-artifact@v2
-        with:
-          name: full-workspace
-      - name: Download terminus.phar as artifact
-        uses: actions/download-artifact@v2
-        with:
-          name: terminus-phar
-      - name: Full Composer Install
-        run: composer install
-      - name: Prepare needed folder and fix permissions
-        run: mkdir -p ~/.terminus/cache/tokens && mv ./terminus.phar ./terminus && chmod +x ./terminus
-      - name: Passegers, gather ye packages
-        run: composer bundle:linux
-      - name: Save terminus deb as artifact
-        uses: actions/upload-artifact@v2
-        with:
-          name: terminus-deb
-          path: ./*.deb
-          if-no-files-found: error
+  #package_linux:
+  #  runs-on: ubuntu-latest
+  #  name: Package .deb Release
+  #  container:
+  #    image: quay.io/pantheon-public/php-ci:v7.4
+  #  if: ${{ startsWith(github.ref, 'refs/tags/')  && github.repository_owner == 'pantheon-systems' }}
+  #  needs: [ release ]
+  #  steps:
+  #    - name: Download repo content from artifact
+  #      uses: actions/download-artifact@v2
+  #      with:
+  #        name: full-workspace
+  #    - name: Download terminus.phar as artifact
+  #      uses: actions/download-artifact@v2
+  #      with:
+  #        name: terminus-phar
+  #    - name: Full Composer Install
+  #      run: composer install
+  #    - name: Prepare needed folder and fix permissions
+  #      run: mkdir -p ~/.terminus/cache/tokens && mv ./terminus.phar ./terminus && chmod +x ./terminus
+  #    - name: Passegers, gather ye packages
+  #      run: composer bundle:linux
+  #    - name: Save terminus deb as artifact
+  #      uses: actions/upload-artifact@v2
+  #      with:
+  #        name: terminus-deb
+  #        path: ./*.deb
+  #        if-no-files-found: error
 
   # publish_linux:
   #   runs-on: ubuntu-latest
