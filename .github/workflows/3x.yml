@@ -57,9 +57,6 @@ jobs:
       max-parallel: 1
     env:
       TERMINUS_TOKEN: ${{ secrets.TERMINUS_TOKEN }}
-      TERMINUS_SITE: ${{ secrets.TERMINUS_SITE }}
-      TERMINUS_SITE_WP: ${{ secrets.TERMINUS_SITE_WP }}
-      TERMINUS_SITE_WP_NETWORK: ${{ secrets.TERMINUS_SITE_WP_NETWORK }}
       TERMINUS_ORG: ${{ secrets.TERMINUS_ORG }}
       TERMINUS_BASE_DIR: ${{ secrets.TERMINUS_BASE_DIR }}
       TERMINUS_PLUGINS_DIR: ${{ secrets.TERMINUS_PLUGINS_DIR }}

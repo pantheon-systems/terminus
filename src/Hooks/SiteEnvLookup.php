@@ -116,13 +116,13 @@ class SiteEnvLookup implements ConfigAwareInterface, SiteAwareInterface, LoggerA
      */
     protected function determineSite()
     {
-        // If TERMINUS_SITE is set, then return the site indicated.
+        // If TERMINUS_SITE_* is set, then return the site indicated.
         // The config will also be loaded from a .env file at the cwd
         // if present.
         $site = $this->getConfig()->get('site');
         if (!empty($site)) {
             $this->logger->info(
-                sprintf('Missing "site" argument. Setting to "%s" (from TERMINUS_SITE env var).', $site)
+                sprintf('Missing "site" argument. Setting to "%s" (from TERMINUS_SITE_* env var).', $site)
             );
 
             return $site;
@@ -145,7 +145,7 @@ class SiteEnvLookup implements ConfigAwareInterface, SiteAwareInterface, LoggerA
      */
     protected function determineSiteEnv()
     {
-        // If TERMINUS_SITE and TERMINUS_ENV are set, then
+        // If TERMINUS_SITE_* and TERMINUS_ENV are set, then
         // return the site and env they indicate. The config
         // will also be loaded from a .env file at the cwd if present.
         $site = $this->getConfig()->get('site');
@@ -154,7 +154,7 @@ class SiteEnvLookup implements ConfigAwareInterface, SiteAwareInterface, LoggerA
             $site_env = "$site.$env";
             $this->logger->info(
                 sprintf(
-                    'Missing "site_env" argument. Setting to "%s" (from TERMINUS_SITE/TERMINUS_ENV env vars).',
+                    'Missing "site_env" argument. Setting to "%s" (from TERMINUS_SITE_*/TERMINUS_ENV env vars).',
                     $site_env
                 )
             );

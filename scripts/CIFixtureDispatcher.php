@@ -7,7 +7,6 @@ use Kint\Kint;
 use Pantheon\Terminus\CI\Traits\TerminusBinaryTrait;
 use Symfony\Component\Console\ConsoleEvents;
 use Symfony\Component\Console\Event\ConsoleCommandEvent;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\Process\Process;
 use Symfony\Contracts\EventDispatcher\Event;
@@ -65,10 +64,10 @@ class CIFixtureDispatcher extends EventDispatcher
             $output->writeln('Creating site ' . $siteName . ' for fixture ' . $distroShort);
             $command = str_replace('{{BIN}}', $input->getOption('bin'), self::$createFixtureCommand);
             $command = str_replace('{{SITENAME}}', $siteName, $command);
-            $command = str_replace('{{TRANSIENT_CI_SITES_ORG}}', $input->getOption('org'), $command);
+            $command = str_replace('{{TRANSIENT_CI_SITES_ORG}}', $input->getArgument('terminusOrg'), $command);
             $output->writeln('Command ' . $command);
             $proc = new Process(explode(' ', $command), null, [], null, null);
-            $output->writeln('Running ' . Kint::dump($proc));
+            $output->writeln('Running ' . Kint::dump($proc->getCommandLine()));
             // Write to the buffer as the tests run
             $status = $proc->run(function ($type, $buffer) use ($output) {
                 $output->writeln($buffer);
@@ -76,12 +75,7 @@ class CIFixtureDispatcher extends EventDispatcher
             if ($status !== 0) {
                 throw new Exception('Failed to create site for fixture: ' . implode(' ', $command) . ' with output ' . $proc->getOutput());
             }
-            $event->getCommand()->addArgument(
-                'TERMINUS_SITE_' . strtoupper($distroShort),
-                InputOption::VALUE_OPTIONAL,
-                null,
-                $siteName,
-            );
+            $input->setArgument('terminusSite' . ucwords($distroShort), $siteName);
         }
     }
 

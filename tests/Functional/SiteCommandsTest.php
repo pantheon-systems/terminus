@@ -107,7 +107,7 @@ class SiteCommandsTest extends TerminusTestBase
      */
     public function testSiteInfoNoArgCommand()
     {
-        $this->env['TERMINUS_SITE'] = $this->getSiteName();
+        $this->env['TERMINUS_SITE_DRUPAL'] = $this->getSiteName();
         $output = $this->terminusWithStderrRedirected('site:info -v');
         $this->assertStringContainsString(
             sprintf(

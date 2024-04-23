@@ -9,17 +9,6 @@
 ## a string of the Pantheon platform user uuid
 export TERMINUS_USER=$(terminus auth:whoami --format=json | jq -r .id)
 
-## a string of the Drupal site that will be tested. The user above
-## must have access to this site.
-export TERMINUS_SITE=terminus-test-site
-
-## a string of the WordPress site that will be tested. The user above
-## must have access to this site.
-export TERMINUS_SITE_WP=terminus-test-site-wp
-
-## A string of the Wordpress Multisite/Network site that will be tested.
-export TERMINUS_SITE_WP_NETWORK=terminus-test-site-wp-network
-
 ## a string of the Pantheon Organization that will be tested. The user above
 ## must have access to this organization.
 export TERMINUS_ORG=terminus-test-org

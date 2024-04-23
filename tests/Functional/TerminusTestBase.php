@@ -2,6 +2,8 @@
 
 namespace Pantheon\Terminus\Tests\Functional;
 
+use Exception;
+use JsonException;
 use Monolog\Logger;
 use PHPUnit\Framework\TestCase;
 
@@ -17,7 +19,7 @@ abstract class TerminusTestBase extends TestCase
      */
     protected $env = [];
     /**
-     * @var \Monolog\Logger $logger
+     * @var Logger $logger
      */
     protected Logger $logger;
 
@@ -218,7 +220,7 @@ abstract class TerminusTestBase extends TestCase
                 512,
                 JSON_THROW_ON_ERROR
             );
-        } catch (\JsonException $jsonException) {
+        } catch (JsonException $jsonException) {
             $this->logger->warning(
                 sprintf(
                     'Failed to decode JSON response: %s \n\n ===> %s',
@@ -297,7 +299,7 @@ abstract class TerminusTestBase extends TestCase
             case "wordpress_network":
                 return getenv('TERMINUS_SITE_WP_NETWORK');
             default:
-                return getenv('TERMINUS_SITE');
+                return getenv('TERMINUS_SITE_DRUPAL');
         }
     }
 
@@ -356,7 +358,7 @@ abstract class TerminusTestBase extends TestCase
      *
      * @return bool
      *
-     * @throws \Exception
+     * @throws Exception
      */
     protected function isSiteFrameworkDrupal(): bool
     {
@@ -374,14 +376,14 @@ abstract class TerminusTestBase extends TestCase
      *
      * @return string
      *
-     * @throws \Exception
+     * @throws Exception
      */
     protected function getSiteFramework(): string
     {
         $site_info = $this->getSiteInfo();
 
         if (!isset($site_info['framework'])) {
-            throw new \Exception(
+            throw new Exception(
                 sprintf(
                     'Failed to get framework for test site %s',
                     $this->getSiteName()
@@ -397,14 +399,14 @@ abstract class TerminusTestBase extends TestCase
      *
      * @return string
      *
-     * @throws \Exception
+     * @throws Exception
      */
     protected function getSiteId(): string
     {
         $site_info = $this->getSiteInfo();
 
         if (!isset($site_info['id'])) {
-            throw new \Exception(
+            throw new Exception(
                 sprintf(
                     'Failed to get id for test site %s',
                     $this->getSiteName()

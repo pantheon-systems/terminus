@@ -76,7 +76,7 @@
   ],
   "scripts": {
     "build": "@phar:build",
-    "test": "bin/ci test:short",
+    "test": "bin/ci run-tests",
     "phar:build": [
       "./scripts/phar_build.sh"
     ],
@@ -115,25 +115,18 @@
     "code:setup-precommit": [
       "bash scripts/setup-precommit.sh"
     ],
-    "test:behat": [
-      "SHELL_INTERACTIVE=true TERMINUS_TEST_MODE=1 behat --colors --config tests/config/behat.yml --stop-on-failure --suite=default"
-    ],
     "test:short": [
-      "XDEBUG_MODE=coverage vendor/bin/phpunit --colors=always -c ./phpunit.xml --debug --group=short --do-not-cache-result --verbose --stop-on-failure"
+      "./bin/ci run-tests short"
     ],
     "test:long": [
-      "XDEBUG_MODE=coverage vendor/bin/phpunit --colors=always -c ./phpunit.xml --debug --group=long --do-not-cache-result --verbose"
+      "./bin/ci run-tests long"
     ],
     "test:functional": [
-      "XDEBUG_MODE=coverage vendor/bin/phpunit --colors=always -c ./phpunit.xml --debug --group=short,long --do-not-cache-result --verbose",
+      "./bin/ci run-tests long,short",
       "@coverage"
     ],
     "test:all": [
       "@test:functional",
-      "@test:behat"
-    ],
-    "test:group": [
-      "vendor/bin/phpunit -c ./phpunit.xml --debug --do-not-cache-result --verbose --group"
     ],
     "test:create-site-archive": [
       "Pantheon\\Terminus\\Scripts\\CreateTestSiteArchive::do"
