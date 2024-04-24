@@ -38,13 +38,9 @@ class CreateCommand extends TerminusCommand implements SiteAwareInterface
      * @option bool $no-db Do not clone database
      * @option bool $no-files Do not clone files
      *
-     * @usage <site>.<env> <multidev> Creates the Multidev environment,
-     *     <multidev>, within <site> with database and files from the <env>
-     *     environment.
-     * @usage <site>.<env> <multidev> --no-db Creates the <multidev>
-     *     environment without database from the <env> environment.
-     * @usage <site>.<env> <multidev> --no-files Creates the <multidev>
-     *     environment without files from the <env> environment.
+     * @usage <site>.<env> <multidev> Creates the Multidev environment, <multidev>, within <site> with database and files from the <env> environment.
+     * @usage <site>.<env> <multidev> --no-db Creates the <multidev> environment without database from the <env> environment.
+     * @usage <site>.<env> <multidev> --no-files Creates the <multidev> environment without files from the <env> environment.
      *
      * @throws \Pantheon\Terminus\Exceptions\TerminusException
      * @throws \Exception
