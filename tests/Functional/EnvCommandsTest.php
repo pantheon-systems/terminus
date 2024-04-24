@@ -61,6 +61,26 @@ class EnvCommandsTest extends TerminusTestBase
      */
     public function testDeployCommand()
     {
+
+        // Test that the command works when plugins are not installed.
+        [$output, $exitCode, $error] = static::callTerminus(
+            sprintf('env:deploy %s.%s', $this->getSiteName(), $this->getMdEnv()),
+            null,
+            $this->env
+        );
+
+        $this->assertNotEquals(
+            0,
+            $exitCode,
+            'env:deploy should fail if a multidev environment is given'
+        );
+
+        $this->assertStringContainsString(
+            'This command should only be used to deploy to test or live environments',
+            $error,
+            'env:deploy should fail if a multidev environment is given'
+        );
+
         $this->terminus(
             sprintf('env:deploy %s.%s', $this->getSiteName(), 'live')
         );
