@@ -1,6 +1,8 @@
 # Change Log
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org)
 
+## 3.4.0-dev
+
 ## 3.4.0
 
 - Update clone:content command documentation #2560
