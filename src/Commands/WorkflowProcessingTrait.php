@@ -4,6 +4,7 @@ namespace Pantheon\Terminus\Commands;
 
 use Pantheon\Terminus\Models\Workflow;
 use Pantheon\Terminus\ProgressBars\WorkflowProgressBar;
+use Pantheon\Terminus\Exceptions\TerminusException;
 
 /**
  * Class WorkflowTrait
@@ -33,6 +34,9 @@ trait WorkflowProcessingTrait
             $workflow->fetch();
             usleep($retry_interval * 1000);
         } while (!$workflow->isFinished());
+        if (!$workflow->isSuccessful()) {
+            throw new TerminusException($workflow->getMessage());
+        }
         return $workflow;
     }
 }
