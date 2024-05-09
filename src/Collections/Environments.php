@@ -12,7 +12,14 @@ use Pantheon\Terminus\Models\Workflow;
  */
 class Environments extends SiteOwnedCollection
 {
+    /**
+     *
+     */
     public const PRETTY_NAME = 'environments';
+    /**
+     *
+     */
+    public const DEFAULT_ENVIRONMENTS = ['dev', 'test', 'live'];
     /**
      * @var string
      */
@@ -61,33 +68,20 @@ class Environments extends SiteOwnedCollection
     }
 
     /**
-     * Filters out non-multidev environments
-     *
-     * @return Environments $this
-     */
-    public function filterForMultidev()
-    {
-        $this->filter(function ($env) {
-            return $env->isMultidev();
-        });
-        return $this;
-    }
-
-    /**
      * List Environment IDs, with Dev/Test/Live first
      *
      * @return string[] $ids
      */
-    public function ids()
+    public function ids(): array
     {
         $ids = array_keys($this->all());
 
         //Reorder environments to put dev/test/live first
-        $default_ids = ['dev', 'test', 'live'];
-        $multidev_ids = array_diff($ids, $default_ids);
-        $ids = array_merge($default_ids, $multidev_ids);
+        // but only if they exist
+        $default_ids = array_intersect($ids, self::DEFAULT_ENVIRONMENTS);
+        $multidev_ids = array_diff($default_ids, $default_ids);
 
-        return $ids;
+        return array_merge($default_ids, $multidev_ids);
     }
 
     /**
@@ -100,6 +94,19 @@ class Environments extends SiteOwnedCollection
         $multidev_envs = $this->filterForMultidev()->all();
         $this->reset();
         return $multidev_envs;
+    }
+
+    /**
+     * Filters out non-multidev environments
+     *
+     * @return Environments $this
+     */
+    public function filterForMultidev()
+    {
+        $this->filter(function ($env) {
+            return $env->isMultidev();
+        });
+        return $this;
     }
 
     /**
