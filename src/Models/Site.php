@@ -65,7 +65,7 @@ class Site extends TerminusModel implements
     /**
      * @var Environments
      */
-    protected ?Environments $environments;
+    protected ?Environments $environments = null;
     /**
      * @var NewRelic
      */
@@ -231,6 +231,7 @@ class Site extends TerminusModel implements
     public function getEnvironments(bool $refresh = false): Environments
     {
         if (
+            empty($this->environments) ||
             // If the object hasn't been created yet
             !$this->environments instanceof Environments ||
             // if the environment has no ids, we need to refresh
