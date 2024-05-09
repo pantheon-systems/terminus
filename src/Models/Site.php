@@ -40,88 +40,72 @@ class Site extends TerminusModel implements
      * @var array
      */
     public static $date_attributes = ['created', 'last_frozen_at',];
-
-    /**
-     * @var string
-     */
-    protected $url = 'sites/{id}?site_state=true';
-
-    /**
-     * @var Branches
-     */
-    protected ?Branches $branches;
-
-    /**
-     * @var Environments
-     */
-    protected ?Environments $environments;
-
-    /**
-     * @var NewRelic
-     */
-    protected $new_relic;
-
-    /**
-     * @var SiteOrganizationMemberships
-     */
-    protected $org_memberships;
-
-    /**
-     * @var Plan
-     */
-    protected $plan;
-
-    /**
-     * @var Plans
-     */
-    protected $plans;
-
-    /**
-     * @var Redis
-     */
-    protected $redis;
-
-    /**
-     * @var Solr
-     */
-    protected $solr;
-
-    /**
-     * @var SiteUserMemberships
-     */
-    protected $user_memberships;
-
-    /**
-     * @var SiteAuthorizations
-     */
-    private $authorizations;
-
-    /**
-     * @var array
-     */
-    private $features;
-
-    /**
-     * @var Workflows
-     */
-    private $workflows;
-
     /**
      * @var SiteOrganizationMemberships
      *
      * Set by SiteJoinTrait.
      */
     public $memberships;
-
     /**
      * @var Pantheon\Terminus\Collections\Tags
      */
     public $tags;
-
     /**
      * @var SiteMetrics
      */
     public $site_metrics;
+    /**
+     * @var string
+     */
+    protected $url = 'sites/{id}?site_state=true';
+    /**
+     * @var Branches
+     */
+    protected ?Branches $branches;
+    /**
+     * @var Environments
+     */
+    protected ?Environments $environments;
+    /**
+     * @var NewRelic
+     */
+    protected $new_relic;
+    /**
+     * @var SiteOrganizationMemberships
+     */
+    protected $org_memberships;
+    /**
+     * @var Plan
+     */
+    protected $plan;
+    /**
+     * @var Plans
+     */
+    protected $plans;
+    /**
+     * @var Redis
+     */
+    protected $redis;
+    /**
+     * @var Solr
+     */
+    protected $solr;
+    /**
+     * @var SiteUserMemberships
+     */
+    protected $user_memberships;
+    /**
+     * @var SiteAuthorizations
+     */
+    private $authorizations;
+    /**
+     * @var array
+     */
+    private $features;
+    /**
+     * @var Workflows
+     */
+    private $workflows;
 
     /**
      * Add a payment method to the given site
@@ -140,6 +124,20 @@ class Site extends TerminusModel implements
             'associate_site_instrument',
             $args
         );
+    }
+
+    /**
+     * @return Workflows
+     */
+    public function getWorkflows()
+    {
+        if (empty($this->workflows)) {
+            $nickname = \uniqid(__FUNCTION__ . "-");
+            $this->getContainer()->add($nickname, Workflows::class)
+                ->addArgument(['site' => $this]);
+            $this->workflows = $this->getContainer()->get($nickname);
+        }
+        return $this->workflows;
     }
 
     /**
@@ -232,7 +230,14 @@ class Site extends TerminusModel implements
      */
     public function getEnvironments(bool $refresh = false): Environments
     {
-        if (empty($this->environments) || $refresh) {
+        if (
+            // If the object hasn't been created yet
+            !$this->environments instanceof Environments ||
+            // if the environment has no ids, we need to refresh
+            empty($this->environments->ids()) ||
+            // if we're forcing a refresh
+            $refresh
+        ) {
             $nickname = \uniqid(__FUNCTION__ . "-");
             $this->getContainer()->add($nickname, Environments::class)
                 ->addArgument(['site' => $this]);
@@ -269,16 +274,6 @@ class Site extends TerminusModel implements
             return $this->features[$feature];
         }
         return null;
-    }
-
-    /**
-     * Get the human-readable name of the site
-     *
-     * @return string
-     */
-    public function getName()
-    {
-        return $this->get('name');
     }
 
     /**
@@ -377,6 +372,16 @@ class Site extends TerminusModel implements
     }
 
     /**
+     * Get the human-readable name of the site
+     *
+     * @return string
+     */
+    public function getName()
+    {
+        return $this->get('name');
+    }
+
+    /**
      * @return SiteMetrics
      */
     public function getSiteMetrics()
@@ -405,30 +410,6 @@ class Site extends TerminusModel implements
     }
 
     /**
-     * Returns the Upstream.
-     *
-     * @return \Pantheon\Terminus\Models\SiteUpstream
-     */
-    public function getUpstream(): SiteUpstream
-    {
-        $upstream_data = (object)array_merge(
-            (array)$this->get('upstream'),
-            (array)$this->get('product')
-        );
-        if (
-            empty((array)$upstream_data)
-            && !is_null($settings = $this->get('settings'))
-            && isset($settings->upstream)
-        ) {
-            $upstream_data = $settings->upstream;
-        }
-        $nickname = \uniqid(__FUNCTION__ . "-");
-        $this->getContainer()->add($nickname, SiteUpstream::class)
-            ->addArguments([$upstream_data, ['site' => $this]]);
-        return $this->getContainer()->get($nickname);
-    }
-
-    /**
      * @return SiteUserMemberships
      */
     public function getUserMemberships()
@@ -440,30 +421,6 @@ class Site extends TerminusModel implements
             $this->user_memberships = $this->getContainer()->get($nickname);
         }
         return $this->user_memberships;
-    }
-
-    /**
-     * @return Workflows
-     */
-    public function getWorkflows()
-    {
-        if (empty($this->workflows)) {
-            $nickname = \uniqid(__FUNCTION__ . "-");
-            $this->getContainer()->add($nickname, Workflows::class)
-                ->addArgument(['site' => $this]);
-            $this->workflows = $this->getContainer()->get($nickname);
-        }
-        return $this->workflows;
-    }
-
-    /**
-     * Returns whether the site is frozen or not.
-     *
-     * @return boolean
-     */
-    public function isFrozen()
-    {
-        return !empty($this->get('frozen'));
     }
 
     /**
@@ -517,6 +474,40 @@ class Site extends TerminusModel implements
     }
 
     /**
+     * Returns the Upstream.
+     *
+     * @return \Pantheon\Terminus\Models\SiteUpstream
+     */
+    public function getUpstream(): SiteUpstream
+    {
+        $upstream_data = (object)array_merge(
+            (array)$this->get('upstream'),
+            (array)$this->get('product')
+        );
+        if (
+            empty((array)$upstream_data)
+            && !is_null($settings = $this->get('settings'))
+            && isset($settings->upstream)
+        ) {
+            $upstream_data = $settings->upstream;
+        }
+        $nickname = \uniqid(__FUNCTION__ . "-");
+        $this->getContainer()->add($nickname, SiteUpstream::class)
+            ->addArguments([$upstream_data, ['site' => $this]]);
+        return $this->getContainer()->get($nickname);
+    }
+
+    /**
+     * Returns whether the site is frozen or not.
+     *
+     * @return boolean
+     */
+    public function isFrozen()
+    {
+        return !empty($this->get('frozen'));
+    }
+
+    /**
      * Sets the site owner to the indicated team member
      *
      * @param User $user_id UUID of new owner of site
@@ -550,13 +541,13 @@ class Site extends TerminusModel implements
     /**
      * Update service level
      *
-     * @deprecated 2.0.0 This is no longer the appropriate way to change a
-     *     site's plan. Use $this->getPlans()->set().
-     *
      * @param string $service_level Level to set service on site to
      *
      * @return Workflow
      * @throws TerminusException|\Exception
+     * @deprecated 2.0.0 This is no longer the appropriate way to change a
+     *     site's plan. Use $this->getPlans()->set().
+     *
      */
     public function updateServiceLevel($service_level)
     {
