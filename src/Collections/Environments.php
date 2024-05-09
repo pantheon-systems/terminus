@@ -79,7 +79,7 @@ class Environments extends SiteOwnedCollection
         //Reorder environments to put dev/test/live first
         // but only if they exist
         $default_ids = array_intersect($ids, self::DEFAULT_ENVIRONMENTS);
-        $multidev_ids = array_diff($default_ids, $default_ids);
+        $multidev_ids = array_diff($ids, $default_ids);
 
         return array_merge($default_ids, $multidev_ids);
     }
