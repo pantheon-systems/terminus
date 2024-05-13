@@ -4,6 +4,7 @@ namespace Pantheon\Terminus\Collections;
 
 use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
 use Pantheon\Terminus\Models\Environment;
+use Pantheon\Terminus\Models\TerminusModel;
 use Pantheon\Terminus\Models\Workflow;
 
 /**
@@ -69,23 +70,6 @@ class Environments extends SiteOwnedCollection
     }
 
     /**
-     * List Environment IDs, with Dev/Test/Live first
-     *
-     * @return string[] $ids
-     */
-    public function ids(): array
-    {
-        $ids = array_keys($this->all());
-
-        //Reorder environments to put dev/test/live first
-        // but only if they exist
-        $default_ids = array_intersect($ids, self::DEFAULT_ENVIRONMENTS);
-        $multidev_ids = array_diff($ids, $default_ids);
-
-        return array_merge($default_ids, $multidev_ids);
-    }
-
-    /**
      * Returns a list of all multidev environments on the collection-owning Site
      *
      * @return Environment[]
@@ -131,18 +115,19 @@ class Environments extends SiteOwnedCollection
      * Retrieves the model of the given ID
      *
      * @param string $id
-     * @return \Pantheon\Terminus\Models\TerminusModel
+     * @return TerminusModel
      * @throws TerminusNotFoundException
      */
-    public function get($id): \Pantheon\Terminus\Models\TerminusModel
+    public function get($id): TerminusModel
     {
+        print_r($id);
         if ($this->has($id)) {
-            return $this->models[$id];
+            return parent::get($id);
         }
         // Try one more time to fetch the environment
         $this->setData(array_filter((array)$this->requestData()));
         if ($this->has($id)) {
-            return $this->models[$id];
+            return parent::get($id);
         }
         throw new TerminusNotFoundException('An environment "{id}" was not found.', compact('id'));
     }
@@ -155,6 +140,22 @@ class Environments extends SiteOwnedCollection
      */
     public function has($id): bool
     {
-        return isset($this->models[$id]);
+        return in_array($id, $this->ids());
+    }
+
+    /**
+     * List Environment IDs, with Dev/Test/Live first
+     *
+     * @return string[] $ids
+     */
+    public function ids(): array
+    {
+        $ids = array_keys($this->all());
+
+        //Reorder environments to put dev/test/live first
+        // but only if they exist
+        $default_ids = array_intersect($ids, self::DEFAULT_ENVIRONMENTS);
+        $multidev_ids = array_diff($ids, $default_ids);
+        return array_merge($default_ids, $multidev_ids);
     }
 }
