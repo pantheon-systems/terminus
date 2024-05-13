@@ -2,6 +2,7 @@
 
 namespace Pantheon\Terminus\Collections;
 
+use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
 use Pantheon\Terminus\Models\Environment;
 use Pantheon\Terminus\Models\Workflow;
 
@@ -89,7 +90,7 @@ class Environments extends SiteOwnedCollection
      *
      * @return Environment[]
      */
-    public function multidev()
+    public function multidev(): array
     {
         $multidev_envs = $this->filterForMultidev()->all();
         $this->reset();
@@ -124,5 +125,36 @@ class Environments extends SiteOwnedCollection
             }
         }
         return $models;
+    }
+
+    /**
+     * Retrieves the model of the given ID
+     *
+     * @param string $id
+     * @return \Pantheon\Terminus\Models\TerminusModel
+     * @throws TerminusNotFoundException
+     */
+    public function get($id): \Pantheon\Terminus\Models\TerminusModel
+    {
+        if ($this->has($id)) {
+            return $this->models[$id];
+        }
+        // Try one more time to fetch the environment
+        $this->setData(array_filter((array)$this->requestData()));
+        if ($this->has($id)) {
+            return $this->models[$id];
+        }
+        throw new TerminusNotFoundException('An environment "{id}" was not found.', compact('id'));
+    }
+
+    /**
+     * Determines whether the given environment exists
+     *
+     * @param string $id
+     * @return bool
+     */
+    public function has($id): bool
+    {
+        return isset($this->models[$id]);
     }
 }
