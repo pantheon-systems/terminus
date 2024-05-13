@@ -63,6 +63,9 @@ class WakeCommand extends TerminusCommand implements SiteAwareInterface
 
         // @TODO: Move the exceptions up the chain to the `wake` function. (One env is ported over).
         if (empty($wakeStatus['success'])) {
+            $this->log()->error('{target} could not be reached, domain returned {status_code}.', [
+                'status_code' => $wakeStatus['response']['status_code'],
+            ]);
             throw new TerminusException('Could not reach {target}', $wakeStatus);
         }
         if (empty($wakeStatus['styx'])) {

@@ -30,6 +30,9 @@ trait WaitForWakeTrait
             // Allow user to set the number of retries if the site is still waking up.
             // Default should be 25 times, once per second.
             if ($waits > $this->getConfig()->get("wait_for_wake_repeat", 25)) {
+                $this->log()->error('{target} could not be reached, domain returned {status_code}.', [
+                    'status_code' => $woke['response']['status_code'],
+                ]);
                 throw new TerminusException('Could not confirm that the site is working; there might be a problem.');
             }
             sleep(1);
