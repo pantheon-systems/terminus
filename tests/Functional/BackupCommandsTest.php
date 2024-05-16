@@ -17,15 +17,6 @@ class BackupCommandsTest extends TerminusTestBase
     protected $client;
 
     /**
-     * @inheritdoc
-     */
-    protected function setUp(): void
-    {
-        parent::setUp();
-        $this->client = new Client();
-    }
-
-    /**
      * @test
      * @covers \Pantheon\Terminus\Commands\Backup\GetCommand
      * @covers \Pantheon\Terminus\Commands\Backup\InfoCommand
@@ -39,7 +30,10 @@ class BackupCommandsTest extends TerminusTestBase
     {
         $this->terminus(sprintf('backup:create %s --element=database', $this->getSiteEnv()));
         $backupList = $this->terminusJsonResponse(sprintf('backup:list %s --element=database', $this->getSiteEnv()));
-        $this->assertIsArray($backupList);
+        $this->assertIsArray(
+            $backupList,
+            sprintf('A list of backups should be an array. %s', print_r($backupList, true))
+        );
         $backup = array_shift($backupList);
         $this->assertArrayHasKey('file', $backup, 'A backup should have "file" field.');
 
@@ -112,5 +106,14 @@ class BackupCommandsTest extends TerminusTestBase
         if ($latestBackupTimestamp < $startOfCommandExecutionTimestamp) {
             $this->fail('Command "backup:get" should return URL of the most recent backup.');
         }
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->client = new Client();
     }
 }
