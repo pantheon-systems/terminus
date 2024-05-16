@@ -27,7 +27,7 @@ class WatchCommand extends TerminusCommand implements SiteAwareInterface
     private $started = [];
 
     /**
-     * Streams new and finished workflows from a site to the console.
+     * Streams workflows from a site to the console until their status = complete.
      *
      * @authorize
      *
@@ -35,53 +35,23 @@ class WatchCommand extends TerminusCommand implements SiteAwareInterface
      *
      * @option integer $checks Times to query
      *
-     * @usage <site> Streams new and finished workflows from <site> to the console.
+     * @usage <site> Streams workflows from <site> / <site>.<env> to the console.
      *
-     * @param string $site_id Site name
-     * @param null[] $options
+     * @param string $site_env {Sitename}.{Env}. The .env is optional
      *
      * @throws \GuzzleHttp\Exception\GuzzleException
      * @throws \Pantheon\Terminus\Exceptions\TerminusException
      * @throws \Psr\Container\ContainerExceptionInterface
      * @throws \Psr\Container\NotFoundExceptionInterface
      */
-    public function watch($site_id, $options = ['checks' => null])
+    public function watch($site_env, $options = ['checks' => null])
     {
-        $site = $this->getSiteById($site_id);
-        if (!is_null($number_of_checks = $options['checks'])) {
-            $number_of_checks = (int)$number_of_checks;
-        }
-
-        $this->log()->notice('Watching workflows...');
-        $site->getWorkflows()->fetchWithOperations();
-        while (true) {
-            $last_wf_created_at = $site->getWorkflows()->lastCreatedAt();
-            $last_wf_finished_at = $site->getWorkflows()->lastFinishedAt();
-            sleep(self::WORKFLOWS_WATCH_INTERVAL);
-            // Clear cached data
-            $site->getWorkflows()->setData([]);
-            $site->getWorkflows()->fetchWithOperations();
-
-            $workflows = $site->getWorkflows()->all();
-            foreach ($workflows as $workflow) {
-                /** @var \Pantheon\Terminus\Models\Workflow $workflow */
-                if ($workflow->wasCreatedAfter($last_wf_created_at) && !$this->startedNoticeAlreadyEmitted($workflow)) {
-                    $this->emitStartedNotice($workflow);
-                }
-
-                if (
-                    $workflow->wasFinishedAfter($last_wf_finished_at)
-                    && !$this->finishedNoticeAlreadyEmitted($workflow)
-                ) {
-                    $this->emitFinishedNotice($workflow);
-                    if ($workflow->get('has_operation_log_output')) {
-                        $this->emitOperationLogs($workflow);
-                    }
-                }
-            }
-            if (!is_null($number_of_checks) && (--$number_of_checks < 1)) {
-                break;
-            }
+        // 1. Get the siteID from the site name
+        $site = $this->getSiteById($site_env);
+        $env = $this->getEnv($site_env);
+        $wfl = $site->getWorkflows();
+        if (!empty($env)) {
+            $wfl->filterBy('environment', $env);
         }
     }
 
@@ -95,10 +65,10 @@ class WatchCommand extends TerminusCommand implements SiteAwareInterface
         $date_format = $this->getConfig()->get('date_format');
         $finished_message = 'Finished workflow {id} {description} ({env}) at {time}';
         $finished_context = [
-            'id'          => $workflow->id,
+            'id' => $workflow->id,
             'description' => $workflow->get('description'),
-            'env'         => $workflow->get('environment'),
-            'time'        => date($date_format, $workflow->getFinishedAt()),
+            'env' => $workflow->get('environment'),
+            'time' => date($date_format, $workflow->getFinishedAt()),
         ];
         $this->log()->notice($finished_message, $finished_context);
         array_push($this->finished, $workflow->id);
@@ -130,10 +100,10 @@ class WatchCommand extends TerminusCommand implements SiteAwareInterface
         $date_format = $this->getConfig()->get('date_format');
         $started_message = 'Started {id} {description} ({env}) at {time}';
         $started_context = [
-            'id'          => $workflow->id,
+            'id' => $workflow->id,
             'description' => $workflow->get('description'),
-            'env'         => $workflow->get('environment'),
-            'time'        => date($date_format, $workflow->getStartedAt()),
+            'env' => $workflow->get('environment'),
+            'time' => date($date_format, $workflow->getStartedAt()),
         ];
         $this->log()->notice($started_message, $started_context);
         array_push($this->started, $workflow->id);

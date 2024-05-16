@@ -23,10 +23,6 @@ abstract class TerminusCollection implements ContainerAwareInterface, RequestAwa
     use LoggerAwareTrait;
 
     /**
-     * @var array
-     */
-    private $data = [];
-    /**
      * @var string
      */
     protected $collected_class = TerminusModel::class;
@@ -34,6 +30,10 @@ abstract class TerminusCollection implements ContainerAwareInterface, RequestAwa
      * @var TerminusModel[]
      */
     protected $models = null;
+    /**
+     * @var array
+     */
+    private $data = [];
 
     /**
      * Instantiates the collection, sets param members as properties
@@ -70,6 +70,29 @@ abstract class TerminusCollection implements ContainerAwareInterface, RequestAwa
         $model = $this->getContainer()->get($nickname);
         $this->models[$model_data->id] = $model;
         return $model;
+    }
+
+    /**
+     * Retrieves the model of the given ID
+     *
+     * @param string $id ID of desired model instance
+     * @return TerminusModel $this->models[$id]
+     * @throws TerminusNotFoundException
+     */
+    public function get($id): TerminusModel
+    {
+        foreach ($this->all() as $member) {
+            if (in_array($id, $member->getReferences())) {
+                return $member;
+            }
+        }
+        $class_name = $this->collected_class;
+        $pretty_name = $class_name::PRETTY_NAME;
+        $particle = in_array(substr($pretty_name, 0, 1), ['a', 'e', 'i', 'o', 'u',]) ? 'an' : 'a';
+        throw new TerminusNotFoundException(
+            "Could not find $particle {model} identified by {id}.",
+            ['model' => $pretty_name, 'id' => $id,]
+        );
     }
 
     /**
@@ -135,14 +158,19 @@ abstract class TerminusCollection implements ContainerAwareInterface, RequestAwa
     }
 
     /**
-     * Filters the members of this collectin
-     *
-     * @param callable $filter Filter function
+     * @return array Returns data array
      */
-    public function filter(callable $filter)
+    public function getData()
     {
-        $this->models = array_filter($this->all(), $filter);
-        return $this;
+        return $this->data;
+    }
+
+    /**
+     * @param array $data
+     */
+    public function setData(array $data = [])
+    {
+        $this->data = $data;
     }
 
     /**
@@ -161,26 +189,14 @@ abstract class TerminusCollection implements ContainerAwareInterface, RequestAwa
     }
 
     /**
-     * Retrieves the model of the given ID
+     * Filters the members of this collectin
      *
-     * @param string $id ID of desired model instance
-     * @return TerminusModel $this->models[$id]
-     * @throws TerminusNotFoundException
+     * @param callable $filter Filter function
      */
-    public function get($id): TerminusModel
+    public function filter(callable $filter): TerminusCollection
     {
-        foreach ($this->all() as $member) {
-            if (in_array($id, $member->getReferences())) {
-                return $member;
-            }
-        }
-        $class_name = $this->collected_class;
-        $pretty_name = $class_name::PRETTY_NAME;
-        $particle = in_array(substr($pretty_name, 0, 1), ['a', 'e', 'i', 'o', 'u',]) ? 'an' : 'a';
-        throw new TerminusNotFoundException(
-            "Could not find $particle {model} identified by {id}.",
-            ['model' => $pretty_name, 'id' => $id,]
-        );
+        $this->models = array_filter($this->all(), $filter);
+        return $this;
     }
 
     /**
@@ -191,14 +207,6 @@ abstract class TerminusCollection implements ContainerAwareInterface, RequestAwa
     public function getCollectedClass(): string
     {
         return $this->collected_class;
-    }
-
-    /**
-     * @return array Returns data array
-     */
-    public function getData()
-    {
-        return $this->data;
     }
 
     /**
@@ -278,14 +286,6 @@ abstract class TerminusCollection implements ContainerAwareInterface, RequestAwa
             $models[$id] = $model->serialize();
         }
         return $models;
-    }
-
-    /**
-     * @param array $data
-     */
-    public function setData(array $data = [])
-    {
-        $this->data = $data;
     }
 
     /**

@@ -25,6 +25,7 @@
     "czproject/git-php": "^4.0",
     "guzzlehttp/guzzle": "^7.0",
     "justinrainbow/json-schema": "^5.2",
+    "kint-php/kint": "^5.1",
     "league/container": "^3",
     "monolog/monolog": "^2.2",
     "psy/psysh": "^0.11.9",
@@ -32,6 +33,7 @@
     "symfony/console": "^5",
     "symfony/finder": "^5",
     "symfony/process": "^5",
+    "symfony/serializer": "^5",
     "symfony/yaml": "^5",
     "twig/twig": "^3.3"
   },

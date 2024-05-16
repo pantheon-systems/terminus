@@ -39,8 +39,6 @@ class StatusCommand extends InfoBaseCommand
      */
     public function status($site_id, $options = ['id' => null,])
     {
-        $workflow = $this->getWorkflow($site_id, $options['id']);
-        $workflow->unsetAttribute('operations');
-        return $this->getPropertyList($workflow);
+        return $this->getPropertyList($this->getWorkflowLogs($site_id, $options['id']));
     }
 }

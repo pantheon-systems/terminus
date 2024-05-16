@@ -256,6 +256,9 @@ EOD;
         $container->add(\Pantheon\Terminus\Models\UserOrganizationMembership::class);
         $container->add(\Pantheon\Terminus\Models\UserSiteMembership::class);
         $container->add(\Pantheon\Terminus\Models\Workflow::class);
+        $container->add(\Pantheon\Terminus\Models\WorkflowLog::class);
+        $container->add(\Pantheon\Terminus\Models\WorkflowLogActor::class);
+        $container->add(\Pantheon\Terminus\Models\WorkflowLogInfo::class);
         $container->add(\Pantheon\Terminus\Models\WorkflowOperation::class);
 
         // Collections
@@ -285,6 +288,7 @@ EOD;
         $container->add(\Pantheon\Terminus\Collections\Upstreams::class);
         $container->add(\Pantheon\Terminus\Collections\UserOrganizationMemberships::class);
         $container->add(\Pantheon\Terminus\Collections\UserSiteMemberships::class);
+        $container->add(\Pantheon\Terminus\Collections\WorkflowLogsCollection::class);
         $container->add(\Pantheon\Terminus\Collections\WorkflowOperations::class);
         $container->add(\Pantheon\Terminus\Collections\Workflows::class);
     }
@@ -296,7 +300,6 @@ EOD;
     {
         // List of all hooks and commands. Update via 'composer update-class-lists'
         $this->commands = [
-            'Consolidation\\Filter\\Hooks\\FilterHooks',
             'Pantheon\\Terminus\\Hooks\\Authorizer',
             'Pantheon\\Terminus\\Hooks\\RoleValidator',
             'Pantheon\\Terminus\\Hooks\\SiteEnvLookup',
@@ -437,6 +440,7 @@ EOD;
             'Pantheon\\Terminus\\Commands\\Workflow\\Info\\StatusCommand',
             'Pantheon\\Terminus\\Commands\\Workflow\\ListCommand',
             'Pantheon\\Terminus\\Commands\\Workflow\\WaitCommand',
+            'Pantheon\\Terminus\\Commands\\Workflow\\WaitForCommitCommand',
             'Pantheon\\Terminus\\Commands\\Workflow\\WatchCommand'
         ];
     }

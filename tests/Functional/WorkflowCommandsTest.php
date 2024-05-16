@@ -2,6 +2,8 @@
 
 namespace Pantheon\Terminus\Tests\Functional;
 
+use Pantheon\Terminus\Models\Site;
+
 /**
  * Class WorkflowCommandsTest.
  *
@@ -14,7 +16,7 @@ class WorkflowCommandsTest extends TerminusTestBase
      * @covers \Pantheon\Terminus\Commands\Workflow\ListCommand
      * @covers \Pantheon\Terminus\Commands\Workflow\Info\StatusCommand
      *
-     * @group workflow
+     * @group workflows
      * @group short
      */
     public function testWorkflowListAndStatusCommand()
@@ -30,12 +32,57 @@ class WorkflowCommandsTest extends TerminusTestBase
     }
 
     /**
+     * Tests and returns the latest workflow record.
+     *
+     * @param array $filters
+     *   The list of filters (field name => expected value).
+     *
+     * @return array
+     *   The workflow metadata.
+     */
+    private function getLatestWorkflow(array $filters = []): array
+    {
+        $workflowsList = $this->terminusJsonResponse(sprintf('workflow:list %s', $this->getSiteName()));
+        $this->assertIsArray($workflowsList);
+        $this->assertNotEmpty($workflowsList);
+
+        if ($filters) {
+            $workflowsList = array_filter(
+                $workflowsList,
+                fn ($workflow): bool => count(array_intersect_assoc($filters, $workflow)) === count($filters)
+            );
+        }
+
+        $workflow = array_shift($workflowsList);
+
+        $fields = [
+            'id',
+            'env',
+            'workflow',
+            'user',
+            'status',
+            'started_at',
+            'finished_at',
+            'time',
+        ];
+        foreach ($fields as $field) {
+            $this->assertArrayHasKey(
+                $field,
+                $workflow,
+                sprintf('Workflow should have "%s" field', $field)
+            );
+        }
+
+        return $workflow;
+    }
+
+    /**
      * @test
      * @covers \Pantheon\Terminus\Commands\Workflow\ListCommand
      * @covers \Pantheon\Terminus\Commands\Workflow\Info\OperationsCommand
      * @covers \Pantheon\Terminus\Commands\Workflow\Info\LogsCommand
      *
-     * @group workflow
+     * @group workflows
      * @group short
      *
      * Requirements:
@@ -91,48 +138,31 @@ class WorkflowCommandsTest extends TerminusTestBase
         );
     }
 
+
     /**
-     * Tests and returns the latest workflow record.
+     * @return void
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
      *
-     * @param array $filters
-     *   The list of filters (field name => expected value).
+     * @covers \Pantheon\Terminus\Collections\WorkflowLogsCollection
+     * @covers \Pantheon\Terminus\Models\WorkflowLogs
+     * @group workflows
+     * @group short
+     * @test
      *
-     * @return array
-     *   The workflow metadata.
      */
-    private function getLatestWorkflow(array $filters = []): array
+    public function testWorkflowLogsWaitForCommit()
     {
-        $workflowsList = $this->terminusJsonResponse(sprintf('workflow:list %s', $this->getSiteName()));
-        $this->assertIsArray($workflowsList);
-        $this->assertNotEmpty($workflowsList);
+        // 1. Clone the site with the local command
 
-        if ($filters) {
-            $workflowsList = array_filter(
-                $workflowsList,
-                fn ($workflow): bool => count(array_intersect_assoc($filters, $workflow)) === count($filters)
-            );
-        }
+        // 2. Switch to the multidev branch
 
-        $workflow = array_shift($workflowsList);
+        // 3. Make a small change to the repository
 
-        $fields = [
-            'id',
-            'env',
-            'workflow',
-            'user',
-            'status',
-            'started_at',
-            'finished_at',
-            'time',
-        ];
-        foreach ($fields as $field) {
-            $this->assertArrayHasKey(
-                $field,
-                $workflow,
-                sprintf('Workflow should have "%s" field', $field)
-            );
-        }
+        // 4. Commit the change
 
-        return $workflow;
+        // 5. Push the change to the repository
+
+        // 6. Running wait for commit should return the commit message
     }
 }

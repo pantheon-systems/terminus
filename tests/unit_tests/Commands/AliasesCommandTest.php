@@ -38,53 +38,6 @@ class AliasesCommandTest extends CommandTestCase
     protected $output;
 
     /**
-     * @inheritdoc
-     */
-    protected function setUp()
-    {
-        parent::setUp();
-
-        $this->fixtures = new AliasFixtures();
-        $this->output = new BufferedOutput();
-
-        $this->home_dir = realpath($this->fixtures->mktmpdir());
-
-        $this->session = $this->getMockBuilder(Session::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $this->container = $this->getMockBuilder(Container::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $this->getConfig()->method('get')
-            ->with($this->equalTo('user_home'))
-            ->willReturn($this->home_dir);
-        $this->sites->method('fetch')
-            ->willReturn(null);
-        $this->sites->method('ids')
-            ->willReturn([$this->site->id]);
-        $this->sites->method('serialize')
-            ->willReturn([$this->site->id => ['id' => $this->site->id, 'name' => 'site1']]);
-        $this->site->method('get')
-            ->willReturn('site1');
-
-        $this->command = new AliasesCommand($this->getConfig());
-        $this->command->setLogger($this->logger);
-        $this->command->setSession($this->session);
-        $this->command->setContainer($this->container);
-        $this->command->setConfig($this->config);
-        $this->command->setSites($this->sites);
-        $this->command->setOutput($this->output);
-    }
-
-    /**
-     * @inheritdoc
-     */
-    protected function tearDown()
-    {
-        $this->fixtures->cleanup();
-    }
-
-    /**
      * Tests the aliases command when writing to a the default file
      */
     public function testAliases()
@@ -160,6 +113,38 @@ __EOT__;
     }
 
     /**
+     * Return the expected output for Drush 8 alias files.
+     */
+    protected function expectedDrush8AliasOutput()
+    {
+        $expected = <<<__EOT__
+<?php
+  /**
+   * Pantheon drush alias file, to be placed in your ~/.drush directory or the aliases
+   * directory of your local Drush home. Once it's in place, clear drush cache:
+   *
+   * drush cc drush
+   *
+   * To see all your available aliases:
+   *
+   * drush sa
+   *
+   * See http://helpdesk.getpantheon.com/customer/portal/articles/411388 for details.
+   */
+  \$aliases['site1.*'] = array(
+    'uri' => '\${env-name}-site1.pantheonsite.io',
+    'remote-host' => 'appserver.\${env-name}.abc.drush.in',
+    'remote-user' => '\${env-name}.abc',
+    'ssh-options' => '-p 2222 -o "AddressFamily inet"',
+    'path-aliases' => array(
+      '%files' => 'files',
+     ),
+  );
+__EOT__;
+        return $expected;
+    }
+
+    /**
      * Tests the aliases command when it is outputting to the screen
      */
     public function testAliasesPrint()
@@ -210,34 +195,50 @@ __EOT__;
     }
 
     /**
-     * Return the expected output for Drush 8 alias files.
+     * @inheritdoc
      */
-    protected function expectedDrush8AliasOutput()
+    protected function setUp()
     {
-        $expected = <<<__EOT__
-<?php
-  /**
-   * Pantheon drush alias file, to be placed in your ~/.drush directory or the aliases
-   * directory of your local Drush home. Once it's in place, clear drush cache:
-   *
-   * drush cc drush
-   *
-   * To see all your available aliases:
-   *
-   * drush sa
-   *
-   * See http://helpdesk.getpantheon.com/customer/portal/articles/411388 for details.
-   */
-  \$aliases['site1.*'] = array(
-    'uri' => '\${env-name}-site1.pantheonsite.io',
-    'remote-host' => 'appserver.\${env-name}.abc.drush.in',
-    'remote-user' => '\${env-name}.abc',
-    'ssh-options' => '-p 2222 -o "AddressFamily inet"',
-    'path-aliases' => array(
-      '%files' => 'files',
-     ),
-  );
-__EOT__;
-        return $expected;
+        parent::setUp();
+
+        $this->
+        fixtures = new AliasFixtures();
+        $this->output = new BufferedOutput();
+
+        $this->home_dir = realpath($this->fixtures->mktmpdir());
+
+        $this->session = $this->getMockBuilder(Session::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $this->container = $this->getMockBuilder(Container::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $this->getConfig()->method('get')
+            ->with($this->equalTo('user_home'))
+            ->willReturn($this->home_dir);
+        $this->sites->method('fetch')
+            ->willReturn(null);
+        $this->sites->method('ids')
+            ->willReturn([$this->site->id]);
+        $this->sites->method('serialize')
+            ->willReturn([$this->site->id => ['id' => $this->site->id, 'name' => 'site1']]);
+        $this->site->method('get')
+            ->willReturn('site1');
+
+        $this->command = new AliasesCommand($this->getConfig());
+        $this->command->setLogger($this->logger);
+        $this->command->setSession($this->session);
+        $this->command->setContainer($this->container);
+        $this->command->setConfig($this->config);
+        $this->command->setSites($this->sites);
+        $this->command->setOutput($this->output);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected function tearDown()
+    {
+        $this->fixtures->cleanup();
     }
 }

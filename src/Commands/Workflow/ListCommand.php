@@ -18,14 +18,19 @@ class ListCommand extends TerminusCommand implements SiteAwareInterface
     use StructuredListTrait;
 
     /**
-     * Displays the list of the workflows for a site.
+     * Displays the list of the workflows for a site. If the environment is provided, will filter
+     * for that environment.
      *
      * @authorize
      *
      * @command workflow:list
+     * @aliases wfl
      * @aliases workflows
      *
-     * @option bool $all Return all of the available workflows, not just the most recent 100
+     * @option bool $all Requests are limited to the last 10 workflows run. This option has been deprecated
+     *     but will not produce an error
+     * @option bool $inProgress Requests are limited to workflows that are in progress
+     * @option string $env Environment to filter by
      *
      * @field-labels
      *     id: Workflow ID
@@ -36,24 +41,35 @@ class ListCommand extends TerminusCommand implements SiteAwareInterface
      *     started_at: Started At
      *     finished_at: Finished At
      *     time: Time Elapsed
-     * @return RowsOfFields
-     *
-     * @param string $site_id Site name
+     * @param string $site_id Site to list workflows for
      *
      * @usage <site> Displays the list of the workflows for <site>.
+     * @usage <site>.<env> Displays the list of the workflows for <site> filtering for a specific environment.
+     * @usage <site> --inProgress Displays the list of the workflows for <site> filtering for in-progress workflows.
+     * @usage <site> --finished Displays the list of the workflows for <site> filtering for finished workflows.
+     *
+     * @return RowsOfFields
+     *
      */
-    public function wfList($site_id, $options = [
-        'all' => false,
-    ])
-    {
-        $paging = (bool) $options['all'];
-        $site = $this->getSiteById($site_id);
-        return $this->getRowsOfFields(
-            $site->getWorkflows()->setPaging($paging)->fetch(),
-            [
-                'message' => 'No workflows have been run on {site}.',
-                'message_options' => ['site' => $site->getName()],
-            ]
-        );
+    public function wfList(
+        $site_id,
+        $options = [
+            'all' => false,
+            'inProgress' => false,
+            'env' => null,
+        ]
+    ) {
+        try {
+            $site = $this->getSiteById($site_id);
+            $wfl = $site->getWorkflows();
+            if (!empty($options['env'])) {
+                $wfl->filter(function ($wf) use ($options) {
+                    return $wf->get('environment') == $options['env'];
+                });
+            }
+            return $this->getRowsOfFields($wfl, $options);
+        } catch (\Exception $e) {
+            $this->log()->error($e->getMessage());
+        }
     }
 }

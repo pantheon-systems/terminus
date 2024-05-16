@@ -56,35 +56,32 @@ class Request implements
     public const HIDDEN_VALUE_REPLACEMENT = '**HIDDEN**';
 
     public const DEBUG_REQUEST_STRING = "#### REQUEST ####\n"
-    . "Headers: {headers}\n"
-    . "URI: {uri}\n"
-    . "Method: {method}\n"
-    . "Body: {body}";
+        . "Headers: {headers}\n"
+        . "URI: {uri}\n"
+        . "Method: {method}\n"
+        . "Body: {body}";
 
     public const DEBUG_RESPONSE_STRING = "#### RESPONSE ####\n"
-    . "Headers: {headers}\n"
-    . "Data: {data}\n"
-    . "Status Code: {status_code}";
+        . "Headers: {headers}\n"
+        . "Data: {data}\n"
+        . "Status Code: {status_code}";
 
     public const MAX_HEADER_LENGTH = 4096;
 
     private static $TRACE_ID = null;
-
-    /**
-    * Generate UUID for use as distributed tracing ID and assign to static class variable
-    */
-    public static function generateTraceId()
-    {
-        self::$TRACE_ID = vsprintf('%s%s-%s-%s-%s-%s%s%s', str_split(bin2hex(random_bytes(16)), 4));
-    }
-
-
     protected ClientInterface $client;
-
     /**
      * @var array Names of the values to strip from debug output
      */
     protected $sensitive_data = ['machine_token', 'Authorization', 'session',];
+
+    /**
+     * Generate UUID for use as distributed tracing ID and assign to static class variable
+     */
+    public static function generateTraceId()
+    {
+        self::$TRACE_ID = vsprintf('%s%s-%s-%s-%s-%s%s%s', str_split(bin2hex(random_bytes(16)), 4));
+    }
 
     /**
      * Download file from target URL.
@@ -134,221 +131,6 @@ class Request implements
             $url,
             ['sink' => $target]
         );
-    }
-
-    /**
-     * Returns a configured Client object.
-     *
-     * @param string $base_uri Defaults to the getBaseURI() value
-     */
-    private function getClient($base_uri = null): ClientInterface
-    {
-        if (!isset($this->client)) {
-            $config = $this->getConfig();
-            $stack = HandlerStack::create(new StreamHandler());
-            $stack->push(Middleware::retry($this->createRetryDecider()));
-
-            $params = $config->get('client_options') + [
-                    'base_uri' => ($base_uri === null) ? $this->getBaseURI(
-                    ) : $base_uri,
-                    RequestOptions::VERIFY => (bool)$config->get(
-                        'verify_host_cert',
-                        true
-                    ),
-                    'handler' => $stack,
-                ];
-
-            $host_cert = $config->get('host_cert');
-            if ($host_cert !== null) {
-                $params[RequestOptions::CERT] = $host_cert;
-            }
-
-            $this->client = new Client($params);
-        }
-        return $this->client;
-    }
-
-    /**
-     * Returns the Retry Decider middleware.
-     *
-     * @return callable
-     */
-    private function createRetryDecider(): callable
-    {
-        $config = $this->getConfig();
-        $maxRetries = $config->get('http_max_retries', 5);
-        // Cap max retries at 10.
-        $maxRetries = $maxRetries > 10 ? 10 : $maxRetries;
-        $retryBackoff = $config->get('http_retry_backoff', 5);
-        // Retry backoff should be at least 3.
-        $retryBackoff = $retryBackoff < 3 ? 3 : $retryBackoff;
-        $logger = $this->logger;
-        $logWarning = function (string $message) use ($logger) {
-            if ($this->output()->isVerbose()) {
-                $logger->warning($message);
-            }
-        };
-
-        return function (
-            $retry,
-            RequestInterface $request,
-            ?ResponseInterface $response = null,
-            ?Exception $exception = null
-        ) use (
-            $maxRetries,
-            $logWarning,
-            $retryBackoff
-        ) {
-            $logWarningOnRetry = fn (string $reason) => 0 === $retry
-                ? $logWarning(
-                    sprintf(
-                        'HTTP request %s %s has failed: %s',
-                        $request->getMethod(),
-                        $request->getUri(),
-                        $reason
-                    )
-                )
-                : $logWarning(
-                    sprintf(
-                        'Retrying %s %s %s out of %s (reason: %s)',
-                        $request->getMethod(),
-                        $request->getUri(),
-                        $retry,
-                        $maxRetries,
-                        $reason
-                    )
-                );
-
-            if ($exception instanceof ConnectException) {
-                // Retry on connection-related exceptions such as "Connection refused" and "Operation timed out".
-                if ($retry !== $maxRetries) {
-                    $logWarningOnRetry($exception->getMessage());
-                    $logWarning(sprintf("Retrying in %s seconds.", $retryBackoff * ($retry + 1)));
-                    sleep($retryBackoff * ($retry + 1));
-
-                    return true;
-                }
-            } elseif (null !== $exception) {
-                throw new TerminusException(
-                    'HTTPS request has failed with error "{error}".',
-                    ['error' => $exception->getMessage()]
-                );
-            } else {
-                if (preg_match('/[2,4]0\d/', $response->getStatusCode())) {
-                    // Do not retry on 20x and 40x responses.
-                    return false;
-                }
-
-                if ($retry !== $maxRetries) {
-                    $logWarningOnRetry(
-                        sprintf('status code - %s', $response->getStatusCode())
-                    );
-                    $this->logger->debug(
-                        'Response body: {body}',
-                        ['body' => $response->getBody()->getContents()]
-                    );
-
-                    $logWarning(sprintf("Retrying in %s seconds.", $retryBackoff * ($retry + 1)));
-                    sleep($retryBackoff * ($retry + 1));
-
-                    return true;
-                }
-            }
-
-            // Response can be null if there is a network disconnect.  Get a different error message in that case.
-            if (is_object($response) && is_object($response->getBody()) && $response->getBody()->getContents() !== '') {
-                $error = $response->getBody()->getContents();
-            } elseif (null !== $exception && '' != $exception->getMessage()) {
-                $error = $exception->getMessage();
-            } else {
-                $error = "Undefined";
-            }
-
-            $this->logger->error(
-                "HTTP request {method} {uri} has failed with error {error}.",
-                [
-                    'method' => $request->getMethod(),
-                    'uri' => $request->getUri(),
-                    'error' => $error,
-                ]
-            );
-
-            throw new TerminusException(
-                'HTTP request has failed with error "Maximum retry attempts reached".',
-            );
-        };
-    }
-
-    /**
-     * Parses the base URI for requests.
-     *
-     * @return string
-     */
-    private function getBaseURI()
-    {
-        $config = $this->getConfig();
-        return sprintf(
-            '%s://%s:%s',
-            $config->get('protocol'),
-            $config->get('host'),
-            $config->get('port')
-        );
-    }
-
-    /**
-     * Make a request to the Dashboard's internal API.
-     *
-     * @param string $path API path (URL)
-     * @param array $options Options for the request
-     *   string method      GET is default
-     *   array form_params  Fed into the body of the request
-     *   integer limit      Max number of entries to return
-     *
-     * @return array
-     *
-     * @throws GuzzleException
-     * @throws TerminusException
-     */
-    public function pagedRequest($path, array $options = [])
-    {
-        $limit = $options['limit'] ?? self::PAGED_REQUEST_ENTRY_LIMIT;
-
-        // $results is an associative array, so we don't re-fetch.
-        $results = [];
-        $finished = false;
-        $start = null;
-
-        while (!$finished) {
-            $paged_path = $path . '?limit=' . $limit;
-            if ($start) {
-                $paged_path .= '&start=' . $start;
-            }
-
-            $resp = $this->request($paged_path);
-
-            $data = (array)$resp['data'];
-            if (count($data) > 0) {
-                if (count($data) < $limit) {
-                    $finished = true;
-                }
-                $start = end($data)->id;
-
-                // If the last item of the results has previously been received,
-                // that means there are no more pages to fetch.
-                if (isset($results[$start])) {
-                    $finished = true;
-                    continue;
-                }
-
-                foreach ($data as $item) {
-                    $results[$item->id] = $item;
-                }
-            } else {
-                $finished = true;
-            }
-        }
-
-        return ['data' => $results,];
     }
 
     /**
@@ -503,6 +285,22 @@ class Request implements
     }
 
     /**
+     * Parses the base URI for requests.
+     *
+     * @return string
+     */
+    private function getBaseURI()
+    {
+        $config = $this->getConfig();
+        return sprintf(
+            '%s://%s:%s',
+            $config->get('protocol'),
+            $config->get('host'),
+            $config->get('port')
+        );
+    }
+
+    /**
      * Removes sensitive information.
      *
      * @param array
@@ -519,5 +317,203 @@ class Request implements
             }
         }
         return $data;
+    }
+
+    /**
+     * Returns a configured Client object.
+     *
+     * @param string $base_uri Defaults to the getBaseURI() value
+     */
+    private function getClient($base_uri = null): ClientInterface
+    {
+        if (!isset($this->client)) {
+            $config = $this->getConfig();
+            $stack = HandlerStack::create(new StreamHandler());
+            $stack->push(Middleware::retry($this->createRetryDecider()));
+
+            $params = $config->get('client_options') + [
+                    'base_uri' => ($base_uri === null) ? $this->getBaseURI() : $base_uri,
+                    RequestOptions::VERIFY => (bool)$config->get(
+                        'verify_host_cert',
+                        true
+                    ),
+                    'handler' => $stack,
+                ];
+
+            $host_cert = $config->get('host_cert');
+            if ($host_cert !== null) {
+                $params[RequestOptions::CERT] = $host_cert;
+            }
+
+            $this->client = new Client($params);
+        }
+        return $this->client;
+    }
+
+    /**
+     * Returns the Retry Decider middleware.
+     *
+     * @return callable
+     */
+    private function createRetryDecider(): callable
+    {
+        $config = $this->getConfig();
+        $maxRetries = $config->get('http_max_retries', 5);
+        // Cap max retries at 10.
+        $maxRetries = $maxRetries > 10 ? 10 : $maxRetries;
+        $retryBackoff = $config->get('http_retry_backoff', 5);
+        // Retry backoff should be at least 3.
+        $retryBackoff = $retryBackoff < 3 ? 3 : $retryBackoff;
+        $logger = $this->logger;
+        $logWarning = function (string $message) use ($logger) {
+            if ($this->output()->isVerbose()) {
+                $logger->warning($message);
+            }
+        };
+
+        return function (
+            $retry,
+            RequestInterface $request,
+            ?ResponseInterface $response = null,
+            ?Exception $exception = null
+        ) use (
+            $maxRetries,
+            $logWarning,
+            $retryBackoff
+        ) {
+            $logWarningOnRetry = fn (string $reason) => 0 === $retry
+                ? $logWarning(
+                    sprintf(
+                        'HTTP request %s %s has failed: %s',
+                        $request->getMethod(),
+                        $request->getUri(),
+                        $reason
+                    )
+                )
+                : $logWarning(
+                    sprintf(
+                        'Retrying %s %s %s out of %s (reason: %s)',
+                        $request->getMethod(),
+                        $request->getUri(),
+                        $retry,
+                        $maxRetries,
+                        $reason
+                    )
+                );
+
+            if ($exception instanceof ConnectException) {
+                // Retry on connection-related exceptions such as "Connection refused" and "Operation timed out".
+                if ($retry !== $maxRetries) {
+                    $logWarningOnRetry($exception->getMessage());
+                    $logWarning(sprintf("Retrying in %s seconds.", $retryBackoff * ($retry + 1)));
+                    sleep($retryBackoff * ($retry + 1));
+
+                    return true;
+                }
+            } elseif (null !== $exception) {
+                throw new TerminusException(
+                    'HTTPS request has failed with error "{error}".',
+                    ['error' => $exception->getMessage()]
+                );
+            } else {
+                if (preg_match('/[2,4]0\d/', $response->getStatusCode())) {
+                    // Do not retry on 20x and 40x responses.
+                    return false;
+                }
+
+                if ($retry !== $maxRetries) {
+                    $logWarningOnRetry(
+                        sprintf('status code - %s', $response->getStatusCode())
+                    );
+                    $this->logger->debug(
+                        'Response body: {body}',
+                        ['body' => $response->getBody()->getContents()]
+                    );
+
+                    $logWarning(sprintf("Retrying in %s seconds.", $retryBackoff * ($retry + 1)));
+                    sleep($retryBackoff * ($retry + 1));
+
+                    return true;
+                }
+            }
+
+            // Response can be null if there is a network disconnect.  Get a different error message in that case.
+            if (is_object($response) && is_object($response->getBody()) && $response->getBody()->getContents() !== '') {
+                $error = $response->getBody()->getContents();
+            } elseif (null !== $exception && '' != $exception->getMessage()) {
+                $error = $exception->getMessage();
+            } else {
+                $error = "Undefined";
+            }
+
+            $this->logger->error(
+                "HTTP request {method} {uri} has failed with error {error}.",
+                [
+                    'method' => $request->getMethod(),
+                    'uri' => $request->getUri(),
+                    'error' => $error,
+                ]
+            );
+
+            throw new TerminusException(
+                'HTTP request has failed with error "Maximum retry attempts reached".',
+            );
+        };
+    }
+
+    /**
+     * Make a request to the Dashboard's internal API.
+     *
+     * @param string $path API path (URL)
+     * @param array $options Options for the request
+     *   string method      GET is default
+     *   array form_params  Fed into the body of the request
+     *   integer limit      Max number of entries to return
+     *
+     * @return array
+     *
+     * @throws GuzzleException
+     * @throws TerminusException
+     */
+    public function pagedRequest($path, array $options = [])
+    {
+        $limit = $options['limit'] ?? self::PAGED_REQUEST_ENTRY_LIMIT;
+
+        // $results is an associative array, so we don't re-fetch.
+        $results = [];
+        $finished = false;
+        $start = null;
+
+        while (!$finished) {
+            $paged_path = $path . '?limit=' . $limit;
+            if ($start) {
+                $paged_path .= '&start=' . $start;
+            }
+
+            $resp = $this->request($paged_path);
+
+            $data = (array)$resp['data'];
+            if (count($data) > 0) {
+                if (count($data) < $limit) {
+                    $finished = true;
+                }
+                $start = end($data)->id;
+
+                // If the last item of the results has previously been received,
+                // that means there are no more pages to fetch.
+                if (isset($results[$start])) {
+                    $finished = true;
+                    continue;
+                }
+
+                foreach ($data as $item) {
+                    $results[$item->id] = $item;
+                }
+            } else {
+                $finished = true;
+            }
+        }
+
+        return ['data' => $results,];
     }
 }

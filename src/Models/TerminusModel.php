@@ -30,7 +30,7 @@ abstract class TerminusModel implements
     /**
      * @var string
      */
-    public $id;
+    public string $id;
 
     /**
      * @var object
@@ -69,6 +69,18 @@ abstract class TerminusModel implements
     }
 
     /**
+     * Modify response data between fetch and assignment
+     *
+     * @param object $data attributes received from API response
+     *
+     * @return object $data
+     */
+    protected function parseAttributes($data)
+    {
+        return $data;
+    }
+
+    /**
      * Fetches this object from Pantheon
      *
      * @param array $args Params to pass to request
@@ -87,6 +99,16 @@ abstract class TerminusModel implements
     }
 
     /**
+     * Get the URL for this model
+     *
+     * @return string
+     */
+    public function getUrl()
+    {
+        return str_replace('{id}', $this->id ?? '', $this->url ?? '');
+    }
+
+    /**
      * Retrieves attribute of given name
      *
      * @param string $attribute Name of the key of the desired attribute
@@ -99,26 +121,6 @@ abstract class TerminusModel implements
     }
 
     /**
-     * Returns the fields by which this model can be found.
-     *
-     * @return array
-     */
-    public function getReferences()
-    {
-        return [$this->id,];
-    }
-
-    /**
-     * Get the URL for this model
-     *
-     * @return string
-     */
-    public function getUrl()
-    {
-        return str_replace('{id}', $this->id ?? '', $this->url ?? '');
-    }
-
-    /**
      * Checks whether the model has an attribute
      *
      * @param string $attribute Name of the attribute key
@@ -128,6 +130,16 @@ abstract class TerminusModel implements
     public function has($attribute)
     {
         return isset($this->attributes->$attribute);
+    }
+
+    /**
+     * Returns the fields by which this model can be found.
+     *
+     * @return array
+     */
+    public function getReferences()
+    {
+        return [$this->id,];
     }
 
     /**
@@ -159,17 +171,5 @@ abstract class TerminusModel implements
     public function unsetAttribute($attribute)
     {
         unset($this->attributes->$attribute);
-    }
-
-    /**
-     * Modify response data between fetch and assignment
-     *
-     * @param object $data attributes received from API response
-     *
-     * @return object $data
-     */
-    protected function parseAttributes($data)
-    {
-        return $data;
     }
 }
