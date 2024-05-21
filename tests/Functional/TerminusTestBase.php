@@ -392,7 +392,9 @@ abstract class TerminusTestBase extends TestCase
                     $response
                 )
             );
-            return null;
+            // if there was an error in deserialization,
+            // return the original response
+            return $response;
         }
         return $toReturn;
     }
