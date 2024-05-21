@@ -30,8 +30,7 @@ class BackupCommandsTest extends TerminusTestBase
     {
         $this->terminus(sprintf('backup:create %s --element=database', $this->getSiteEnv()));
         $backupList = $this->terminusJsonResponse(
-            sprintf('backup:list %s --element=database', $this->getSiteEnv()),
-            false
+            sprintf('backup:list %s --element=database', $this->getSiteEnv())
         );
         $this->assertIsArray(
             $backupList,
