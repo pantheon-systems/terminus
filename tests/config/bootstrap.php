@@ -4,6 +4,8 @@
  * Bootstrap file for functional tests.
  */
 
+include_once(getenv('PROJECT_PATH') . '/vendor/autoload.php');
+
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
 use Pantheon\Terminus\Tests\Functional\TerminusTestBase;

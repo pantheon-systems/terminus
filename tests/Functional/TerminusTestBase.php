@@ -21,6 +21,24 @@ abstract class TerminusTestBase extends TestCase
      */
     protected Logger $logger;
 
+    /**
+     * Sets the testing runtime multidev name.
+     */
+    public static function setMdEnv(string $name): void
+    {
+        putenv(sprintf('TERMINUS_TESTING_RUNTIME_ENV=%s', $name));
+    }
+
+    /**
+     * Returns the organization ID.
+     *
+     * @return string
+     */
+    protected static function getOrg(): string
+    {
+        return getenv('TERMINUS_ORG');
+    }
+
     protected function setUp(): void
     {
         parent::setUp();
@@ -40,6 +58,36 @@ abstract class TerminusTestBase extends TestCase
                 $this->env[$envVar] = getenv($envVar);
             }
         }
+    }
+
+    /**
+     * Run a terminus command with the pipe input.
+     *
+     * @param string $command
+     *   The command to run.
+     * @param string $pipeInput
+     *   The pipe input.
+     */
+    protected function terminusPipeInput(string $command, string $pipeInput)
+    {
+        $command = sprintf('%s --yes', $command);
+
+        [$output, $status] = static::callTerminus($command, $pipeInput);
+        $this->logger->debug(
+            sprintf(
+                'Terminus command: %s',
+                $command
+            )
+        );
+        $this->logger->debug(
+            sprintf(
+                'Terminus output: %s',
+                $output
+            )
+        );
+        $this->assertEquals(0, $status, $output);
+
+        return $output;
     }
 
     /**
@@ -91,6 +139,17 @@ abstract class TerminusTestBase extends TestCase
         $exitCode = proc_close($process);
 
         return [$stdout, $exitCode, $stderr, $env];
+    }
+
+    /**
+     * Run a terminus command redirecting stderr to stdout.
+     *
+     * @param string $command
+     *   The command to run.
+     */
+    protected function terminusWithStderrRedirected(string $command): ?string
+    {
+        return $this->terminus($command, ['2>&1']);
     }
 
     /**
@@ -163,71 +222,22 @@ abstract class TerminusTestBase extends TestCase
     }
 
     /**
-     * Run a terminus command with the pipe input.
+     * Asserts terminus command execution succeeds in multiple attempts.
      *
      * @param string $command
-     *   The command to run.
-     * @param string $pipeInput
-     *   The pipe input.
+     *   The command to execute.
+     * @param int $attempts
+     *   The maximum number of attempts.
      */
-    protected function terminusPipeInput(string $command, string $pipeInput)
-    {
-        $command = sprintf('%s --yes', $command);
-
-        [$output, $status] = static::callTerminus($command, $pipeInput);
-        $this->logger->debug(
-            sprintf(
-                'Terminus command: %s',
-                $command
-            )
+    protected function assertTerminusCommandSucceedsInAttempts(
+        string $command,
+        int $attempts = 3
+    ): void {
+        $this->assertTerminusCommandResultEqualsInAttempts(
+            fn() => static::callTerminus(sprintf('%s --yes', $command))[1],
+            0,
+            $attempts
         );
-        $this->logger->debug(
-            sprintf(
-                'Terminus output: %s',
-                $output
-            )
-        );
-        $this->assertEquals(0, $status, $output);
-
-        return $output;
-    }
-
-    /**
-     * Run a terminus command redirecting stderr to stdout.
-     *
-     * @param string $command
-     *   The command to run.
-     */
-    protected function terminusWithStderrRedirected(string $command): ?string
-    {
-        return $this->terminus($command, ['2>&1']);
-    }
-
-    /**
-     * @param $command
-     *
-     * @return array|string|null
-     */
-    protected function terminusJsonResponse($command)
-    {
-        $response = trim($this->terminus($command, ['--format=json']));
-        try {
-            return json_decode(
-                $response,
-                true,
-                512,
-                JSON_THROW_ON_ERROR
-            );
-        } catch (\JsonException $jsonException) {
-            $this->logger->warning(
-                sprintf(
-                    'Failed to decode JSON response: %s \n\n ===> %s',
-                    $response,
-                    $jsonException->getMessage()
-                )
-            );
-            return $response;
-        }
     }
 
     /**
@@ -261,54 +271,6 @@ abstract class TerminusTestBase extends TestCase
         } while ($attempts > 0);
 
         $this->assertEquals($expected, $actual);
-    }
-
-    /**
-     * Asserts terminus command execution succeeds in multiple attempts.
-     *
-     * @param string $command
-     *   The command to execute.
-     * @param int $attempts
-     *   The maximum number of attempts.
-     */
-    protected function assertTerminusCommandSucceedsInAttempts(
-        string $command,
-        int $attempts = 3
-    ): void {
-        $this->assertTerminusCommandResultEqualsInAttempts(
-            fn () => static::callTerminus(sprintf('%s --yes', $command))[1],
-            0,
-            $attempts
-        );
-    }
-
-    /**
-     * Returns the site name.
-     *
-     * @param string $
-     *
-     * @return string
-     */
-    public static function getSiteName(string $siteFramework = "drupal"): string
-    {
-        switch ($siteFramework) {
-            case "wordpress":
-                return getenv('TERMINUS_SITE_WP');
-            case "wordpress_network":
-                return getenv('TERMINUS_SITE_WP_NETWORK');
-            default:
-                return getenv('TERMINUS_SITE');
-        }
-    }
-
-    /**
-     * Returns the organization ID.
-     *
-     * @return string
-     */
-    protected static function getOrg(): string
-    {
-        return getenv('TERMINUS_ORG');
     }
 
     /**
@@ -393,6 +355,68 @@ abstract class TerminusTestBase extends TestCase
     }
 
     /**
+     * Returns the site info.
+     *
+     * @return array
+     */
+    protected function getSiteInfo(): array
+    {
+        static $site_info;
+        if (is_null($site_info)) {
+            $site_info = $this->terminusJsonResponse(
+                sprintf('site:info %s', $this->getSiteName())
+            );
+        }
+
+        return $site_info;
+    }
+
+    /**
+     * @param $command
+     *
+     * @return array|string|null
+     */
+    protected function terminusJsonResponse($command, $associativeArray = true)
+    {
+        $response = trim($this->terminus($command, ['--format=json']));
+        $toReturn = json_decode(
+            $response,
+            $associativeArray,
+            512,
+            JSON_INVALID_UTF8_IGNORE
+        );
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            $this->logger->warning(
+                sprintf(
+                    'Failed to decode JSON response: %s',
+                    $response
+                )
+            );
+            return null;
+        }
+        return $toReturn;
+    }
+
+    /**
+     * Returns the site name.
+     *
+     * @param string $
+     *
+     * @return string
+     */
+    public static function getSiteName(string $siteFramework = "drupal"): string
+    {
+        switch ($siteFramework) {
+            case "wordpress":
+                return getenv('TERMINUS_SITE_WP');
+            case "wordpress_network":
+                return getenv('TERMINUS_SITE_WP_NETWORK');
+            default:
+                return getenv('TERMINUS_SITE');
+        }
+    }
+
+    /**
      * Returns the test site id.
      *
      * @return string
@@ -436,20 +460,14 @@ abstract class TerminusTestBase extends TestCase
     }
 
     /**
-     * Returns the site info.
+     * Returns site and environment in a form of "<site>.<env>" string which
+     * used in most commands.
      *
-     * @return array
+     * @return string
      */
-    protected function getSiteInfo(): array
+    protected function getSiteEnv(): string
     {
-        static $site_info;
-        if (is_null($site_info)) {
-            $site_info = $this->terminusJsonResponse(
-                sprintf('site:info %s', $this->getSiteName())
-            );
-        }
-
-        return $site_info;
+        return sprintf('%s.%s', $this->getSiteName(), $this->getMdEnv());
     }
 
     /**
@@ -460,25 +478,6 @@ abstract class TerminusTestBase extends TestCase
     protected static function getMdEnv(): string
     {
         return getenv('TERMINUS_TESTING_RUNTIME_ENV');
-    }
-
-    /**
-     * Sets the testing runtime multidev name.
-     */
-    public static function setMdEnv(string $name): void
-    {
-        putenv(sprintf('TERMINUS_TESTING_RUNTIME_ENV=%s', $name));
-    }
-
-    /**
-     * Returns site and environment in a form of "<site>.<env>" string which
-     * used in most commands.
-     *
-     * @return string
-     */
-    protected function getSiteEnv(): string
-    {
-        return sprintf('%s.%s', $this->getSiteName(), $this->getMdEnv());
     }
 
     /**

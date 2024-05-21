@@ -29,7 +29,10 @@ class BackupCommandsTest extends TerminusTestBase
     public function testBackupCreateListInfoGetCommand()
     {
         $this->terminus(sprintf('backup:create %s --element=database', $this->getSiteEnv()));
-        $backupList = $this->terminusJsonResponse(sprintf('backup:list %s --element=database', $this->getSiteEnv()));
+        $backupList = $this->terminusJsonResponse(
+            sprintf('backup:list %s --element=database', $this->getSiteEnv()),
+            false
+        );
         $this->assertIsArray(
             $backupList,
             sprintf('A list of backups should be an array. %s', print_r($backupList, true))

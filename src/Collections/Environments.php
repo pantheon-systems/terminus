@@ -120,7 +120,6 @@ class Environments extends SiteOwnedCollection
      */
     public function get($id): TerminusModel
     {
-        print_r($id);
         if ($this->has($id)) {
             return parent::get($id);
         }
