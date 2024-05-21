@@ -40,7 +40,7 @@ jobs:
           export PATH=~/box/vendor/bin:$PATH
           composer phar:build
       - name: Save terminus.phar as artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: terminus-phar
           path: terminus.phar
