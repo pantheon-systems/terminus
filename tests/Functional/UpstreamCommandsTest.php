@@ -12,7 +12,7 @@ class UpstreamCommandsTest extends TerminusTestBase
     public function setUp(): void
     {
         // apply all upstream updates before doing anything
-        $this->terminus(sprintf('upstream:updates:apply %s', $this->getSiteEnv()));
+        $this->terminusJsonResponse(sprintf('upstream:updates:apply %s', $this->getSiteEnv()));
     }
 
 
