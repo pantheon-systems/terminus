@@ -29,6 +29,8 @@ jobs:
         with:
           name: full-workspace
           path: ${{ github.workspace }}
+          if-no-files-found: error
+          overwrite: true
       - name: Full Composer Install
         run: composer install
       - name: Validate Code
@@ -43,8 +45,9 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: terminus-phar
-          path: terminus.phar
+          path: ${{ github.workspace }}/terminus.phar
           if-no-files-found: error
+          overwrite: true
 
   functional:
     runs-on: ${{ matrix.operating-system }}
@@ -91,10 +94,12 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: full-workspace
+          path: ${{ github.workspace }}
       - name: Download terminus.phar as artifact
         uses: actions/download-artifact@v4
         with:
           name: terminus-phar
+          path: ${{ github.workspace }}
       - name: Install Composer Dependencies
         run: composer install --no-interaction --prefer-dist
       - name: Setup tmate session
@@ -115,7 +120,9 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: CoverageReport
-          path: docs/TestCoverage.md
+          path: ${{ github.workspace }}/docs/TestCoverage.md
+          if-no-files-found: ignore
+          overwrite: true
       - name: Finish sesssion
         if: ${{ always() && github.event.inputs.tmate_enabled == 1 }}
         run: |
@@ -137,6 +144,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: terminus-phar
+          path: ${{ github.workspace }}
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
