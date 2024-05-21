@@ -25,7 +25,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
       - name: Save repo content as artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: full-workspace
           path: ${{ github.workspace }}
@@ -88,11 +88,11 @@ jobs:
           coverage: pcov
           ini-values: error_reporting=E_ALL
       - name: Download repo content from artifact
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: full-workspace
       - name: Download terminus.phar as artifact
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: terminus-phar
       - name: Install Composer Dependencies
@@ -112,7 +112,7 @@ jobs:
       - name: Coverage Report
         run: composer coverage
       - name: Save coverage as artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: CoverageReport
           path: docs/TestCoverage.md
@@ -134,7 +134,7 @@ jobs:
     if: ${{ startsWith(github.ref, 'refs/tags/')  && github.repository == 'pantheon-systems/terminus' }}
     steps:
       - name: Download terminus.phar as artifact
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v4
         with:
           name: terminus-phar
       - name: Release
