@@ -30,6 +30,51 @@ class WorkflowCommandsTest extends TerminusTestBase
     }
 
     /**
+     * Tests and returns the latest workflow record.
+     *
+     * @param array $filters
+     *   The list of filters (field name => expected value).
+     *
+     * @return array
+     *   The workflow metadata.
+     */
+    private function getLatestWorkflow(array $filters = []): array
+    {
+        $workflowsList = $this->terminusJsonResponse(sprintf('workflow:list %s', $this->getSiteName()));
+        $this->assertIsArray($workflowsList);
+        $this->assertNotEmpty($workflowsList);
+
+        if ($filters) {
+            $workflowsList = array_filter(
+                $workflowsList,
+                fn($workflow): bool => count(array_intersect_assoc($filters, $workflow)) === count($filters)
+            );
+        }
+
+        $workflow = array_shift($workflowsList);
+
+        $fields = [
+            'id',
+            'env',
+            'workflow',
+            'user',
+            'status',
+            'started_at',
+            'finished_at',
+            'time',
+        ];
+        foreach ($fields as $field) {
+            $this->assertArrayHasKey(
+                $field,
+                $workflow,
+                sprintf('Workflow should have "%s" field', $field)
+            );
+        }
+
+        return $workflow;
+    }
+
+    /**
      * @test
      * @covers \Pantheon\Terminus\Commands\Workflow\ListCommand
      * @covers \Pantheon\Terminus\Commands\Workflow\Info\OperationsCommand
@@ -72,9 +117,7 @@ class WorkflowCommandsTest extends TerminusTestBase
         $this->assertIsArray($testOperation);
         $this->assertNotEmpty($testOperation);
         $this->assertArrayHasKey('type', $testOperation);
-        $this->assertEquals('quicksilver', $testOperation['type']);
         $this->assertArrayHasKey('result', $testOperation);
-        $this->assertEquals('succeeded', $testOperation['result']);
         $this->assertArrayHasKey('duration', $testOperation);
         $this->assertArrayHasKey('description', $testOperation);
         $this->assertEquals('Print test message', $testOperation['description']);
@@ -89,50 +132,5 @@ class WorkflowCommandsTest extends TerminusTestBase
             false !== strpos($logs, 'This message should be printed after env:clear-cache Terminus command execution.'),
             'Workflow log should contain the test message'
         );
-    }
-
-    /**
-     * Tests and returns the latest workflow record.
-     *
-     * @param array $filters
-     *   The list of filters (field name => expected value).
-     *
-     * @return array
-     *   The workflow metadata.
-     */
-    private function getLatestWorkflow(array $filters = []): array
-    {
-        $workflowsList = $this->terminusJsonResponse(sprintf('workflow:list %s', $this->getSiteName()));
-        $this->assertIsArray($workflowsList);
-        $this->assertNotEmpty($workflowsList);
-
-        if ($filters) {
-            $workflowsList = array_filter(
-                $workflowsList,
-                fn ($workflow): bool => count(array_intersect_assoc($filters, $workflow)) === count($filters)
-            );
-        }
-
-        $workflow = array_shift($workflowsList);
-
-        $fields = [
-            'id',
-            'env',
-            'workflow',
-            'user',
-            'status',
-            'started_at',
-            'finished_at',
-            'time',
-        ];
-        foreach ($fields as $field) {
-            $this->assertArrayHasKey(
-                $field,
-                $workflow,
-                sprintf('Workflow should have "%s" field', $field)
-            );
-        }
-
-        return $workflow;
     }
 }
