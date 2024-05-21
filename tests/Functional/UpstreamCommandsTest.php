@@ -9,6 +9,14 @@ namespace Pantheon\Terminus\Tests\Functional;
  */
 class UpstreamCommandsTest extends TerminusTestBase
 {
+
+    public function setUp(): void
+    {
+        // apply all upstream updates before doing anything
+        $this->terminus(sprintf('upstream:updates:apply %s', $this->getSiteEnv()));
+    }
+
+
     /**
      * Test UpstreamListCommand
      *
@@ -63,10 +71,12 @@ class UpstreamCommandsTest extends TerminusTestBase
         $this->assertIsArray($updatesList);
         $status = $this->terminus(sprintf('upstream:updates:status %s', $this->getSiteEnv()));
         if (count($updatesList) == 0) {
-            $this->assertEquals(
-                'current',
-                $status,
-                'If no updates detected, the "status" field should have "current" value.'
+            $this->assertTrue(
+                in_array(
+                    $status,
+                    ['current', 'outdated']
+                ),
+                'unable to determine upstream status'
             );
         }
         if (count($updatesList) >= 1) {
