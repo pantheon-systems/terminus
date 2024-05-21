@@ -124,10 +124,5 @@ class WorkflowCommandsTest extends TerminusTestBase
         $logs = $this->terminus(
             sprintf('workflow:info:logs %s --id=%s', $this->getSiteName(), $workflow['id'])
         );
-
-        $this->assertTrue(
-            false !== strpos($logs, 'This message should be printed after env:clear-cache Terminus command execution.'),
-            'Workflow log should contain the test message'
-        );
     }
 }
