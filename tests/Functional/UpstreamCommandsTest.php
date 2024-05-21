@@ -9,13 +9,6 @@ namespace Pantheon\Terminus\Tests\Functional;
  */
 class UpstreamCommandsTest extends TerminusTestBase
 {
-    public function setUp(): void
-    {
-        // apply all upstream updates before doing anything
-        $this->terminusJsonResponse(sprintf('upstream:updates:apply %s', $this->getSiteEnv()));
-    }
-
-
     /**
      * Test UpstreamListCommand
      *
@@ -66,6 +59,8 @@ class UpstreamCommandsTest extends TerminusTestBase
      */
     public function testUpstreamUpdatesListStatus()
     {
+        // apply all upstream updates before doing anything
+        $this->terminus(sprintf('upstream:updates:apply %s', $this->getSiteEnv()), ['yes' => true], false);
         $updatesList = $this->terminusJsonResponse(sprintf('upstream:updates:list %s', $this->getSiteEnv()));
         $this->assertIsArray($updatesList);
         $status = $this->terminus(sprintf('upstream:updates:status %s', $this->getSiteEnv()));
