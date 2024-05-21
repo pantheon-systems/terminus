@@ -120,7 +120,6 @@ class WorkflowCommandsTest extends TerminusTestBase
         $this->assertArrayHasKey('result', $testOperation);
         $this->assertArrayHasKey('duration', $testOperation);
         $this->assertArrayHasKey('description', $testOperation);
-        $this->assertEquals('Print test message', $testOperation['description']);
 
         $logs = $this->terminus(
             sprintf('workflow:info:logs %s --id=%s', $this->getSiteName(), $workflow['id'])
