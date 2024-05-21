@@ -234,7 +234,7 @@ abstract class TerminusTestBase extends TestCase
         int $attempts = 3
     ): void {
         $this->assertTerminusCommandResultEqualsInAttempts(
-            fn() => static::callTerminus(sprintf('%s --yes', $command))[1],
+            fn () => static::callTerminus(sprintf('%s --yes', $command))[1],
             0,
             $attempts
         );

@@ -9,7 +9,6 @@ namespace Pantheon\Terminus\Tests\Functional;
  */
 class UpstreamCommandsTest extends TerminusTestBase
 {
-
     public function setUp(): void
     {
         // apply all upstream updates before doing anything
