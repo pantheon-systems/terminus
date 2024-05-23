@@ -26,15 +26,18 @@ class WPCommand extends SSHBaseCommand
      * @param array $wp_command WP-CLI command
      * @param array $options Commandline options
      * @option progress Allow progress bar to be used (tty mode only)
+     * @option int $retry Number of retries on failure
      * @return string Command output
      *
      * @usage <site>.<env> -- <command> Runs the WP-CLI command <command> remotely on <site>'s <env> environment.
      * @usage <site>.<env> --progress -- <command> Runs a WP-CLI command with a progress bar
+     * @usage <site>.<env> --retry=3 -- <command> Runs a WP-CLI command with up to 3 retries on failure
      */
-    public function wpCommand($site_env, array $wp_command, array $options = ['progress' => false])
+    public function wpCommand($site_env, array $wp_command, array $options = ['progress' => false, 'retry' => 0])
     {
         $this->prepareEnvironment($site_env);
         $this->setProgressAllowed($options['progress']);
-        return $this->executeCommand($wp_command);
+        $retries = isset($options['retry']) ? (int)$options['retry'] : 0;
+        return $this->executeCommand($wp_command, $retries);
     }
 }

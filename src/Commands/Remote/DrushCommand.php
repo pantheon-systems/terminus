@@ -26,15 +26,18 @@ class DrushCommand extends SSHBaseCommand
      * @param array $drush_command Drush command
      * @param array $options Commandline options
      * @option progress Allow progress bar to be used (tty mode only)
+     * @option int $retry Number of retries on failure
      * @return string Command output
      *
      * @usage <site>.<env> -- <command> Runs the Drush command <command> remotely on <site>'s <env> environment.
      * @usage <site>.<env> --progress -- <command> Runs a Drush command with a progress bar
+     * @usage <site>.<env> --retry=3 -- <command> Runs a Drush command with up to 3 retries on failure
      */
-    public function drushCommand($site_env, array $drush_command, array $options = ['progress' => false])
+    public function drushCommand($site_env, array $drush_command, array $options = ['progress' => false, 'retry' => 0])
     {
         $this->prepareEnvironment($site_env);
         $this->setProgressAllowed($options['progress']);
-        return $this->executeCommand($drush_command);
+        $retries = isset($options['retry']) ? (int)$options['retry'] : 0;
+        return $this->executeCommand($drush_command, $retries);
     }
 }
