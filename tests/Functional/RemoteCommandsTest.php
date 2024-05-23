@@ -38,19 +38,22 @@ class RemoteCommandsTest extends TerminusTestBase
     {
         $commandPrefix = sprintf('drush %s', $this->getSiteEnv());
 
-        $drushVersionCommand = sprintf('%s -- %s', $commandPrefix, 'version');
+        // Test Drush version command with retry
+        $drushVersionCommand = sprintf('%s --retry=3 -- %s', $commandPrefix, 'version');
         $drushVersion = $this->terminusJsonResponse($drushVersionCommand);
         $this->assertIsString($drushVersion);
         $this->assertIsInt(preg_match('(^\d{1,2})', $drushVersion, $matches));
         $this->assertGreaterThanOrEqual(8, $matches[0]);
 
-        $drushStatusCommand = sprintf('%s -- %s', $commandPrefix, 'status');
+        // Test Drush status command with retry
+        $drushStatusCommand = sprintf('%s --retry=3 -- %s', $commandPrefix, 'status');
         $drushStatus = $this->terminusJsonResponse($drushStatusCommand);
         $this->assertIsArray($drushStatus);
         $this->assertTrue(isset($drushStatus['drush-version']));
         $this->assertEquals($drushStatus['drush-version'], $drushVersion);
 
-        $drushSqlCliCommand = sprintf('%s -- %s', $commandPrefix, 'sql:cli');
+        // Test Drush sql:cli command with retry
+        $drushSqlCliCommand = sprintf('%s --retry=3 -- %s', $commandPrefix, 'sql:cli');
         $drushSqlCliResult = $this->terminusPipeInput(
             $drushSqlCliCommand,
             'echo "select uuid from users where uid=1;"'
@@ -60,6 +63,45 @@ class RemoteCommandsTest extends TerminusTestBase
             1,
             preg_match('/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/', $drushSqlCliResult),
             'The "drush sql:cli" execution result should contain a valid v4 UUID.'
+        );
+    }
+
+    /**
+     * @test
+     * @covers \Pantheon\Terminus\Commands\Remote\WPCommand
+     *
+     * @group remote
+     * @group short
+     */
+    public function testWPCommands()
+    {
+        $commandPrefix = sprintf('wp %s', $this->getSiteEnv());
+
+        // Test WP-CLI core version command with retry
+        $wpVersionCommand = sprintf('%s --retry=3 -- %s', $commandPrefix, 'core version');
+        $wpVersion = $this->terminusJsonResponse($wpVersionCommand);
+        $this->assertIsString($wpVersion);
+        $this->assertIsInt(preg_match('(^\d{1,2})', $wpVersion, $matches));
+        $this->assertGreaterThanOrEqual(5, $matches[0]);
+
+        // Test WP-CLI core info command with retry
+        $wpInfoCommand = sprintf('%s --retry=3 -- %s', $commandPrefix, 'core info');
+        $wpInfo = $this->terminusJsonResponse($wpInfoCommand);
+        $this->assertIsArray($wpInfo);
+        $this->assertTrue(isset($wpInfo['version']));
+        $this->assertEquals($wpInfo['version'], $wpVersion);
+
+        // Test WP-CLI db query command with retry
+        $wpDbQueryCommand = sprintf('%s --retry=3 -- %s', $commandPrefix, 'db query');
+        $wpDbQueryResult = $this->terminusPipeInput(
+            $wpDbQueryCommand,
+            'echo "select ID from wp_users where ID=1;"'
+        );
+
+        $this->assertEquals(
+            1,
+            preg_match('/^\d+$/', $wpDbQueryResult),
+            'The "wp db query" execution result should contain a valid user ID.'
         );
     }
 }
