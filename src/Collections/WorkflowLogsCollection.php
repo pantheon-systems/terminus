@@ -131,7 +131,7 @@ class WorkflowLogsCollection extends SiteOwnedCollection implements \Iterator
         $wfl = $this->latest();
 
         switch (true) {
-            // if we have a match, then break
+            // if we have a match, then just return the WorkflowLog
             case ($wfl->get('type') === $options['type']):
             case ($wfl->get('id') === $options['id']):
             case ($wfl->get('commit_hash') === $options['commit_hash']):

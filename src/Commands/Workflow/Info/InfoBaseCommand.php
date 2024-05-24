@@ -3,6 +3,8 @@
 namespace Pantheon\Terminus\Commands\Workflow\Info;
 
 use Pantheon\Terminus\Commands\TerminusCommand;
+use Pantheon\Terminus\Models\Site;
+use Pantheon\Terminus\Models\TerminusModel;
 use Pantheon\Terminus\Models\WorkflowLog;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
@@ -17,45 +19,27 @@ abstract class InfoBaseCommand extends TerminusCommand implements SiteAwareInter
 {
     use SiteAwareTrait;
 
-
     /**
      * @param $site_id
      * @param $workflow_id
-     * @return Workflow
+     * @return TerminusModel
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
      * @throws \GuzzleHttp\Exception\GuzzleException
      * @throws \Pantheon\Terminus\Exceptions\TerminusException
      * @throws \Pantheon\Terminus\Exceptions\TerminusNotFoundException
      */
-    protected function getWorkflow($site_id, $workflow_id = null): Workflow
+    protected function getWorkflowLogs($site_id, $workflow_id = null): ?TerminusModel
     {
         $site = $this->getSiteById($site_id);
-        $workflows = $site->getWorkflows();
-
-        if (!is_null($workflow_id)) {
-            return $workflows->get($workflow_id);
+        if (!$site instanceof Site) {
+            $this->log()->error('The site {site} was not found.', ['site' => $site_id,]);
+            return null;
+        }
+        if ($workflow_id != null) {
+            return $site->getWorkflowLogs()->findLatestFromOptionsArray(['id' => $workflow_id]);
         }
         $this->log()->notice('Showing latest workflow on {site}.', ['site' => $site->getName(),]);
-        return $workflows->latest();
-    }
-
-    /**
-     * Get the WorkflowLogs collection
-     *
-     * @param string $site_id     UUID or name of the site to get a workflow of
-     * @param string $workflow_id The UUID of a specific workflow to retrieve
-     * @return Workflow
-     */
-    protected function getWorkflowLogs($site_id, $workflow_id = null): WorkflowLog
-    {
-        $site = $this->getSiteById($site_id);
-        $wfl = $site->getWorkflowLogs();
-
-        if (!is_null($workflow_id)) {
-            return $wfl->get($workflow_id);
-        }
-        $this->log()->notice('Showing latest workflow on {site}.', ['site' => $site->getName(),]);
-        return $wfl->latest();
+        return $site->getWorkflowLogs()->latest();
     }
 }

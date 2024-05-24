@@ -24,7 +24,7 @@ class LogsCommand extends InfoBaseCommand
      */
     public function logs($site_id, $options = ['id' => null,])
     {
-        $workflow_ops = $this->getWorkflow($site_id, $options['id'])->getOperations();
+        $workflow_ops = $this->getWorkflowLogs($site_id, $options['id']);
         $operations = $workflow_ops->all();
         $log_operations = array_filter(
             $operations,
