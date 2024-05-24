@@ -66,8 +66,12 @@ class WPCommandTest extends CommandTestCase
         $this->command->expects($this->exactly(3))
             ->method('executeCommand')
             ->will($this->onConsecutiveCalls(
-                $this->throwException(new \Pantheon\Terminus\Exceptions\TerminusProcessException('First attempt failed')),
-                $this->throwException(new \Pantheon\Terminus\Exceptions\TerminusProcessException('Second attempt failed')),
+                $this->throwException(
+                    new \Pantheon\Terminus\Exceptions\TerminusProcessException('First attempt failed')
+                ),
+                $this->throwException(
+                    new \Pantheon\Terminus\Exceptions\TerminusProcessException('Second attempt failed')
+                ),
                 $this->returnValue($command_output)
             ));
 
