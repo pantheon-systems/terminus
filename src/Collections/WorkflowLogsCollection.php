@@ -4,14 +4,10 @@ namespace Pantheon\Terminus\Collections;
 
 use GuzzleHttp\Exception\GuzzleException;
 use Pantheon\Terminus\Exceptions\TerminusException;
+use Pantheon\Terminus\Models\Environment;
 use Pantheon\Terminus\Models\Site;
 use Pantheon\Terminus\Models\TerminusModel;
 use Pantheon\Terminus\Models\WorkflowLog;
-use Pantheon\Terminus\Models\WorkflowOperation;
-use Pantheon\Terminus\Site\SiteAwareTrait;
-use Symfony\Component\Serializer\Encoder\JsonEncoder;
-use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
-use Symfony\Component\Serializer\Serializer;
 
 /**
  * Class WorkflowLogsCollection
@@ -125,6 +121,57 @@ class WorkflowLogsCollection extends SiteOwnedCollection implements \Iterator
         $this->current = 0;
     }
 
+    public function findLatestFromOptionsArray($options = [
+        'type' => null,
+        'id' => null,
+        'commit_hash' => null,
+        'start' => 0,
+    ]): ?TerminusModel
+    {
+        $wfl = $this->latest();
+
+        switch (true) {
+            // if we have a match, then break
+            case ($wfl->get('type') === $options['type']):
+            case ($wfl->get('id') === $options['id']):
+            case ($wfl->get('commit_hash') === $options['commit_hash']):
+            case ($wfl->get('started_at') === $options['start']):
+                return $wfl;
+
+            // It's not a match, so let's try to find the workflow
+
+            // 1. Attempt to find workflow by id
+            // if the workflow id is set and the latest workflow is not the required workflow,
+            // then find the workflow by id
+            case ($options['id']):
+                return $this->findLatestByProperty('id', $options['id']);
+
+            // 2. Attempt to find workflow by type
+            // if the latest workflow is not of the required type,
+            // and the type is set, then find the workflow by type
+            case ($options['type']):
+                return $this->findLatestByProperty('type', $options['type']);
+
+            // 3. Attempt to find workflow by commit hash
+            // if the commit hash is set and the latest workflow is not the required workflow,
+            // then find the workflow by commit hash
+            case ($options['commit_hash']):
+                return $this->findLatestByProperty('commit_hash', $options['commit_hash']);
+
+            // 4. Attempt to find workflow by start time
+            // if the start time is set and the latest workflow is not the required workflow,
+            // then find the workflow by start time
+            // This is the least preferred choice because of inaccuracies in the start time
+            // it remains here only to provide compatibility with the previous version
+            case ($options['start'] > 0):
+                return $this->findLatestByProperty('started_at', $options['start']);
+
+            default:
+                // Default just return the latest workflow
+                return $wfl;
+        }
+    }
+
     /**
      * @return WorkflowLog|null
      */
@@ -133,7 +180,12 @@ class WorkflowLogsCollection extends SiteOwnedCollection implements \Iterator
         return $this->models[0];
     }
 
-    public function findByProperty($property, $value): ?TerminusModel
+    /**
+     * @param $property
+     * @param $value
+     * @return TerminusModel|null
+     */
+    public function findLatestByProperty($property, $value): ?TerminusModel
     {
         foreach ($this->models as $model) {
             if ($model->get($property) == $value) {
@@ -141,5 +193,16 @@ class WorkflowLogsCollection extends SiteOwnedCollection implements \Iterator
             }
         }
         return null;
+    }
+
+    /**
+     * @param $env
+     * @return WorkflowLogsCollection
+     */
+    public function filterForEnvironment(Environment $env): WorkflowLogsCollection
+    {
+        return $this->filter(function ($workflow) use ($env) {
+            return $workflow->get("environment") === $env->id;
+        });
     }
 }

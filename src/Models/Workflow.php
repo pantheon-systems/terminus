@@ -21,6 +21,7 @@ class Workflow extends TerminusModel implements
     use ContainerAwareTrait;
     use SessionAwareTrait;
 
+
     public const PRETTY_NAME = 'workflow';
 
     /**
@@ -63,6 +64,15 @@ class Workflow extends TerminusModel implements
         }
     }
 
+    /**
+     * Returns the object which controls this collection
+     *
+     * @return TerminusModel
+     */
+    public function getOwnerObject()
+    {
+        return $this->owner;
+    }
 
     /**
      * Check on the progress of a workflow. There is no check to prevent API
@@ -89,17 +99,51 @@ class Workflow extends TerminusModel implements
     }
 
     /**
-     * @return WorkflowOperations
+     * Detects if the workflow has finished
+     *
+     * @return bool True if workflow has finished
      */
-    public function getOperations()
+    public function isFinished()
     {
-        if (empty($this->workflow_operations)) {
-            $nickname = \uniqid(__FUNCTION__ . "-");
-            $this->getContainer()->add($nickname, WorkflowOperations::class)
-                ->addArgument(['data' => $this->get('operations')]);
-            $this->workflow_operations = $this->getContainer()->get($nickname);
+        return $this->has('result');
+    }
+
+    /**
+     * Detects if the workflow was successful
+     *
+     * @return bool True if workflow succeeded
+     */
+    public function isSuccessful()
+    {
+        return $this->get('result') == 'succeeded';
+    }
+
+    /**
+     * Get the success message of a workflow or throw an exception of the
+     * workflow failed.
+     *
+     * @return string The message to output to the user
+     * @throws \Pantheon\Terminus\Exceptions\TerminusException
+     */
+    public function getMessage()
+    {
+        if (!$this->isSuccessful()) {
+            $message = 'Workflow failed.';
+            $final_task = $this->get('final_task');
+            if (!empty($final_task) && !empty($final_task->reason)) {
+                $message = $final_task->reason;
+            } elseif (!empty($final_task) && !empty($final_task->messages)) {
+                foreach ($final_task->messages as $message) {
+                    $message = $message->message;
+                    if (!is_string($message)) {
+                        $message = print_r($message, true);
+                    }
+                }
+            }
+        } else {
+            $message = $this->get('active_description');
         }
-        return $this->workflow_operations;
+        return $message;
     }
 
     /**
@@ -166,44 +210,6 @@ class Workflow extends TerminusModel implements
     }
 
     /**
-     * Get the success message of a workflow or throw an exception of the
-     * workflow failed.
-     *
-     * @return string The message to output to the user
-     * @throws \Pantheon\Terminus\Exceptions\TerminusException
-     */
-    public function getMessage()
-    {
-        if (!$this->isSuccessful()) {
-            $message = 'Workflow failed.';
-            $final_task = $this->get('final_task');
-            if (!empty($final_task) && !empty($final_task->reason)) {
-                $message = $final_task->reason;
-            } elseif (!empty($final_task) && !empty($final_task->messages)) {
-                foreach ($final_task->messages as $message) {
-                    $message = $message->message;
-                    if (!is_string($message)) {
-                        $message = print_r($message, true);
-                    }
-                }
-            }
-        } else {
-            $message = $this->get('active_description');
-        }
-        return $message;
-    }
-
-    /**
-     * Returns the object which controls this collection
-     *
-     * @return TerminusModel
-     */
-    public function getOwnerObject()
-    {
-        return $this->owner;
-    }
-
-    /**
      * Sets the object which owns this workflow
      *
      * @param $owner The object that owns this workflow
@@ -211,43 +217,6 @@ class Workflow extends TerminusModel implements
     public function setOwnerObject($owner)
     {
         $this->owner = $owner;
-    }
-
-    /**
-     * Returns the status of this workflow
-     *
-     * @return string
-     */
-    public function getStatus()
-    {
-        $status = 'running';
-        if ($this->isFinished()) {
-            $status = 'failed';
-            if ($this->isSuccessful()) {
-                $status = 'succeeded';
-            }
-        }
-        return $status;
-    }
-
-    /**
-     * Detects if the workflow has finished
-     *
-     * @return bool True if workflow has finished
-     */
-    public function isFinished()
-    {
-        return $this->has('result');
-    }
-
-    /**
-     * Detects if the workflow was successful
-     *
-     * @return bool True if workflow succeeded
-     */
-    public function isSuccessful()
-    {
-        return $this->get('result') == 'succeeded';
     }
 
     /**
@@ -260,6 +229,20 @@ class Workflow extends TerminusModel implements
     public function operations()
     {
         return $this->getOperations()->all();
+    }
+
+    /**
+     * @return WorkflowOperations
+     */
+    public function getOperations()
+    {
+        if (empty($this->workflow_operations)) {
+            $nickname = \uniqid(__FUNCTION__ . "-");
+            $this->getContainer()->add($nickname, WorkflowOperations::class)
+                ->addArgument(['data' => $this->get('operations')]);
+            $this->workflow_operations = $this->getContainer()->get($nickname);
+        }
+        return $this->workflow_operations;
     }
 
     /**
@@ -288,6 +271,23 @@ class Workflow extends TerminusModel implements
             'started_at' => $this->get('started_at'),
             'operations' => $this->getOperations()->serialize(),
         ];
+    }
+
+    /**
+     * Returns the status of this workflow
+     *
+     * @return string
+     */
+    public function getStatus()
+    {
+        $status = 'running';
+        if ($this->isFinished()) {
+            $status = 'failed';
+            if ($this->isSuccessful()) {
+                $status = 'succeeded';
+            }
+        }
+        return $status;
     }
 
     /**

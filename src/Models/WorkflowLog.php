@@ -130,4 +130,20 @@ class WorkflowLog extends TerminusModel
         }
         return null;
     }
+
+    /**
+     * Wait for a workflow to complete.
+     *
+     * @param int $max
+     * @return void
+     */
+    public function waitUntilFinished(int $max = 180)
+    {
+        $this->workflow->fetch();
+        $start = time();
+        while (!$this->isFinished() && (time() - $start) < $max) {
+            sleep(self::REFRESH_INTERVAL);
+            $this->workflow->fetch();
+        }
+    }
 }
