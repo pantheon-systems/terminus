@@ -135,11 +135,9 @@ abstract class SSHBaseCommand extends TerminusCommand implements SiteAwareInterf
     {
         // Define the exit codes that indicate a permanent failure
         $permanent_failure_exit_codes = [
-            1,   // Permission denied
             2,   // Invalid arguments
             126, // Command cannot execute
             127, // Command not found
-            137, // Out of memory
             255  // Service unavailable
         ];
 
