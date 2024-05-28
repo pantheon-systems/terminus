@@ -49,7 +49,10 @@ abstract class SSHBaseCommand extends TerminusCommand implements SiteAwareInterf
      */
     public static function generateTraceId()
     {
-        self::$traceId = vsprintf('%s%s-%s-%s-%s-%s%s%s', str_split(bin2hex(random_bytes(16)), 4));
+        self::$traceId = vsprintf(
+            '%s%s-%s-%s-%s-%s%s%s', 
+            str_split(bin2hex(random_bytes(16)), 4)
+        );
     }
 
     /**
@@ -123,7 +126,9 @@ abstract class SSHBaseCommand extends TerminusCommand implements SiteAwareInterf
     protected function sendCommandViaSsh($command)
     {
         // Include the trace ID as an environment variable in the SSH command
-        $ssh_command = $this->getConnectionString() . ' ' . escapeshellarg("TRACE_ID=" . self::$traceId . " " . $command);
+        $ssh_command = $this->getConnectionString() . ' ' . escapeshellarg(
+            "TRACE_ID=" . self::$traceId . " " . $command
+        );
         
         $this->logger->debug('shell command: {command}', [ 'command' => $ssh_command ]);
         if ($this->getConfig()->get('test_mode')) {
