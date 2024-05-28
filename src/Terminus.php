@@ -14,6 +14,7 @@ use Pantheon\Terminus\Config\ConfigAwareTrait;
 use Pantheon\Terminus\DataStore\FileStore;
 use Pantheon\Terminus\Helpers\LocalMachineHelper;
 use Pantheon\Terminus\Helpers\Traits\CommandExecutorTrait;
+use Pantheon\Terminus\Helpers\Utility\TraceId;
 use Pantheon\Terminus\Plugins\PluginDiscovery;
 use Pantheon\Terminus\Plugins\PluginInfo;
 use Pantheon\Terminus\ProgressBars\ProcessProgressBar;
@@ -165,16 +166,14 @@ EOD;
     {
         $container = $this->getContainer();
 
+        // Generate the trace ID
+        TraceId::generateTraceId();
+
         // Add the services
         // Request
-
-        Request::generateTraceId();
         $container->share('request', Request::class);
         $container->inflector(RequestAwareInterface::class)
             ->invokeMethod('setRequest', ['request']);
-
-        // Store the trace ID in the container
-        $container->add('trace_id', Request::getTraceId());
 
         // Session
         $session_store = new FileStore(

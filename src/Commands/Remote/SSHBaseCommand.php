@@ -9,6 +9,7 @@ use Pantheon\Terminus\Models\Environment;
 use Pantheon\Terminus\Models\Site;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
+use Pantheon\Terminus\Helpers\Utility\TraceId;
 use Symfony\Component\Process\Process;
 
 /**
@@ -80,8 +81,8 @@ abstract class SSHBaseCommand extends TerminusCommand implements SiteAwareInterf
         $command_summary = $this->getCommandSummary($command_args);
         $command_line = $this->getCommandLine($command_args);
 
-        // Retrieve the trace ID from the container
-        $trace_id = $this->getContainer()->get('trace_id');
+        // Retrieve the trace ID from the TraceId class
+        $trace_id = TraceId::getTraceId();
 
         // Log the trace ID for user visibility
         $this->log()->notice('Trace ID: {trace_id}', [
@@ -111,7 +112,9 @@ abstract class SSHBaseCommand extends TerminusCommand implements SiteAwareInterf
     protected function sendCommandViaSsh($command, $trace_id)
     {
         // Include the trace ID as an environment variable in the SSH command using the -o SetEnv option
-        $ssh_command = $this->getConnectionString() . ' ' . escapeshellarg($command) . " -o SetEnv=TRACE_ID=$trace_id";
+        $ssh_command = $this->getConnectionString()
+            . ' -o SetEnv=TRACE_ID=' . escapeshellarg($trace_id)
+            . ' ' . escapeshellarg($command);
 
         $this->logger->debug('shell command: {command}', [ 'command' => $ssh_command ]);
         if ($this->getConfig()->get('test_mode')) {
