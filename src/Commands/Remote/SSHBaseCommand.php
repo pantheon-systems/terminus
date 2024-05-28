@@ -40,6 +40,19 @@ abstract class SSHBaseCommand extends TerminusCommand implements SiteAwareInterf
     protected $progressAllowed;
 
     /**
+     * @var string Trace ID
+     */
+    private static $traceId;
+
+    /**
+     * Generate UUID for use as distributed tracing ID and assign to static class variable
+     */
+    public static function generateTraceId()
+    {
+        self::$traceId = vsprintf('%s%s-%s-%s-%s-%s%s%s', str_split(bin2hex(random_bytes(16)), 4));
+    }
+
+    /**
      * Define the environment and site properties
      *
      * @param string $site_env The site/env to retrieve in <site>.<env> format
@@ -80,6 +93,14 @@ abstract class SSHBaseCommand extends TerminusCommand implements SiteAwareInterf
         $command_summary = $this->getCommandSummary($command_args);
         $command_line = $this->getCommandLine($command_args);
 
+        // Generate the trace ID
+        self::generateTraceId();
+
+        // Log the trace ID for user visibility
+        $this->log()->notice('Trace ID: {trace_id}', [
+            'trace_id' => self::$traceId,
+        ]);
+
         $ssh_data = $this->sendCommandViaSsh($command_line);
 
         $this->log()->notice('Command: {site}.{env} -- {command} [Exit: {exit}]', [
@@ -101,8 +122,10 @@ abstract class SSHBaseCommand extends TerminusCommand implements SiteAwareInterf
      */
     protected function sendCommandViaSsh($command)
     {
-        $ssh_command = $this->getConnectionString() . ' ' . escapeshellarg($command);
-        $this->logger->debug('shell command: {command}', [ 'command' => $command ]);
+        // Include the trace ID as an environment variable in the SSH command
+        $ssh_command = $this->getConnectionString() . ' ' . escapeshellarg("TRACE_ID=" . self::$traceId . " " . $command);
+        
+        $this->logger->debug('shell command: {command}', [ 'command' => $ssh_command ]);
         if ($this->getConfig()->get('test_mode')) {
             return $this->divertForTestMode($ssh_command);
         }
