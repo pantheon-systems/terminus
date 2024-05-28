@@ -105,7 +105,9 @@ abstract class SSHBaseCommand extends TerminusCommand implements SiteAwareInterf
 
             // Check if the failure is permanent
             if ($this->isPermanentFailure($ssh_data['exit_code'])) {
-                $this->log()->error('Permanent failure detected. Aborting retries.');
+                $this->log()->error('Permanent failure detected. Aborting retries. Exit code: {exit_code}', [
+                    'exit_code' => $ssh_data['exit_code']
+                ]);
                 break;
             }
 
