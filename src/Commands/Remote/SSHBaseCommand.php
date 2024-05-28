@@ -40,22 +40,6 @@ abstract class SSHBaseCommand extends TerminusCommand implements SiteAwareInterf
     protected $progressAllowed;
 
     /**
-     * @var string Trace ID
-     */
-    private static $traceId;
-
-    /**
-     * Generate UUID for use as distributed tracing ID and assign to static class variable
-     */
-    public static function generateTraceId()
-    {
-        self::$traceId = vsprintf(
-            '%s%s-%s-%s-%s-%s%s%s', 
-            str_split(bin2hex(random_bytes(16)), 4)
-        );
-    }
-
-    /**
      * Define the environment and site properties
      *
      * @param string $site_env The site/env to retrieve in <site>.<env> format
@@ -96,15 +80,15 @@ abstract class SSHBaseCommand extends TerminusCommand implements SiteAwareInterf
         $command_summary = $this->getCommandSummary($command_args);
         $command_line = $this->getCommandLine($command_args);
 
-        // Generate the trace ID
-        self::generateTraceId();
+        // Retrieve the trace ID from the container
+        $trace_id = $this->getContainer()->get('trace_id');
 
         // Log the trace ID for user visibility
         $this->log()->notice('Trace ID: {trace_id}', [
-            'trace_id' => self::$traceId,
+            'trace_id' => $trace_id,
         ]);
 
-        $ssh_data = $this->sendCommandViaSsh($command_line);
+        $ssh_data = $this->sendCommandViaSsh($command_line, $trace_id);
 
         $this->log()->notice('Command: {site}.{env} -- {command} [Exit: {exit}]', [
             'site'    => $this->site->getName(),
@@ -122,13 +106,12 @@ abstract class SSHBaseCommand extends TerminusCommand implements SiteAwareInterf
      * Sends a command to an environment via SSH.
      *
      * @param string $command The command to be run on the platform
+     * @param string $trace_id The trace ID to include as an environment variable
      */
-    protected function sendCommandViaSsh($command)
+    protected function sendCommandViaSsh($command, $trace_id)
     {
-        // Include the trace ID as an environment variable in the SSH command
-        $ssh_command = $this->getConnectionString() . ' ' . escapeshellarg(
-            "TRACE_ID=" . self::$traceId . " " . $command
-        );
+        // Include the trace ID as an environment variable in the SSH command using the -o SetEnv option
+        $ssh_command = $this->getConnectionString() . ' ' . escapeshellarg($command) . " -o SetEnv=TRACE_ID=$trace_id";
         
         $this->logger->debug('shell command: {command}', [ 'command' => $ssh_command ]);
         if ($this->getConfig()->get('test_mode')) {

@@ -173,6 +173,9 @@ EOD;
         $container->inflector(RequestAwareInterface::class)
             ->invokeMethod('setRequest', ['request']);
 
+        // Store the trace ID in the container
+        $container->add('trace_id', Request::getTraceId());
+
         // Session
         $session_store = new FileStore(
             $this->getConfig()->get('cache_dir')
