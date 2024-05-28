@@ -112,7 +112,7 @@ abstract class SSHBaseCommand extends TerminusCommand implements SiteAwareInterf
     {
         // Include the trace ID as an environment variable in the SSH command using the -o SetEnv option
         $ssh_command = $this->getConnectionString() . ' ' . escapeshellarg($command) . " -o SetEnv=TRACE_ID=$trace_id";
-        
+
         $this->logger->debug('shell command: {command}', [ 'command' => $ssh_command ]);
         if ($this->getConfig()->get('test_mode')) {
             return $this->divertForTestMode($ssh_command);
