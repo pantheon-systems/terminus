@@ -61,7 +61,7 @@ class ListCommand extends TerminusCommand implements SiteAwareInterface
     ) {
         try {
             $site = $this->getSiteById($site_id);
-            $wfl = $site->getWorkflows();
+            $wfl = $site->getWorkflowLogs();
             if (!empty($options['env'])) {
                 $wfl->filter(function ($wf) use ($options) {
                     return $wf->get('environment') == $options['env'];

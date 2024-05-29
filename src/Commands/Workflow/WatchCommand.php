@@ -2,7 +2,9 @@
 
 namespace Pantheon\Terminus\Commands\Workflow;
 
+use Pantheon\Terminus\Collections\WorkflowLogsCollection;
 use Pantheon\Terminus\Commands\TerminusCommand;
+use Pantheon\Terminus\Models\WorkflowLog;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 
@@ -44,34 +46,54 @@ class WatchCommand extends TerminusCommand implements SiteAwareInterface
      * @throws \Psr\Container\ContainerExceptionInterface
      * @throws \Psr\Container\NotFoundExceptionInterface
      */
-    public function watch($site_env, $options = ['checks' => null])
+    public function watch($site_env, $options = ['checks' => null]): int
     {
         // 1. Get the siteID from the site name
         $site = $this->getSiteById($site_env);
         $env = $this->getEnv($site_env);
-        $wfl = $site->getWorkflows();
-        if (!empty($env)) {
-            $wfl->filterBy('environment', $env);
+        // Get all of the workflow Logs for the site
+        $wflc = $site->getWorkflowLogs();
+        // if the environment is not empty, filter by environment
+        if (!$wflc instanceof WorkflowLogsCollection) {
+            $this->log()->error('Unable to get workflow for site.');
+            return -1;
         }
+        if (!empty($env)) {
+            $wflc->filterForEnvironment($env);
+        }
+        // Get the latest workflow log
+        $wfl = $wflc->latest();
+        // If there are no workflows, return
+        if (!$wfl instanceof WorkflowLog) {
+            $this->log()->error('No workflows found.');
+            return false;
+        }
+        // If the workflow is already finished, return
+        while (!$wfl->isFinished()) {
+            $this->emitWorkflowLogs($wfl);
+            sleep(self::WORKFLOWS_WATCH_INTERVAL);
+            $wfl->fetch();
+        }
+        return $wfl->isSuccessful();
     }
 
     /**
      * Emits a workflow-finished notice.
      *
-     * @param \Pantheon\Terminus\Models\Workflow $workflow
+     * @param \Pantheon\Terminus\Models\WorkflowLog $workflow
      */
-    protected function emitFinishedNotice($workflow)
+    protected function emitFinishedNotice(WorkflowLog $wfl)
     {
         $date_format = $this->getConfig()->get('date_format');
         $finished_message = 'Finished workflow {id} {description} ({env}) at {time}';
         $finished_context = [
-            'id' => $workflow->id,
-            'description' => $workflow->get('description'),
-            'env' => $workflow->get('environment'),
-            'time' => date($date_format, $workflow->getFinishedAt()),
+            'id' => $wfl->id,
+            'description' => $wfl->get('description'),
+            'env' => $wfl->get('environment'),
+            'time' => date($date_format, $wfl->get('finished_at')),
         ];
         $this->log()->notice($finished_message, $finished_context);
-        array_push($this->finished, $workflow->id);
+        array_push($this->finished, $wfl->id);
     }
 
     /**

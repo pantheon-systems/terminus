@@ -40,9 +40,6 @@ class WorkflowLogsCollection extends SiteOwnedCollection implements \Iterator
         parent::__construct(["site" => $site]);
     }
 
-
-
-
     /**
      * @throws TerminusException
      * @throws GuzzleException
@@ -188,6 +185,9 @@ class WorkflowLogsCollection extends SiteOwnedCollection implements \Iterator
     public function findLatestByProperty($property, $value): ?TerminusModel
     {
         foreach ($this->models as $model) {
+            if ($property == "id" && $model->id == $value) {
+                return $model;
+            }
             if ($model->get($property) == $value) {
                 return $model;
             }

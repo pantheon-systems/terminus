@@ -37,7 +37,7 @@ abstract class InfoBaseCommand extends TerminusCommand implements SiteAwareInter
             return null;
         }
         if ($workflow_id != null) {
-            return $site->getWorkflowLogs()->findLatestFromOptionsArray(['id' => $workflow_id]);
+            return $site->getWorkflowLogs()->findLatestByProperty('id', $workflow_id);
         }
         $this->log()->notice('Showing latest workflow on {site}.', ['site' => $site->getName(),]);
         return $site->getWorkflowLogs()->latest();

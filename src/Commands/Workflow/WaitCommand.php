@@ -10,6 +10,8 @@ use Pantheon\Terminus\Models\Site;
 use Pantheon\Terminus\Models\WorkflowLog;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
+use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\NotFoundExceptionInterface;
 
 /**
  * Class AwaitCommand.
@@ -55,11 +57,12 @@ class WaitCommand extends TerminusCommand implements SiteAwareInterface
 
     /**
      * @param Site $site
-     * @param Environment $env
+     * @param Environment|null $env
      * @param array $options
      * @return void
-     * @throws \Psr\Container\ContainerExceptionInterface
-     * @throws \Psr\Container\NotFoundExceptionInterface
+     * @throws TerminusException
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
      */
     protected function waitForWorkflow(
         Site $site,
@@ -81,6 +84,9 @@ class WaitCommand extends TerminusCommand implements SiteAwareInterface
         // You take it on faith
         // You take it to the heart
         // The waiting is the hardest part
-        $wfl->waitUntilFinished($options['max']);
+        if ($wfl instanceof WorkflowLog) {
+            return $wfl->waitForComplete($options['max']);
+        }
+        $this->log()->notice('No workflows found.');
     }
 }

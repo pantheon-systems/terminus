@@ -43,6 +43,7 @@ class WorkflowCommandsTest extends TerminusTestBase
     private function getLatestWorkflow(array $filters = []): array
     {
         $workflowsList = $this->terminusJsonResponse(sprintf('workflow:list %s', $this->getSiteName()));
+        \Kint::dump($workflowsList);
         $this->assertIsArray($workflowsList);
         $this->assertNotEmpty($workflowsList);
 

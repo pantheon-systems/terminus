@@ -103,10 +103,11 @@ class WorkflowLog extends TerminusModel
      * @return bool
      * @throws TerminusException
      */
-    public function waitForComplete(): bool
+    public function waitForComplete($max = 180): bool
     {
+        $start = time();
         $this->workflow->fetch();
-        while (!$this->isFinished()) {
+        while (!$this->isFinished() && (time() - $start) < $max) {
             sleep(self::REFRESH_INTERVAL);
             $this->workflow->fetch();
         }
@@ -129,21 +130,5 @@ class WorkflowLog extends TerminusModel
             return $this->actor->{$name};
         }
         return null;
-    }
-
-    /**
-     * Wait for a workflow to complete.
-     *
-     * @param int $max
-     * @return void
-     */
-    public function waitUntilFinished(int $max = 180)
-    {
-        $this->workflow->fetch();
-        $start = time();
-        while (!$this->isFinished() && (time() - $start) < $max) {
-            sleep(self::REFRESH_INTERVAL);
-            $this->workflow->fetch();
-        }
     }
 }
