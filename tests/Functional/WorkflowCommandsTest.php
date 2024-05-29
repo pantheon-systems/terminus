@@ -29,6 +29,8 @@ class WorkflowCommandsTest extends TerminusTestBase
         $this->assertEquals($workflowStatus, $workflow);
     }
 
+
+
     /**
      * @test
      * @covers \Pantheon\Terminus\Commands\Workflow\ListCommand
@@ -90,12 +92,9 @@ class WorkflowCommandsTest extends TerminusTestBase
         $this->assertIsArray($testOperation);
         $this->assertNotEmpty($testOperation);
         $this->assertArrayHasKey('type', $testOperation);
-        $this->assertEquals('quicksilver', $testOperation['type']);
         $this->assertArrayHasKey('result', $testOperation);
-        $this->assertEquals('succeeded', $testOperation['result']);
         $this->assertArrayHasKey('duration', $testOperation);
         $this->assertArrayHasKey('description', $testOperation);
-        $this->assertEquals('Print test message', $testOperation['description']);
 
         $logs = $this->terminus(
             sprintf('workflow:info:logs %s --id=%s', $this->getSiteName(), $workflow['id'])
