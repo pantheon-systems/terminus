@@ -85,12 +85,7 @@ abstract class SSHBaseCommand extends TerminusCommand implements SiteAwareInterf
         $trace_id = TraceId::getTraceId();
 
         // Log the trace ID for user visibility only in debug mode
-        if ($this->output()->isDebug()) {
-            $this->log()->notice(
-                'Trace ID: {trace_id}',
-                ['trace_id' => $trace_id]
-            );
-        }
+        $this->log()->debug('Trace ID: {trace_id}', ['trace_id' => $trace_id]);
 
         $ssh_data = $this->sendCommandViaSsh($command_line, $trace_id);
 
