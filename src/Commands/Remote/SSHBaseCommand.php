@@ -84,19 +84,25 @@ abstract class SSHBaseCommand extends TerminusCommand implements SiteAwareInterf
         // Retrieve the trace ID from the TraceId class
         $trace_id = TraceId::getTraceId();
 
-        // Log the trace ID for user visibility
-        $this->log()->notice('Trace ID: {trace_id}', [
-            'trace_id' => $trace_id,
-        ]);
+        // Log the trace ID for user visibility only in debug mode
+        if ($this->output()->isDebug()) {
+            $this->log()->notice(
+                'Trace ID: {trace_id}',
+                ['trace_id' => $trace_id]
+            );
+        }
 
         $ssh_data = $this->sendCommandViaSsh($command_line, $trace_id);
 
-        $this->log()->notice('Command: {site}.{env} -- {command} [Exit: {exit}]', [
-            'site'    => $this->site->getName(),
-            'env'     => $this->environment->id,
-            'command' => $command_summary,
-            'exit'    => $ssh_data['exit_code'],
-        ]);
+        $this->log()->notice(
+            'Command: {site}.{env} -- {command} [Exit: {exit}]',
+            [
+                'site'    => $this->site->getName(),
+                'env'     => $this->environment->id,
+                'command' => $command_summary,
+                'exit'    => $ssh_data['exit_code'],
+            ]
+        );
 
         if ($ssh_data['exit_code'] != 0) {
             throw new TerminusProcessException($ssh_data['output'], [], $ssh_data['exit_code']);
@@ -116,7 +122,7 @@ abstract class SSHBaseCommand extends TerminusCommand implements SiteAwareInterf
             . ' -o SetEnv=TRACE_ID=' . escapeshellarg($trace_id)
             . ' ' . escapeshellarg($command);
 
-        $this->logger->debug('shell command: {command}', [ 'command' => $ssh_command ]);
+        $this->logger->debug('shell command: {command}', ['command' => $ssh_command]);
         if ($this->getConfig()->get('test_mode')) {
             return $this->divertForTestMode($ssh_command);
         }
@@ -297,7 +303,7 @@ abstract class SSHBaseCommand extends TerminusCommand implements SiteAwareInterf
 
         return vsprintf(
             '%s -T %s@%s -p %s -o "StrictHostKeyChecking=no" -o "AddressFamily inet"',
-            [$command, $sftp['username'], $this->lookupHostViaAlternateNameserver($sftp['host']), $sftp['port'],]
+            [$command, $sftp['username'], $this->lookupHostViaAlternateNameserver($sftp['host']), $sftp['port']]
         );
     }
 
