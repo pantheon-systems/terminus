@@ -21,6 +21,9 @@ class TraceId
      */
     public static function getTraceId()
     {
+        if (empty(self::$traceId)) { // If trace ID is not set, generate it
+            self::$traceId = self::generateTraceId();
+        }
         return self::$traceId;
     }
 }
