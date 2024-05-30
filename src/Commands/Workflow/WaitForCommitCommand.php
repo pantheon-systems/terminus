@@ -3,10 +3,11 @@
 namespace Pantheon\Terminus\Commands\Workflow;
 
 use Pantheon\Terminus\Collections\WorkflowLogsCollection;
+use Pantheon\Terminus\Commands\TerminusCommand;
 use Pantheon\Terminus\Exceptions\TerminusException;
 use Pantheon\Terminus\Models\WorkflowLog;
 
-class WaitForCommitCommand extends WaitCommand
+class WaitForCommitCommand extends TerminusCommand
 {
     /**
      * Wait for a workflow to complete. Usually this will be used to wait
