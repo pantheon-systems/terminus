@@ -37,7 +37,7 @@ class DrushCommand extends SSHBaseCommand
     {
         $this->prepareEnvironment($site_env);
         $this->setProgressAllowed($options['progress']);
-        $retries = isset($options['retry']) ? (int)$options['retry'] : 0;
+        $retries = (int)($options['retry'] ?? 0);
         return $this->executeCommand($drush_command, $retries);
     }
 }
