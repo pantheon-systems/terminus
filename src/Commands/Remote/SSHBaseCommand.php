@@ -267,7 +267,11 @@ abstract class SSHBaseCommand extends TerminusCommand implements SiteAwareInterf
      */
     private function getCommandLine($command_args)
     {
-        array_unshift($command_args, $this->command);
+        // Retrieve the trace ID from the TraceId class
+        $trace_id = TraceId::getTraceId();
+
+        // Prepend the trace ID to the command arguments
+        array_unshift($command_args, "TRACE_ID={$trace_id}", $this->command);
         return implode(" ", $this->escapeArguments($command_args));
     }
 
