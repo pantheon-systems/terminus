@@ -126,36 +126,34 @@ class WorkflowLogsCollection extends SiteOwnedCollection implements \Iterator
             'start' => 0,
         ]
     ): TerminusModel {
+        $start_time = $options['start'] ?? 0; // Default to 0 if not set
         $wfl = $this->latest();
-        // if we have a match, then just return the WorkflowLog
+
+        // If the workflow is newer than the start time and matches the options
         if (
-            $wfl->get('type') === $options['type']
-            || ($wfl->get('id') === $options['id'])
-            || ($wfl->get('commit_hash') === $options['commit_hash'])
+            $wfl->get('start_time') >= $start_time &&
+            (
+                $wfl->get('type') === $options['type'] ||
+                $wfl->get('id') === $options['id'] ||
+                $wfl->get('commit_hash') === $options['commit_hash']
+            )
         ) {
             return $wfl;
         }
 
-        // It's not a match, so let's try to find the workflow
-
-        // 1. Attempt to find workflow by id
-        // if the workflow id is set and the latest workflow is not the required workflow,
-        // then find the workflow by id
+        // Attempt to find the latest workflow by ID
         if (isset($options['id'])) {
-            return $this->findLatestByProperty('id', $options['id']);
+            return $this->findLatestByProperty('id', $options['id'], $start_time);
         }
 
-        // 2. Attempt to find workflow by type
-        // if the latest workflow is not of the required type,
-        // and the type is set, then find the workflow by type
+        // Attempt to find the latest workflow by type
         if (isset($options['type'])) {
-            return $this->findLatestByProperty('type', $options['type']);
+            return $this->findLatestByProperty('type', $options['type'], $start_time);
         }
-        // 3. Attempt to find workflow by commit hash
-        // if the commit hash is set and the latest workflow is not the required workflow,
-        // then find the workflow by commit hash
+
+        // Attempt to find the latest workflow by commit hash
         if (isset($options['commit_hash'])) {
-            return $this->findLatestByProperty('commit_hash', $options['commit_hash']);
+            return $this->findLatestByProperty('commit_hash', $options['commit_hash'], $start_time);
         }
         return $wfl;
     }
@@ -169,16 +167,23 @@ class WorkflowLogsCollection extends SiteOwnedCollection implements \Iterator
     }
 
     /**
-     * @param $property
-     * @param $value
+     * @param string $property
+     * @param mixed $value
+     * @param int $start_time
      * @return TerminusModel|null
      */
-    public function findLatestByProperty($property, $value): ?TerminusModel
+    public function findLatestByProperty($property, $value, $start_time = 0): ?TerminusModel
     {
         foreach ($this->models as $model) {
+            // Skip if older than start time
+            if ($model->get('start_time') < $start_time) {
+                continue;
+            }
+            // If the property is 'id' and the model's id matches the value, return the model
             if ($property == "id" && $model->id == $value) {
                 return $model;
             }
+            // If the property is 'type' and the model's type matches the value, return the model
             if ($value === $model->get($property)) {
                 return $model;
             }

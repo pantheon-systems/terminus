@@ -18,12 +18,14 @@ class WaitForCommitCommand extends TerminusCommand
      * @param string $site_id The pantheon site to wait for.
      * @option string commit_hash commit id to wait for
      * @option max Maximum number of seconds to wait for the workflow to complete
+     * @option int start Unix timestamp to start searching from
      */
     public function waitForCommit(
         string $site_id,
         array $options = [
           'commit_hash' => null,
           'max' => 180,
+          'start' => 0,
         ]
     ) {
         $wfl = null;
@@ -32,14 +34,24 @@ class WaitForCommitCommand extends TerminusCommand
         if (!$wflc instanceof WorkflowLogsCollection) {
             throw new TerminusException('Workflow logs could not be retrieved.');
         }
-        if ($options['commit_hash'] !== null) {
-            $wfl = $wflc->findLatestByProperty('commit_hash', $options['commit_hash']);
-        }
+
+        // Find the latest workflow that matches the commit hash
+        $wfl = $wflc->findLatestFromOptionsArray([
+            'commit_hash' => $options['commit_hash'],
+            'start' => $options['start'],
+        ]);
+
+        // If we didn't find a workflow, then we need to wait for one to be created
         if (!$wfl instanceof WorkflowLog) {
             $wfl = $wflc->latest();
         }
 
+        $startTime = time();
         while (!$wfl->isFinished()) {
+            $elapsed = time() - $startTime;
+            if ($elapsed > $options['max']) {
+                throw new TerminusException('Exceeded maximum wait time of {max} seconds.', ['max' => $options['max']]);
+            }
             $this->log()->notice('Waiting for workflow {id} to complete.', ['id' => $wfl->id,]);
             sleep($this->getConfig()->get('refresh_workflow_delay', 30));
             $wfl->fetch();
