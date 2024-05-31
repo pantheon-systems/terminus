@@ -103,7 +103,7 @@ class WorkflowLog extends TerminusModel
      * @return bool
      * @throws TerminusException
      */
-    public function waitForComplete($max = 180): bool
+    public function waitForComplete($max = 600): bool // 600 = 10 minutes
     {
         $start = time();
         $this->workflow->fetch();
