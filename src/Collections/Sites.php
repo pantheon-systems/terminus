@@ -250,6 +250,7 @@ class Sites extends APICollection implements SessionAwareInterface
                 // Also store the site by its name.
                 $this->models[$id] = $site;
             }
+
             $this->models[$uuid] = $site;
 
             return $this->models[$uuid];
