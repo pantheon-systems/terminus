@@ -127,23 +127,25 @@ class WorkflowLogsCollection extends SiteOwnedCollection implements \Iterator
         ]
     ): TerminusModel {
         $start_time = $options['start'] ?? 0; // Default to 0 if not set
+
+        // Initialize $wfl to the first workflow in the collection
         $wfl = $this->latest();
+
+        // Loop through the collection to find the first workflow newer than the start time
+        while ($wfl && $wfl->get('start_time') < $start_time) {
+            $this->next();
+            $wfl = $this->current();
+        }
 
         // If the workflow is newer than the start time and matches the options
         if (
-            $wfl->get('start_time') >= $start_time &&
+            $wfl && $wfl->get('start_time') >= $start_time &&
             (
                 $wfl->get('type') === $options['type'] ||
-                $wfl->get('id') === $options['id'] ||
                 $wfl->get('commit_hash') === $options['commit_hash']
             )
         ) {
             return $wfl;
-        }
-
-        // Attempt to find the latest workflow by ID
-        if (isset($options['id'])) {
-            return $this->findLatestByProperty('id', $options['id'], $start_time);
         }
 
         // Attempt to find the latest workflow by type
@@ -155,6 +157,8 @@ class WorkflowLogsCollection extends SiteOwnedCollection implements \Iterator
         if (isset($options['commit_hash'])) {
             return $this->findLatestByProperty('commit_hash', $options['commit_hash'], $start_time);
         }
+
+        // Return the latest workflow if no specific matches found
         return $wfl;
     }
 
@@ -179,11 +183,7 @@ class WorkflowLogsCollection extends SiteOwnedCollection implements \Iterator
             if ($model->get('start_time') < $start_time) {
                 continue;
             }
-            // If the property is 'id' and the model's id matches the value, return the model
-            if ($property == "id" && $model->id == $value) {
-                return $model;
-            }
-            // If the property is 'type' and the model's type matches the value, return the model
+            // If the property matches the value, return the model
             if ($value === $model->get($property)) {
                 return $model;
             }
