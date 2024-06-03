@@ -78,13 +78,21 @@ abstract class SSHBaseCommand extends TerminusCommand implements SiteAwareInterf
     {
         $this->validateEnvironment($this->environment);
 
+        // Retrieve the trace ID from the TraceId class
+        $trace_id = TraceId::getTraceId();
+
+        // Separate the environment variables and command arguments
+        $env_vars = [
+            'TRACE_ID' => $trace_id
+        ];
+
         $command_summary = $this->getCommandSummary($command_args);
 
         // Separate the command line and environment variables
-        list($command_line, $env_vars) = $this->getCommandLine($command_args);
+        list($command_line, $env_vars) = $this->getCommandLine($command_args, $env_vars);
 
         // Log the trace ID for user visibility only in debug mode
-        $this->log()->debug('Trace ID: {trace_id}', ['trace_id' => $env_vars['TRACE_ID']]);
+        $this->log()->notice('Trace ID: {trace_id}', ['trace_id' => $trace_id]);
 
         $ssh_data = $this->sendCommandViaSsh($command_line, $env_vars);
 
@@ -264,22 +272,15 @@ abstract class SSHBaseCommand extends TerminusCommand implements SiteAwareInterf
      * Returns the command-line args.
      *
      * @param string[] $command_args
+     * @param array $env_vars
      *
      * @return array
      *   Elements are as follows:
      *     string command_line The command line string
      *     array env_vars The environment variables
      */
-    private function getCommandLine($command_args)
+    private function getCommandLine($command_args, $env_vars)
     {
-        // Retrieve the trace ID from the TraceId class
-        $trace_id = TraceId::getTraceId();
-
-        // Separate the environment variables and command arguments
-        $env_vars = [
-            'TRACE_ID' => $trace_id
-        ];
-
         $command_line = implode(" ", $this->escapeArguments(array_merge([$this->command], $command_args)));
 
         return [$command_line, $env_vars];
