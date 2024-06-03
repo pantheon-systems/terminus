@@ -226,6 +226,9 @@ class Sites extends APICollection implements SessionAwareInterface
      */
     public function get($id): TerminusModel
     {
+        if (isset($this->models[$id])) {
+            return $this->models[$id];
+        }
         try {
             $uuid = $this->getUuid($id);
             if (isset($this->models[$uuid])) {
@@ -242,6 +245,10 @@ class Sites extends APICollection implements SessionAwareInterface
                 );
             $site = $this->getContainer()->get($nickname);
             $site->fetch();
+            if ($id != $uuid) {
+                // Also store the site by its name.
+                $this->models[$id] = $site;
+            }
             $this->models[$uuid] = $site;
 
             return $this->models[$uuid];
