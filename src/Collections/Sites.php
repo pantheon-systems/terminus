@@ -29,6 +29,11 @@ class Sites extends APICollection implements SessionAwareInterface
     protected $collected_class = Site::class;
 
     /**
+     * @var array
+     */
+    protected $site_names = [];
+
+    /**
      * Creates a new site.
      *
      * @param string[] $params
@@ -226,10 +231,6 @@ class Sites extends APICollection implements SessionAwareInterface
      */
     public function get($id): TerminusModel
     {
-        if (isset($this->models[$id])) {
-            return $this->models[$id];
-        }
-
         try {
             $uuid = $this->getUuid($id);
             if (isset($this->models[$uuid])) {
@@ -246,10 +247,6 @@ class Sites extends APICollection implements SessionAwareInterface
                 );
             $site = $this->getContainer()->get($nickname);
             $site->fetch();
-            if ($id != $uuid) {
-                // Also store the site by its name.
-                $this->models[$id] = $site;
-            }
 
             $this->models[$uuid] = $site;
 
@@ -298,6 +295,10 @@ class Sites extends APICollection implements SessionAwareInterface
      */
     protected function getUuidByName(string $name): string
     {
+        if (isset($this->site_names[$name])) {
+            return $this->site_names[$name];
+        }
+
         $response = $this->request()->request(
             'site-names/' . $name,
             ['method' => 'get',]
@@ -307,7 +308,10 @@ class Sites extends APICollection implements SessionAwareInterface
             throw new TerminusNotFoundException($response->getData());
         }
 
-        return $response->getData()->id;
+        $id = $response->getData()->id;
+        $this->site_names[$name] = $id;
+
+        return $id;
     }
 
     /**
