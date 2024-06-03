@@ -2,6 +2,9 @@
 
 namespace Pantheon\Terminus\Tests\Functional;
 
+use CzProject\GitPhp\Git;
+use CzProject\GitPhp\GitException;
+
 /**
  * Class WorkflowCommandsTest.
  *
@@ -28,7 +31,6 @@ class WorkflowCommandsTest extends TerminusTestBase
         unset($workflow['time']);
         $this->assertEquals($workflowStatus, $workflow);
     }
-
 
 
     /**
@@ -109,6 +111,25 @@ class WorkflowCommandsTest extends TerminusTestBase
     }
 
     /**
+     * testWorkflowWaitForCommitCommand
+     *
+     * @test
+     * @covers \Pantheon\Terminus\Commands\Workflow\Info\WaitForCommitCommand
+     * @group workflow
+     * @group short
+     * @throws GitException
+     */
+    public function testWorkflowWaitForCommitCommand()
+    {
+        $command = "vendor/bin/robo generate:test-commit";
+        // this should have returned the commit has from that test commit
+        $response = exec($command);
+        $this->assertStringContainsString('Commit hash:', $response);
+        $err = $this->terminus(sprintf('workflow:wait-for-commit %s --commit=%s', $this->getSiteName(), $commitHash));
+        $this->assertEmpty($err, 'Terminus command should not return any error: %s', $err);
+    }
+
+    /**
      * Tests and returns the latest workflow record.
      *
      * @param array $filters
@@ -126,7 +147,7 @@ class WorkflowCommandsTest extends TerminusTestBase
         if ($filters) {
             $workflowsList = array_filter(
                 $workflowsList,
-                fn ($workflow): bool => count(array_intersect_assoc($filters, $workflow)) === count($filters)
+                fn($workflow): bool => count(array_intersect_assoc($filters, $workflow)) === count($filters)
             );
         }
 
