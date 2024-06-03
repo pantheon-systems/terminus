@@ -247,7 +247,6 @@ class Sites extends APICollection implements SessionAwareInterface
                 );
             $site = $this->getContainer()->get($nickname);
             $site->fetch();
-
             $this->models[$uuid] = $site;
 
             return $this->models[$uuid];
