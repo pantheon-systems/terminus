@@ -229,6 +229,7 @@ class Sites extends APICollection implements SessionAwareInterface
         if (isset($this->models[$id])) {
             return $this->models[$id];
         }
+
         try {
             $uuid = $this->getUuid($id);
             if (isset($this->models[$uuid])) {
