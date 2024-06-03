@@ -92,7 +92,7 @@ abstract class SSHBaseCommand extends TerminusCommand implements SiteAwareInterf
         list($command_line, $env_vars) = $this->getCommandLine($command_args, $env_vars);
 
         // Log the trace ID for user visibility only in debug mode
-        $this->log()->notice('Trace ID: {trace_id}', ['trace_id' => $trace_id]);
+        $this->log()->debug('Trace ID: {trace_id}', ['trace_id' => $trace_id]);
 
         $ssh_data = $this->sendCommandViaSsh($command_line, $env_vars);
 
@@ -125,7 +125,8 @@ abstract class SSHBaseCommand extends TerminusCommand implements SiteAwareInterf
             $env_vars_string .= sprintf(' -o SetEnv=%s=%s', escapeshellarg($key), escapeshellarg($value));
         }
 
-        $ssh_command = $this->getConnectionString() . $env_vars_string . ' ' . escapeshellarg($command);
+        // Construct the SSH command
+        $ssh_command = $this->getConnectionString() . $env_vars_string . ' ' . $command;
 
         $this->logger->debug('shell command: {command}', ['command' => $ssh_command]);
         if ($this->getConfig()->get('test_mode')) {
