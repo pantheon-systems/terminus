@@ -9,10 +9,7 @@ on:
         description: Run arbitrary functional tests group by name or all (short and long) tests (default)
         required: true
         default: all
-      tmate_enabled:
-        description: Enable tmate debugging
-        required: true
-        default: "0"
+
 
 jobs:
   # Checkout in separate job because docker image is alpine based and checkout action doesn't work.
@@ -29,6 +26,7 @@ jobs:
         with:
           name: full-workspace
           path: ${{ github.workspace }}
+          overwrite: true
       - name: Full Composer Install
         run: composer install
       - name: Validate Code
@@ -45,6 +43,7 @@ jobs:
           name: terminus-phar
           path: terminus.phar
           if-no-files-found: error
+          overwrite: true
 
   functional:
     runs-on: ${{ matrix.operating-system }}
@@ -108,20 +107,6 @@ jobs:
         run: composer test:group -- ${{ github.event.inputs.functional_tests_group }}
       - name: Coverage Report
         run: composer coverage
-      - name: Save coverage as artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: CoverageReport
-          path: docs/TestCoverage.md
-      - name: Finish sesssion
-        if: ${{ always() && github.event.inputs.tmate_enabled == 1 }}
-        run: |
-          while [ ! -f /tmp/finish ]
-          do
-            sleep 2
-          done
-          exit 0
-
   release:
     runs-on: ubuntu-latest
     name: Release
