@@ -125,15 +125,18 @@ class WorkflowLogsCollection extends SiteOwnedCollection implements \Iterator
             'commit_hash' => null,
             'start' => 0,
         ]
-    ): TerminusModel {
+    ): ?TerminusModel {
         $start_time = $options['start'] ?? 0; // Default to 0 if not set
 
         // Initialize $wfl to the first workflow in the collection
         $wfl = $this->latest();
 
         // Loop through the collection to find the first workflow newer than the start time
-        while ($wfl && intval($start_time) !== 0 && $wfl->get('start_time') > $start_time) {
+        while ($wfl && intval($start_time) !== 0 && $wfl->startedAfter($start_time)) {
             $this->next();
+            if (!$this->valid()) {
+                return null;
+            }
             $wfl = $this->current();
         }
 

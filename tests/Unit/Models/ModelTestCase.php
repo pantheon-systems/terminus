@@ -1,10 +1,12 @@
 <?php
 
-namespace Pantheon\Terminus\UnitTests\Models;
+namespace Pantheon\Terminus\Tests\Unit\Models;
 
+use Pantheon\Terminus\Collections\TerminusCollection;
 use Pantheon\Terminus\Config\TerminusConfig;
+use Pantheon\Terminus\Models\TerminusModel;
 use Pantheon\Terminus\Request\Request;
-use Pantheon\Terminus\UnitTests\TerminusTestCase;
+use Pantheon\Terminus\Tests\Unit\TerminusTestCase;
 
 /**
  * Class ModelTestCase
@@ -15,7 +17,7 @@ abstract class ModelTestCase extends TerminusTestCase
     /**
      * @var TerminusCollection
      */
-    protected $collection;
+    protected TerminusCollection $collection;
     /**
      * @var Config
      */
@@ -23,7 +25,7 @@ abstract class ModelTestCase extends TerminusTestCase
     /**
      * @var TerminusModel
      */
-    protected $model;
+    protected TerminusModel $model;
     /**
      * @var Request
      */
@@ -32,7 +34,7 @@ abstract class ModelTestCase extends TerminusTestCase
     /**
      * @return Config
      */
-    public function getConfig()
+    public function getConfig(): TerminusConfig
     {
         return $this->config;
     }
@@ -40,7 +42,7 @@ abstract class ModelTestCase extends TerminusTestCase
     /**
      * @inheritdoc
      */
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->config = $this->getMockBuilder(TerminusConfig::class)
           ->disableOriginalConstructor()

@@ -23,7 +23,7 @@ class WorkflowLogInfo
     /**
      * @var float
      */
-    public ?float $finished_at;
+    public \DateTime $finished_at;
     /**
      * @var string|mixed
      */
@@ -31,7 +31,7 @@ class WorkflowLogInfo
     /**
      * @var float
      */
-    public ?float $started_at;
+    public \DateTime $started_at;
     /**
      * @var string|mixed
      */
@@ -56,15 +56,16 @@ class WorkflowLogInfo
 
     /**
      * @param $data
+     * @throws \Exception
      */
     public function __construct($data)
     {
         $this->status = $data->status;
         $this->active_description = $data->active_description;
         $this->description = $data->description;
-        $this->finished_at = floatval($data->finished_at);
+        $this->finished_at = new \DateTime("@" . $data->finished_at);
         $this->reason = $data->reason;
-        $this->started_at = floatval($data->started_at);
+        $this->started_at = new \DateTime("@", $data->started_at);
         $this->id = $data->id;
         $this->has_more_details = boolval($data->has_more_details);
         $this->environment = $data->environment;

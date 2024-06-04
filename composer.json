@@ -115,14 +115,18 @@
     "test:behat": [
       "SHELL_INTERACTIVE=true TERMINUS_TEST_MODE=1 behat --colors --config tests/config/behat.yml --stop-on-failure --suite=default"
     ],
+    "tests:unit": [
+      "vendor/bin/phpunit --colors=always -c ./phpunit.xml --debug  --testsuite unit --group=unit --do-not-cache-result --verbose --stop-on-failure"
+
+    ],
     "test:short": [
-      "XDEBUG_MODE=coverage vendor/bin/phpunit --colors=always -c ./phpunit.xml --debug --group=short --do-not-cache-result --verbose --stop-on-failure"
+      "XDEBUG_MODE=coverage vendor/bin/phpunit --colors=always -c ./phpunit.xml --debug --testsuite functional --group=short --do-not-cache-result --verbose --stop-on-failure"
     ],
     "test:long": [
-      "XDEBUG_MODE=coverage vendor/bin/phpunit --colors=always -c ./phpunit.xml --debug --group=long --do-not-cache-result --verbose"
+      "XDEBUG_MODE=coverage vendor/bin/phpunit --colors=always -c ./phpunit.xml --debug --testsuite functional  --group=long --do-not-cache-result --verbose"
     ],
     "test:functional": [
-      "XDEBUG_MODE=coverage vendor/bin/phpunit --colors=always -c ./phpunit.xml --debug --group=short,long --do-not-cache-result --verbose",
+      "XDEBUG_MODE=coverage vendor/bin/phpunit --colors=always -c ./phpunit.xml --debug --testsuite functional  --group=short,long --do-not-cache-result --verbose",
       "@coverage"
     ],
     "test:all": [
@@ -156,7 +160,7 @@
     "php-cs-fixer": [
       "vendor/bin/php-cs-fixer fix ./src --rules=@PSR12",
       "vendor/bin/php-cs-fixer fix ./tests/Functional --rules=@PSR12",
-      "vendor/bin/php-cs-fixer fix ./tests/unit_tests --rules=@PSR12"
+      "vendor/bin/php-cs-fixer fix ./tests/Unit --rules=@PSR12"
     ]
   },
   "config": {

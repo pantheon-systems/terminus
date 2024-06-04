@@ -1,11 +1,13 @@
 <?php
 
-namespace Pantheon\Terminus\UnitTests\Collections;
+namespace Pantheon\Terminus\Tests\Unit\Collections;
 
 use League\Container\Container;
-use Robo\Config;
+use Pantheon\Terminus\Collections\TerminusCollection;
+use Pantheon\Terminus\Config\TerminusConfig;
+use Robo\Config\Config;
 use Pantheon\Terminus\Request\Request;
-use Pantheon\Terminus\UnitTests\TerminusTestCase;
+use Pantheon\Terminus\Tests\Unit\TerminusTestCase;
 
 /**
  * Class CollectionTestCase
@@ -16,11 +18,11 @@ abstract class CollectionTestCase extends TerminusTestCase
     /**
      * @var TerminusCollection
      */
-    protected $collection;
+    protected TerminusCollection $collection;
     /**
-     * @var Config
+     * @var TerminusConfig
      */
-    protected $config;
+    protected TerminusConfig $config;
     /**
      * @var Request
      */
@@ -33,7 +35,7 @@ abstract class CollectionTestCase extends TerminusTestCase
     /**
      * @return Config
      */
-    public function getConfig()
+    public function getConfig(): TerminusConfig
     {
         return $this->config;
     }
@@ -41,9 +43,9 @@ abstract class CollectionTestCase extends TerminusTestCase
     /**
      * @inheritdoc
      */
-    protected function setUp()
+    protected function setUp(): void
     {
-        $this->config = $this->getMockBuilder(Config::class)
+        $this->config = $this->getMockBuilder(TerminusConfig::class)
             ->disableOriginalConstructor()
             ->getMock();
         $this->request = $this->getMockBuilder(Request::class)
