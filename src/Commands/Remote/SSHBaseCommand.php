@@ -122,11 +122,11 @@ abstract class SSHBaseCommand extends TerminusCommand implements SiteAwareInterf
         // Include the environment variables as an environment option in the SSH command
         $env_vars_string = '';
         foreach ($env_vars as $key => $value) {
-            $env_vars_string .= sprintf(' -o SetEnv=%s=%s', escapeshellarg($key), escapeshellarg($value));
+            $env_vars_string .= sprintf(' -o SetEnv=%s=%s', $key, $value);
         }
 
         // Construct the SSH command
-        $ssh_command = $this->getConnectionString() . $env_vars_string . ' ' . $command;
+        $ssh_command = $this->getConnectionString() . $env_vars_string . ' ' . escapeshellarg($command);
 
         $this->logger->debug('shell command: {command}', ['command' => $ssh_command]);
         if ($this->getConfig()->get('test_mode')) {
