@@ -218,6 +218,7 @@ class RoboFile extends Tasks
      */
     public function generateTestCommit()
     {
+        $this->output()->writeln('Getting the Site Repo');
         // get the git host and port from terminus
         $commandResponse = $this->getTerminus()->execute(
             '%s connection:info %s.dev --fields=git_host,git_port --format=json',
@@ -265,23 +266,29 @@ class RoboFile extends Tasks
         }
 
         // checkout the branch related to this test run
-        $this->output()->writeln('Checking out the site repository');
-        $clonedPath = sprintf("%s/pantheon-local-copies/%s", getenv("HOME"), $this->getSiteName());
-        if (!is_dir($clonedPath)) {
-            $this->output()->writeln(sprintf('Cloning the site repository to %s', $clonedPath));
-            // get the git host and port from terminus
-            $commandResponse = $this->getTerminus()->execute(
-                '%s local:clone %s',
-                [
-                    $this->getProjectPath() . "/terminus.phar",
-                    $this->getSiteName(),
-                ]
-            );
+        $clonedPath = sprintf(
+            "%s/pantheon-local-copies/%s",
+            getenv("HOME"),
+            $this->getSiteName()
+        );
+        if (is_dir($clonedPath)) {
+            // make sure you're working with a clean copy of the repo
+            exec("rm -rf {$clonedPath}");
         }
-        $git = new Git();
-        $repo = $git->open($clonedPath);
+        $this->output()->writeln(sprintf('Cloning the site repository to %s', $clonedPath));
+        // get the git host and port from terminus
+        $commandResponse = $this->getTerminus()->execute(
+            '%s local:clone %s',
+            [
+                $this->getProjectPath() . "/terminus.phar",
+                $this->getSiteName(),
+            ]
+        );
+
         $response = "";
         try {
+            $git = new Git();
+            $repo = $git->open($clonedPath);
             chdir($clonedPath);
             $branches = $repo->getBranches();
             if (!in_array($this->getSiteEnv(), $branches)) {
@@ -301,7 +308,6 @@ class RoboFile extends Tasks
             // push the commit
             $response = $repo->execute(
                 'push',
-                "--set-upstream",
                 'origin',
                 $this->getSiteEnv(),
             );
