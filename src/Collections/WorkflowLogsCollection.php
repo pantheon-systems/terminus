@@ -132,7 +132,7 @@ class WorkflowLogsCollection extends SiteOwnedCollection implements \Iterator
         $wfl = $this->latest();
 
         // Loop through the collection to find the first workflow newer than the start time
-        while ($wfl && $wfl->get('start_time') < $start_time) {
+        while ($wfl && intval($start_time) !== 0 && $wfl->get('start_time') > $start_time) {
             $this->next();
             $wfl = $this->current();
         }

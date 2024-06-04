@@ -32,7 +32,8 @@
     "symfony/finder": "^5",
     "symfony/process": "^5",
     "symfony/yaml": "^5",
-    "twig/twig": "^3.3"
+    "twig/twig": "^3.3",
+    "consolidation/robo": "^4.0"
   },
   "require-dev": {
     "ext-pcov": "*",
@@ -45,8 +46,7 @@
     "phpunit/phpcov": "^8.2",
     "phpunit/phpunit": "^9",
     "squizlabs/php_codesniffer": "^3.5",
-    "wdalmut/php-deb-packager": "^0.0.14",
-    "consolidation/robo": "^4.0"
+    "wdalmut/php-deb-packager": "^0.0.14"
   },
   "conflict": {
     "drupal/core": "*",

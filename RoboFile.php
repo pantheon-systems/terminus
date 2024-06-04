@@ -1,6 +1,6 @@
 <?php
 
-include_once 'vendor/autoload.php';
+include_once dirname(__FILE__) . '/vendor/autoload.php';
 
 use CzProject\GitPhp\Git;
 use Pantheon\Terminus\Config\ConfigAwareTrait;
@@ -328,11 +328,17 @@ class RoboFile extends Tasks
     }
 
 
+    /**
+     * @return string
+     */
     private function getSiteName(): string
     {
         return getenv('TERMINUS_SITE') ?? 'ci-terminus-composer';
     }
 
+    /**
+     * @return string
+     */
     private function getSiteEnv(): string
     {
         return getenv('TERMINUS_ENV') ?? 'dev';

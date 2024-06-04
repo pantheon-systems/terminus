@@ -94,7 +94,9 @@ class WorkflowCommandsTest extends TerminusTestBase
         $this->assertIsArray($testOperation);
         $this->assertNotEmpty($testOperation);
         $this->assertArrayHasKey('type', $testOperation);
+        $this->assertEquals('quicksilver', $testOperation['type']);
         $this->assertArrayHasKey('result', $testOperation);
+        $this->assertEquals('succeeded', $testOperation['result']);
         $this->assertArrayHasKey('duration', $testOperation);
         $this->assertArrayHasKey('description', $testOperation);
 
@@ -125,6 +127,7 @@ class WorkflowCommandsTest extends TerminusTestBase
         // this should have returned the commit has from that test commit
         $response = exec($command);
         $this->assertStringContainsString('Commit hash:', $response);
+        $commitHash = explode(':', $response)[1];
         $err = $this->terminus(sprintf('workflow:wait-for-commit %s --commit=%s', $this->getSiteName(), $commitHash));
         $this->assertEmpty($err, 'Terminus command should not return any error: %s', $err);
     }
