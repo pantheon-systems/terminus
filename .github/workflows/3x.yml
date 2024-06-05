@@ -30,7 +30,7 @@ jobs:
           name: full-workspace
           path: ${{ github.workspace }}
       - name: Full Composer Install
-        run: composer install
+        run: composer install --dev
       - name: Validate Code
         run: composer code:lint
       - name: Unit Tests
@@ -44,7 +44,6 @@ jobs:
           export PATH=~/box/vendor/bin:$PATH
           composer phar:build
           composer install --dev
-
       - name: Save terminus.phar as artifact
         uses: actions/upload-artifact@v4
         with:
