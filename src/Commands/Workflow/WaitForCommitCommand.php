@@ -28,7 +28,7 @@ class WaitForCommitCommand extends TerminusCommand
         $site = $this->getSiteById($site_id);
         $wflc = $site->getWorkflowLogs();
         if (!$wflc instanceof WorkflowLogsCollection) {
-            throw new TerminusException('Workflow logs could not be retrieved.');
+            throw new TerminusException('Workflow logs could not be retrieved for site: {site}', ['site' => $site_id,]);
         }
 
         // Find the latest workflow that matches the commit hash
@@ -36,15 +36,22 @@ class WaitForCommitCommand extends TerminusCommand
             'target_commit' => $target_commit,
         ]);
 
+        $startTime = new \DateTime();
         // If we didn't find a workflow, then we need to wait for one to be created
         if (!$wfl instanceof WorkflowLog) {
-            $wfl = $wflc->latest();
+            // sleep to give the workflow time to be created
+            sleep($this->getConfig()->get('refresh_workflow_delay', 30));
+            $wfl = $wflc->fetch()->findLatestFromOptionsArray([
+                'target_commit' => $target_commit,
+            ]);
+            if ($startTime->diff(new \DateTime())->s > $options['max']) {
+                throw new TerminusException('Exceeded maximum wait time of {max} seconds.', ['max' => $options['max']]);
+            }
         }
 
-        $startTime = time();
+        $startTime = new \DateTime();
         while (!$wfl->isFinished()) {
-            $elapsed = time() - $startTime;
-            if ($elapsed > $options['max']) {
+            if ($startTime->diff(new \DateTime())->s > $options['max']) {
                 throw new TerminusException('Exceeded maximum wait time of {max} seconds.', ['max' => $options['max']]);
             }
             $this->log()->notice('Waiting for workflow {id} to complete.', ['id' => $wfl->id,]);
