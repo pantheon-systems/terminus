@@ -116,8 +116,7 @@
       "SHELL_INTERACTIVE=true TERMINUS_TEST_MODE=1 behat --colors --config tests/config/behat.yml --stop-on-failure --suite=default"
     ],
     "tests:unit": [
-      "vendor/bin/phpunit --colors=always -c ./phpunit.xml --debug  --testsuite unit --group=unit --do-not-cache-result --verbose --stop-on-failure"
-
+      "vendor/bin/phpunit --colors=always -c ./phpunit.xml --debug  --testsuite unit --do-not-cache-result --verbose --stop-on-failure"
     ],
     "test:short": [
       "XDEBUG_MODE=coverage vendor/bin/phpunit --colors=always -c ./phpunit.xml --debug --testsuite functional --group=short --do-not-cache-result --verbose --stop-on-failure"

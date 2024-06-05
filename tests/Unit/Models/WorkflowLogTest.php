@@ -30,12 +30,14 @@ class WorkflowLogTest extends ModelTestBase
      */
     public function dataProvider(): array
     {
-        return [ json_decode(
-            file_get_contents(
-                dirname(TERMINUS_BIN_FILE) . '/tests/fixtures/WorkflowLogsCollectionTest.json'
-            ),
-            true
-        ) ];
+        return [
+            json_decode(
+                file_get_contents(
+                    dirname(TERMINUS_BIN_FILE) . '/tests/fixtures/WorkflowLogsCollectionTest.json'
+                ),
+                true
+            )
+        ];
     }
 
     /**

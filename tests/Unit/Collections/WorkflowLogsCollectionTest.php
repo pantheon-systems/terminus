@@ -25,7 +25,7 @@ class WorkflowLogsCollectionTest extends CollectionTestBase
         $collection->setData($data);
         $this->assertCount($collection->count(), $data, 'The collection should have the same number of items as the data array.');
         $this->assertInstanceOf($this->getClass(), $collection, 'The collection should be an instance of the class being tested.');
-        $this->assertEquals($data[0]->workflow->id, $collection->latest()->id, 'The latest item in the collection should be the same as the first item in the data array.');
+        $this->assertEquals($data[0]->workflow->id, $collection->latest()->id(), 'The latest item in the collection should be the same as the first item in the data array.');
     }
 
     /**
@@ -40,7 +40,7 @@ class WorkflowLogsCollectionTest extends CollectionTestBase
         $collection->setData($data);
         $findMe = $collection->findLatestByProperty('id', $data[5]->workflow->id);
         $this->assertNotNull($findMe, 'Searching for a property by ID should yield a result.');
-        $this->assertEquals($data[5]->workflow->id, $findMe->id, 'Searching for a property by ID should yield the correct workflow.');
+        $this->assertEquals($data[5]->workflow->id, $findMe->id(), 'Searching for a property by ID should yield the correct workflow.');
     }
 
     /**

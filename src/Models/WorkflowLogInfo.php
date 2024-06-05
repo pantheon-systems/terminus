@@ -64,9 +64,9 @@ class WorkflowLogInfo
         $this->active_description = $data->active_description ?? null;
         $this->description = $data->description ?? null;
         $this->finished_at = $data->finished_at != 0 ?
-            new \DateTime("@" . $data->finished_at) : null;
+            new \DateTime("@" . round($data->finished_at)) : null;
         $this->reason = $data->reason ?? null;
-        $this->started_at = new \DateTime("@" . $data->started_at);
+        $this->started_at = new \DateTime("@" . round($data->started_at));
         $this->id = $data->id;
         $this->has_more_details = boolval($data->has_more_details);
         $this->environment = $data->environment ?? null;
