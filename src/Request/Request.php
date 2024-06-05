@@ -57,15 +57,15 @@ class Request implements
     public const HIDDEN_VALUE_REPLACEMENT = '**HIDDEN**';
 
     public const DEBUG_REQUEST_STRING = "#### REQUEST ####\n"
-    . "Headers: {headers}\n"
-    . "URI: {uri}\n"
-    . "Method: {method}\n"
-    . "Body: {body}";
+        . "Headers: {headers}\n"
+        . "URI: {uri}\n"
+        . "Method: {method}\n"
+        . "Body: {body}";
 
     public const DEBUG_RESPONSE_STRING = "#### RESPONSE ####\n"
-    . "Headers: {headers}\n"
-    . "Data: {data}\n"
-    . "Status Code: {status_code}";
+        . "Headers: {headers}\n"
+        . "Data: {data}\n"
+        . "Status Code: {status_code}";
 
     public const MAX_HEADER_LENGTH = 4096;
 

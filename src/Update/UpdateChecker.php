@@ -32,19 +32,19 @@ class UpdateChecker implements
     public const DEFAULT_COLOR = "\e[0m";
 
     public const UPDATE_COMMAND = 'You can update Terminus by running `composer '
-    . 'update` or using the Terminus installer:'
-    . PHP_EOL
-    . 'curl -O https://raw.githubusercontent.com/pantheon-systems/terminus-installer/master/builds/installer.phar '
-    . '&& php installer.phar update'
-    . '&& php installer.phar update';
+        . 'update` or using the Terminus installer:'
+        . PHP_EOL
+        . 'curl -O https://raw.githubusercontent.com/pantheon-systems/terminus-installer/master/builds/installer.phar '
+        . '&& php installer.phar update'
+        . '&& php installer.phar update';
 
     public const UPDATE_COMMAND_PHAR = 'You can update Terminus by running:' . PHP_EOL . 'terminus self:update';
 
     public const UPDATE_NOTICE = 'A new Terminus version v{latest_version} is available.'
-    . PHP_EOL
-    . 'You are currently using version v{running_version}.'
-    . PHP_EOL
-    . '{update_command}';
+        . PHP_EOL
+        . 'You are currently using version v{running_version}.'
+        . PHP_EOL
+        . '{update_command}';
 
     public const UPDATE_NOTICE_COLOR = "\e[38;5;33m";
 

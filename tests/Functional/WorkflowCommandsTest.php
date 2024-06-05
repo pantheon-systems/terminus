@@ -68,7 +68,25 @@ class WorkflowCommandsTest extends TerminusTestBase
         $this->assertIsArray($operations);
         $this->assertNotEmpty($operations);
 
+        // Find the first non-'platform' operation
         $testOperation = array_pop($operations);
+        while (!empty($testOperation) && ('platform' == $testOperation['type'] ?: '')) {
+            $testOperation = array_pop($operations);
+        }
+
+        // In order for this test to pass, there must be an entry in
+        // the test fixture site's pantheon.yml file:
+        //
+        // api_version: 1
+        // workflows:
+        //   clear_cache:
+        //     after:
+        //       - type: webphp
+        //         description: Print test message
+        //         script: private/scripts/quicksilver/print-test-message.php
+        //
+        // The contents of the script do not matter, as long as it completes successfully.
+
         $this->assertIsArray($testOperation);
         $this->assertNotEmpty($testOperation);
         $this->assertArrayHasKey('type', $testOperation);
