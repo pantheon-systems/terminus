@@ -49,7 +49,7 @@ if (!is_dir($cache_dir)) {
 }
 
 // If the bin file doesn't exist, build it.
-const TERMINUS_BIN_FILE = './terminus.phar';
+define("TERMINUS_BIN_FILE", realpath('./terminus.phar'));
 $version = exec(sprintf('%s --version', TERMINUS_BIN_FILE));
 if (!file_exists(TERMINUS_BIN_FILE)) {
     exec(

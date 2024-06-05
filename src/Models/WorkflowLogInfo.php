@@ -23,7 +23,7 @@ class WorkflowLogInfo
     /**
      * @var float
      */
-    public \DateTime $finished_at;
+    public ?\DateTime $finished_at;
     /**
      * @var string|mixed
      */
@@ -60,18 +60,19 @@ class WorkflowLogInfo
      */
     public function __construct($data)
     {
-        $this->status = $data->status;
-        $this->active_description = $data->active_description;
-        $this->description = $data->description;
-        $this->finished_at = new \DateTime("@" . $data->finished_at);
-        $this->reason = $data->reason;
-        $this->started_at = new \DateTime("@", $data->started_at);
+        $this->status = $data->status ?? null;
+        $this->active_description = $data->active_description ?? null;
+        $this->description = $data->description ?? null;
+        $this->finished_at = $data->finished_at != 0 ?
+            new \DateTime("@" . $data->finished_at) : null;
+        $this->reason = $data->reason ?? null;
+        $this->started_at = new \DateTime("@" . $data->started_at);
         $this->id = $data->id;
         $this->has_more_details = boolval($data->has_more_details);
-        $this->environment = $data->environment;
-        $this->progress = intval($data->progress);
+        $this->environment = $data->environment ?? null;
+        $this->progress = intval($data->progress) ?? null;
         $this->type = $data->type;
-        $this->target_commit = $data->target_commit;
+        $this->target_commit = $data->target_commit ?? null;
     }
 
 

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "d8ad042334c1b6a88a4516d967e6a933",
+    "content-hash": "fe53e123366264bf16d7c653b6fa6117",
     "packages": [
         {
             "name": "composer/semver",
@@ -413,16 +413,16 @@
         },
         {
             "name": "consolidation/robo",
-            "version": "4.0.2",
+            "version": "3.0.12",
             "source": {
                 "type": "git",
                 "url": "https://github.com/consolidation/robo.git",
-                "reference": "ccf80963abf11bdb8e90659aa99a7449b21e9452"
+                "reference": "0c3a5085357f46c90a0b756e3d326f44847158b8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/consolidation/robo/zipball/ccf80963abf11bdb8e90659aa99a7449b21e9452",
-                "reference": "ccf80963abf11bdb8e90659aa99a7449b21e9452",
+                "url": "https://api.github.com/repos/consolidation/robo/zipball/0c3a5085357f46c90a0b756e3d326f44847158b8",
+                "reference": "0c3a5085357f46c90a0b756e3d326f44847158b8",
                 "shasum": ""
             },
             "require": {
@@ -506,9 +506,9 @@
             "description": "Modern task runner",
             "support": {
                 "issues": "https://github.com/consolidation/robo/issues",
-                "source": "https://github.com/consolidation/robo/tree/4.0.2"
+                "source": "https://github.com/consolidation/robo/tree/3.0.12"
             },
-            "time": "2022-04-21T09:29:58+00:00"
+            "time": "2023-04-30T21:18:09+00:00"
         },
         {
             "name": "consolidation/self-update",
@@ -2258,9 +2258,6 @@
                 "symfony/polyfill-ctype": "~1.8",
                 "symfony/polyfill-mbstring": "~1.8",
                 "symfony/polyfill-php80": "^1.16"
-            },
-            "require-dev": {
-                "symfony/process": "^5.4|^6.4"
             },
             "require-dev": {
                 "symfony/process": "^5.4|^6.4"

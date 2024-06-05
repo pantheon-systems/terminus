@@ -29,10 +29,10 @@ class WorkflowLogActor
 
     public function __construct($data)
     {
-        $this->id = $data->id;
-        $this->email = $data->email;
-        $this->kind = $data->kind;
-        $this->name = $data->name;
+        $this->id = $data->id ?? null;
+        $this->email = $data->email ?? null;
+        $this->kind = $data->kind ?? null;
+        $this->name = $data->name ?? null;
     }
 
     public function serialize()

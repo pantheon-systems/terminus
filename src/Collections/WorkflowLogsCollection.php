@@ -8,12 +8,15 @@ use Pantheon\Terminus\Models\Environment;
 use Pantheon\Terminus\Models\Site;
 use Pantheon\Terminus\Models\TerminusModel;
 use Pantheon\Terminus\Models\WorkflowLog;
+use Psr\Log\LogLevel;
+use Robo\Collection\NestedCollectionInterface;
+use Robo\Contract\TaskInterface;
 
 /**
  * Class WorkflowLogsCollection
  * @package Pantheon\Terminus\Collections
  */
-class WorkflowLogsCollection extends SiteOwnedCollection implements \Iterator
+class WorkflowLogsCollection extends SiteOwnedCollection implements \Iterator, \Countable
 {
     /**
      *
@@ -41,10 +44,20 @@ class WorkflowLogsCollection extends SiteOwnedCollection implements \Iterator
     }
 
     /**
+     * @return array
+     * @throws GuzzleException
+     * @throws TerminusException
+     */
+    public function getData(): array
+    {
+        return $this->serialize();
+    }
+
+    /**
      * @throws TerminusException
      * @throws GuzzleException
      */
-    public function fetch()
+    public function fetch(): array
     {
         $result = $this->request()->request(
             $this->getUrl(),
@@ -58,7 +71,7 @@ class WorkflowLogsCollection extends SiteOwnedCollection implements \Iterator
      * @param array $data
      * @return void
      */
-    public function setData(array $data = [])
+    public function setData(array $data = []): void
     {
         $class = $this->getCollectedClass();
         foreach ($data as $datum) {
@@ -118,6 +131,10 @@ class WorkflowLogsCollection extends SiteOwnedCollection implements \Iterator
         $this->current = 0;
     }
 
+    /**
+     * @param $options
+     * @return TerminusModel|null
+     */
     public function findLatestFromOptionsArray(
         $options = [
             'type' => null,
@@ -203,5 +220,13 @@ class WorkflowLogsCollection extends SiteOwnedCollection implements \Iterator
         return $this->filter(function ($workflow) use ($env) {
             return $workflow->get("environment") === $env->id;
         });
+    }
+
+    /**
+     * @return int
+     */
+    public function count(): int
+    {
+        return count($this->models) ?? 0;
     }
 }

@@ -48,14 +48,14 @@ class WorkflowLog extends TerminusModel
         }
         try {
             parent::__construct($attributes, $options);
-            $this->actor = new WorkflowLogActor($this->get('actor'));
-            $this->workflow = new WorkflowLogInfo($this->get('workflow'));
-            $this->kind = $this->get('kind');
+            $this->actor = new WorkflowLogActor((object)$attributes->actor);
+            $this->workflow = new WorkflowLogInfo((object)$attributes->workflow);
+            $this->kind = $attributes->kind ?? '';
             $this->id = $this->workflow->id ?? '';
         } catch (\Exception $e) {
             throw new TerminusException(
-                "Exception unpacking workflow Logs: {message}",
-                ['message' => $e->getMessage()]
+                "Exception unpacking workflow Logs: {message} {data}",
+                ['message' => $e->getMessage(), 'data' => print_r($attributes, true)]
             );
         }
     }
@@ -65,6 +65,8 @@ class WorkflowLog extends TerminusModel
      */
     public function serialize()
     {
+        $interval = $this->workflow->finished_at->diff($this->workflow->started_at->getTimestamp());
+
         return [
             "id" => $this->workflow->id,
             "env" => $this->workflow->environment,
@@ -74,9 +76,9 @@ class WorkflowLog extends TerminusModel
             'finished' => $this->isFinished() ? "Yes" : "No",
             // if this is not finished, then success should be "?"
             'successful' => ($this->isFinished() === false) ? '?' : ($this->isSuccessful() ? 'Yes' : 'No'),
-            'started_at' => date('Y-m-d H:i:s', round($this->workflow->started_at)),
-            'finished_at' => date('Y-m-d H:i:s', round($this->workflow->finished_at)),
-            'time' => $this->workflow->finished_at - $this->workflow->started_at,
+            'started_at' => $this->workflow->started_at->format('Y-m-d H:i:s'),
+            'finished_at' => $this->workflow->finished_at->format('Y-m-d H:i:s'),
+            'time' => (string) $interval,
         ];
     }
 
@@ -130,5 +132,40 @@ class WorkflowLog extends TerminusModel
             return $this->actor->{$name};
         }
         return null;
+    }
+
+    /**
+     * @param int $time
+     * @return bool
+     */
+    public function startedBefore(\DateTime $dateTime): bool
+    {
+    }
+
+    /**
+     * @param int $time
+     * @return bool
+     */
+    public function startedAfter(int $time): bool
+    {
+        return $this->workflow->started_at > $time;
+    }
+
+    /**
+     * @param int $time
+     * @return bool
+     */
+    public function finishedBefore(int $time): bool
+    {
+        return $this->workflow->finished_at < $time;
+    }
+
+    /**
+     * @param int $time
+     * @return bool
+     */
+    public function finishedAfter(int $time): bool
+    {
+        return $this->workflow->finished_at > $time;
     }
 }
