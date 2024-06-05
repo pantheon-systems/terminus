@@ -41,7 +41,7 @@ jobs:
           composer phar:build
       - name: Unit Tests
         run: composer test:unit
-        with:
+        env:
           TERMINUS_BIN_FILE: ${{ github.workspace }}/terminus.phar
       - name: Save terminus.phar as artifact
         uses: actions/upload-artifact@v4
