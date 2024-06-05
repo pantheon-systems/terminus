@@ -31,19 +31,18 @@ jobs:
           path: ${{ github.workspace }}
       - name: Full Composer Install
         run: composer install --dev
+        with:
+          working-directory: ${{ github.workspace }}
       - name: Validate Code
-        run: composer code:lint
-      - name: Unit Tests
-        run: composer test:unit
-        env:
-          TERMINUS_PROJECT_ROOT: ${{ github.workspace }}
+        run: composer code:lint && composer test:unit
+        with:
+          working-directory: ${{ github.workspace }}
       - name: Phar Build
         run: |
           mkdir $HOME/box
           composer require humbug/box --working-dir=$HOME/box
           export PATH=~/box/vendor/bin:$PATH
           composer phar:build
-          composer install --dev
       - name: Save terminus.phar as artifact
         uses: actions/upload-artifact@v4
         with:
