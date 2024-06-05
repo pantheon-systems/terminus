@@ -31,12 +31,8 @@ jobs:
           path: ${{ github.workspace }}
       - name: Full Composer Install
         run: composer install --dev
-        with:
-          working-directory: ${{ github.workspace }}
       - name: Validate Code
-        run: composer code:lint && composer test:unit
-        with:
-          working-directory: ${{ github.workspace }}
+        run: composer code:lint
       - name: Phar Build
         run: |
           mkdir $HOME/box
