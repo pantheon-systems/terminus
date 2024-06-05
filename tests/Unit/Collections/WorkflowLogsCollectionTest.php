@@ -80,7 +80,7 @@ class WorkflowLogsCollectionTest extends CollectionTestBase
             [
                 json_decode(
                     file_get_contents(
-                        dirname(TERMINUS_BIN_FILE) . '/tests/fixtures/WorkflowLogsCollectionTest.json'
+                        getenv("TERMINUS_PROJECT_ROOT") . '/tests/fixtures/WorkflowLogsCollectionTest.json'
                     )
                 ),
             ]

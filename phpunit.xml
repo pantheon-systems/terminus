@@ -32,6 +32,6 @@
         <server name="TERMINUS_VERIFY_HOST_CERT" value="${TERMINUS_VERIFY_HOST_CERT}" />
         <server name="TERMINUS_CACHE_DIR" value="${TERMINUS_CACHE_DIR}" />
         <server name="TERMINUS_DEBUG" value="${TERMINUS_DEBUG}" />
-        <server name="TERMINUS_BIN_FILE" value="${TERMINUS_BIN_FILE}" />
+        <server name="TERMINUS_PROJECT_ROOT" value="${TERMINUS_PROJECT_ROOT}" />
     </php>
 </phpunit>
