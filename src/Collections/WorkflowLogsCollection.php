@@ -161,8 +161,8 @@ class WorkflowLogsCollection extends SiteOwnedCollection implements \Iterator, \
         if (
             $wfl && $wfl->get('start_time') >= $start_time &&
             (
-                $wfl->get('type') === $options['type'] ||
-                $wfl->get('commit_hash') === $options['commit_hash']
+                $wfl->get('type') === ($options['type'] ?? '') ||
+                $wfl->get('commit_hash') === ($options['commit_hash'] ?? '')
             )
         ) {
             return $wfl;
@@ -200,7 +200,7 @@ class WorkflowLogsCollection extends SiteOwnedCollection implements \Iterator, \
     {
         foreach ($this->models as $model) {
             // Skip if older than start time
-            if ($model->get('start_time') < $start_time) {
+            if ($model->get('start_time') !== 0 && $model->get('start_time') < $start_time) {
                 continue;
             }
             // If the property matches the value, return the model

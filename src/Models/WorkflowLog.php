@@ -68,17 +68,17 @@ class WorkflowLog extends TerminusModel
         $interval = $this->workflow->finished_at->diff($this->workflow->started_at->getTimestamp());
 
         return [
-            "id" => $this->workflow->id,
-            "env" => $this->workflow->environment,
-            "workflow" => $this->workflow->type,
-            'user' => $this->actor->name,
-            'status' => $this->workflow->status,
-            'finished' => $this->isFinished() ? "Yes" : "No",
+            "id"          => $this->workflow->id,
+            "env"         => $this->workflow->environment,
+            "workflow"    => $this->workflow->type,
+            'user'        => $this->actor->name,
+            'status'      => $this->workflow->status,
+            'finished'    => $this->isFinished() ? "Yes" : "No",
             // if this is not finished, then success should be "?"
-            'successful' => ($this->isFinished() === false) ? '?' : ($this->isSuccessful() ? 'Yes' : 'No'),
-            'started_at' => $this->workflow->started_at->format('Y-m-d H:i:s'),
+            'successful'  => ($this->isFinished() === false) ? '?' : ($this->isSuccessful() ? 'Yes' : 'No'),
+            'started_at'  => $this->workflow->started_at->format('Y-m-d H:i:s'),
             'finished_at' => $this->workflow->finished_at->format('Y-m-d H:i:s'),
-            'time' => (string) $interval,
+            'time'        => (string)$interval,
         ];
     }
 
@@ -132,6 +132,11 @@ class WorkflowLog extends TerminusModel
             return $this->actor->{$name};
         }
         return null;
+    }
+
+    public function get($attribute)
+    {
+        return $this->__get($attribute);
     }
 
     /**
