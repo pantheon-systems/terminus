@@ -87,7 +87,7 @@ abstract class SSHBaseCommand extends TerminusCommand implements SiteAwareInterf
         ];
 
         // Get the combined command line
-        list($command_line) = $this->getCommandLine($command_args, $env_vars);
+        $command_line = $this->getCommandLine($command_args, $env_vars);
 
         // Log the trace ID for user visibility only in debug mode
         $this->log()->debug('Trace ID: {trace_id}', ['trace_id' => $trace_id]);
@@ -288,7 +288,7 @@ abstract class SSHBaseCommand extends TerminusCommand implements SiteAwareInterf
             implode(" ", $this->escapeArguments(array_merge([$this->command], $command_args)))
         );
 
-        return [$command_line];
+        return $command_line;
     }
 
     /**
