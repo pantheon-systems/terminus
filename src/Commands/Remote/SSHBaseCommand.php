@@ -81,31 +81,32 @@ abstract class SSHBaseCommand extends TerminusCommand implements SiteAwareInterf
         // Retrieve the trace ID from the TraceId class
         $trace_id = TraceId::getTraceId();
 
-        // Separate the environment variables and command arguments
+        // Prepare the environment variables
         $env_vars = [
             'TRACE_ID' => $trace_id
         ];
 
-        $command_summary = $this->getCommandSummary($command_args);
-
-        // Separate the command line and environment variables
+        // Get the combined command line
         list($command_line, $env_vars) = $this->getCommandLine($command_args, $env_vars);
 
         // Log the trace ID for user visibility only in debug mode
         $this->log()->debug('Trace ID: {trace_id}', ['trace_id' => $trace_id]);
 
-        $ssh_data = $this->sendCommandViaSsh($command_line, $env_vars);
+        // Send the combined command line via SSH
+        $ssh_data = $this->sendCommandViaSsh($command_line);
 
+        // Log the command execution
         $this->log()->notice(
             'Command: {site}.{env} -- {command} [Exit: {exit}]',
             [
                 'site'    => $this->site->getName(),
                 'env'     => $this->environment->id,
-                'command' => $command_summary,
+                'command' => $this->getCommandSummary($command_args),
                 'exit'    => $ssh_data['exit_code'],
             ]
         );
 
+        // Handle any errors in the command execution
         if ($ssh_data['exit_code'] != 0) {
             throw new TerminusProcessException($ssh_data['output'], [], $ssh_data['exit_code']);
         }
@@ -119,14 +120,8 @@ abstract class SSHBaseCommand extends TerminusCommand implements SiteAwareInterf
      */
     protected function sendCommandViaSsh($command, array $env_vars = [])
     {
-        // Include the environment variables as an environment option in the SSH command
-        $env_vars_string = '';
-        foreach ($env_vars as $key => $value) {
-            $env_vars_string .= sprintf(' -o SetEnv=%s=%s', $key, $value);
-        }
-
-        // Construct the SSH command
-        $ssh_command = $this->getConnectionString() . $env_vars_string . ' ' . escapeshellarg($command);
+        // Construct the SSH command without environment variables in SSH options
+        $ssh_command = $this->getConnectionString() . ' ' . $command;
 
         $this->logger->debug('shell command: {command}', ['command' => $ssh_command]);
         if ($this->getConfig()->get('test_mode')) {
@@ -282,7 +277,14 @@ abstract class SSHBaseCommand extends TerminusCommand implements SiteAwareInterf
      */
     private function getCommandLine($command_args, $env_vars)
     {
-        $command_line = implode(" ", $this->escapeArguments(array_merge([$this->command], $command_args)));
+        // Convert env_vars array into a series of key=value strings
+        $env_vars_string = '-o SetEnv=';
+        foreach ($env_vars as $key => $value) {
+            $env_vars_string .= sprintf('%s=%s ', $key, $value);
+        }
+
+        // Construct the command line with environment variables and the command arguments
+        $command_line = $env_vars_string . escapeshellarg(implode(" ", $this->escapeArguments(array_merge([$this->command], $command_args))));
 
         return [$command_line, $env_vars];
     }
