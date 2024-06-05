@@ -284,7 +284,9 @@ abstract class SSHBaseCommand extends TerminusCommand implements SiteAwareInterf
         }
 
         // Construct the command line with environment variables and the command arguments
-        $command_line = $env_vars_string . escapeshellarg(implode(" ", $this->escapeArguments(array_merge([$this->command], $command_args))));
+        $command_line = $env_vars_string . escapeshellarg(
+            implode(" ", $this->escapeArguments(array_merge([$this->command], $command_args)))
+        );
 
         return [$command_line, $env_vars];
     }
