@@ -75,6 +75,24 @@ class WorkflowLogInfo
         $this->target_commit = $data->target_commit ?? null;
     }
 
+    public function serialize(): object
+    {
+        return (object) [
+            'status' => $this->status,
+            'active_description' => $this->active_description,
+            'description' => $this->description,
+            'finished_at' => $this->finished_at,
+            'reason' => $this->reason,
+            'started_at' => $this->started_at,
+            'id' => $this->id,
+            'has_more_details' => $this->has_more_details,
+            'environment' => $this->environment,
+            'progress' => $this->progress,
+            'type' => $this->type,
+            'target_commit' => $this->target_commit,
+        ];
+    }
+
 
     /**
      * @return bool

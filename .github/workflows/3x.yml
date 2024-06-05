@@ -33,6 +33,8 @@ jobs:
         run: composer install
       - name: Validate Code
         run: composer code:lint
+      - name: Unit Tests
+        run: composer test:unit
       - name: Phar Build
         run: |
           mkdir $HOME/box

@@ -50,8 +50,7 @@ class WorkflowLog extends TerminusModel
             parent::__construct($attributes, $options);
             $this->actor = new WorkflowLogActor((object)$attributes->actor);
             $this->workflow = new WorkflowLogInfo((object)$attributes->workflow);
-            $this->kind = $attributes->kind ?? '';
-            $this->id = $this->workflow->id ?? '';
+            $this->kind = $attributes->kind;
         } catch (\Exception $e) {
             throw new TerminusException(
                 "Exception unpacking workflow Logs: {message} {data}",
@@ -65,20 +64,10 @@ class WorkflowLog extends TerminusModel
      */
     public function serialize()
     {
-        $interval = $this->workflow->finished_at->diff($this->workflow->started_at->getTimestamp());
-
         return [
-            "id"          => $this->workflow->id,
-            "env"         => $this->workflow->environment,
-            "workflow"    => $this->workflow->type,
-            'user'        => $this->actor->name,
-            'status'      => $this->workflow->status,
-            'finished'    => $this->isFinished() ? "Yes" : "No",
-            // if this is not finished, then success should be "?"
-            'successful'  => ($this->isFinished() === false) ? '?' : ($this->isSuccessful() ? 'Yes' : 'No'),
-            'started_at'  => $this->workflow->started_at->format('Y-m-d H:i:s'),
-            'finished_at' => $this->workflow->finished_at->format('Y-m-d H:i:s'),
-            'time'        => (string)$interval,
+            "type"          => $this->id(),
+            "workflow"      => $this->workflow->serialize(),
+            "actor"         => $this->actor->serialize(),
         ];
     }
 
@@ -122,12 +111,15 @@ class WorkflowLog extends TerminusModel
      */
     public function __get($name)
     {
+        // First, is it a property of the base object?
         if (isset($this->{$name})) {
             return $this->{$name};
         }
+        // Second, is it a property of the workflow?
         if (isset($this->workflow->{$name})) {
             return $this->workflow->{$name};
         }
+        // Third, is it a property of the actor?
         if (isset($this->actor->{$name})) {
             return $this->actor->{$name};
         }
@@ -145,24 +137,25 @@ class WorkflowLog extends TerminusModel
      */
     public function startedBefore(\DateTime $dateTime): bool
     {
+        return $this->workflow->started_at->diff($dateTime) < 0;
     }
 
     /**
      * @param int $time
      * @return bool
      */
-    public function startedAfter(int $time): bool
+    public function startedAfter(\DateTime $dateTime): bool
     {
-        return $this->workflow->started_at > $time;
+        return $this->workflow->started_at->diff($dateTime) > 0;
     }
 
     /**
      * @param int $time
      * @return bool
      */
-    public function finishedBefore(int $time): bool
+    public function finishedBefore(\DateTime $dateTime): bool
     {
-        return $this->workflow->finished_at < $time;
+        return $this->workflow->finished_at->diff($dateTime) < 0;
     }
 
     /**
@@ -171,6 +164,11 @@ class WorkflowLog extends TerminusModel
      */
     public function finishedAfter(int $time): bool
     {
-        return $this->workflow->finished_at > $time;
+        return $this->workflow->finished_at->diff($time) > 0;
+    }
+
+    public function id()
+    {
+        return $this->workflow->id;
     }
 }

@@ -8,9 +8,6 @@ use Pantheon\Terminus\Models\Environment;
 use Pantheon\Terminus\Models\Site;
 use Pantheon\Terminus\Models\TerminusModel;
 use Pantheon\Terminus\Models\WorkflowLog;
-use Psr\Log\LogLevel;
-use Robo\Collection\NestedCollectionInterface;
-use Robo\Contract\TaskInterface;
 
 /**
  * Class WorkflowLogsCollection
@@ -132,54 +129,35 @@ class WorkflowLogsCollection extends SiteOwnedCollection implements \Iterator, \
     }
 
     /**
-     * @param $options
+     * @param array $options
      * @return TerminusModel|null
      */
     public function findLatestFromOptionsArray(
-        $options = [
+        array $options = [
             'type' => null,
             'id' => null,
-            'commit_hash' => null,
-            'start' => 0,
+            'target_commit' => null,
+            // ignore start_time for now. We're finding by
+            // known properties, not by time.
         ]
     ): ?TerminusModel {
-        $start_time = $options['start'] ?? 0; // Default to 0 if not set
-
-        // Initialize $wfl to the first workflow in the collection
-        $wfl = $this->latest();
-
-        // Loop through the collection to find the first workflow newer than the start time
-        while ($wfl && intval($start_time) !== 0 && $wfl->startedAfter($start_time)) {
-            $this->next();
-            if (!$this->valid()) {
-                return null;
-            }
-            $wfl = $this->current();
-        }
-
-        // If the workflow is newer than the start time and matches the options
-        if (
-            $wfl && $wfl->get('start_time') >= $start_time &&
-            (
-                $wfl->get('type') === ($options['type'] ?? '') ||
-                $wfl->get('commit_hash') === ($options['commit_hash'] ?? '')
-            )
-        ) {
-            return $wfl;
-        }
-
-        // Attempt to find the latest workflow by type
-        if (isset($options['type'])) {
-            return $this->findLatestByProperty('type', $options['type'], $start_time);
+        // Attempt to find the latest workflow by ID
+        if (isset($options['id']) && $options['id'] !== null) {
+            return $this->findLatestByProperty('id', $options['id']);
         }
 
         // Attempt to find the latest workflow by commit hash
-        if (isset($options['commit_hash'])) {
-            return $this->findLatestByProperty('commit_hash', $options['commit_hash'], $start_time);
+        if (isset($options['target_commit']) && $options['target_commit'] !== null) {
+            return $this->findLatestByProperty('target_commit', $options['target_commit']);
+        }
+
+        // Attempt to find the latest workflow by type
+        if (isset($options['type']) && $options['type'] !== null) {
+            return $this->findLatestByProperty('type', $options['type']);
         }
 
         // Return the latest workflow if no specific matches found
-        return $wfl;
+        return null;
     }
 
     /**
@@ -196,13 +174,9 @@ class WorkflowLogsCollection extends SiteOwnedCollection implements \Iterator, \
      * @param int $start_time
      * @return TerminusModel|null
      */
-    public function findLatestByProperty($property, $value, $start_time = 0): ?TerminusModel
+    public function findLatestByProperty(string $property, $value): ?TerminusModel
     {
         foreach ($this->models as $model) {
-            // Skip if older than start time
-            if ($model->get('start_time') !== 0 && $model->get('start_time') < $start_time) {
-                continue;
-            }
             // If the property matches the value, return the model
             if ($value === $model->get($property)) {
                 return $model;
@@ -212,7 +186,7 @@ class WorkflowLogsCollection extends SiteOwnedCollection implements \Iterator, \
     }
 
     /**
-     * @param $env
+     * @param Environment $env
      * @return WorkflowLogsCollection
      */
     public function filterForEnvironment(Environment $env): WorkflowLogsCollection

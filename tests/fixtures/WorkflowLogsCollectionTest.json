@@ -4,7 +4,7 @@
     "actor": {
       "kind": "user",
       "id": "7558a08d-8059-45f6-9c4b-908299a025ef",
-      "email": "greg+ci-d8-composer@pantheon.io"
+      "email": "some.user@pantheon.io"
     },
     "workflow": {
       "status": "Success",
@@ -25,7 +25,7 @@
     "actor": {
       "kind": "user",
       "id": "7558a08d-8059-45f6-9c4b-908299a025ef",
-      "email": "greg+ci-d8-composer@pantheon.io"
+      "email": "some.user@pantheon.io"
     },
     "workflow": {
       "status": "Success",
@@ -46,7 +46,7 @@
     "actor": {
       "kind": "user",
       "id": "7558a08d-8059-45f6-9c4b-908299a025ef",
-      "email": "greg+ci-d8-composer@pantheon.io"
+      "email": "some.user@pantheon.io"
     },
     "workflow": {
       "status": "Success",
@@ -67,7 +67,7 @@
     "actor": {
       "kind": "user",
       "id": "7558a08d-8059-45f6-9c4b-908299a025ef",
-      "email": "greg+ci-d8-composer@pantheon.io"
+      "email": "some.user@pantheon.io"
     },
     "workflow": {
       "status": "Success",
@@ -88,7 +88,7 @@
     "actor": {
       "kind": "user",
       "id": "7558a08d-8059-45f6-9c4b-908299a025ef",
-      "email": "greg+ci-d8-composer@pantheon.io"
+      "email": "some.user@pantheon.io"
     },
     "workflow": {
       "status": "Success",
@@ -109,7 +109,7 @@
     "actor": {
       "kind": "user",
       "id": "7558a08d-8059-45f6-9c4b-908299a025ef",
-      "email": "greg+ci-d8-composer@pantheon.io"
+      "email": "some.user@pantheon.io"
     },
     "workflow": {
       "status": "Success",
@@ -152,7 +152,7 @@
     "actor": {
       "kind": "user",
       "id": "7558a08d-8059-45f6-9c4b-908299a025ef",
-      "email": "greg+ci-d8-composer@pantheon.io"
+      "email": "some.user@pantheon.io"
     },
     "workflow": {
       "status": "Success",
@@ -173,7 +173,7 @@
     "actor": {
       "kind": "user",
       "id": "7558a08d-8059-45f6-9c4b-908299a025ef",
-      "email": "greg+ci-d8-composer@pantheon.io"
+      "email": "some.user@pantheon.io"
     },
     "workflow": {
       "status": "Success",
@@ -194,7 +194,7 @@
     "actor": {
       "kind": "user",
       "id": "7558a08d-8059-45f6-9c4b-908299a025ef",
-      "email": "greg+ci-d8-composer@pantheon.io"
+      "email": "some.user@pantheon.io"
     },
     "workflow": {
       "status": "Success",
@@ -215,7 +215,7 @@
     "actor": {
       "kind": "user",
       "id": "7558a08d-8059-45f6-9c4b-908299a025ef",
-      "email": "greg+ci-d8-composer@pantheon.io"
+      "email": "some.user@pantheon.io"
     },
     "workflow": {
       "status": "Success",
@@ -236,7 +236,7 @@
     "actor": {
       "kind": "user",
       "id": "7558a08d-8059-45f6-9c4b-908299a025ef",
-      "email": "greg+ci-d8-composer@pantheon.io"
+      "email": "some.user@pantheon.io"
     },
     "workflow": {
       "status": "Success",
@@ -257,7 +257,7 @@
     "actor": {
       "kind": "user",
       "id": "7558a08d-8059-45f6-9c4b-908299a025ef",
-      "email": "greg+ci-d8-composer@pantheon.io"
+      "email": "some.user@pantheon.io"
     },
     "workflow": {
       "status": "Success",
@@ -278,7 +278,7 @@
     "actor": {
       "kind": "user",
       "id": "7558a08d-8059-45f6-9c4b-908299a025ef",
-      "email": "greg+ci-d8-composer@pantheon.io"
+      "email": "some.user@pantheon.io"
     },
     "workflow": {
       "status": "Success",
@@ -301,7 +301,7 @@
     "actor": {
       "kind": "user",
       "id": "9b92d8b2-eebb-4c96-8ea9-496670fa9eac",
-      "email": "tom.stovall@getpantheon.com"
+      "email": "some.user@getpantheon.com"
     },
     "workflow": {
       "status": "Success",
@@ -322,7 +322,7 @@
     "actor": {
       "kind": "user",
       "id": "9b92d8b2-eebb-4c96-8ea9-496670fa9eac",
-      "email": "tom.stovall@getpantheon.com"
+      "email": "some.user@getpantheon.com"
     },
     "workflow": {
       "status": "Success",
@@ -343,7 +343,7 @@
     "actor": {
       "kind": "user",
       "id": "9b92d8b2-eebb-4c96-8ea9-496670fa9eac",
-      "email": "tom.stovall@getpantheon.com"
+      "email": "some.user@getpantheon.com"
     },
     "workflow": {
       "status": "Success",
@@ -364,7 +364,7 @@
     "actor": {
       "kind": "user",
       "id": "9b92d8b2-eebb-4c96-8ea9-496670fa9eac",
-      "email": "tom.stovall@getpantheon.com"
+      "email": "some.user@getpantheon.com"
     },
     "workflow": {
       "status": "Success",
@@ -385,7 +385,7 @@
     "actor": {
       "kind": "user",
       "id": "9b92d8b2-eebb-4c96-8ea9-496670fa9eac",
-      "email": "tom.stovall@getpantheon.com"
+      "email": "some.user@getpantheon.com"
     },
     "workflow": {
       "status": "Success",
@@ -406,7 +406,7 @@
     "actor": {
       "kind": "user",
       "id": "9b92d8b2-eebb-4c96-8ea9-496670fa9eac",
-      "email": "tom.stovall@getpantheon.com"
+      "email": "some.user@getpantheon.com"
     },
     "workflow": {
       "status": "Success",
@@ -449,7 +449,7 @@
     "actor": {
       "kind": "user",
       "id": "9b92d8b2-eebb-4c96-8ea9-496670fa9eac",
-      "email": "tom.stovall@getpantheon.com"
+      "email": "some.user@getpantheon.com"
     },
     "workflow": {
       "status": "Success",
@@ -470,7 +470,7 @@
     "actor": {
       "kind": "user",
       "id": "9b92d8b2-eebb-4c96-8ea9-496670fa9eac",
-      "email": "tom.stovall@getpantheon.com"
+      "email": "some.user@getpantheon.com"
     },
     "workflow": {
       "status": "Success",
@@ -491,7 +491,7 @@
     "actor": {
       "kind": "user",
       "id": "9b92d8b2-eebb-4c96-8ea9-496670fa9eac",
-      "email": "tom.stovall@getpantheon.com"
+      "email": "some.user@getpantheon.com"
     },
     "workflow": {
       "status": "Success",
@@ -512,7 +512,7 @@
     "actor": {
       "kind": "user",
       "id": "9b92d8b2-eebb-4c96-8ea9-496670fa9eac",
-      "email": "tom.stovall@getpantheon.com"
+      "email": "some.user@getpantheon.com"
     },
     "workflow": {
       "status": "Success",
@@ -533,7 +533,7 @@
     "actor": {
       "kind": "user",
       "id": "9b92d8b2-eebb-4c96-8ea9-496670fa9eac",
-      "email": "tom.stovall@getpantheon.com"
+      "email": "some.user@getpantheon.com"
     },
     "workflow": {
       "status": "Success",
@@ -554,7 +554,7 @@
     "actor": {
       "kind": "user",
       "id": "9b92d8b2-eebb-4c96-8ea9-496670fa9eac",
-      "email": "tom.stovall@getpantheon.com"
+      "email": "some.user@getpantheon.com"
     },
     "workflow": {
       "status": "Success",
@@ -575,7 +575,7 @@
     "actor": {
       "kind": "user",
       "id": "9b92d8b2-eebb-4c96-8ea9-496670fa9eac",
-      "email": "tom.stovall@getpantheon.com"
+      "email": "some.user@getpantheon.com"
     },
     "workflow": {
       "status": "Success",
@@ -598,7 +598,7 @@
     "actor": {
       "kind": "user",
       "id": "9b92d8b2-eebb-4c96-8ea9-496670fa9eac",
-      "email": "tom.stovall@getpantheon.com"
+      "email": "some.user@getpantheon.com"
     },
     "workflow": {
       "status": "Success",
@@ -619,7 +619,7 @@
     "actor": {
       "kind": "user",
       "id": "9b92d8b2-eebb-4c96-8ea9-496670fa9eac",
-      "email": "tom.stovall@getpantheon.com"
+      "email": "some.user@getpantheon.com"
     },
     "workflow": {
       "status": "Success",
@@ -642,7 +642,7 @@
     "actor": {
       "kind": "user",
       "id": "9b92d8b2-eebb-4c96-8ea9-496670fa9eac",
-      "email": "tom.stovall@getpantheon.com"
+      "email": "some.user@getpantheon.com"
     },
     "workflow": {
       "status": "Success",
@@ -663,7 +663,7 @@
     "actor": {
       "kind": "user",
       "id": "9b92d8b2-eebb-4c96-8ea9-496670fa9eac",
-      "email": "tom.stovall@getpantheon.com"
+      "email": "some.user@getpantheon.com"
     },
     "workflow": {
       "status": "Success",
@@ -686,7 +686,7 @@
     "actor": {
       "kind": "user",
       "id": "9b92d8b2-eebb-4c96-8ea9-496670fa9eac",
-      "email": "tom.stovall@getpantheon.com"
+      "email": "some.user@getpantheon.com"
     },
     "workflow": {
       "status": "Success",
@@ -707,7 +707,7 @@
     "actor": {
       "kind": "user",
       "id": "9b92d8b2-eebb-4c96-8ea9-496670fa9eac",
-      "email": "tom.stovall@getpantheon.com"
+      "email": "some.user@getpantheon.com"
     },
     "workflow": {
       "status": "Success",
@@ -730,7 +730,7 @@
     "actor": {
       "kind": "user",
       "id": "7558a08d-8059-45f6-9c4b-908299a025ef",
-      "email": "greg+ci-d8-composer@pantheon.io"
+      "email": "some.user@pantheon.io"
     },
     "workflow": {
       "status": "Success",
@@ -751,7 +751,7 @@
     "actor": {
       "kind": "user",
       "id": "7558a08d-8059-45f6-9c4b-908299a025ef",
-      "email": "greg+ci-d8-composer@pantheon.io"
+      "email": "some.user@pantheon.io"
     },
     "workflow": {
       "status": "Success",
@@ -772,7 +772,7 @@
     "actor": {
       "kind": "user",
       "id": "7558a08d-8059-45f6-9c4b-908299a025ef",
-      "email": "greg+ci-d8-composer@pantheon.io"
+      "email": "some.user@pantheon.io"
     },
     "workflow": {
       "status": "Success",
@@ -793,7 +793,7 @@
     "actor": {
       "kind": "user",
       "id": "7558a08d-8059-45f6-9c4b-908299a025ef",
-      "email": "greg+ci-d8-composer@pantheon.io"
+      "email": "some.user@pantheon.io"
     },
     "workflow": {
       "status": "Success",
@@ -814,7 +814,7 @@
     "actor": {
       "kind": "user",
       "id": "7558a08d-8059-45f6-9c4b-908299a025ef",
-      "email": "greg+ci-d8-composer@pantheon.io"
+      "email": "some.user@pantheon.io"
     },
     "workflow": {
       "status": "Success",
@@ -835,7 +835,7 @@
     "actor": {
       "kind": "user",
       "id": "7558a08d-8059-45f6-9c4b-908299a025ef",
-      "email": "greg+ci-d8-composer@pantheon.io"
+      "email": "some.user@pantheon.io"
     },
     "workflow": {
       "status": "Success",
@@ -878,7 +878,7 @@
     "actor": {
       "kind": "user",
       "id": "7558a08d-8059-45f6-9c4b-908299a025ef",
-      "email": "greg+ci-d8-composer@pantheon.io"
+      "email": "some.user@pantheon.io"
     },
     "workflow": {
       "status": "Success",
@@ -899,7 +899,7 @@
     "actor": {
       "kind": "user",
       "id": "7558a08d-8059-45f6-9c4b-908299a025ef",
-      "email": "greg+ci-d8-composer@pantheon.io"
+      "email": "some.user@pantheon.io"
     },
     "workflow": {
       "status": "Success",
@@ -920,7 +920,7 @@
     "actor": {
       "kind": "user",
       "id": "7558a08d-8059-45f6-9c4b-908299a025ef",
-      "email": "greg+ci-d8-composer@pantheon.io"
+      "email": "some.user@pantheon.io"
     },
     "workflow": {
       "status": "Success",
@@ -941,7 +941,7 @@
     "actor": {
       "kind": "user",
       "id": "7558a08d-8059-45f6-9c4b-908299a025ef",
-      "email": "greg+ci-d8-composer@pantheon.io"
+      "email": "some.user@pantheon.io"
     },
     "workflow": {
       "status": "Success",
@@ -962,7 +962,7 @@
     "actor": {
       "kind": "user",
       "id": "7558a08d-8059-45f6-9c4b-908299a025ef",
-      "email": "greg+ci-d8-composer@pantheon.io"
+      "email": "some.user@pantheon.io"
     },
     "workflow": {
       "status": "Success",
@@ -983,7 +983,7 @@
     "actor": {
       "kind": "user",
       "id": "7558a08d-8059-45f6-9c4b-908299a025ef",
-      "email": "greg+ci-d8-composer@pantheon.io"
+      "email": "some.user@pantheon.io"
     },
     "workflow": {
       "status": "Success",
@@ -1004,7 +1004,7 @@
     "actor": {
       "kind": "user",
       "id": "7558a08d-8059-45f6-9c4b-908299a025ef",
-      "email": "greg+ci-d8-composer@pantheon.io"
+      "email": "some.user@pantheon.io"
     },
     "workflow": {
       "status": "Success",
@@ -1027,7 +1027,7 @@
     "actor": {
       "kind": "user",
       "id": "7558a08d-8059-45f6-9c4b-908299a025ef",
-      "email": "greg+ci-d8-composer@pantheon.io"
+      "email": "some.user@pantheon.io"
     },
     "workflow": {
       "status": "Success",
@@ -1048,7 +1048,7 @@
     "actor": {
       "kind": "user",
       "id": "7558a08d-8059-45f6-9c4b-908299a025ef",
-      "email": "greg+ci-d8-composer@pantheon.io"
+      "email": "some.user@pantheon.io"
     },
     "workflow": {
       "status": "Success",
@@ -1069,7 +1069,7 @@
     "actor": {
       "kind": "user",
       "id": "7558a08d-8059-45f6-9c4b-908299a025ef",
-      "email": "greg+ci-d8-composer@pantheon.io"
+      "email": "some.user@pantheon.io"
     },
     "workflow": {
       "status": "Success",
@@ -1090,7 +1090,7 @@
     "actor": {
       "kind": "user",
       "id": "7558a08d-8059-45f6-9c4b-908299a025ef",
-      "email": "greg+ci-d8-composer@pantheon.io"
+      "email": "some.user@pantheon.io"
     },
     "workflow": {
       "status": "Success",
@@ -1111,7 +1111,7 @@
     "actor": {
       "kind": "user",
       "id": "7558a08d-8059-45f6-9c4b-908299a025ef",
-      "email": "greg+ci-d8-composer@pantheon.io"
+      "email": "some.user@pantheon.io"
     },
     "workflow": {
       "status": "Success",
@@ -1132,7 +1132,7 @@
     "actor": {
       "kind": "user",
       "id": "7558a08d-8059-45f6-9c4b-908299a025ef",
-      "email": "greg+ci-d8-composer@pantheon.io"
+      "email": "some.user@pantheon.io"
     },
     "workflow": {
       "status": "Success",
@@ -1175,7 +1175,7 @@
     "actor": {
       "kind": "user",
       "id": "7558a08d-8059-45f6-9c4b-908299a025ef",
-      "email": "greg+ci-d8-composer@pantheon.io"
+      "email": "some.user@pantheon.io"
     },
     "workflow": {
       "status": "Success",
@@ -1196,7 +1196,7 @@
     "actor": {
       "kind": "user",
       "id": "7558a08d-8059-45f6-9c4b-908299a025ef",
-      "email": "greg+ci-d8-composer@pantheon.io"
+      "email": "some.user@pantheon.io"
     },
     "workflow": {
       "status": "Success",
@@ -1217,7 +1217,7 @@
     "actor": {
       "kind": "user",
       "id": "7558a08d-8059-45f6-9c4b-908299a025ef",
-      "email": "greg+ci-d8-composer@pantheon.io"
+      "email": "some.user@pantheon.io"
     },
     "workflow": {
       "status": "Success",
@@ -1238,7 +1238,7 @@
     "actor": {
       "kind": "user",
       "id": "7558a08d-8059-45f6-9c4b-908299a025ef",
-      "email": "greg+ci-d8-composer@pantheon.io"
+      "email": "some.user@pantheon.io"
     },
     "workflow": {
       "status": "Success",
@@ -1259,7 +1259,7 @@
     "actor": {
       "kind": "user",
       "id": "7558a08d-8059-45f6-9c4b-908299a025ef",
-      "email": "greg+ci-d8-composer@pantheon.io"
+      "email": "some.user@pantheon.io"
     },
     "workflow": {
       "status": "Success",
@@ -1280,7 +1280,7 @@
     "actor": {
       "kind": "user",
       "id": "7558a08d-8059-45f6-9c4b-908299a025ef",
-      "email": "greg+ci-d8-composer@pantheon.io"
+      "email": "some.user@pantheon.io"
     },
     "workflow": {
       "status": "Success",
@@ -1301,7 +1301,7 @@
     "actor": {
       "kind": "user",
       "id": "7558a08d-8059-45f6-9c4b-908299a025ef",
-      "email": "greg+ci-d8-composer@pantheon.io"
+      "email": "some.user@pantheon.io"
     },
     "workflow": {
       "status": "Success",
@@ -1322,7 +1322,7 @@
     "actor": {
       "kind": "user",
       "id": "7558a08d-8059-45f6-9c4b-908299a025ef",
-      "email": "greg+ci-d8-composer@pantheon.io"
+      "email": "some.user@pantheon.io"
     },
     "workflow": {
       "status": "Success",
@@ -1343,7 +1343,7 @@
     "actor": {
       "kind": "user",
       "id": "7558a08d-8059-45f6-9c4b-908299a025ef",
-      "email": "greg+ci-d8-composer@pantheon.io"
+      "email": "some.user@pantheon.io"
     },
     "workflow": {
       "status": "Success",
@@ -1364,7 +1364,7 @@
     "actor": {
       "kind": "user",
       "id": "7558a08d-8059-45f6-9c4b-908299a025ef",
-      "email": "greg+ci-d8-composer@pantheon.io"
+      "email": "some.user@pantheon.io"
     },
     "workflow": {
       "status": "Success",
@@ -1385,7 +1385,7 @@
     "actor": {
       "kind": "user",
       "id": "7558a08d-8059-45f6-9c4b-908299a025ef",
-      "email": "greg+ci-d8-composer@pantheon.io"
+      "email": "some.user@pantheon.io"
     },
     "workflow": {
       "status": "Success",
@@ -1406,7 +1406,7 @@
     "actor": {
       "kind": "user",
       "id": "7558a08d-8059-45f6-9c4b-908299a025ef",
-      "email": "greg+ci-d8-composer@pantheon.io"
+      "email": "some.user@pantheon.io"
     },
     "workflow": {
       "status": "Success",
@@ -1449,7 +1449,7 @@
     "actor": {
       "kind": "user",
       "id": "7558a08d-8059-45f6-9c4b-908299a025ef",
-      "email": "greg+ci-d8-composer@pantheon.io"
+      "email": "some.user@pantheon.io"
     },
     "workflow": {
       "status": "Success",
@@ -1470,7 +1470,7 @@
     "actor": {
       "kind": "user",
       "id": "7558a08d-8059-45f6-9c4b-908299a025ef",
-      "email": "greg+ci-d8-composer@pantheon.io"
+      "email": "some.user@pantheon.io"
     },
     "workflow": {
       "status": "Success",
@@ -1493,7 +1493,7 @@
     "actor": {
       "kind": "user",
       "id": "7558a08d-8059-45f6-9c4b-908299a025ef",
-      "email": "greg+ci-d8-composer@pantheon.io"
+      "email": "some.user@pantheon.io"
     },
     "workflow": {
       "status": "Success",
@@ -1514,7 +1514,7 @@
     "actor": {
       "kind": "user",
       "id": "7558a08d-8059-45f6-9c4b-908299a025ef",
-      "email": "greg+ci-d8-composer@pantheon.io"
+      "email": "some.user@pantheon.io"
     },
     "workflow": {
       "status": "Success",
@@ -1535,7 +1535,7 @@
     "actor": {
       "kind": "user",
       "id": "7558a08d-8059-45f6-9c4b-908299a025ef",
-      "email": "greg+ci-d8-composer@pantheon.io"
+      "email": "some.user@pantheon.io"
     },
     "workflow": {
       "status": "Success",
@@ -1556,7 +1556,7 @@
     "actor": {
       "kind": "user",
       "id": "7558a08d-8059-45f6-9c4b-908299a025ef",
-      "email": "greg+ci-d8-composer@pantheon.io"
+      "email": "some.user@pantheon.io"
     },
     "workflow": {
       "status": "Success",
@@ -1577,7 +1577,7 @@
     "actor": {
       "kind": "user",
       "id": "7558a08d-8059-45f6-9c4b-908299a025ef",
-      "email": "greg+ci-d8-composer@pantheon.io"
+      "email": "some.user@pantheon.io"
     },
     "workflow": {
       "status": "Success",
@@ -1598,7 +1598,7 @@
     "actor": {
       "kind": "user",
       "id": "7558a08d-8059-45f6-9c4b-908299a025ef",
-      "email": "greg+ci-d8-composer@pantheon.io"
+      "email": "some.user@pantheon.io"
     },
     "workflow": {
       "status": "Success",
@@ -1619,7 +1619,7 @@
     "actor": {
       "kind": "user",
       "id": "7558a08d-8059-45f6-9c4b-908299a025ef",
-      "email": "greg+ci-d8-composer@pantheon.io"
+      "email": "some.user@pantheon.io"
     },
     "workflow": {
       "status": "Success",
@@ -1640,7 +1640,7 @@
     "actor": {
       "kind": "user",
       "id": "7558a08d-8059-45f6-9c4b-908299a025ef",
-      "email": "greg+ci-d8-composer@pantheon.io"
+      "email": "some.user@pantheon.io"
     },
     "workflow": {
       "status": "Success",
@@ -1661,7 +1661,7 @@
     "actor": {
       "kind": "user",
       "id": "7558a08d-8059-45f6-9c4b-908299a025ef",
-      "email": "greg+ci-d8-composer@pantheon.io"
+      "email": "some.user@pantheon.io"
     },
     "workflow": {
       "status": "Success",
@@ -1682,7 +1682,7 @@
     "actor": {
       "kind": "user",
       "id": "7558a08d-8059-45f6-9c4b-908299a025ef",
-      "email": "greg+ci-d8-composer@pantheon.io"
+      "email": "some.user@pantheon.io"
     },
     "workflow": {
       "status": "Success",
@@ -1703,7 +1703,7 @@
     "actor": {
       "kind": "user",
       "id": "7558a08d-8059-45f6-9c4b-908299a025ef",
-      "email": "greg+ci-d8-composer@pantheon.io"
+      "email": "some.user@pantheon.io"
     },
     "workflow": {
       "status": "Success",
@@ -1724,7 +1724,7 @@
     "actor": {
       "kind": "user",
       "id": "7558a08d-8059-45f6-9c4b-908299a025ef",
-      "email": "greg+ci-d8-composer@pantheon.io"
+      "email": "some.user@pantheon.io"
     },
     "workflow": {
       "status": "Success",
@@ -1745,7 +1745,7 @@
     "actor": {
       "kind": "user",
       "id": "7558a08d-8059-45f6-9c4b-908299a025ef",
-      "email": "greg+ci-d8-composer@pantheon.io"
+      "email": "some.user@pantheon.io"
     },
     "workflow": {
       "status": "Success",
@@ -1766,7 +1766,7 @@
     "actor": {
       "kind": "user",
       "id": "7558a08d-8059-45f6-9c4b-908299a025ef",
-      "email": "greg+ci-d8-composer@pantheon.io"
+      "email": "some.user@pantheon.io"
     },
     "workflow": {
       "status": "Success",
@@ -1809,7 +1809,7 @@
     "actor": {
       "kind": "user",
       "id": "7558a08d-8059-45f6-9c4b-908299a025ef",
-      "email": "greg+ci-d8-composer@pantheon.io"
+      "email": "some.user@pantheon.io"
     },
     "workflow": {
       "status": "Success",
@@ -1830,7 +1830,7 @@
     "actor": {
       "kind": "user",
       "id": "7558a08d-8059-45f6-9c4b-908299a025ef",
-      "email": "greg+ci-d8-composer@pantheon.io"
+      "email": "some.user@pantheon.io"
     },
     "workflow": {
       "status": "Success",
@@ -1873,7 +1873,7 @@
     "actor": {
       "kind": "user",
       "id": "7558a08d-8059-45f6-9c4b-908299a025ef",
-      "email": "greg+ci-d8-composer@pantheon.io"
+      "email": "some.user@pantheon.io"
     },
     "workflow": {
       "status": "Success",
@@ -1894,7 +1894,7 @@
     "actor": {
       "kind": "user",
       "id": "7558a08d-8059-45f6-9c4b-908299a025ef",
-      "email": "greg+ci-d8-composer@pantheon.io"
+      "email": "some.user@pantheon.io"
     },
     "workflow": {
       "status": "Success",
@@ -1915,7 +1915,7 @@
     "actor": {
       "kind": "user",
       "id": "7558a08d-8059-45f6-9c4b-908299a025ef",
-      "email": "greg+ci-d8-composer@pantheon.io"
+      "email": "some.user@pantheon.io"
     },
     "workflow": {
       "status": "Success",
@@ -1936,7 +1936,7 @@
     "actor": {
       "kind": "user",
       "id": "7558a08d-8059-45f6-9c4b-908299a025ef",
-      "email": "greg+ci-d8-composer@pantheon.io"
+      "email": "some.user@pantheon.io"
     },
     "workflow": {
       "status": "Success",
@@ -1957,7 +1957,7 @@
     "actor": {
       "kind": "user",
       "id": "7558a08d-8059-45f6-9c4b-908299a025ef",
-      "email": "greg+ci-d8-composer@pantheon.io"
+      "email": "some.user@pantheon.io"
     },
     "workflow": {
       "status": "Success",
@@ -1978,7 +1978,7 @@
     "actor": {
       "kind": "user",
       "id": "7558a08d-8059-45f6-9c4b-908299a025ef",
-      "email": "greg+ci-d8-composer@pantheon.io"
+      "email": "some.user@pantheon.io"
     },
     "workflow": {
       "status": "Success",
@@ -1999,7 +1999,7 @@
     "actor": {
       "kind": "user",
       "id": "7558a08d-8059-45f6-9c4b-908299a025ef",
-      "email": "greg+ci-d8-composer@pantheon.io"
+      "email": "some.user@pantheon.io"
     },
     "workflow": {
       "status": "Success",
@@ -2020,7 +2020,7 @@
     "actor": {
       "kind": "user",
       "id": "7558a08d-8059-45f6-9c4b-908299a025ef",
-      "email": "greg+ci-d8-composer@pantheon.io"
+      "email": "some.user@pantheon.io"
     },
     "workflow": {
       "status": "Success",
@@ -2041,7 +2041,7 @@
     "actor": {
       "kind": "user",
       "id": "7558a08d-8059-45f6-9c4b-908299a025ef",
-      "email": "greg+ci-d8-composer@pantheon.io"
+      "email": "some.user@pantheon.io"
     },
     "workflow": {
       "status": "Success",
@@ -2062,7 +2062,7 @@
     "actor": {
       "kind": "user",
       "id": "7558a08d-8059-45f6-9c4b-908299a025ef",
-      "email": "greg+ci-d8-composer@pantheon.io"
+      "email": "some.user@pantheon.io"
     },
     "workflow": {
       "status": "Success",
@@ -2083,7 +2083,7 @@
     "actor": {
       "kind": "user",
       "id": "7558a08d-8059-45f6-9c4b-908299a025ef",
-      "email": "greg+ci-d8-composer@pantheon.io"
+      "email": "some.user@pantheon.io"
     },
     "workflow": {
       "status": "Success",
@@ -2104,7 +2104,7 @@
     "actor": {
       "kind": "user",
       "id": "7558a08d-8059-45f6-9c4b-908299a025ef",
-      "email": "greg+ci-d8-composer@pantheon.io"
+      "email": "some.user@pantheon.io"
     },
     "workflow": {
       "status": "Success",

@@ -2,10 +2,7 @@
 
 namespace Pantheon\Terminus\Tests\Unit\Collections;
 
-use Composer\Autoload\ClassLoader;
 use Pantheon\Terminus\Collections\WorkflowLogsCollection;
-use Pantheon\Terminus\Terminus;
-use PHPUnit\Framework\TestCase;
 
 /**
  *
@@ -22,9 +19,8 @@ class WorkflowLogsCollectionTest extends CollectionTestBase
      * @throws \ReflectionException
      * @dataProvider dataProvider
      */
-    public function testCollection(array $data)
+    public function testCollection(array $data): void
     {
-
         $collection = $this->reflector->newInstanceWithoutConstructor();
         $collection->setData($data);
         $this->assertCount($collection->count(), $data, 'The collection should have the same number of items as the data array.');
@@ -38,7 +34,7 @@ class WorkflowLogsCollectionTest extends CollectionTestBase
      * @dataProvider dataProvider
      * @throws \ReflectionException
      */
-    public function testFindLatestByProperty(array $data)
+    public function testFindLatestByProperty(array $data): void
     {
         $collection = $this->reflector->newInstanceWithoutConstructor();
         $collection->setData($data);
@@ -53,18 +49,24 @@ class WorkflowLogsCollectionTest extends CollectionTestBase
      * @dataProvider dataProvider
      * @throws \ReflectionException
      */
-    public function testFindLatestFromOptionsArray(array $data)
+    public function testFindLatestFromOptionsArray(array $data): void
     {
         $collection = $this->reflector->newInstanceWithoutConstructor();
         $collection->setData($data);
+        // pick a random item and find based on the ID property
         $findMe = $collection->findLatestFromOptionsArray(['id' => $data[5]->workflow->id]);
         $this->assertNotNull($findMe, 'Searching for a property by ID should yield a result.');
-        $this->assertEquals($data[5]->workflow->id, $findMe->id, 'Searching for a property by ID should yield the correct workflow.');
+        $this->assertEquals($data[5]->workflow->id, $findMe->id(), 'Searching for a property by ID should yield the correct workflow.');
 
         $collection->rewind();
-        $findMe = $collection->findLatestFromOptionsArray(['commit_hash' => 'f69f04c1c50d415801e30a808bd3857650565204']);
+        $findMe = $collection->findLatestFromOptionsArray(['target_commit' => 'f69f04c1c50d415801e30a808bd3857650565204']);
         $this->assertNotNull($findMe, 'Searching for a property by commit hash should yield a result.');
-        $this->assertEquals('429fa362-22c3-11ef-a213-1af7603d5813', $findMe->id, 'Searching for a property by commit hash should yield the correct workflow.');
+        $this->assertEquals('429fa362-22c3-11ef-a213-1af7603d5813', $findMe->id(), 'Searching for a property by commit hash should yield the correct workflow.');
+
+        $collection->rewind();
+        $findMe = $collection->findLatestFromOptionsArray(['type' => 'clear_cache']);
+        $this->assertNotNull($findMe, 'Searching for a property by commit hash should yield a result.');
+        $this->assertEquals('2c18bc44-22c5-11ef-b8f5-f240bee5a085', $findMe->id(), 'Searching for a property by type should yield the correct workflow.');
     }
 
 
@@ -75,11 +77,13 @@ class WorkflowLogsCollectionTest extends CollectionTestBase
     {
         // TODO: add some more json responses based on the different types of workflows
         return [
-            [ json_decode(
-                file_get_contents(
-                    dirname(TERMINUS_BIN_FILE) . '/tests/fixtures/WorkflowLogsCollectionTest.json'
-                )
-            ) ]
+            [
+                json_decode(
+                    file_get_contents(
+                        dirname(TERMINUS_BIN_FILE) . '/tests/fixtures/WorkflowLogsCollectionTest.json'
+                    )
+                ),
+            ]
         ];
     }
 
