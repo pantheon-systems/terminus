@@ -152,7 +152,7 @@ class WorkflowCommandsTest extends TerminusTestBase
         if ($filters) {
             $workflowsList = array_filter(
                 $workflowsList,
-                fn($workflow): bool => count(array_intersect_assoc($filters, $workflow)) === count($filters)
+                fn ($workflow): bool => count(array_intersect_assoc($filters, $workflow)) === count($filters)
             );
         }
 

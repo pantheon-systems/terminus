@@ -44,8 +44,8 @@ class WaitCommand extends TerminusCommand implements SiteAwareInterface
             $startTime = time() - 60;
         }
         if (!empty($options['target_commit'])) {
-          $this->waitForCommit($startTime, $site, $env_name, $options['commit'], $options['max']);
-          return;
+            $this->waitForCommit($startTime, $site, $env_name, $options['commit'], $options['max']);
+            return;
         }
         $this->waitForWorkflow($startTime, $site, $env_name, $description, $options['max']);
     }
@@ -176,5 +176,4 @@ class WaitCommand extends TerminusCommand implements SiteAwareInterface
             'status' => $wfl->get('status'),
         ]);
     }
-
 }
