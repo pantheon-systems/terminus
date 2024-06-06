@@ -24,6 +24,7 @@ class WaitCommand extends TerminusCommand implements SiteAwareInterface
      * @param $site_env_id The pantheon site to wait for.
      * @param $description The workflow description to wait for. Optional; default is code sync.
      * @option start Ignore any workflows started prior to the start time (epoch)
+     * @option commit Commit sha to wait for
      * @option max Maximum number of seconds to wait for the workflow to complete
      */
     public function workflowWait(
@@ -31,6 +32,7 @@ class WaitCommand extends TerminusCommand implements SiteAwareInterface
         $description = '',
         $options = [
           'start' => 0,
+          'commit' => '',
           'max' => 180,
         ]
     ) {
@@ -40,6 +42,10 @@ class WaitCommand extends TerminusCommand implements SiteAwareInterface
         $startTime = $options['start'];
         if (!$startTime) {
             $startTime = time() - 60;
+        }
+        if (!empty($options['target_commit'])) {
+          $this->waitForCommit($startTime, $site, $env_name, $options['commit'], $options['max']);
+          return;
         }
         $this->waitForWorkflow($startTime, $site, $env_name, $description, $options['max']);
     }
@@ -120,4 +126,55 @@ class WaitCommand extends TerminusCommand implements SiteAwareInterface
             }
         }
     }
+
+    /**
+     * Wait for a workflow with a given commit to complete.
+     */
+    public function waitForCommit(
+        $startTime,
+        $site,
+        $env_name,
+        $target_commit,
+        $maxWaitInSeconds = 180,
+        $maxNotFoundAttempts = null
+    ) {
+        $wfl = null;
+        $wflc = $site->getWorkflowLogs();
+        if (!$wflc instanceof WorkflowLogsCollection) {
+            throw new TerminusException('Workflow logs could not be retrieved for site: {site}', ['site' => $site_id,]);
+        }
+
+        // TODO: We need to ignore workflows that are not for the environment $env_name.
+
+        // Find the latest workflow that matches the commit hash
+        $wfl = $wflc->findLatestFromOptionsArray([
+            'target_commit' => $target_commit,
+        ]);
+
+        // If we didn't find a workflow, then we need to wait for one to be created
+        if (!$wfl instanceof WorkflowLog) {
+            // sleep to give the workflow time to be created
+            sleep($this->getConfig()->get('refresh_workflow_delay', 30));
+            $wfl = $wflc->fetch()->findLatestFromOptionsArray([
+                'target_commit' => $target_commit,
+            ]);
+            if ($startTime->diff(new \DateTime())->s > $options['max']) {
+                throw new TerminusException('Exceeded maximum wait time of {max} seconds.', ['max' => $options['max']]);
+            }
+        }
+
+        while (!$wfl->isFinished()) {
+            if ($startTime->diff(new \DateTime())->s > $options['max']) {
+                throw new TerminusException('Exceeded maximum wait time of {max} seconds.', ['max' => $options['max']]);
+            }
+            $this->log()->notice('Waiting for workflow {id} to complete.', ['id' => $wfl->id,]);
+            sleep($this->getConfig()->get('refresh_workflow_delay', 30));
+            $wfl->fetch();
+        }
+        $this->log()->notice('Workflow {id} has completed with status {status}.', [
+            'id' => $wfl->id,
+            'status' => $wfl->get('status'),
+        ]);
+    }
+
 }
