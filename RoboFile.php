@@ -1,7 +1,5 @@
 <?php
 
-include_once dirname(__FILE__) . '/vendor/autoload.php';
-
 use CzProject\GitPhp\Git;
 use Pantheon\Terminus\Config\ConfigAwareTrait;
 use Pantheon\Terminus\Helpers\CommandCoverageReport;
