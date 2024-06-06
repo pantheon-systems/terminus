@@ -16,6 +16,7 @@ use League\Container\ContainerAwareTrait;
 use Pantheon\Terminus\Config\ConfigAwareTrait;
 use Pantheon\Terminus\Exceptions\TerminusException;
 use Pantheon\Terminus\Helpers\LocalMachineHelper;
+use Pantheon\Terminus\Helpers\Utility\TraceId;
 use Pantheon\Terminus\Session\SessionAwareInterface;
 use Pantheon\Terminus\Session\SessionAwareTrait;
 use Psr\Http\Message\RequestInterface;
@@ -67,17 +68,6 @@ class Request implements
         . "Status Code: {status_code}";
 
     public const MAX_HEADER_LENGTH = 4096;
-
-    private static $TRACE_ID = null;
-
-    /**
-    * Generate UUID for use as distributed tracing ID and assign to static class variable
-    */
-    public static function generateTraceId()
-    {
-        self::$TRACE_ID = vsprintf('%s%s-%s-%s-%s-%s%s%s', str_split(bin2hex(random_bytes(16)), 4));
-    }
-
 
     protected ClientInterface $client;
 
@@ -456,7 +446,7 @@ class Request implements
         return [
             'User-Agent' => $this->userAgent(),
             'Accept' => 'application/json',
-            'X-Pantheon-Trace-Id' => self::$TRACE_ID,
+            'X-Pantheon-Trace-Id' => TraceId::getTraceId(),
             'X-Pantheon-Terminus-Command' => $this->terminusCommand(),
         ];
     }
