@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "571143a88fb7946df423ca2a8bc3020f",
+    "content-hash": "d0e50e82798a1eca3536f21dc201f5a2",
     "packages": [
         {
             "name": "composer/semver",
@@ -4324,89 +4324,6 @@
                 "source": "https://github.com/phar-io/version/tree/3.2.1"
             },
             "time": "2022-02-21T01:04:05+00:00"
-        },
-        {
-            "name": "php-coveralls/php-coveralls",
-            "version": "v2.7.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/php-coveralls/php-coveralls.git",
-                "reference": "b36fa4394e519dafaddc04ae03976bc65a25ba15"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/php-coveralls/php-coveralls/zipball/b36fa4394e519dafaddc04ae03976bc65a25ba15",
-                "reference": "b36fa4394e519dafaddc04ae03976bc65a25ba15",
-                "shasum": ""
-            },
-            "require": {
-                "ext-json": "*",
-                "ext-simplexml": "*",
-                "guzzlehttp/guzzle": "^6.0 || ^7.0",
-                "php": "^7.0 || ^8.0",
-                "psr/log": "^1.0 || ^2.0",
-                "symfony/config": "^2.1 || ^3.0 || ^4.0 || ^5.0 || ^6.0 || ^7.0",
-                "symfony/console": "^2.1 || ^3.0 || ^4.0 || ^5.0 || ^6.0 || ^7.0",
-                "symfony/stopwatch": "^2.0 || ^3.0 || ^4.0 || ^5.0 || ^6.0 || ^7.0",
-                "symfony/yaml": "^2.0.5 || ^3.0 || ^4.0 || ^5.0 || ^6.0 || ^7.0"
-            },
-            "require-dev": {
-                "phpunit/phpunit": "^4.8.35 || ^5.4.3 || ^6.0 || ^7.0 || >=8.0 <8.5.29 || >=9.0 <9.5.23",
-                "sanmai/phpunit-legacy-adapter": "^6.1 || ^8.0"
-            },
-            "suggest": {
-                "symfony/http-kernel": "Allows Symfony integration"
-            },
-            "bin": [
-                "bin/php-coveralls"
-            ],
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "PhpCoveralls\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Kitamura Satoshi",
-                    "email": "with.no.parachute@gmail.com",
-                    "homepage": "https://www.facebook.com/satooshi.jp",
-                    "role": "Original creator"
-                },
-                {
-                    "name": "Takashi Matsuo",
-                    "email": "tmatsuo@google.com"
-                },
-                {
-                    "name": "Google Inc"
-                },
-                {
-                    "name": "Dariusz Ruminski",
-                    "email": "dariusz.ruminski@gmail.com",
-                    "homepage": "https://github.com/keradus"
-                },
-                {
-                    "name": "Contributors",
-                    "homepage": "https://github.com/php-coveralls/php-coveralls/graphs/contributors"
-                }
-            ],
-            "description": "PHP client library for Coveralls API",
-            "homepage": "https://github.com/php-coveralls/php-coveralls",
-            "keywords": [
-                "ci",
-                "coverage",
-                "github",
-                "test"
-            ],
-            "support": {
-                "issues": "https://github.com/php-coveralls/php-coveralls/issues",
-                "source": "https://github.com/php-coveralls/php-coveralls/tree/v2.7.0"
-            },
-            "time": "2023-11-22T10:21:01+00:00"
         },
         {
             "name": "php-vcr/php-vcr",
