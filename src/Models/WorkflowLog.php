@@ -91,8 +91,8 @@ class WorkflowLog extends TerminusModel
     /**
      * Wait for the workflow to complete and return success/failure as bool.
      *
+     * @param int $max
      * @return bool
-     * @throws TerminusException
      */
     public function waitForComplete($max = 600): bool // 600 = 10 minutes
     {
@@ -126,6 +126,10 @@ class WorkflowLog extends TerminusModel
         return null;
     }
 
+    /**
+     * @param $attribute
+     * @return null
+     */
     public function get($attribute)
     {
         return $this->__get($attribute);
@@ -167,6 +171,9 @@ class WorkflowLog extends TerminusModel
         return $this->workflow->finished_at->diff($time) > 0;
     }
 
+    /**
+     * @return mixed|string|null
+     */
     public function id()
     {
         return $this->workflow->id;

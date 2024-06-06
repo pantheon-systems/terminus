@@ -7,6 +7,9 @@ namespace Pantheon\Terminus\Models;
  */
 class WorkflowLogInfo
 {
+    /**
+     * @var string
+     */
     public const PRETTY_NAME = 'WorkflowLog Info';
     /**
      * @var string|mixed
@@ -52,6 +55,9 @@ class WorkflowLogInfo
      * @var string|mixed
      */
     public ?string $type;
+    /**
+     * @var string|null
+     */
     public ?string $target_commit;
 
     /**
@@ -75,6 +81,9 @@ class WorkflowLogInfo
         $this->target_commit = $data->target_commit ?? null;
     }
 
+    /**
+     * @return object
+     */
     public function serialize(): object
     {
         return (object) [

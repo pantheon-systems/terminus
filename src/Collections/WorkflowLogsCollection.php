@@ -16,7 +16,7 @@ use Pantheon\Terminus\Models\WorkflowLog;
 class WorkflowLogsCollection extends SiteOwnedCollection implements \Iterator, \Countable
 {
     /**
-     *
+     * @var string
      */
     public const PRETTY_NAME = 'Workflow Logs Collection';
     /**

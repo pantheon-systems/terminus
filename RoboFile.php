@@ -1,6 +1,7 @@
 <?php
 
 use CzProject\GitPhp\Git;
+use CzProject\GitPhp\GitException;
 use Pantheon\Terminus\Config\ConfigAwareTrait;
 use Pantheon\Terminus\Helpers\CommandCoverageReport;
 use Pantheon\Terminus\Terminus;
@@ -210,9 +211,8 @@ class RoboFile extends Tasks
     /**
      * Generates a test commit.
      *
-     * @throws GitException
      * @throws \Pantheon\Terminus\Exceptions\TerminusException
-     * @throws \CzProject\GitPhp\GitException
+     * @throws GitException
      */
     public function generateTestCommit()
     {
@@ -309,6 +309,10 @@ class RoboFile extends Tasks
                 'origin',
                 $this->getSiteEnv(),
             );
+        } catch (GitException $e) {
+            $this->output()->writeln(["Git Exception:", $e->getMessage()]);
+            $this->output()->writeln(print_r($response, true));
+            exit(1);
         } catch (Exception $e) {
             $this->output()->writeln($e->getMessage());
             $this->output()->writeln(print_r($response, true));
@@ -318,7 +322,8 @@ class RoboFile extends Tasks
         // get the last commit
         $commit = $repo->getLastCommit();
         // output the commit id
-        $this->output()->writeln('Commit hash:' . $commit->getId());
+        $this->output()->writeln($commit->getId());
+        return $commit->getId();
     }
 
     /**

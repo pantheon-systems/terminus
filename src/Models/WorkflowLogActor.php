@@ -7,6 +7,9 @@ namespace Pantheon\Terminus\Models;
  */
 class WorkflowLogActor
 {
+    /**
+     * @var string
+     */
     public const PRETTY_NAME = 'WorkflowLog Actor';
 
     /**
@@ -27,6 +30,9 @@ class WorkflowLogActor
     public ?string $name;
 
 
+    /**
+     * @param $data
+     */
     public function __construct($data)
     {
         $this->id = $data->id ?? null;
@@ -35,6 +41,9 @@ class WorkflowLogActor
         $this->name = $data->name ?? null;
     }
 
+    /**
+     * @return array
+     */
     public function serialize()
     {
         return [
