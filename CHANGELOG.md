@@ -1,7 +1,15 @@
 # Change Log
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org)
 
-## 3.4.1-dev
+## 3.5.0
+- Retry option added for Drush and WP-CLI commands (#2588)
+- Provides a trace ID when running remote commands (Drush, WP-CLI) (#2589)
+- Terminus Workflow:waitForCommit command added (#2591)
+- Add new static cache for site_names (#2594)
+- Env deploy command should only be used in test/live envs (#2575)
+- Fix multidev:create command help (#2579)
+- On April 30st, 2024, Pantheon deprecated support for password authentication for ssh, which is used for git and sftp.  Going forward, users need to use ssh keys for git and sftp. [https://docs.pantheon.io/ssh-keys](https://docs.pantheon.io/ssh-keys) (#2572)
+- Non-interactive commands should also exit with error if the workflow failed (#2583)
 
 ## 3.4.0
 
