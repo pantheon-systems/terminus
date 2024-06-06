@@ -1,8 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd" bootstrap="tests/config/bootstrap.php" colors="true">
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd"
+         bootstrap="tests/config/bootstrap.php"
+         colors="true">
     <testsuites>
         <testsuite name="functional">
             <directory suffix="Test.php">tests/Functional/</directory>
+        </testsuite>
+        <testsuite name="unit">
+            <directory suffix="Test.php">tests/Unit/Collections/</directory>
+            <directory suffix="Test.php">tests/Unit/Models/</directory>
         </testsuite>
     </testsuites>
     <coverage processUncoveredFiles="true" cacheDirectory="reports">
@@ -25,5 +32,6 @@
         <server name="TERMINUS_VERIFY_HOST_CERT" value="${TERMINUS_VERIFY_HOST_CERT}" />
         <server name="TERMINUS_CACHE_DIR" value="${TERMINUS_CACHE_DIR}" />
         <server name="TERMINUS_DEBUG" value="${TERMINUS_DEBUG}" />
+        <server name="TERMINUS_PROJECT_ROOT" value="${TERMINUS_PROJECT_ROOT}" />
     </php>
 </phpunit>
