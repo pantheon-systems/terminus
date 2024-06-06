@@ -1,6 +1,8 @@
 # Change Log
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org)
 
+## 3.5-dev
+
 ## 3.5.0
 - Retry option added for Drush and WP-CLI commands (#2588)
 - Provides a trace ID when running remote commands (Drush, WP-CLI) (#2589)
