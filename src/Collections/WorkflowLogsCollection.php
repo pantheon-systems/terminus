@@ -134,7 +134,6 @@ class WorkflowLogsCollection extends SiteOwnedCollection implements \Iterator, \
      */
     public function findLatestFromOptionsArray(
         array $options = [
-            'type' => null,
             'id' => null,
             'target_commit' => null,
             // ignore start_time for now. We're finding by
@@ -149,11 +148,6 @@ class WorkflowLogsCollection extends SiteOwnedCollection implements \Iterator, \
         // Attempt to find the latest workflow by commit hash
         if (isset($options['target_commit']) && $options['target_commit'] !== null) {
             return $this->findLatestByProperty('target_commit', $options['target_commit']);
-        }
-
-        // Attempt to find the latest workflow by type
-        if (isset($options['type']) && $options['type'] !== null) {
-            return $this->findLatestByProperty('type', $options['type']);
         }
 
         // Return the latest workflow if no specific matches found
