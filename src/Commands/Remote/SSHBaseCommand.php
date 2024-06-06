@@ -111,7 +111,6 @@ abstract class SSHBaseCommand extends TerminusCommand implements SiteAwareInterf
                     'attempt' => $attempt + 1,
                     'max_attempts' => $max_attempts,
                 ]
-
             );
 
             // Handle any errors in the command execution
