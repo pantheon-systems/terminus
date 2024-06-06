@@ -134,7 +134,7 @@ jobs:
     if: ${{ startsWith(github.ref, 'refs/tags/')  && github.repository == 'pantheon-systems/terminus' }}
     steps:
       - name: Download terminus.phar as artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v3
         with:
           name: terminus-phar
       - name: Release
