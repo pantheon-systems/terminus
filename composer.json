@@ -41,7 +41,6 @@
     "erusev/parsedown": "^1.7",
     "friendsofphp/php-cs-fixer": "^3.17",
     "pcov/clobber": "^2.0",
-    "php-coveralls/php-coveralls": "^2.4",
     "php-vcr/php-vcr": "~1.5.2",
     "phpunit/php-code-coverage": "^9.2",
     "phpunit/phpcov": "^8.2",
