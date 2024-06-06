@@ -98,7 +98,7 @@ abstract class SSHBaseCommand extends TerminusCommand implements SiteAwareInterf
 
         do {
             // Send the combined command line via SSH
-            $ssh_data = $this->sendCommandViaSsh($command_line);
+            $ssh_data = $this->sendCommandViaSsh($command_line, $env_vars);
 
             // Log the command execution
             $this->log()->notice(
@@ -168,8 +168,14 @@ abstract class SSHBaseCommand extends TerminusCommand implements SiteAwareInterf
      */
     protected function sendCommandViaSsh($command, array $env_vars = [])
     {
+        // Convert env_vars array into a series of key=value strings
+        $env_vars_string = '';
+        foreach ($env_vars as $key => $value) {
+            $env_vars_string .= sprintf('-o SetEnv="%s=%s" ', $key, $value);
+        }
+
         // Construct the SSH command without environment variables in SSH options
-        $ssh_command = $this->getConnectionString() . ' ' . $command;
+        $ssh_command = $this->getConnectionString() . ' ' . $env_vars_string . escapeshellarg($command);
 
         $this->logger->debug('shell command: {command}', ['command' => $ssh_command]);
         if ($this->getConfig()->get('test_mode')) {
@@ -326,15 +332,15 @@ abstract class SSHBaseCommand extends TerminusCommand implements SiteAwareInterf
     private function getCommandLine($command_args, $env_vars)
     {
         // Convert env_vars array into a series of key=value strings
-        $env_vars_string = '-o SetEnv=';
+        $env_vars_string = '';
         foreach ($env_vars as $key => $value) {
-            $env_vars_string .= sprintf('%s=%s ', $key, $value);
+            $env_vars_string .= sprintf('%s=%s ', $key, strtr($value, '-', '_'));
         }
 
         // Construct the command line with environment variables and the command arguments
-        $command_line = $env_vars_string . escapeshellarg(
-            implode(" ", $this->escapeArguments(array_merge([$this->command], $command_args)))
-        );
+        $command_line = $env_vars_string . implode(" ", $this->escapeArguments(array_merge([$this->command], $command_args)));
+
+        $this->log()->debug('getCommandLine: {command_line}', ['command_line' => $command_line]);
 
         return $command_line;
     }
