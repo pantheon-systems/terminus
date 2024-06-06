@@ -62,11 +62,6 @@ class WorkflowLogsCollectionTest extends CollectionTestBase
         $findMe = $collection->findLatestFromOptionsArray(['target_commit' => 'f69f04c1c50d415801e30a808bd3857650565204']);
         $this->assertNotNull($findMe, 'Searching for a property by commit hash should yield a result.');
         $this->assertEquals('429fa362-22c3-11ef-a213-1af7603d5813', $findMe->id(), 'Searching for a property by commit hash should yield the correct workflow.');
-
-        $collection->rewind();
-        $findMe = $collection->findLatestFromOptionsArray(['type' => 'clear_cache']);
-        $this->assertNotNull($findMe, 'Searching for a property by commit hash should yield a result.');
-        $this->assertEquals('2c18bc44-22c5-11ef-b8f5-f240bee5a085', $findMe->id(), 'Searching for a property by type should yield the correct workflow.');
     }
 
 

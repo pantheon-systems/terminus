@@ -1,7 +1,9 @@
 <?php
 
 // This makes Robo commands available from inside a PHPUnit Test
-require_once('RoboFile.php');
+if (!class_exists("\RoboFile")) {
+    require_once('RoboFile.php');
+};
 
 /**
  * Bootstrap file for functional tests.
