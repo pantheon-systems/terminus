@@ -144,7 +144,8 @@ class WaitCommand extends TerminusCommand implements SiteAwareInterface
             throw new TerminusException('Workflow logs could not be retrieved for site: {site}', ['site' => $site_id,]);
         }
 
-        // TODO: We need to ignore workflows that are not for the environment $env_name.
+        // Remove workflows that are not for the environment $env_name.
+        $wflc->filterForEnvironment($env_name);
 
         // Find the latest workflow that matches the commit hash
         $wfl = $wflc->findLatestFromOptionsArray([
