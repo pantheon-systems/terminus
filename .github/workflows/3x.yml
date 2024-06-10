@@ -74,7 +74,7 @@ jobs:
     needs: [ checkout_build ]
     steps:
       - name: Install SSH key
-        uses: webfactory/ssh-agent@v0.5.3
+        uses: webfactory/ssh-agent@0.9.0
         with:
           ssh-private-key: ${{ secrets.TERMINUS_SITE_OWNER_SSH_PRIVATE_KEY }}
       - run: brew update && brew upgrade icu4c
@@ -112,7 +112,7 @@ jobs:
       - name: Coverage Report
         run: composer coverage
       - name: Save coverage as artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: CoverageReport
           path: docs/TestCoverage.md
