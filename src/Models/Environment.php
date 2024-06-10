@@ -1012,6 +1012,12 @@ class Environment extends TerminusModel implements
         $response = $this->request()->request(
             "https://{$domain->id}/pantheon_healthcheck"
         );
+        if ($response['status_code'] != 200) {
+            throw new TerminusException('Could not reach {target}', $wakeStatus);
+        }
+        if (empty($response['headers']['X-Pantheon-Styx-Hostname'])) {
+            throw new TerminusException('Pantheon headers missing, which is not quite right.');
+        }
         return [
             'success' => ($response['status_code'] === 200),
             'styx' => $response['headers']['X-Pantheon-Styx-Hostname'],
