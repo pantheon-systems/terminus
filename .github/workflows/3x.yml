@@ -74,7 +74,7 @@ jobs:
     needs: [ checkout_build ]
     steps:
       - name: Install SSH key
-        uses: webfactory/ssh-agent@latest
+        uses: webfactory/ssh-agent@v0.9.0
         with:
           ssh-private-key: ${{ secrets.TERMINUS_SITE_OWNER_SSH_PRIVATE_KEY }}
       - run: brew update && brew upgrade icu4c
