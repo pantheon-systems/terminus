@@ -1,6 +1,8 @@
 # Change Log
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org)
 
+## 3.5.1-dev
+
 ## 3.5.1 - 2024-06-13
 - Fix a bug where the --filter option was not working correctly for several commands [#2607]
 
