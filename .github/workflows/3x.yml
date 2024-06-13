@@ -109,13 +109,6 @@ jobs:
       - name: Functional Tests (arbitrary group)
         if: ${{ github.event.inputs.functional_tests_group != '' && github.event.inputs.functional_tests_group != 'all' }}
         run: composer test:group -- ${{ github.event.inputs.functional_tests_group }}
-      - name: Coverage Report
-        run: composer coverage
-      - name: Save coverage as artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: CoverageReport
-          path: docs/TestCoverage.md
       - name: Finish sesssion
         if: ${{ always() && github.event.inputs.tmate_enabled == 1 }}
         run: |
