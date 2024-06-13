@@ -61,6 +61,19 @@ class SiteCommandsTest extends TerminusTestBase
     }
 
     /**
+     * @test
+     * @covers \Consolidation\Filter\Hooks\FilterHooks
+     *
+     * @group site
+     * @group short
+     */
+    public function testSiteListFilterOption()
+    {
+        $siteListHelpOutput = $this->terminus('help site:list');
+        $this->assertStringContainsString('--filter[=FILTER]', $siteListHelpOutput);
+    }
+
+    /**
      * Test site:create command.
      *
      * @test

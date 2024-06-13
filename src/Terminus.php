@@ -444,6 +444,9 @@ EOD;
             'Pantheon\\Terminus\\Commands\\Workflow\\WaitCommand',
             'Pantheon\\Terminus\\Commands\\Workflow\\WatchCommand'
         ];
+
+        // Add in any static additions not handled by 'composer update-class-lists'
+        $this->commands[] = 'Consolidation\\Filter\\Hooks\\FilterHooks';
     }
 
     /**
