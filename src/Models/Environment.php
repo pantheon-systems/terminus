@@ -988,7 +988,6 @@ class Environment extends TerminusModel implements
             'username' => $username,
             'host' => $domain,
             'port' => $port,
-            'password' => $password,
             'url' => $url,
             'command' => $command,
         ];
