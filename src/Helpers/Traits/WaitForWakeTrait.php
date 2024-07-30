@@ -38,10 +38,19 @@ trait WaitForWakeTrait
             sleep(1);
             $waits++;
         } while (true);
-        $logger->notice(sprintf(
-            '%s => %s has been created successfully and is available for use.',
-            $env->getSite()->getName(),
-            $env->get('name')
-        ));
+        $env_name = $env->getName();
+        $message = sprintf(
+            'The %s environment for the %s site has been created successfully and is available for use.',
+            $env_name,
+            $env->getSite()->getName()
+        );
+        if ($env_name === 'dev') {
+            // Assume site creation, use a different message.
+            $message = sprintf(
+                '%s site has been created successfully and is available for use.',
+                $env->getSite()->getName(),
+            );
+        }
+        $logger->notice($message);
     }
 }
