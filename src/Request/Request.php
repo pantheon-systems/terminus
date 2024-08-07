@@ -69,6 +69,11 @@ class Request implements
 
     public const MAX_HEADER_LENGTH = 4096;
 
+    public const ENVIRONMENT_VARIABLES = [
+        'CI',
+        'PWD',
+    ];
+
     protected ClientInterface $client;
 
     /**
@@ -448,6 +453,7 @@ class Request implements
             'Accept' => 'application/json',
             'X-Pantheon-Trace-Id' => TraceId::getTraceId(),
             'X-Pantheon-Terminus-Command' => $this->terminusCommand(),
+            'X-Pantheon-Terminus-Environment' => $this->terminusEnvironment(),
         ];
     }
 
@@ -490,6 +496,19 @@ class Request implements
         }
 
         return $candidate;
+    }
+
+    /**
+     * Returns terminus execution environment variables as json.
+     */
+    private function terminusEnvironment()
+    {
+        $values = [];
+        foreach (self::ENVIRONMENT_VARIABLES as $var) {
+            $values[$var] = $_SERVER[$var] ?? false;
+        }
+        $values['OS'] = PHP_OS;
+        return json_encode($values);
     }
 
     /**
