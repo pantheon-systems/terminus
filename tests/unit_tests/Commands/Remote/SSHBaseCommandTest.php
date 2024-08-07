@@ -139,6 +139,19 @@ class SSHBaseCommandTest extends CommandTestCase
 
         $out = $this->command->dummyCommand("$site_name.{$this->environment->id}", $options);
         $this->assertNull($out);
+        $this->logger->expects($this->once())
+            ->method('log')
+            ->with(
+                $this->equalTo('error'),
+                $this->equalTo('Command: {site}.{env} -- {command} [Exit: {exit}] (All attempts failed)'),
+                $this->equalTo([
+                    'site' => $site_name,
+                    'env' => $this->environment->id,
+                    'command' => "$expectedLoggedCommand",
+                    'exit' => $status_code,
+                ])
+            );
+
     }
 
     /**
