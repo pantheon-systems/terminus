@@ -151,7 +151,6 @@ class SSHBaseCommandTest extends CommandTestCase
                     'exit' => $status_code,
                 ])
             );
-
     }
 
     /**
