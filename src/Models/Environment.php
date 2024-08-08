@@ -994,7 +994,7 @@ class Environment extends TerminusModel implements
     }
 
     /**
-     * "Wake" a site
+     * "Wake" a site with retries
      *
      * @param int $maxRetries Maximum number of retries
      * @param int $delay Delay between retries in seconds
@@ -1004,21 +1004,25 @@ class Environment extends TerminusModel implements
      */
     public function wake(int $maxRetries = 3, int $delay = 5): array
     {
+        $domains = array_filter(
+            $this->getDomains()->all(),
+            function ($domain) {
+                $domain_type = $domain->get('type');
+                return (!empty($domain_type) && "platform" == $domain_type);
+            }
+        );
+
+        if (empty($domains)) {
+            throw new TerminusException('No valid domains found for health check.');
+        }
+
+        $domain = array_pop($domains);
         $attempt = 0;
-        do {
+        $success = false;
+
+        while ($attempt < $maxRetries && !$success) {
             $attempt++;
             try {
-                $domains = array_filter(
-                    $this->getDomains()->all(),
-                    function ($domain) {
-                        $domain_type = $domain->get('type');
-                        return (!empty($domain_type) && "platform" == $domain_type);
-                    }
-                );
-                if (empty($domains)) {
-                    throw new TerminusException('No valid domains found for health check.');
-                }
-                $domain = array_pop($domains);
                 $response = $this->request()->request(
                     "https://{$domain->id}/pantheon_healthcheck"
                 );
@@ -1042,7 +1046,7 @@ class Environment extends TerminusModel implements
             if (!$success) {
                 sleep($delay); // Delay before retrying
             }
-        } while (!$success && $attempt < $maxRetries);
+        }
 
         throw new TerminusException('Failed to wake the site after ' . $maxRetries . ' attempts.');
     }
