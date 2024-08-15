@@ -994,11 +994,15 @@ class Environment extends TerminusModel implements
     }
 
     /**
-     * "Wake" a site
+     * "Wake" a site with retries
      *
+     * @param int $maxRetries Maximum number of retries
+     * @param int $delay Delay between retries in seconds
      * @return array
+     *
+     * @throws \Pantheon\Terminus\Exceptions\TerminusException
      */
-    public function wake(): array
+    public function wake(int $maxRetries = 3, int $delay = 5): array
     {
         $domains = array_filter(
             $this->getDomains()->all(),
@@ -1007,16 +1011,44 @@ class Environment extends TerminusModel implements
                 return (!empty($domain_type) && "platform" == $domain_type);
             }
         );
+
+        if (empty($domains)) {
+            throw new TerminusException('No valid domains found for health check.');
+        }
+
         $domain = array_pop($domains);
-        $response = $this->request()->request(
-            "https://{$domain->id}/pantheon_healthcheck"
-        );
-        return [
-            'success' => ($response['status_code'] === 200),
-            'styx' => $response['headers']['X-Pantheon-Styx-Hostname'],
-            'response' => $response,
-            'target' => $domain->id,
-        ];
+        $attempt = 0;
+        $success = false;
+
+        while ($attempt < $maxRetries && !$success) {
+            $attempt++;
+            try {
+                $response = $this->request()->request(
+                    "https://{$domain->id}/pantheon_healthcheck"
+                );
+                $success = ($response['status_code'] === 200);
+                if ($success) {
+                    return [
+                        'success' => true,
+                        'styx' => $response['headers']['X-Pantheon-Styx-Hostname'],
+                        'response' => $response,
+                        'target' => $domain->id,
+                    ];
+                }
+            } catch (\Exception $e) {
+                $this->logger->debug(
+                    "Failed to wake the site:\n{message}",
+                    ['message' => $e->getMessage(),]
+                );
+                $success = false;
+            }
+
+            if (!$success) {
+                sleep($delay); // Delay before retrying
+            }
+        }
+
+        throw new TerminusException('Failed to wake the site after ' . $maxRetries . ' attempts.');
     }
 
     /**
