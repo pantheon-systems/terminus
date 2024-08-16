@@ -1,7 +1,22 @@
 # Change Log
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org)
 
-## 3.5.1-dev
+## 3.5.2 - 2024-08-19
+
+### Fixed
+
+- Fix undefined notice from sftp password cleanup (#2609)
+- Use right message after site or environment creation (#2611)
+
+### Added
+
+- Add new header x-pantheon-terminus-environment (#2613)
+
+### Changed
+
+- Add retries to env:wake (#2612)
+- Add more logging to env:wake command (#2586)
+
 
 ## 3.5.1 - 2024-06-13
 - Fix a bug where the --filter option was not working correctly for several commands [#2607]
