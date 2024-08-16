@@ -71,7 +71,6 @@ class Request implements
 
     public const ENVIRONMENT_VARIABLES = [
         'CI',
-        'PWD',
     ];
 
     protected ClientInterface $client;
