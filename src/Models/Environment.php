@@ -334,7 +334,7 @@ class Environment extends TerminusModel implements
         $username = $env_vars['DB_USER'] ?? null;
         $database = $env_vars['DB_NAME'] ?? null;
         $url = "mysql://$username:$password@$domain:$port/$database";
-        $command = "mysql -u $username -p$password -h $domain -P $port $database";
+        $command = "mysql -u $username -p $password -h $domain -P $port $database";
 
         if (is_null($domain)) {
             return [];
