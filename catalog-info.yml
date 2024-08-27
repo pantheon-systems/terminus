@@ -1,0 +1,12 @@
+---
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: terminus
+  description: Auto-generated catalog info for pantheon-systems/terminus
+  annotations:
+    backstage.io/techdocs-ref: dir:docs/
+spec:
+  type: service
+  lifecycle: experimental
+  owner: sre
