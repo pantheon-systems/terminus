@@ -10,7 +10,8 @@ use Pantheon\Terminus\Helpers\Utility\Timing;
 use Pantheon\Terminus\Request\RequestAwareInterface;
 use Pantheon\Terminus\Request\RequestAwareTrait;
 
-class CommandTracker implements EventSubscriberInterface, RequestAwareInterface {
+class CommandTracker implements EventSubscriberInterface, RequestAwareInterface
+{
     use RequestAwareTrait;
 
     /**
@@ -24,7 +25,8 @@ class CommandTracker implements EventSubscriberInterface, RequestAwareInterface 
     /**
      * Terminate Command hook
      */
-    public function terminateCommand(ConsoleTerminateEvent $event) {
+    public function terminateCommand(ConsoleTerminateEvent $event)
+    {
         $startTime = Timing::getStartTime();
         $exitCode = $event->getExitCode();
         $endTime = new \DateTime();
@@ -41,7 +43,5 @@ class CommandTracker implements EventSubscriberInterface, RequestAwareInterface 
         } catch (\Exception $e) {
             // Do nothing
         }
-
     }
-
 }
