@@ -39,7 +39,7 @@ class CommandTracker implements EventSubscriberInterface, RequestAwareInterface
         ];
 
         try {
-            $result = $this->request->request('track', ['method' => 'POST', 'json' => $data]);
+            $result = $this->request->request('track', ['method' => 'POST', 'json' => $data, 'timeout' => 2]);
         } catch (\Exception $e) {
             // Do nothing
         }
