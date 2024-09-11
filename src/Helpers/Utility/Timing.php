@@ -22,7 +22,7 @@ class Timing
     public static function getStartTime()
     {
         if (empty(self::$startTime)) { // If startTime is not set, generate it
-            self::$startTime = self::generateStartTime();
+            self::generateStartTime();
         }
         return self::$startTime;
     }
