@@ -38,16 +38,15 @@ class LabelCommand extends SiteCommand
 
     public function label($site_name, $label)
     {
-        $workflow_options = [
-            'label' => $label,
-        ];
         return $this->processWorkflow(
             $this->session()->
                 getUser()->
                 getWorkflows()->
                 create(
                     'set_site_label',
-                    ['params' => $workflow_options,]
+                    ['params' => [
+                        'label' => $label,
+                    ]]
                 )
         );
     }
