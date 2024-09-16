@@ -127,16 +127,6 @@ class SiteCommandsTest extends TerminusTestBase
 
     public function testSiteLabelCommand()
     {
-        $this->mockSiteName = uniqid('site-label-');
-        $command = sprintf(
-            'site:create %s %s drupal9',
-            $this->mockSiteName,
-            $this->mockSiteName
-        );
-        $this->terminus(
-            $command,
-            [sprintf('--org=%s', $this->getOrg()), '--quiet']
-        );
         $label = 'test-label';
         $this->terminus(
             sprintf('site:label %s %s', $this->mockSiteName, $label),
