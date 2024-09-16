@@ -422,6 +422,7 @@ EOD;
             'Pantheon\\Terminus\\Commands\\Site\\CreateCommand',
             'Pantheon\\Terminus\\Commands\\Site\\DeleteCommand',
             'Pantheon\\Terminus\\Commands\\Site\\InfoCommand',
+            'Pantheon\\Terminus\\Commands\\Site\\LabelCommand',
             'Pantheon\\Terminus\\Commands\\Site\\ListCommand',
             'Pantheon\\Terminus\\Commands\\Site\\LookupCommand',
             'Pantheon\\Terminus\\Commands\\Site\\Org\\AddCommand',

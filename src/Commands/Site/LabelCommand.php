@@ -38,9 +38,9 @@ class LabelCommand extends SiteCommand
 
     public function label($site_name, $label)
     {
+        $siteObj = $this->sites()->get($site_name);
         return $this->processWorkflow(
-            $this->session()->
-                getUser()->
+            $siteObj->
                 getWorkflows()->
                 create(
                     'set_site_label',
