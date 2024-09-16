@@ -15,20 +15,6 @@ class SiteCommandsTest extends TerminusTestBase
     private $mockSiteName;
 
     /**
-     * @inheritdoc
-     */
-    protected function tearDown(): void
-    {
-        if (isset($this->mockSiteName)) {
-            $this->terminus(
-                sprintf('site:delete %s', $this->mockSiteName),
-                ['--quiet'],
-                false
-            );
-        }
-    }
-
-    /**
      * @test
      * @covers \Pantheon\Terminus\Commands\Site\ListCommand
      *
@@ -129,5 +115,51 @@ class SiteCommandsTest extends TerminusTestBase
             ),
             $output
         );
+    }
+
+    /**
+     * @test
+     * @covers \Pantheon\Terminus\Commands\Site\LabelCommand
+     *
+     * @group site
+     * @group short
+     */
+
+    public function testSiteLabelCommand()
+    {
+        $this->mockSiteName = uniqid('site-label-');
+        $command = sprintf(
+            'site:create %s %s drupal9',
+            $this->mockSiteName,
+            $this->mockSiteName
+        );
+        $this->terminus(
+            $command,
+            [sprintf('--org=%s', $this->getOrg()), '--quiet']
+        );
+        $label = 'test-label';
+        $this->terminus(
+            sprintf('site:label %s %s', $this->mockSiteName, $label),
+            ['--yes']
+        );
+        $siteInfo = $this->terminusJsonResponse(sprintf('site:info %s', $this->mockSiteName));
+        $this->assertNotEmpty($siteInfo);
+        $this->assertIsArray($siteInfo);
+        $this->assertArrayHasKey('label', $siteInfo);
+        $this->assertEquals($label, $siteInfo['label']);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected function tearDown(): void
+    {
+        if (isset($this->mockSiteName)) {
+            $this->terminus(
+                sprintf('site:delete %s', $this->mockSiteName),
+                ['--quiet'],
+                false
+            );
+        }
     }
 }
