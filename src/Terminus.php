@@ -15,6 +15,7 @@ use Pantheon\Terminus\DataStore\FileStore;
 use Pantheon\Terminus\Helpers\LocalMachineHelper;
 use Pantheon\Terminus\Helpers\Traits\CommandExecutorTrait;
 use Pantheon\Terminus\Helpers\Utility\TraceId;
+use Pantheon\Terminus\Helpers\Utility\Timing;
 use Pantheon\Terminus\Plugins\PluginDiscovery;
 use Pantheon\Terminus\Plugins\PluginInfo;
 use Pantheon\Terminus\ProgressBars\ProcessProgressBar;
@@ -45,6 +46,8 @@ use Pantheon\Terminus\Config\EnvConfig;
 use Pantheon\Terminus\Config\YamlConfig;
 use Symfony\Component\Filesystem\Filesystem;
 use SelfUpdate\SelfUpdateCommand;
+use Pantheon\Terminus\Hooks\CommandTracker;
+use Symfony\Component\EventDispatcher\EventDispatcher;
 
 /**
  * Class Terminus
@@ -128,6 +131,8 @@ EOD;
         $this->addBuiltInCommandsAndHooks();
         $this->addPluginsCommandsAndHooks();
 
+        $container->get('eventDispatcher')->addSubscriber($container->get('Pantheon\Terminus\Hooks\CommandTracker'));
+
         // We can't use Robo\Application addSelfUpdateCommand because if plugin manager is running it won't be a phar from there.
         if (!empty(\Phar::running())) {
             $selfUpdateCommand = new SelfUpdateCommand(
@@ -169,6 +174,9 @@ EOD;
         // Generate the trace ID
         TraceId::generateTraceId();
 
+        // Generate the time at which Terminus was started
+        Timing::generateStartTime();
+
         // Add the services
         // Request
         $container->share('request', Request::class);
@@ -205,6 +213,9 @@ EOD;
         $container->share('sites', Sites::class);
         $container->inflector(SiteAwareInterface::class)
             ->invokeMethod('setSites', ['sites']);
+
+        // Command Tracker
+        $container->add(CommandTracker::class);
 
         // Install our command cache into the command factory
         $commandCacheDir = $this->getConfig()->get('command_cache_dir');
