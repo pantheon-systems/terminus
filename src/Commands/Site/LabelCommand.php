@@ -19,7 +19,7 @@ class LabelCommand extends SiteCommand
     use WaitForWakeTrait;
 
     /**
-     * Creates a new site.
+     * Changes the site label
      *
      * @authorize
      *
