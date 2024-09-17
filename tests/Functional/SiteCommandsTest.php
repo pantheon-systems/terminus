@@ -133,7 +133,7 @@ class SiteCommandsTest extends TerminusTestBase
             $this->markTestSkipped('No site found to test label command');
         }
         $this->terminus(
-            sprintf('site:label %s %s', $siteName, $label),
+            sprintf('site:label %s "%s" ', $siteName, $label),
             ['--yes']
         );
         $siteInfo = $this->terminusJsonResponse(sprintf('site:info %s', $this->mockSiteName));
