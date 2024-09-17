@@ -127,9 +127,13 @@ class SiteCommandsTest extends TerminusTestBase
 
     public function testSiteLabelCommand()
     {
-        $label = 'test-label';
+        $label = uniqid('test label ');
+        $siteName = $this->getSiteName();
+        if (empty($siteName) || empty($label)) {
+            $this->markTestSkipped('No site found to test label command');
+        }
         $this->terminus(
-            sprintf('site:label %s %s', $this->mockSiteName, $label),
+            sprintf('site:label %s %s', $siteName, $label),
             ['--yes']
         );
         $siteInfo = $this->terminusJsonResponse(sprintf('site:info %s', $this->mockSiteName));
