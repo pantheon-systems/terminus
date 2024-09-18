@@ -139,7 +139,7 @@ class SiteCommandsTest extends TerminusTestBase
         $this->assertArrayHasKey('label', $siteInfo);
         $this->assertEquals($label, $siteInfo['label']);
         // Change it back
-        $command = sprintf('site:label %s "%s"', $this->getSiteName(), $this->getSiteName());
+        $command = sprintf('site:label:set %s "%s"', $this->getSiteName(), $this->getSiteName());
         $this->terminus(
             $command,
             ['--yes']
