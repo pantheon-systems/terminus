@@ -23,7 +23,9 @@ class LabelCommand extends SiteCommand
      *
      * @authorize
      *
-     * @command site:label
+     * @command site:label:set
+     * @alias site:label-set
+     * @alias slbl
      *
      * @param string $site_name Site name
      * @param string $label Site label
