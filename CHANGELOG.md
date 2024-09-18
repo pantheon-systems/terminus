@@ -5,7 +5,8 @@ All notable changes to this project will be documented in this file. This projec
 
 ### Added
 
-- New command "site:label" to set a site's label (#2621)
+- New command "site:label" to set a site's label (#2626)
+- Track command success rates and execution time (#2623)
 
 ## 3.5.2 - 2024-08-19
 
