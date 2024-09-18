@@ -128,7 +128,7 @@ class SiteCommandsTest extends TerminusTestBase
     public function testSiteLabelCommand()
     {
         $label = uniqid('test-label');
-        $command = sprintf('site:label %s "%s"', $this->getSiteName(), $label);
+        $command = sprintf('site:label:set %s "%s"', $this->getSiteName(), $label);
         $this->terminus(
             $command,
             ['--yes']
