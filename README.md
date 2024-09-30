@@ -40,6 +40,8 @@ These packages are required to take full advantage of Terminus.
 
 - [Git](https://help.github.com/articles/set-up-git/) (May be needed for the plugin manager component)
 
+- OpenSSH 7.8 or later
+
 #### Recommended Packages
 
 - [Drush](http://docs.drush.org/en/master/install/) (Useful to run incompatible-with-Terminus Drush commands)
