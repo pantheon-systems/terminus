@@ -39,7 +39,7 @@ class CloneContentCommand extends TerminusCommand implements SiteAwareInterface
      *
      * IMPORTANT NOTE: if you have a WordPress Multisite installation, you
      * will need an entry in your pantheon.yml in order to search all the
-     * sites in your install.  See http://pantheon.io/some/link/in/docs.
+     * sites in your install.  See https://docs.pantheon.io/guides/multisite/search-replace.
      *
      * @authorize
      *
