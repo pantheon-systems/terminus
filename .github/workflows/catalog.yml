@@ -1,0 +1,20 @@
+---
+name: Catalog
+
+on:
+  workflow_dispatch:
+  pull_request:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: "read"
+  packages: "read"
+  id-token: "write"
+
+jobs:
+#   docs:
+#     uses: pantheon-systems/service-catalog/.github/workflows/docs-like-code.yaml@main
+  catalog-upload:
+    uses: pantheon-systems/service-catalog/.github/workflows/catalog-upload.yaml@main
