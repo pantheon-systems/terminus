@@ -1019,8 +1019,10 @@ class Environment extends TerminusModel implements
         $domain = array_pop($domains);
         $attempt = 0;
         $success = false;
+        $lastError = null;
 
         while ($attempt < $maxRetries && !$success) {
+            $lastError = null;
             $attempt++;
             try {
                 $response = $this->request()->request(
@@ -1036,16 +1038,19 @@ class Environment extends TerminusModel implements
                     ];
                 }
             } catch (\Exception $e) {
-                $this->logger->debug(
-                    "Failed to wake the site:\n{message}",
-                    ['message' => $e->getMessage(),]
-                );
+                $lastError = $e;
                 $success = false;
             }
 
             if (!$success) {
                 sleep($delay); // Delay before retrying
             }
+        }
+
+        if ($lastError) {
+            throw new TerminusException(
+                'Failed to wake the site after ' . $maxRetries . ' attempts. Last error: ' . $lastError->getMessage()
+            );
         }
 
         throw new TerminusException('Failed to wake the site after ' . $maxRetries . ' attempts.');
