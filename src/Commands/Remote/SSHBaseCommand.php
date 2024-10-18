@@ -373,7 +373,7 @@ abstract class SSHBaseCommand extends TerminusCommand implements SiteAwareInterf
         $command = $this->getConfig()->get('ssh_command');
 
         return vsprintf(
-            '%s -T %s@%s -p %s -o "StrictHostKeyChecking=no" -o "AddressFamily inet"',
+            '%s -T %s@%s -p %s -o "StrictHostKeyChecking=no"',
             [$command, $sftp['username'], $this->lookupHostViaAlternateNameserver($sftp['host']), $sftp['port']]
         );
     }
