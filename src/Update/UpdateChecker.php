@@ -51,6 +51,16 @@ class UpdateChecker implements
     public const UPDATE_VARS_COLOR = "\e[38;5;45m";
 
     /**
+     * File to store the last notification time
+     */
+    public const LAST_NOTIFICATION_FILE = 'last_update_notification';
+
+    /**
+     * Notification frequency in seconds (24 hours)
+     */
+    public const NOTIFICATION_FREQUENCY = 86400;
+
+    /**
      * @var boolean
      */
     private $should_check_for_updates;
@@ -90,15 +100,18 @@ class UpdateChecker implements
             'hide_update_message'
         );
         if ($update_exists && !$should_hide_update) {
-            $this->logger->notice($this->getUpdateNotice(), [
-                'latest_version' => self::UPDATE_VARS_COLOR . $latest_version,
-                'running_version' => self::UPDATE_VARS_COLOR . $running_version,
-                'update_command' => self::UPDATE_VARS_COLOR . (
-                    \Phar::running()
-                        ? self::UPDATE_COMMAND_PHAR
-                        : self::UPDATE_COMMAND
-                ),
-            ]);
+            if ($this->shouldShowNotification()) {
+                $this->logger->notice($this->getUpdateNotice(), [
+                    'latest_version' => self::UPDATE_VARS_COLOR . $latest_version,
+                    'running_version' => self::UPDATE_VARS_COLOR . $running_version,
+                    'update_command' => self::UPDATE_VARS_COLOR . (
+                        \Phar::running()
+                            ? self::UPDATE_COMMAND_PHAR
+                            : self::UPDATE_COMMAND
+                    ),
+                ]);
+                $this->updateLastNotificationTime();
+            }
         }
     }
 
@@ -154,5 +167,33 @@ class UpdateChecker implements
                 self::UPDATE_NOTICE
             )
             . self::DEFAULT_COLOR;
+    }
+
+    /**
+     * Determines if it's time to show a notification based on the time elapsed since last notification
+     *
+     * @return boolean
+     */
+    private function shouldShowNotification()
+    {
+        try {
+            $last_notification = $this->getDataStore()->get(self::LAST_NOTIFICATION_FILE);
+            $current_time = time();
+            return ($current_time - $last_notification->time) > self::NOTIFICATION_FREQUENCY;
+        } catch (TerminusNotFoundException $e) {
+            // If we've never shown a notification before, show it now
+            return true;
+        }
+    }
+
+    /**
+     * Updates the timestamp of the last notification
+     */
+    private function updateLastNotificationTime()
+    {
+        $notification_data = (object)[
+            'time' => time()
+        ];
+        $this->getDataStore()->set(self::LAST_NOTIFICATION_FILE, $notification_data);
     }
 }
