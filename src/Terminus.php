@@ -137,11 +137,11 @@ EOD;
         $this->addPluginsCommandsAndHooks();
 
         // Configure the data store for the update checker
-        $token_store = new FileStore($this->getConfig()->get('tokens_dir'));
-        $this->setDataStore($token_store);
+        $cache_store = new FileStore($this->getConfig()->get('cache_dir'));
+        $this->setDataStore($cache_store);
         
         // Configure and run the update checker
-        $update_checker = new Update\UpdateChecker($token_store);
+        $update_checker = new Update\UpdateChecker($cache_store);
         $update_checker->setConfig($this->getConfig());
         $update_checker->setContainer($this->getContainer());
         $update_checker->setLogger($this->logger);
