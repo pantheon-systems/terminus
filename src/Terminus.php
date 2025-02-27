@@ -48,6 +48,7 @@ use Symfony\Component\Filesystem\Filesystem;
 use SelfUpdate\SelfUpdateCommand;
 use Pantheon\Terminus\Hooks\CommandTracker;
 use Symfony\Component\EventDispatcher\EventDispatcher;
+use Pantheon\Terminus\Update\UpdateChecker;
 
 /**
  * Class Terminus
@@ -130,6 +131,14 @@ EOD;
         $this->setLogger($container->get('logger'));
         $this->addBuiltInCommandsAndHooks();
         $this->addPluginsCommandsAndHooks();
+
+        // Configure and run the update checker
+        $token_store = new FileStore($this->getConfig()->get('tokens_dir'));
+        $update_checker = new Update\UpdateChecker($token_store);
+        $update_checker->setConfig($this->getConfig());
+        $update_checker->setContainer($this->getContainer());
+        $update_checker->setLogger($this->getLogger());
+        $update_checker->run();
 
         $container->get('eventDispatcher')->addSubscriber($container->get('Pantheon\Terminus\Hooks\CommandTracker'));
 
