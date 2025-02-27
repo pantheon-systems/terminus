@@ -11,6 +11,8 @@ use League\Container\ContainerAwareTrait;
 use Pantheon\Terminus\Collections\SavedTokens;
 use Pantheon\Terminus\Collections\Sites;
 use Pantheon\Terminus\Config\ConfigAwareTrait;
+use Pantheon\Terminus\DataStore\DataStoreAwareInterface;
+use Pantheon\Terminus\DataStore\DataStoreAwareTrait;
 use Pantheon\Terminus\DataStore\FileStore;
 use Pantheon\Terminus\Helpers\LocalMachineHelper;
 use Pantheon\Terminus\Helpers\Traits\CommandExecutorTrait;
@@ -58,6 +60,7 @@ use Pantheon\Terminus\Update\UpdateChecker;
 class Terminus implements
     ConfigAwareInterface,
     ContainerAwareInterface,
+    DataStoreAwareInterface,
     LoggerAwareInterface,
     IOAwareInterface
 {
@@ -66,6 +69,7 @@ class Terminus implements
     use LoggerAwareTrait;
     use CommandExecutorTrait;
     use IO;
+    use DataStoreAwareTrait;
 
     /**
      * @var \Robo\Runner
@@ -132,12 +136,15 @@ EOD;
         $this->addBuiltInCommandsAndHooks();
         $this->addPluginsCommandsAndHooks();
 
-        // Configure and run the update checker
+        // Configure the data store for the update checker
         $token_store = new FileStore($this->getConfig()->get('tokens_dir'));
+        $this->setDataStore($token_store);
+        
+        // Configure and run the update checker
         $update_checker = new Update\UpdateChecker($token_store);
         $update_checker->setConfig($this->getConfig());
         $update_checker->setContainer($this->getContainer());
-        $update_checker->setLogger($this->getLogger());
+        $update_checker->setLogger($this->logger);
         $update_checker->run();
 
         $container->get('eventDispatcher')->addSubscriber($container->get('Pantheon\Terminus\Hooks\CommandTracker'));
