@@ -23,27 +23,33 @@ class WaitCommand extends TerminusCommand implements SiteAwareInterface
      * @command workflow:wait
      * @param $site_env_id The pantheon site to wait for.
      * @param $description The workflow description to wait for. Optional; default is code sync.
-     * @option start Ignore any workflows started prior to the start time (epoch)
-     * @option commit Commit sha to wait for
+     * @option start Ignore any workflows started prior to the start time (epoch). Required if --commit is not provided.
+     * @option commit Commit sha to wait for. Required if --start is not provided.
      * @option max Maximum number of seconds to wait for the workflow to complete
      */
     public function workflowWait(
         $site_env_id,
         $description = '',
         $options = [
-          'start' => 0,
+          'start' => null,
           'commit' => '',
           'max' => 180,
         ]
     ) {
+        // Validate that at least one of start or commit is provided
+        if (is_null($options['start']) && empty($options['commit'])) {
+            throw new \Exception('You must specify either --start or --commit');
+        }
+
         list($site, $env) = $this->getSiteEnv($site_env_id);
         $env_name = $env->getName();
 
         $startTime = $options['start'];
-        if (!$startTime) {
+        if (is_null($startTime)) {
             $startTime = time() - 60;
         }
-        if (!empty($options['target_commit'])) {
+        
+        if (!empty($options['commit'])) {
             $this->waitForCommit($startTime, $site, $env_name, $options['commit'], $options['max']);
             return;
         }
@@ -159,14 +165,14 @@ class WaitCommand extends TerminusCommand implements SiteAwareInterface
             $wfl = $wflc->fetch()->findLatestFromOptionsArray([
                 'target_commit' => $target_commit,
             ]);
-            if ($startTime->diff(new \DateTime())->s > $options['max']) {
-                throw new TerminusException('Exceeded maximum wait time of {max} seconds.', ['max' => $options['max']]);
+            if ($startTime->diff(new \DateTime())->s > $maxWaitInSeconds) {
+                throw new TerminusException('Exceeded maximum wait time of {max} seconds.', ['max' => $maxWaitInSeconds]);
             }
         }
 
         while (!$wfl->isFinished()) {
-            if ($startTime->diff(new \DateTime())->s > $options['max']) {
-                throw new TerminusException('Exceeded maximum wait time of {max} seconds.', ['max' => $options['max']]);
+            if ($startTime->diff(new \DateTime())->s > $maxWaitInSeconds) {
+                throw new TerminusException('Exceeded maximum wait time of {max} seconds.', ['max' => $maxWaitInSeconds]);
             }
             $this->log()->notice('Waiting for workflow {id} to complete.', ['id' => $wfl->id,]);
             sleep($this->getConfig()->get('refresh_workflow_delay', 30));
