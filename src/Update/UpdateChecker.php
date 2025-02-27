@@ -150,6 +150,10 @@ class UpdateChecker implements
      */
     private function getRunningVersion()
     {
+        // For testing purposes, allow overriding the version
+        if (!empty(getenv('TERMINUS_TEST_OUTDATED_VERSION'))) {
+            return '0.0.1'; // Return very old version to trigger update notice
+        }
         return $this->getConfig()->get('version');
     }
 
