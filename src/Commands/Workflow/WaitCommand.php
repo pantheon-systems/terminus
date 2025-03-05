@@ -48,7 +48,7 @@ class WaitCommand extends TerminusCommand implements SiteAwareInterface
         if (is_null($startTime)) {
             $startTime = time() - 60;
         }
-        
+
         if (!empty($options['commit'])) {
             $this->waitForCommit($startTime, $site, $env_name, $options['commit'], $options['max']);
             return;
