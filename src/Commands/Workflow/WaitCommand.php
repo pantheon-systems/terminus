@@ -166,13 +166,19 @@ class WaitCommand extends TerminusCommand implements SiteAwareInterface
                 'target_commit' => $target_commit,
             ]);
             if ($startTime->diff(new \DateTime())->s > $maxWaitInSeconds) {
-                throw new TerminusException('Exceeded maximum wait time of {max} seconds.', ['max' => $maxWaitInSeconds]);
+                throw new TerminusException(
+                    'Exceeded maximum wait time of {max} seconds.',
+                    ['max' => $maxWaitInSeconds]
+                );
             }
         }
 
         while (!$wfl->isFinished()) {
             if ($startTime->diff(new \DateTime())->s > $maxWaitInSeconds) {
-                throw new TerminusException('Exceeded maximum wait time of {max} seconds.', ['max' => $maxWaitInSeconds]);
+                throw new TerminusException(
+                    'Exceeded maximum wait time of {max} seconds.',
+                    ['max' => $maxWaitInSeconds]
+                );
             }
             $this->log()->notice('Waiting for workflow {id} to complete.', ['id' => $wfl->id,]);
             sleep($this->getConfig()->get('refresh_workflow_delay', 30));
