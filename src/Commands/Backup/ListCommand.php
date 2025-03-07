@@ -33,7 +33,7 @@ class ListCommand extends BackupCommand
      * @param array $options
      * @return RowsOfFields
      *
-     * @option string $element [all|code|files|database|db] DEPRECATED Backup element filter
+     * @option string $element [all|code|files|database|db] Backup element filter
      *
      * @usage <site>.<env> Lists all backups made of <site>'s <env> environment.
      * @usage <site>.<env> --element=<element> Lists all <element> backups made of <site>'s <env> environment.

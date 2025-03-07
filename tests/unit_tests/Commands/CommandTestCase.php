@@ -178,10 +178,6 @@ abstract class CommandTestCase extends TerminusTestCase
 
     /**
      * Responds to the confirmation prompt
-     *
-     * @deprecated 1.0.1 This is a test for the incorrect way to do this and will be removed in the future.
-     *
-     * @todo Remove this when removing TerminusCommand::confirm()
      */
     protected function expectConfirmation()
     {
