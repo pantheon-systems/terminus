@@ -439,18 +439,6 @@ class Request implements
                     'message' => $jsonException->getMessage()
                 ]);
             }
-        } else {
-            $expectedContentLength = !empty($headers['Content-Length'][0]);
-            $expectedContentStatusCode = !in_array($statusCode, [204, 304]);
-            if ($expectedContentStatusCode || $expectedContentLength) {
-                $this->logger->debug(
-                    'Response body is empty, but status code is {status_code} and content length is {content_length}.',
-                    [
-                        'status_code' => $statusCode,
-                        'content_length' => $headers['Content-Length'][0] ?? 'unknown',
-                    ]
-                );
-            }
         }
 
         return new RequestOperationResult([
