@@ -441,7 +441,6 @@ class Request implements
             }
         } elseif (
             !in_array($statusCode, [204, 304]) ||
-            $method === 'DELETE' ||
             empty($headers['Content-Length'][0])
         ) {
             $this->logger->debug(
