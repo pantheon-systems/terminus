@@ -423,30 +423,38 @@ class Request implements
         $body = $response->getBody()->getContents();
         $statusCode = $response->getStatusCode();
         $headers = $response->getHeaders();
+        $decoded_body = null;
 
-        // Don't attempt to decode JSON if the response is expected to have no body.
-        if (
-            !in_array($statusCode, [204, 304], true)
-            && (!isset($headers['Content-Length']) || $headers['Content-Length'][0] != '0')
-            && !empty($body)
-        ) {
+        // Don't attempt to decode JSON if the body is empty.
+        if (!empty($body)) {
             try {
-                $body = \json_decode(
+                $decoded_body = \json_decode(
                     $body,
                     false,
                     512,
                     JSON_THROW_ON_ERROR
                 );
             } catch (\JsonException $jsonException) {
-                $this->logger->debug($jsonException->getMessage());
-                $body = null;
+                $this->logger->debug('json_decode exception: {message}', [
+                    'message' => $jsonException->getMessage()
+                ]);
             }
-        } else {
-            $body = null;
+        } elseif (
+            !in_array($statusCode, [204, 304]) ||
+            $method === 'DELETE' ||
+            empty($headers['Content-Length'][0])
+        ) {
+            $this->logger->debug(
+                'Response body is empty, but status code is {status_code} and content length is {content_length}.',
+                [
+                    'status_code' => $statusCode,
+                    'content_length' => $headers['Content-Length'][0] ?? 'unknown',
+                ]
+            );
         }
 
         return new RequestOperationResult([
-            'data' => $body,
+            'data' => $decoded_body,
             'headers' => $headers,
             'status_code' => $statusCode,
             'status_code_reason' => $response->getReasonPhrase(),
