@@ -7,11 +7,7 @@
 ---
 
 # App
-<<<<<<< HEAD
 TERMINUS_VERSION: '4.0.0-dev'
-=======
-TERMINUS_VERSION: '3.6.3-dev'
->>>>>>> c6199230 ([DEVX-4421] Version back to dev (#2673))
 
 # Connectivity
 TERMINUS_HOST:        'terminus.pantheon.io'
