@@ -1,7 +1,12 @@
 # Change Log
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org)
 
-## 3.6.2-dev -
+## 3.6.3-dev
+
+
+## 3.6.2 - 2025-03-03
+- Pass verbose flag to ssh if terminus is in verbose mode (#2663)
+- Bug fix: backup:restore with --file parameter restores backups multiple ties (#2664)
 
 ## 3.6.1 - 2024-12-04
 
