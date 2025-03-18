@@ -421,21 +421,42 @@ class Request implements
             $options
         );
         $body = $response->getBody()->getContents();
-        try {
-            $body = \json_decode(
-                $body,
-                false,
-                512,
-                JSON_THROW_ON_ERROR
-            );
-        } catch (\JsonException $jsonException) {
-            $this->logger->debug($jsonException->getMessage());
+        $statusCode = $response->getStatusCode();
+        $headers = $response->getHeaders();
+        $decoded_body = null;
+
+        // Don't attempt to decode JSON if the body is empty.
+        if (!empty($body)) {
+            try {
+                $decoded_body = \json_decode(
+                    $body,
+                    false,
+                    512,
+                    JSON_THROW_ON_ERROR
+                );
+            } catch (\JsonException $jsonException) {
+                $this->logger->debug('json_decode exception: {message}', [
+                    'message' => $jsonException->getMessage()
+                ]);
+            }
+        } else {
+            $expectedContentLength = !empty($headers['Content-Length'][0]);
+            $expectedContentStatusCode = !in_array($statusCode, [204, 304]);
+            if ($expectedContentStatusCode || $expectedContentLength) {
+                $this->logger->debug(
+                    'Response body is empty, but status code is {status_code} and content length is {content_length}.',
+                    [
+                        'status_code' => $statusCode,
+                        'content_length' => $headers['Content-Length'][0] ?? 'unknown',
+                    ]
+                );
+            }
         }
 
         return new RequestOperationResult([
-            'data' => $body,
-            'headers' => $response->getHeaders(),
-            'status_code' => $response->getStatusCode(),
+            'data' => $decoded_body,
+            'headers' => $headers,
+            'status_code' => $statusCode,
             'status_code_reason' => $response->getReasonPhrase(),
         ]);
     }
