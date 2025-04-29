@@ -21,6 +21,8 @@ class CreateCommand extends SiteCommand
      * Creates a new site.
      *
      * @authorize
+     * @interact all
+     * @interact-options-exclude upstream_id
      *
      * @command site:create
      *

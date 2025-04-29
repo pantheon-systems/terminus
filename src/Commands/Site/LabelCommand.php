@@ -22,6 +22,8 @@ class LabelCommand extends SiteCommand
      * Changes the site label
      *
      * @authorize
+     * @interact
+     * @interact-options-exclude site_name
      *
      * @command site:label:set
      * @alias set-label

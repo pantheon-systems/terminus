@@ -315,6 +315,7 @@ EOD;
         $this->commands = [
             'Pantheon\\Terminus\\Hooks\\Authorizer',
             'Pantheon\\Terminus\\Hooks\\CommandTracker',
+            'Pantheon\\Terminus\\Hooks\\Interacter',
             'Pantheon\\Terminus\\Hooks\\RoleValidator',
             'Pantheon\\Terminus\\Hooks\\SiteEnvLookup',
             'Pantheon\\Terminus\\Commands\\AliasesCommand',
