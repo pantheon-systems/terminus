@@ -22,7 +22,7 @@ class CreateCommand extends SiteCommand
      *
      * @authorize
      * @interact all
-     * @interact-options-exclude site_name,upstream_id
+     * @interact-options-exclude site_name
      *
      * @command site:create
      *
