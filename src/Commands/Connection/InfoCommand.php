@@ -20,6 +20,7 @@ class InfoCommand extends TerminusCommand implements SiteAwareInterface
      * Displays connection information for Git, SFTP, MySQL, and Redis.
      *
      * @authorize
+     * @interact
      *
      * @command connection:info
      *

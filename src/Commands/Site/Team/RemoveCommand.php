@@ -20,6 +20,7 @@ class RemoveCommand extends TerminusCommand implements SiteAwareInterface
      * Removes a user from a site team.
      *
      * @authorize
+     * @interact
      *
      * @command site:team:remove
      * @aliases site:team:rm

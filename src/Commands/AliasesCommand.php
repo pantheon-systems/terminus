@@ -24,6 +24,7 @@ class AliasesCommand extends TerminusCommand implements SiteAwareInterface
      * Refer to https://docs.pantheon.io/guides/drush/drush-aliases#manage-available-site-aliases-lists for more information.
      *
      * @authorize
+     * @interact
      *
      * @command aliases
      * @aliases drush:aliases alpha:aliases

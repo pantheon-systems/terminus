@@ -22,6 +22,7 @@ class CodeRebuildCommand extends TerminusCommand implements SiteAwareInterface
      * Moves code to the specified environment's runtime from the associated git branch, retriggering Composer builds for sites using Integrated Composer. (Not applicable for Test and Live environments which run on git tags made from the Dev environment's git history.)
      *
      * @authorize
+     * @interact
      *
      * @command env:code-rebuild
      * @aliases code-rebuild

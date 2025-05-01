@@ -17,6 +17,7 @@ class ApplyCommand extends UpdatesCommand
      * Applies upstream updates to a site development environment.
      *
      * @authorize
+     * @interact
      *
      * @command upstream:updates:apply
      *

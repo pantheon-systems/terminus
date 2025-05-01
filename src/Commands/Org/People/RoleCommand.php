@@ -17,6 +17,7 @@ class RoleCommand extends TerminusCommand
      * Changes a user role within an organization.
      *
      * @authorize
+     * @interact
      *
      * @command org:people:role
      * @aliases org:ppl:role

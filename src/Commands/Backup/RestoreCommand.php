@@ -18,6 +18,7 @@ class RestoreCommand extends SingleBackupCommand
      * Restores a specific backup or the latest backup.
      *
      * @authorize
+     * @interact
      *
      * @command backup:restore
      *

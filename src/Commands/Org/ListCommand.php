@@ -23,6 +23,7 @@ class ListCommand extends TerminusCommand implements OrganizationAwareInterface
      *
      * @authorize
      * @filter-output
+     * @interact
      *
      * @command org:list
      * @aliases orgs

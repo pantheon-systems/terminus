@@ -20,6 +20,7 @@ class DisableCommand extends TerminusCommand implements SiteAwareInterface
      * Disables New Relic for a site.
      *
      * @authorize
+     * @interact
      *
      * @command new-relic:disable
      *

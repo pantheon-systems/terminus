@@ -20,6 +20,7 @@ class RemoveCommand extends TerminusCommand implements SiteAwareInterface
      * Disassociates a domain from the environment.
      *
      * @authorize
+     * @interact
      *
      * @command domain:remove
      * @aliases domain:rm

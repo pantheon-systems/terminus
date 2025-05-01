@@ -26,6 +26,7 @@ class CreateCommand extends TerminusCommand implements SiteAwareInterface
      * then it will be used when the new environment is created.
      *
      * @authorize
+     * @interact
      *
      * @command multidev:create
      * @aliases env:create

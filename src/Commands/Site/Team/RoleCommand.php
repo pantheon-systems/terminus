@@ -21,6 +21,7 @@ class RoleCommand extends TerminusCommand implements SiteAwareInterface
      * Updates a user role on a site team.
      *
      * @authorize
+     * @interact
      *
      * @command site:team:role
      *

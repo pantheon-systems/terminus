@@ -10,6 +10,7 @@ class DeleteCommand extends TerminusCommand
      * Deletes a currently logged-in user machine token.
      *
      * @authorize
+     * @interact
      *
      * @command machine-token:delete
      * @aliases mt:delete

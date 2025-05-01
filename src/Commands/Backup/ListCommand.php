@@ -19,6 +19,7 @@ class ListCommand extends BackupCommand
      *
      * @authorize
      * @filter-output
+     * @interact
      *
      * @command backup:list
      * @aliases backups

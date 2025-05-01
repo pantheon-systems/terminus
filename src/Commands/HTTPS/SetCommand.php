@@ -21,6 +21,7 @@ class SetCommand extends TerminusCommand implements SiteAwareInterface
      * Enables HTTPS and/or updates the SSL certificate for the environment.
      *
      * @authorize
+     * @interact
      *
      * @command https:set
      * @aliases https:add https:enable

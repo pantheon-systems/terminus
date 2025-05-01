@@ -20,6 +20,7 @@ class SetCommand extends TerminusCommand implements SiteAwareInterface
      * Changes a site plan.
      *
      * @authorize
+     * @interact
      *
      * @command plan:set
      *

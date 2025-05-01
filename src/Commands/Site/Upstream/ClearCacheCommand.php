@@ -20,6 +20,7 @@ class ClearCacheCommand extends TerminusCommand implements SiteAwareInterface
      * Clears caches for the site codeserver.
      *
      * @authorize
+     * @interact
      *
      * @command site:upstream:clear-cache
      * @aliases site:upstream:cc upstream:cache-clear upstream:cc

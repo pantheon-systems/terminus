@@ -20,6 +20,9 @@ class WaitCommand extends TerminusCommand implements SiteAwareInterface
      * for code commits, since Terminus will already wait for workflows
      * that it starts through the API.
      *
+     * @authorize
+     * @interact
+     *
      * @command workflow:wait
      * @param $site_env_id The pantheon site to wait for.
      * @param $description The workflow description to wait for. Optional; default is code sync.

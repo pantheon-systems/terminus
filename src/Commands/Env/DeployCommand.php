@@ -25,6 +25,7 @@ class DeployCommand extends TerminusCommand implements SiteAwareInterface
      *   - Deploying the Live environment will deploy code from the Test environment.
      *
      * @authorize
+     * @interact
      *
      * @command env:deploy
      * @aliases deploy

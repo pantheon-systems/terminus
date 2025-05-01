@@ -30,6 +30,7 @@ class CommitAndPushCommand extends TerminusCommand implements SiteAwareInterface
      * Commit local changes to remote repository.
      *
      * @authorize
+     * @interact
      *
      * @command local:commitAndPush
      * @aliases lcp

@@ -21,6 +21,7 @@ class WakeCommand extends TerminusCommand implements SiteAwareInterface
      * Note: Development environments and Sandbox sites will automatically sleep after a period of inactivity.
      *
      * @authorize
+     * @interact
      *
      * @command env:wake
      *

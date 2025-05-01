@@ -19,6 +19,7 @@ class EnableCommand extends TerminusCommand implements SiteAwareInterface
      * Enables automatic daily backups that are retained for one week and weekly backups retained for one month.
      *
      * @authorize
+     * @interact
      *
      * @command backup:automatic:enable
      *

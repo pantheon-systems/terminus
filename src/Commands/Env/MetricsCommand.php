@@ -45,6 +45,7 @@ class MetricsCommand extends TerminusCommand implements SiteAwareInterface
      * returned.
      *
      * @authorize
+     * @interact
      *
      * @command env:metrics
      * @aliases metrics,alpha:env:metrics,alpha:metrics

@@ -22,6 +22,7 @@ class EnableCommand extends TerminusCommand implements SiteAwareInterface
      * Note: HTTP basic authentication username and password are stored in plaintext.
      *
      * @authorize
+     * @interact
      *
      * @command lock:enable
      *

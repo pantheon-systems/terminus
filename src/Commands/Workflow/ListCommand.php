@@ -21,6 +21,7 @@ class ListCommand extends TerminusCommand implements SiteAwareInterface
      * Displays the list of the workflows for a site.
      *
      * @authorize
+     * @interact
      *
      * @command workflow:list
      * @aliases workflows

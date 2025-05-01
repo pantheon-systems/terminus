@@ -24,6 +24,7 @@ class CloneCommand extends TerminusCommand implements SiteAwareInterface, Config
      * CLone a copy of the site code into $HOME/pantheon-local-copies
      *
      * @authorize
+     * @interact
      *
      * @command local:clone
      * @aliases lc

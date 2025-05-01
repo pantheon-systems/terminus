@@ -21,6 +21,7 @@ class RemoveCommand extends TerminusCommand implements SiteAwareInterface
      * Disables HTTPS and removes the SSL certificate from the environment.
      *
      * @authorize
+     * @interact
      *
      * @command https:remove
      * @aliases https:disable https:rm

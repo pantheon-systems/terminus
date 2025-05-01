@@ -20,6 +20,7 @@ class DNSCommand extends TerminusCommand implements SiteAwareInterface
      * Displays recommended DNS settings for the environment.
      *
      * @authorize
+     * @interact
      *
      * @command domain:dns
      *
