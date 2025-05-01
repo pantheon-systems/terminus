@@ -31,12 +31,8 @@ class UpdateChecker implements
 
     public const DEFAULT_COLOR = "\e[0m";
 
-    public const UPDATE_COMMAND = 'You can update Terminus by running `composer '
-        . 'update` or using the Terminus installer:'
-        . PHP_EOL
-        . 'curl -O https://raw.githubusercontent.com/pantheon-systems/terminus-installer/master/builds/installer.phar '
-        . '&& php installer.phar update'
-        . '&& php installer.phar update';
+    public const UPDATE_COMMAND = 'You can update Terminus by running `terminus '
+        . 'self:update` or using Homebrew.' . PHP_EOL;
 
     public const UPDATE_COMMAND_PHAR = 'You can update Terminus by running:' . PHP_EOL . 'terminus self:update';
 
