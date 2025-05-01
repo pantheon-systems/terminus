@@ -230,6 +230,10 @@ class Interacter implements ConfigAwareInterface, ContainerAwareInterface, Sessi
         $user = $this->session()->getUser();
         $upstream_list = $user->getUpstreams()->all();
         foreach ($upstream_list as $upstream) {
+            if ($upstream->get('type') === 'product') {
+                // Skip product upstreams.
+                continue;
+            }
             $upstreams[$upstream->id] = $upstream->get('label');
         }
         return $upstreams;
