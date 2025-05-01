@@ -49,11 +49,6 @@ class Interacter implements ConfigAwareInterface, ContainerAwareInterface, Sessi
             return;
         }
 
-        if ($this->getConfig()->get('disable_interactive')) {
-            // If we are not in interactive mode, then nothing to do.
-            return;
-        }
-
         $command_name = $annotationData->get('command');
         if (empty($command_name)) {
             // Nothing to do if no command name is provided.
@@ -132,6 +127,11 @@ class Interacter implements ConfigAwareInterface, ContainerAwareInterface, Sessi
      */
     public function isInteractive(InputInterface $input): bool
     {
+        if ($this->getConfig()->get('disable_interactive')) {
+            // If we are not in interactive mode, then nothing to do.
+            return false;
+        }
+
         if (!$input->isInteractive()) {
             // If we are not in interactive mode, then never use a tty.
             return false;
@@ -167,8 +167,14 @@ class Interacter implements ConfigAwareInterface, ContainerAwareInterface, Sessi
         }
     }
 
-    // This is a placeholder for the inferTypeFromName method.
-    protected function inferTypeFromName(string $name): string {
+    /**
+     * Infer the type of the argument based on its name.
+     *
+     * @param string $name The name of the argument.
+     *
+     * @return string The inferred type.
+     */
+    public function inferTypeFromName(string $name): string {
         switch ($name) {
             case 'org':
             case 'organization':
@@ -191,7 +197,7 @@ class Interacter implements ConfigAwareInterface, ContainerAwareInterface, Sessi
         }
     }
 
-    protected function getOrganizationList($allow_empty = false): array {
+    public function getOrganizationList($allow_empty = false): array {
         $organizations = [];
         if ($allow_empty) {
             $organizations[''] = 'None';
@@ -205,7 +211,7 @@ class Interacter implements ConfigAwareInterface, ContainerAwareInterface, Sessi
         return $organizations;
     }
 
-    protected function getRegionList($allow_empty = false): array {
+    public function getRegionList($allow_empty = false): array {
         $regions = [];
         if ($allow_empty) {
             $regions[''] = 'None';
@@ -217,7 +223,7 @@ class Interacter implements ConfigAwareInterface, ContainerAwareInterface, Sessi
         return $regions;
     }
 
-    protected function getUpstreamList($allow_empty = false): array {
+    public function getUpstreamList($allow_empty = false): array {
         $upstreams = [];
         if ($allow_empty) {
             $upstreams[''] = 'None';
