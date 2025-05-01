@@ -174,11 +174,6 @@ class Interacter implements ConfigAwareInterface, ContainerAwareInterface, Sessi
             case 'organization':
                 return 'organization';
 
-            case 'site':
-            case 'site_id':
-            case 'site_name':
-                return 'site';
-
             case 'upstream':
             case 'upstream_id':
                 return 'upstream';
@@ -237,19 +232,6 @@ class Interacter implements ConfigAwareInterface, ContainerAwareInterface, Sessi
             $upstreams[$upstream->id] = $upstream->get('label');
         }
         return $upstreams;
-    }
-
-    protected function getSiteList($allow_empty = false): array {
-        $sites = [];
-        if ($allow_empty) {
-            $sites[''] = 'None';
-        }
-        $user = $this->session()->getUser();
-        $site_list = $user->getSites();
-        foreach ($site_list as $site) {
-            $sites[$site->id] = $site->get('name');
-        }
-        return $sites;
     }
 
 }
