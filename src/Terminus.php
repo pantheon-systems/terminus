@@ -139,7 +139,7 @@ EOD;
         // Configure the data store for the update checker
         $cache_store = new FileStore($this->getConfig()->get('cache_dir'));
         $this->setDataStore($cache_store);
-        
+
         // Configure and run the update checker
         $update_checker = new Update\UpdateChecker($cache_store);
         $update_checker->setConfig($this->getConfig());
