@@ -442,7 +442,7 @@ class Request implements
         }
 
         return new RequestOperationResult([
-            'data' => $decoded_body,
+            'data' => $decoded_body ?? $body,
             'headers' => $headers,
             'status_code' => $statusCode,
             'status_code_reason' => $response->getReasonPhrase(),
