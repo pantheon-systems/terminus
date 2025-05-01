@@ -421,21 +421,30 @@ class Request implements
             $options
         );
         $body = $response->getBody()->getContents();
-        try {
-            $body = \json_decode(
-                $body,
-                false,
-                512,
-                JSON_THROW_ON_ERROR
-            );
-        } catch (\JsonException $jsonException) {
-            $this->logger->debug($jsonException->getMessage());
+        $statusCode = $response->getStatusCode();
+        $headers = $response->getHeaders();
+        $decoded_body = null;
+
+        // Don't attempt to decode JSON if the body is empty.
+        if (!empty($body)) {
+            try {
+                $decoded_body = \json_decode(
+                    $body,
+                    false,
+                    512,
+                    JSON_THROW_ON_ERROR
+                );
+            } catch (\JsonException $jsonException) {
+                $this->logger->debug('json_decode exception: {message}', [
+                    'message' => $jsonException->getMessage()
+                ]);
+            }
         }
 
         return new RequestOperationResult([
-            'data' => $body,
-            'headers' => $response->getHeaders(),
-            'status_code' => $response->getStatusCode(),
+            'data' => $decoded_body ?? $body,
+            'headers' => $headers,
+            'status_code' => $statusCode,
             'status_code_reason' => $response->getReasonPhrase(),
         ]);
     }

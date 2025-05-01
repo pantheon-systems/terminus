@@ -1126,6 +1126,26 @@ class Environment extends TerminusModel implements
         return $response['data']->BUILD_STEP;
     }
 
+    /**
+     * Checks if the environment belongs to an eVCS site.
+     *
+     * @return bool
+     */
+    public function isEvcsSite()
+    {
+        $path = sprintf(
+            'sites/%s/environments/%s/variables',
+            $this->getSite()->id,
+            $this->id
+        );
+        $options = ['method' => 'get',];
+        $response = $this->request()->request($path, $options);
+        if (empty($response['data']) || !isset($response['data']->IS_EVCS_SITE)) {
+            return false;
+        }
+        return $response['data']->IS_EVCS_SITE;
+    }
+
 
     public function __toString()
     {

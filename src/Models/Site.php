@@ -551,34 +551,6 @@ class Site extends TerminusModel implements
     }
 
     /**
-     * Update service level
-     *
-     * @deprecated 2.0.0 This is no longer the appropriate way to change a
-     *     site's plan. Use $this->getPlans()->set().
-     *
-     * @param string $service_level Level to set service on site to
-     *
-     * @return Workflow
-     * @throws TerminusException|\Exception
-     */
-    public function updateServiceLevel($service_level)
-    {
-        try {
-            return $this->getWorkflows()->create(
-                'change_site_service_level',
-                ['params' => compact('service_level'),]
-            );
-        } catch (\Exception $e) {
-            if ($e->getCode() == 403) {
-                throw new TerminusException(
-                    'A payment method is required to increase the service level of this site.'
-                );
-            }
-            throw $e;
-        }
-    }
-
-    /**
      * @return bool
      */
     public function valid(): bool
