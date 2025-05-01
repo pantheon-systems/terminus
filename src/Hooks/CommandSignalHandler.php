@@ -40,7 +40,8 @@ class CommandSignalHandler implements EventSubscriberInterface, RequestAwareInte
     /**
      * Track command.
      */
-    public function trackCommand(ConsoleSignalEvent $event) {
+    public function trackCommand(ConsoleSignalEvent $event)
+    {
         $startTime = Timing::getStartTime();
         $exitCode = $event->getExitCode();
         if ($exitCode === 0) {

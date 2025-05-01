@@ -149,7 +149,9 @@ EOD;
         $update_checker->run();
 
         $container->get('eventDispatcher')->addSubscriber($container->get('Pantheon\Terminus\Hooks\CommandTracker'));
-        $container->get('eventDispatcher')->addSubscriber($container->get('Pantheon\Terminus\Hooks\CommandSignalHandler'));
+        $container->get('eventDispatcher')->addSubscriber(
+            $container->get('Pantheon\Terminus\Hooks\CommandSignalHandler')
+        );
 
         // We can't use Robo\Application addSelfUpdateCommand because if plugin manager is running it won't be a phar from there.
         if (!empty(\Phar::running())) {
