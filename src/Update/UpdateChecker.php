@@ -174,6 +174,10 @@ class UpdateChecker implements
     {
         try {
             $last_notification = $this->getDataStore()->get(self::LAST_NOTIFICATION_FILE);
+            if (empty($last_notification->time)) {
+                // If we have no time, show the notification
+                return true;
+            }
             $current_time = time();
             return ($current_time - $last_notification->time) > self::NOTIFICATION_FREQUENCY;
         } catch (TerminusNotFoundException $e) {
