@@ -6,7 +6,6 @@ use Pantheon\Terminus\Hooks\Interacter;
 use Symfony\Component\Console\Input\ArgvInput;
 use Pantheon\Terminus\Config\TerminusConfig;
 
-
 /**
  * Class InteracterHookTest
  *
@@ -14,7 +13,6 @@ use Pantheon\Terminus\Config\TerminusConfig;
  */
 class InteracterHookTest extends TerminusTestBase
 {
-
     /**
      * @var Pantheon\Terminus\Hooks\Interacter
      */

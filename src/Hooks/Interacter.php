@@ -15,7 +15,6 @@ use Symfony\Component\Console\Input\InputArgument;
 use Pantheon\Terminus\Session\SessionAwareInterface;
 use Pantheon\Terminus\Session\SessionAwareTrait;
 
-
 /**
  * Class Interacter
  * @package Pantheon\Terminus\Hooks
@@ -27,15 +26,15 @@ class Interacter implements ConfigAwareInterface, ContainerAwareInterface, Sessi
     use SessionAwareTrait;
 
     /**
-     * Gets required arguments in an interactive way.
+     * Gets arguments and options in an interactive way.
      * The Annotated Commands hook manager will call this function during the interact phase
      * of any command that has an 'interact' annotation.
-     * 
+     *
      * Possible tag values:
      * - only-required-arguments: Only required arguments will be asked for. (default)
      * - all-arguments: All arguments will be asked for.
      * - all: All arguments and options will be asked for.
-     * 
+     *
      * Also configurable through the 'interact-options-exclude' tag to exclude presenting options for the excluded arguments/options.
      *
      * @hook interact @interact
@@ -99,7 +98,14 @@ class Interacter implements ConfigAwareInterface, ContainerAwareInterface, Sessi
                 // If the argument is already set, skip it.
                 continue;
             }
-            $value = $this->ask($io, $interact_options_exclude, false, $name, $argument->getDescription(), $argument->getDefault());
+            $value = $this->ask(
+                $io,
+                $interact_options_exclude,
+                false,
+                $name,
+                $argument->getDescription(),
+                $argument->getDefault()
+            );
             if (empty($value)) {
                 continue;
             }
@@ -112,7 +118,14 @@ class Interacter implements ConfigAwareInterface, ContainerAwareInterface, Sessi
                 // If the option is already set, skip it.
                 continue;
             }
-            $value = $this->ask($io, $interact_options_exclude, true, $name, $option->getDescription(), $option->getDefault());
+            $value = $this->ask(
+                $io,
+                $interact_options_exclude,
+                true,
+                $name,
+                $option->getDescription(),
+                $option->getDefault()
+            );
             if (empty($value)) {
                 continue;
             }
@@ -145,7 +158,14 @@ class Interacter implements ConfigAwareInterface, ContainerAwareInterface, Sessi
         return stream_isatty(STDIN) && stream_isatty(STDOUT);
     }
 
-    protected function ask(SymfonyStyle $io, array $interact_options_exclude, bool $allow_empty, string $name, string $description, $default = null): ?string {
+    protected function ask(
+        SymfonyStyle $io,
+        array $interact_options_exclude,
+        bool $allow_empty,
+        string $name,
+        string $description,
+        $default = null
+    ): ?string {
         $type = $this->inferTypeFromName($name);
 
         switch ($type) {
@@ -174,7 +194,8 @@ class Interacter implements ConfigAwareInterface, ContainerAwareInterface, Sessi
      *
      * @return string The inferred type.
      */
-    public function inferTypeFromName(string $name): string {
+    public function inferTypeFromName(string $name): string
+    {
         switch ($name) {
             case 'org':
             case 'organization':
@@ -197,7 +218,8 @@ class Interacter implements ConfigAwareInterface, ContainerAwareInterface, Sessi
         }
     }
 
-    public function getOrganizationList($allow_empty = false): array {
+    public function getOrganizationList($allow_empty = false): array
+    {
         $organizations = [];
         if ($allow_empty) {
             $organizations[''] = 'None';
@@ -211,7 +233,8 @@ class Interacter implements ConfigAwareInterface, ContainerAwareInterface, Sessi
         return $organizations;
     }
 
-    public function getRegionList($allow_empty = false): array {
+    public function getRegionList($allow_empty = false): array
+    {
         $regions = [];
         if ($allow_empty) {
             $regions[''] = 'None';
@@ -223,7 +246,8 @@ class Interacter implements ConfigAwareInterface, ContainerAwareInterface, Sessi
         return $regions;
     }
 
-    public function getUpstreamList($allow_empty = false): array {
+    public function getUpstreamList($allow_empty = false): array
+    {
         $upstreams = [];
         if ($allow_empty) {
             $upstreams[''] = 'None';
@@ -239,5 +263,4 @@ class Interacter implements ConfigAwareInterface, ContainerAwareInterface, Sessi
         }
         return $upstreams;
     }
-
 }
