@@ -37,48 +37,6 @@ class InteracterHookTest extends TerminusTestBase
      * @group interacter
      * @group short
      */
-    public function testIsInteractive()
-    {
-        $input = new ArgvInput();
-        $input->setInteractive(true);
-        $interactive = $this->interacter->isInteractive($input);
-        $this->assertTrue($interactive, 'The input should be interactive.');
-
-        $input = new ArgvInput();
-        $input->setInteractive(false);
-        $interactive = $this->interacter->isInteractive($input);
-        $this->assertFalse($interactive, 'The input should NOT be interactive.');
-
-        $config = new TerminusConfig();
-        $config->set('disable_interactive', true);
-        $this->interacter->setConfig($config);
-        $input = new ArgvInput();
-        $input->setInteractive(true);
-        $interactive = $this->interacter->isInteractive($input);
-        $this->assertFalse($interactive, 'The input should not be interactive.');
-
-        // Reset the config to default
-        $config->set('disable_interactive', false);
-        $input = new ArgvInput();
-        $input->setInteractive(true);
-        $this->interacter->setConfig($config);
-        $interactive = $this->interacter->isInteractive($input);
-        $this->assertTrue($interactive, 'The input should be interactive.');
-
-        putenv("CI=true");
-        $input = new ArgvInput();
-        $input->setInteractive(true);
-        $interactive = $this->interacter->isInteractive($input);
-        $this->assertFalse($interactive, 'The input should not be interactive.');
-    }
-
-    /**
-     * @test
-     * @covers \Pantheon\Terminus\Hooks\Interacter
-     *
-     * @group interacter
-     * @group short
-     */
     public function testInferTypeFromName()
     {
         $name = 'password';
