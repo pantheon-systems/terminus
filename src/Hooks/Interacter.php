@@ -44,6 +44,16 @@ class Interacter implements ConfigAwareInterface, ContainerAwareInterface, Sessi
      */
     public function interact(InputInterface $input, OutputInterface $output, AnnotationData $annotationData)
     {
+        if (!$this->isInteractive($input)) {
+            // If we are not in interactive mode, then nothing to do.
+            return;
+        }
+
+        if ($this->getConfig()->get('disable_interactive')) {
+            // If we are not in interactive mode, then nothing to do.
+            return;
+        }
+
         $command_name = $annotationData->get('command');
         if (empty($command_name)) {
             // Nothing to do if no command name is provided.
@@ -113,6 +123,26 @@ class Interacter implements ConfigAwareInterface, ContainerAwareInterface, Sessi
             }
             $input->setOption($name, $value);
         }
+    }
+
+    /**
+     * Determine whether the use of a tty is appropriate.
+     *
+     * @return bool
+     */
+    public function isInteractive(InputInterface $input): bool
+    {
+        if (!$input->isInteractive()) {
+            // If we are not in interactive mode, then never use a tty.
+            return false;
+        }
+
+        if (getenv('CI') === 'true') {
+            // If we are in a CI environment, then never use a tty.
+            return false;
+        }
+
+        return stream_isatty(STDIN) && stream_isatty(STDOUT);
     }
 
     protected function ask(SymfonyStyle $io, array $interact_options_exclude, bool $allow_empty, string $name, string $description, $default = null): ?string {
