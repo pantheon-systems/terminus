@@ -1,8 +1,18 @@
 # Change Log
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org)
 
-## 4.0.0-dev -
+## 4.0.0 - 2025-05-07
 
+### Added
+
+- Readd update check and prompt to update when running an old Terminus version (#2669)
+- Prompt for missing required arguments when in interactive mode (#2684)
+
+### Fixed
+
+- Track commands even if it gets killed (#2685)
+- Response json_decode should fallback to original body text (#2687)
+- Simplify env:wake command (#2689)
 
 ## 4.0.0-alpha1 - 2025-03-06
 
