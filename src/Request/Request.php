@@ -379,16 +379,50 @@ class Request implements
         } else {
             $uri = $path;
         }
-        $body = $debug_body = null;
+        $actual_guzzle_request_constructor_body = null; // Body for new \GuzzleHttp\Psr7\Request()
+        $payload_for_logging_raw = null; // Raw payload to be processed for logging
+
         if (isset($options['form_params'])) {
-            $debug_body = $this->stripSensitiveInfo($options['form_params']);
-            $body = json_encode(
+            $payload_for_logging_raw = $options['form_params']; // This is an array
+            $actual_guzzle_request_constructor_body = json_encode(
                 $options['form_params'],
                 JSON_UNESCAPED_SLASHES
             );
+            // Unset form_params as we've processed it into $actual_guzzle_request_constructor_body
+            // Guzzle's send() method should not also see $options['form_params'] if we provide a body to the Request constructor.
             unset($options['form_params']);
             $headers['Content-Type'] = 'application/json';
-            $headers['Content-Length'] = strlen($body);
+            // Content-Length will be set by Guzzle or the HTTP client based on the final body.
+        } elseif (isset($options['json'])) {
+            $payload_for_logging_raw = $options['json']; // This is an array
+            // $actual_guzzle_request_constructor_body remains null. Guzzle's send() will use $options['json'].
+        } elseif (isset($options['body'])) {
+            if (is_string($options['body'])) {
+                // Attempt to decode if it's a JSON string, for better stripping if it's an array.
+                $decoded_json_body = json_decode($options['body'], true);
+                if (json_last_error() === JSON_ERROR_NONE && is_array($decoded_json_body)) {
+                    $payload_for_logging_raw = $decoded_json_body;
+                } else {
+                    $payload_for_logging_raw = $options['body']; // Log as string
+                }
+            } elseif (is_resource($options['body']) || $options['body'] instanceof \Psr\Http\Message\StreamInterface) {
+                $payload_for_logging_raw = '[Stream/Resource Body]';
+            } else {
+                $payload_for_logging_raw = '[Unknown Body Type]';
+            }
+            // $actual_guzzle_request_constructor_body remains null. Guzzle's send() will use $options['body'].
+        }
+
+        $logged_body_json_string = 'null'; // Default for logging if no body content
+        if (is_array($payload_for_logging_raw)) {
+            $logged_body_json_string = json_encode(
+                $this->stripSensitiveInfo($payload_for_logging_raw),
+                JSON_UNESCAPED_SLASHES
+            );
+        } elseif (is_string($payload_for_logging_raw)) {
+            // For strings (e.g. pre-encoded JSON string not decoded to array, or placeholders)
+            // We json_encode it to ensure it's a valid JSON value within the overall log JSON.
+            $logged_body_json_string = json_encode($payload_for_logging_raw, JSON_UNESCAPED_SLASHES);
         }
 
         $method = isset($options['method']) ? strtoupper(
@@ -403,10 +437,7 @@ class Request implements
                 ),
                 'uri' => $uri,
                 'method' => $method,
-                'body' => json_encode(
-                    $this->stripSensitiveInfo($debug_body),
-                    JSON_UNESCAPED_SLASHES
-                ),
+                'body' => $logged_body_json_string, // Use the new comprehensive body logging
             ]
         );
         //Required objects and arrays stir benign warnings.
@@ -416,9 +447,9 @@ class Request implements
                 $method,
                 $uri,
                 $headers,
-                $body
+                $actual_guzzle_request_constructor_body // Use the body derived from form_params, or null
             ),
-            $options
+            $options // Guzzle will use $options['json'] or $options['body'] if $actual_guzzle_request_constructor_body is null
         );
         $body = $response->getBody()->getContents();
         $statusCode = $response->getStatusCode();
