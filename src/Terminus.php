@@ -49,7 +49,6 @@ use Pantheon\Terminus\Config\YamlConfig;
 use Symfony\Component\Filesystem\Filesystem;
 use SelfUpdate\SelfUpdateCommand;
 use Pantheon\Terminus\Hooks\CommandTracker;
-use Pantheon\Terminus\Hooks\CommandSignalHandler;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Pantheon\Terminus\Update\UpdateChecker;
 
@@ -149,9 +148,6 @@ EOD;
         $update_checker->run();
 
         $container->get('eventDispatcher')->addSubscriber($container->get('Pantheon\Terminus\Hooks\CommandTracker'));
-        $container->get('eventDispatcher')->addSubscriber(
-            $container->get('Pantheon\Terminus\Hooks\CommandSignalHandler')
-        );
 
         // We can't use Robo\Application addSelfUpdateCommand because if plugin manager is running it won't be a phar from there.
         if (!empty(\Phar::running())) {
@@ -236,9 +232,6 @@ EOD;
 
         // Command Tracker
         $container->add(CommandTracker::class);
-
-        // Command Signal Handler
-        $container->add(CommandSignalHandler::class);
 
         // Install our command cache into the command factory
         $commandCacheDir = $this->getConfig()->get('command_cache_dir');
@@ -337,7 +330,6 @@ EOD;
         // List of all hooks and commands. Update via 'composer update-class-lists'
         $this->commands = [
             'Pantheon\\Terminus\\Hooks\\Authorizer',
-            'Pantheon\\Terminus\\Hooks\\CommandSignalHandler',
             'Pantheon\\Terminus\\Hooks\\CommandTracker',
             'Pantheon\\Terminus\\Hooks\\Interacter',
             'Pantheon\\Terminus\\Hooks\\RoleValidator',
