@@ -10,7 +10,6 @@ All notable changes to this project will be documented in this file. This projec
 
 ### Fixed
 
-- Track commands even if it gets killed (#2685)
 - Response json_decode should fallback to original body text (#2687)
 - Simplify env:wake command (#2689)
 
