@@ -1004,6 +1004,15 @@ class Environment extends TerminusModel implements
      */
     public function wake(int $maxRetries = 3, int $delay = 5): array
     {
+        $this->logger->debug(
+            'Waking {site} environment {env} with {maxRetries} retries and {delay} seconds delay',
+            [
+                'site' => $this->getSite()->getName(),
+                'env' => $this->id,
+                'maxRetries' => $maxRetries,
+                'delay' => $delay,
+            ]
+        );
         $domains = array_filter(
             $this->getDomains()->all(),
             function ($domain) {
@@ -1022,11 +1031,23 @@ class Environment extends TerminusModel implements
         $lastError = null;
 
         while ($attempt < $maxRetries && !$success) {
+            $this->logger->debug(
+                'Attempt {attempt} to wake {site} environment {env}',
+                [
+                    'attempt' => $attempt + 1,
+                    'site' => $this->getSite()->getName(),
+                    'env' => $this->id,
+                ]
+            );
             $lastError = null;
             $attempt++;
             try {
                 $response = $this->request()->request(
                     "https://{$domain->id}/pantheon_healthcheck"
+                );
+                $this->logger->debug(
+                    'Response: {response}',
+                    ['response' => $response]
                 );
                 $success = ($response['status_code'] === 200);
                 if ($success) {
