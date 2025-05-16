@@ -37,7 +37,7 @@ class CodeRebuildCommand extends TerminusCommand implements SiteAwareInterface
         $site_env
     ) {
         $this->requireSiteIsNotFrozen($site_env);
-        $site = $this->getSite($site_env);
+        $site = $this->getSiteById($site_env);
         $env = $this->getEnv($site_env);
 
         if ($env->getName() === 'test' || $env->getName() === 'live') {
