@@ -603,6 +603,17 @@ EOD;
         return count($dependencies) > 0;
     }
 
+    /**
+     * Automatically reload plugins when dependencies are missing.
+     */
+    public function autoReloadPlugins(): void
+    {
+        $reloadCommand = new \Pantheon\Terminus\Commands\Self\Plugin\ReloadCommand();
+        $reloadCommand->setConfig($this->getConfig());
+        $reloadCommand->setLogger($this->logger);
+        $reloadCommand->reload();
+    }
+
     public static function factory($dependencies_version = null): Terminus
     {
         $input = new ArgvInput($_SERVER['argv']);
@@ -626,8 +637,6 @@ EOD;
         $terminus = new static($config, $input, $output);
 
         if ($dependencies_folder_absent && $terminus->hasPlugins()) {
-            $omit_reload_warning = false;
-
             $input_string = (string) $input;
             $plugin_reload_command_names = [
                 'self:plugin:reload',
@@ -635,18 +644,25 @@ EOD;
                 'plugin:reload',
                 'plugin:refresh',
             ];
+            
+            $is_reload_command = false;
             foreach ($plugin_reload_command_names as $command_name) {
                 if (strpos($input_string, $command_name) !== false) {
-                    $omit_reload_warning = true;
+                    $is_reload_command = true;
                     break;
                 }
             }
 
-            if (!$omit_reload_warning) {
-                $terminus->logger->warning(
-                    'Could not load plugins because Terminus was upgraded. ' .
-                    'Please run terminus self:plugin:reload to refresh.',
-                );
+            if (!$is_reload_command) {
+                $terminus->logger->notice('Plugins need to be reloaded due to version change. Running plugin reload...');
+                try {
+                    $terminus->autoReloadPlugins();
+                } catch (\Exception $e) {
+                    $terminus->logger->warning(
+                        'Could not automatically reload plugins: ' . $e->getMessage() . '. ' .
+                        'Please run terminus self:plugin:reload manually.'
+                    );
+                }
             }
         }
         return $terminus;

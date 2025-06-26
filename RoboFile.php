@@ -68,7 +68,9 @@ class RoboFile extends Tasks
     public function updateDependenciesversion()
     {
         $this->say('Checking Terminus plugins dependencies version...');
-        $hash = substr(sha1_file($this->getProjectPath() . DIRECTORY_SEPARATOR . 'composer.lock'), 0, 10);
+        $composerLockHash = sha1_file($this->getProjectPath() . DIRECTORY_SEPARATOR . 'composer.lock');
+        $phpVersionHash = sha1(PHP_VERSION);
+        $hash = substr(sha1($composerLockHash . $phpVersionHash), 0, 10);
         $binFileContents = file_get_contents(
             $this->getProjectPath() . DIRECTORY_SEPARATOR . 'bin' . DIRECTORY_SEPARATOR . 'terminus'
         );
