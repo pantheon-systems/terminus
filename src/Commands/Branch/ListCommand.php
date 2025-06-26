@@ -7,7 +7,7 @@ use Pantheon\Terminus\Commands\TerminusCommand;
 use Pantheon\Terminus\Commands\StructuredListTrait;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
-use Pantheon\Terminus\Exceptions\TerminusIcrSiteException;
+use Pantheon\Terminus\Exceptions\TerminusEvcsSiteException;
 
 /**
  * Class ListCommand
@@ -42,8 +42,8 @@ class ListCommand extends TerminusCommand implements SiteAwareInterface
     {
         try {
             return $this->getRowsOfFields($this->getSiteById($site_id)->getBranches());
-        } catch (TerminusIcrSiteException $e) {
-            $this->log()->notice("This is an ICR site, branches are managed in the external VCS.");
+        } catch (TerminusEvcsSiteException $e) {
+            $this->log()->notice("This command is not supported for sites using version control systems external to Pantheon.");
             $this->log()->debug($e->getMessage());
             return;
         }

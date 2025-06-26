@@ -15,7 +15,7 @@ use League\Container\ContainerAwareInterface;
 use League\Container\ContainerAwareTrait;
 use Pantheon\Terminus\Config\ConfigAwareTrait;
 use Pantheon\Terminus\Exceptions\TerminusException;
-use Pantheon\Terminus\Exceptions\TerminusIcrSiteException;
+use Pantheon\Terminus\Exceptions\TerminusEvcsSiteException;
 use Pantheon\Terminus\Helpers\LocalMachineHelper;
 use Pantheon\Terminus\Helpers\Utility\TraceId;
 use Pantheon\Terminus\Session\SessionAwareInterface;
@@ -442,9 +442,9 @@ class Request implements
             }
         }
 
-        if ($response->getStatusCode() == 409 && $body == "icr_site") {
-            // This request is expected to fail for an ICR site, throw exception that will be catched down the road.
-            throw new TerminusIcrSiteException("This is an ICR site.");
+        if ($response->getStatusCode() == 409 && $body == "evcs_site") {
+            // This request is expected to fail for an eVCS site, throw exception that will be catched down the road.
+            throw new TerminusEvcsSiteException("This is a site with an external version control system so this is not supported.");
         }
 
         return new RequestOperationResult([

@@ -7,7 +7,7 @@ use Pantheon\Terminus\Commands\WorkflowProcessingTrait;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 use Pantheon\Terminus\Exceptions\TerminusException;
-use Pantheon\Terminus\Exceptions\TerminusIcrSiteException;
+use Pantheon\Terminus\Exceptions\TerminusEvcsSiteException;
 
 /**
  * Class SetCommand.
@@ -66,9 +66,9 @@ class SetCommand extends TerminusCommand implements SiteAwareInterface
         try {
             $mode = strtolower($mode ?? '');
             $workflow = $env->changeConnectionMode($mode);
-        } catch (TerminusIcrSiteException $e) {
+        } catch (TerminusEvcsSiteException $e) {
             $this->log()->debug($e->getMessage());
-            $this->log()->notice("This is an ICR site, connection mode switching is not currently supported.");
+            $this->log()->notice("This command is not supported for sites using version control systems external to Pantheon.");
             return;
         } catch (TerminusException $e) {
             $message = $e->getMessage();

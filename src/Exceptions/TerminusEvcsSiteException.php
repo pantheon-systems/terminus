@@ -3,9 +3,9 @@
 namespace Pantheon\Terminus\Exceptions;
 
 /**
- * Class TerminusIcrSiteException
+ * Class TerminusEvcsSiteException
  * @package Pantheon\Terminus\Exceptions
  */
-class TerminusIcrSiteException extends TerminusException
+class TerminusEvcsSiteException extends TerminusException
 {
 }
