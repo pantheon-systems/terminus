@@ -10,10 +10,10 @@ use Pantheon\Terminus\Collections\Commits;
 use Pantheon\Terminus\Collections\Domains;
 use Pantheon\Terminus\Collections\EnvironmentMetrics;
 use Pantheon\Terminus\Collections\Workflows;
-use Pantheon\Terminus\Helpers\LocalMachineHelper;
+use Pantheon\Terminus\Exceptions\TerminusException;
 use Pantheon\Terminus\Friends\SiteInterface;
 use Pantheon\Terminus\Friends\SiteTrait;
-use Pantheon\Terminus\Exceptions\TerminusException;
+use Pantheon\Terminus\Helpers\LocalMachineHelper;
 
 /**
  * Class Environment
@@ -981,7 +981,6 @@ class Environment extends TerminusModel implements
             $username = "{$this->id}.{$site->id}";
             $domain = "appserver.{$this->id}.{$site->id}.drush.in";
         }
-        $password = 'Use your account password';
         $port = '2222';
         $url = "sftp://$username@$domain:$port";
         $command = "sftp -o Port=$port $username@$domain";
@@ -989,18 +988,21 @@ class Environment extends TerminusModel implements
             'username' => $username,
             'host' => $domain,
             'port' => $port,
-            'password' => $password,
             'url' => $url,
             'command' => $command,
         ];
     }
 
     /**
-     * "Wake" a site
+     * "Wake" a site with retries
      *
+     * @param int $maxRetries Maximum number of retries
+     * @param int $delay Delay between retries in seconds
      * @return array
+     *
+     * @throws \Pantheon\Terminus\Exceptions\TerminusException
      */
-    public function wake()
+    public function wake(int $maxRetries = 3, int $delay = 5): array
     {
         $domains = array_filter(
             $this->getDomains()->all(),
@@ -1009,16 +1011,49 @@ class Environment extends TerminusModel implements
                 return (!empty($domain_type) && "platform" == $domain_type);
             }
         );
+
+        if (empty($domains)) {
+            throw new TerminusException('No valid domains found for health check.');
+        }
+
         $domain = array_pop($domains);
-        $response = $this->request()->request(
-            "https://{$domain->id}/pantheon_healthcheck"
-        );
-        return [
-            'success' => ($response['status_code'] === 200),
-            'styx' => $response['headers']['X-Pantheon-Styx-Hostname'],
-            'response' => $response,
-            'target' => $domain->id,
-        ];
+        $attempt = 0;
+        $success = false;
+        $lastError = null;
+
+        while ($attempt < $maxRetries && !$success) {
+            $lastError = null;
+            $attempt++;
+            try {
+                $response = $this->request()->request(
+                    "https://{$domain->id}/pantheon_healthcheck"
+                );
+                $success = ($response['status_code'] === 200);
+                if ($success) {
+                    return [
+                        'success' => true,
+                        'styx' => $response['headers']['X-Pantheon-Styx-Hostname'],
+                        'response' => $response,
+                        'target' => $domain->id,
+                    ];
+                }
+            } catch (\Exception $e) {
+                $lastError = $e;
+                $success = false;
+            }
+
+            if (!$success) {
+                sleep($delay); // Delay before retrying
+            }
+        }
+
+        if ($lastError) {
+            throw new TerminusException(
+                'Failed to wake the site after ' . $maxRetries . ' attempts. Last error: ' . $lastError->getMessage()
+            );
+        }
+
+        throw new TerminusException('Failed to wake the site after ' . $maxRetries . ' attempts.');
     }
 
     /**
@@ -1089,6 +1124,26 @@ class Environment extends TerminusModel implements
             return false;
         }
         return $response['data']->BUILD_STEP;
+    }
+
+    /**
+     * Checks if the environment belongs to an eVCS site.
+     *
+     * @return bool
+     */
+    public function isEvcsSite()
+    {
+        $path = sprintf(
+            'sites/%s/environments/%s/variables',
+            $this->getSite()->id,
+            $this->id
+        );
+        $options = ['method' => 'get',];
+        $response = $this->request()->request($path, $options);
+        if (empty($response['data']) || !isset($response['data']->IS_EVCS_SITE)) {
+            return false;
+        }
+        return $response['data']->IS_EVCS_SITE;
     }
 
 

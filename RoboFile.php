@@ -1,5 +1,7 @@
 <?php
 
+use CzProject\GitPhp\Git;
+use CzProject\GitPhp\GitException;
 use Pantheon\Terminus\Config\ConfigAwareTrait;
 use Pantheon\Terminus\Helpers\CommandCoverageReport;
 use Pantheon\Terminus\Terminus;
@@ -207,6 +209,124 @@ class RoboFile extends Tasks
     }
 
     /**
+     * Generates a test commit.
+     *
+     * @throws \Pantheon\Terminus\Exceptions\TerminusException
+     * @throws GitException
+     */
+    public function generateTestCommit()
+    {
+        $this->output()->writeln('Getting the Site Repo');
+        // get the git host and port from terminus
+        $commandResponse = $this->getTerminus()->execute(
+            '%s connection:info %s.dev --fields=git_host,git_port --format=json',
+            [
+                $this->getProjectPath() . "/terminus.phar",
+                $this->getSiteName(),
+            ]
+        );
+
+        // check if the command was successful
+        if ($commandResponse[1] !== 0) {
+            $this->output()->writeln('Failed to retrieve git host and port');
+            exit(1);
+        }
+
+        // decode the json response
+        $gitInfo = json_decode($commandResponse[0], true);
+        $this->output()->writeln('Retrieved git host and port' . print_r($gitInfo, true));
+
+        // check if the git host and port were retrieved
+        if (!isset($gitInfo['git_host']) || !isset($gitInfo['git_port'])) {
+            $this->output()->writeln('Failed to retrieve git host and port');
+            exit(1);
+        }
+
+        // Does the known_hosts file exist?
+        if (!file_exists(sprintf("%s/.ssh/known_hosts", getenv("HOME")))) {
+            // if not, create one
+            touch(sprintf("%s/.ssh/known_hosts", getenv("HOME")));
+        }
+
+        // get the contents of the known_hosts file
+        $knownHosts = file_get_contents(sprintf("%s/.ssh/known_hosts", getenv("HOME")));
+        // check if the git host is already in the known_hosts file
+        if (!str_contains($knownHosts, $gitInfo['git_host'])) {
+            // if not, add it
+            $this->output()->writeln('Adding the git host to known hosts file');
+            $addGitHostToKnownHostsCommand = sprintf(
+                'ssh-keyscan -p %d %s >> ~/.ssh/known_hosts',
+                $gitInfo['git_port'],
+                $gitInfo['git_host']
+            );
+            $this->output()->writeln($addGitHostToKnownHostsCommand);
+            exec($addGitHostToKnownHostsCommand);
+        }
+
+        // checkout the branch related to this test run
+        $clonedPath = sprintf(
+            "%s/pantheon-local-copies/%s",
+            getenv("HOME"),
+            $this->getSiteName()
+        );
+        if (is_dir($clonedPath)) {
+            // make sure you're working with a clean copy of the repo
+            exec("rm -rf {$clonedPath}");
+        }
+        $this->output()->writeln(sprintf('Cloning the site repository to %s', $clonedPath));
+        // get the git host and port from terminus
+        $commandResponse = $this->getTerminus()->execute(
+            '%s local:clone %s',
+            [
+                $this->getProjectPath() . "/terminus.phar",
+                $this->getSiteName(),
+            ]
+        );
+
+        $response = "";
+        try {
+            $git = new Git();
+            $repo = $git->open($clonedPath);
+            chdir($clonedPath);
+            $branches = $repo->getBranches();
+            if (!in_array($this->getSiteEnv(), $branches)) {
+                $this->output()->writeln(sprintf('Creating the %s branch', $this->getSiteEnv()));
+                // Create the branch
+                $repo->createBranch($this->getSiteEnv());
+            }
+            // Check out the branch in question
+            $repo->checkout($this->getSiteEnv());
+            // create a text file
+            $testFilePath = sprintf('%s/test.txt', $clonedPath);
+            file_put_contents($testFilePath, 'test');
+            // add the file to the repository
+            $repo->addFile("test.txt");
+            // commit the file
+            $repo->commit('Test commit');
+            // push the commit
+            $response = $repo->execute(
+                'push',
+                'origin',
+                $this->getSiteEnv(),
+            );
+        } catch (GitException $e) {
+            $this->output()->writeln(["Git Exception:", $e->getMessage()]);
+            $this->output()->writeln(print_r($response, true));
+            exit(1);
+        } catch (Exception $e) {
+            $this->output()->writeln($e->getMessage());
+            $this->output()->writeln(print_r($response, true));
+            exit(1);
+        }
+
+        // get the last commit
+        $commit = $repo->getLastCommit();
+        // output the commit id
+        $this->output()->writeln($commit->getId());
+        return $commit->getId();
+    }
+
+    /**
      * Returns the absolute path to the project.
      *
      * @return string
@@ -214,5 +334,22 @@ class RoboFile extends Tasks
     private function getProjectPath(): string
     {
         return dirname(__FILE__);
+    }
+
+
+    /**
+     * @return string
+     */
+    private function getSiteName(): string
+    {
+        return getenv('TERMINUS_SITE') ?? 'ci-terminus-composer';
+    }
+
+    /**
+     * @return string
+     */
+    private function getSiteEnv(): string
+    {
+        return getenv('TERMINUS_ENV') ?? 'dev';
     }
 }

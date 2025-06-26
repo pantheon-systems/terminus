@@ -22,61 +22,6 @@ use Pantheon\Terminus\Models\Site;
 class WorkflowTest extends ModelTestCase
 {
     /**
-     * Tests the Workflow::checkProgress() function
-     */
-    public function testCheckProgress()
-    {
-        $site = $this->getMockBuilder(Site::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $site->id = 'site id';
-        $workflow_id = 'workflow id';
-        $workflow = new Workflow(
-            (object)['id' => $workflow_id,],
-            ['site' => $site,]
-        );
-
-        $this->request->expects($this->once())
-            ->method('request')
-            ->willReturn(['data' => ['result' => 'succeeded',],]);
-
-        $workflow->setRequest($this->request);
-
-        $this->assertTrue($workflow->checkProgress());
-    }
-
-    /**
-     * Tests the Workflow::checkProgress() function when the workflow has failed
-     */
-    public function testCheckProgressFailure()
-    {
-        $message = 'reason message';
-        $site = $this->getMockBuilder(Site::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $site->id = 'site id';
-        $workflow_id = 'workflow id';
-        $workflow = new Workflow((object)['id' => $workflow_id,], ['site' => $site,]);
-        $final_task = (object)[
-            'messages' => ['message' => (object)['message' => ['message'],],],
-            'reason' => $message,
-        ];
-
-        $this->request->expects($this->at(0))
-            ->method('request')
-            ->willReturn(['data' => ['result' => null,],]);
-        $this->request->expects($this->at(1))
-            ->method('request')
-            ->willReturn(['data' => ['result' => 'failed', 'final_task' => $final_task,],]);
-
-        $this->setExpectedException(TerminusException::class, $message);
-
-        $workflow->setRequest($this->request);
-        $this->assertFalse($workflow->checkProgress());
-        $this->assertNull($workflow->checkProgress());
-    }
-
-    /**
      * Tests the Workflow::fetchWithLogs() and ::getUrl() functions
      */
     public function testFetchWithLogs()

@@ -16,23 +16,19 @@
     "php": ">=7.4",
     "ext-json": "*",
     "composer/semver": "^3",
-    "consolidation/comments": "^1.0.2",
+    "consolidation/comments": "^1.0.2 || ^2",
     "consolidation/filter-via-dot-access-data": "^2.0",
     "consolidation/output-formatters": "^4",
-    "consolidation/robo": "^3",
+    "consolidation/robo": "^3 || ^5",
     "consolidation/self-update": "^2.0.4",
     "consolidation/site-alias": "^4.0",
     "czproject/git-php": "^4.0",
     "guzzlehttp/guzzle": "^7.0",
     "justinrainbow/json-schema": "^5.2",
-    "league/container": "^3.4",
+    "league/container": "^4.2",
     "monolog/monolog": "^2.2",
-    "psy/psysh": "^0.11.9",
+    "psy/psysh": "^0.12.6",
     "rogervila/array-diff-multidimensional": "^2.0",
-    "symfony/console": "^5",
-    "symfony/finder": "^5",
-    "symfony/process": "^5",
-    "symfony/yaml": "^5",
     "twig/twig": "^3.3"
   },
   "require-dev": {
@@ -41,8 +37,6 @@
     "erusev/parsedown": "^1.7",
     "friendsofphp/php-cs-fixer": "^3.17",
     "pcov/clobber": "^2.0",
-    "php-coveralls/php-coveralls": "^2.4",
-    "php-vcr/php-vcr": "~1.5.2",
     "phpunit/php-code-coverage": "^9.2",
     "phpunit/phpcov": "^8.2",
     "phpunit/phpunit": "^9",
@@ -116,14 +110,17 @@
     "test:behat": [
       "SHELL_INTERACTIVE=true TERMINUS_TEST_MODE=1 behat --colors --config tests/config/behat.yml --stop-on-failure --suite=default"
     ],
+    "tests:unit": [
+      "vendor/bin/phpunit --colors=always -c ./phpunit.xml --debug  --testsuite unit --do-not-cache-result --verbose --stop-on-failure"
+    ],
     "test:short": [
-      "XDEBUG_MODE=coverage vendor/bin/phpunit --colors=always -c ./phpunit.xml --debug --group=short --do-not-cache-result --verbose --stop-on-failure"
+      "XDEBUG_MODE=coverage vendor/bin/phpunit --colors=always -c ./phpunit.xml --debug --testsuite functional --group=short --do-not-cache-result --verbose --stop-on-failure"
     ],
     "test:long": [
-      "XDEBUG_MODE=coverage vendor/bin/phpunit --colors=always -c ./phpunit.xml --debug --group=long --do-not-cache-result --verbose"
+      "XDEBUG_MODE=coverage vendor/bin/phpunit --colors=always -c ./phpunit.xml --debug --testsuite functional  --group=long --do-not-cache-result --verbose"
     ],
     "test:functional": [
-      "XDEBUG_MODE=coverage vendor/bin/phpunit --colors=always -c ./phpunit.xml --debug --group=short,long --do-not-cache-result --verbose",
+      "XDEBUG_MODE=coverage vendor/bin/phpunit --colors=always -c ./phpunit.xml --debug --testsuite functional  --group=short,long --do-not-cache-result --verbose",
       "@coverage"
     ],
     "test:all": [
@@ -157,7 +154,7 @@
     "php-cs-fixer": [
       "vendor/bin/php-cs-fixer fix ./src --rules=@PSR12",
       "vendor/bin/php-cs-fixer fix ./tests/Functional --rules=@PSR12",
-      "vendor/bin/php-cs-fixer fix ./tests/unit_tests --rules=@PSR12"
+      "vendor/bin/php-cs-fixer fix ./tests/Unit --rules=@PSR12"
     ]
   },
   "config": {
@@ -166,7 +163,7 @@
     "preferred-install": "dist",
     "sort-packages": true,
     "platform": {
-      "php": "7.4"
+      "php": "8.2.26"
     },
     "allow-plugins": {
       "phpstan/extension-installer": true

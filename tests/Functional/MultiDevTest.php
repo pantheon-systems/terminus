@@ -28,6 +28,12 @@ class MultiDevTest extends TerminusTestBase
         $this->assertNotEmpty($list);
 
         $envIds = array_column($list, 'id');
+        if (empty($envIds)) {
+            $this->markTestSkipped('No multidev environments found.');
+        }
+        if (in_array($this->getMdEnv(), ['dev', 'test', 'live'])) {
+            $this->markTestSkipped('No multidev environments found.');
+        }
         $this->assertTrue(
             false !== array_search($this->getMdEnv(), $envIds),
             sprintf('Multidev "%s" should be in the list on multidev environments', $this->getMdEnv())

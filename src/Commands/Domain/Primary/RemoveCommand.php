@@ -21,6 +21,7 @@ class RemoveCommand extends TerminusCommand implements SiteAwareInterface
      * Removes the primary designation from the primary domain in the site and environment.
      *
      * @authorize
+     * @interact
      *
      * @command domain:primary:remove
      * @aliases domain:primary:rm

@@ -20,6 +20,7 @@ class EnableCommand extends TerminusCommand implements SiteAwareInterface
      * Enables Redis add-on for a site.
      *
      * @authorize
+     * @interact
      *
      * @command redis:enable
      *

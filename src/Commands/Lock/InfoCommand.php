@@ -22,6 +22,7 @@ class InfoCommand extends TerminusCommand implements SiteAwareInterface
      * Displays HTTP basic authentication status and configuration for the environment.
      *
      * @authorize
+     * @interact
      *
      * @command lock:info
      *

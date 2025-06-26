@@ -18,6 +18,7 @@ class GetCommand extends SingleBackupCommand implements RequestAwareInterface
      * Displays the download URL for a specific backup or latest backup.
      *
      * @authorize
+     * @interact
      *
      * @command backup:get
      *

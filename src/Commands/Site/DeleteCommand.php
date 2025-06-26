@@ -20,6 +20,7 @@ class DeleteCommand extends SiteCommand implements SiteAwareInterface
      * Deletes a site from Pantheon.
      *
      * @authorize
+     * @interact
      *
      * @command site:delete
      *

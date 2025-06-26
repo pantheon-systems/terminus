@@ -14,6 +14,7 @@ class OperationsCommand extends InfoBaseCommand
      * Displays Quicksilver operation details of a workflow.
      *
      * @authorize
+     * @interact
      *
      * @command workflow:info:operations
      *

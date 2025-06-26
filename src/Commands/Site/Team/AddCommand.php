@@ -23,6 +23,7 @@ class AddCommand extends TerminusCommand implements SiteAwareInterface
      * Note: An invite will be sent if the email is not associated with a Pantheon account.
      *
      * @authorize
+     * @interact
      *
      * @command site:team:add
      *
@@ -40,14 +41,6 @@ class AddCommand extends TerminusCommand implements SiteAwareInterface
     {
         $site = $this->getSiteById($site_id);
         $team = $site->getUserMemberships();
-
-        if ($role !== SiteUserMembership::ROLE_TEAM_MEMBER && !$site->getFeature('change_management')) {
-            $role = SiteUserMembership::ROLE_TEAM_MEMBER;
-            $this->log()->warning(
-                'Site does not have change management enabled, defaulting to user role {role}.',
-                compact('role')
-            );
-        }
 
         $workflow = $team->create($member, $role);
         $this->processWorkflow($workflow);

@@ -21,6 +21,7 @@ class InfoCommand extends TerminusCommand implements SiteAwareInterface
      * Displays New Relic configuration.
      *
      * @authorize
+     * @interact
      *
      * @command new-relic:info
      *

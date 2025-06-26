@@ -75,7 +75,7 @@ A PHAR file must also be built before running tests.
 
 The functional test files are in the `tests/Functional` directory.
 
-The Terminus 3.x functional tests can be run via:
+The Terminus 4.x functional tests can be run via:
 
   ```bash
   cd /install/location/terminus
@@ -85,6 +85,8 @@ The Terminus 3.x functional tests can be run via:
 This will take some time to complete and will produce a report at the end with any failed or
 skipped tests. To run a specific test, find the test's group in the comments above the test and
 use the command specified in `composer.json` under `test:functional` with `--group=<the-group>`
+
+Tests are grouped by `short` and `long` tests. The `short` tests are those that can be run in about a minute or less and are run by on every push. The `long` tests are those that take longer to run and are only run on merge.
 
 Versioning
 ----------

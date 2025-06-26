@@ -21,6 +21,7 @@ class DisableCommand extends TerminusCommand implements SiteAwareInterface
      * @authorize
      *
      * @command backup:automatic:disable
+     * @interact
      *
      * @param string $site_env Site & environment in the format `site-name.env`
      *

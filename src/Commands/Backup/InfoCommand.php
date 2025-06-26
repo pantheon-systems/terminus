@@ -17,6 +17,7 @@ class InfoCommand extends SingleBackupCommand
      * Displays information about a specific backup or the latest backup.
      *
      * @authorize
+     * @interact
      *
      * @command backup:info
      *

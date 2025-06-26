@@ -17,6 +17,7 @@ class ListCommand extends UpdatesCommand
      *
      * @authorize
      * @filter-output
+     * @interact
      *
      * @command upstream:updates:list
      *

@@ -18,6 +18,8 @@ class RedisCommandsTest extends TerminusTestBase
      */
     public function testRedisEnable()
     {
+        // This usually runs right after site plan change, let's sleep for a bit before continuing.
+        sleep(5);
         $this->assertTerminusCommandSucceedsInAttempts(sprintf('redis:enable %s', $this->getSiteName()));
     }
 

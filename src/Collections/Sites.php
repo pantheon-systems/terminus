@@ -3,6 +3,7 @@
 namespace Pantheon\Terminus\Collections;
 
 use Exception;
+use Pantheon\Terminus\Exceptions\TerminusException;
 use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
 use Pantheon\Terminus\Models\Site;
 use Pantheon\Terminus\Models\SiteOrganizationMembership;
@@ -10,7 +11,6 @@ use Pantheon\Terminus\Models\TerminusModel;
 use Pantheon\Terminus\Models\Workflow;
 use Pantheon\Terminus\Session\SessionAwareInterface;
 use Pantheon\Terminus\Session\SessionAwareTrait;
-use Pantheon\Terminus\Exceptions\TerminusException;
 
 /**
  * Class Sites.
@@ -27,6 +27,11 @@ class Sites extends APICollection implements SessionAwareInterface
      * @var string
      */
     protected $collected_class = Site::class;
+
+    /**
+     * @var array
+     */
+    protected $site_names = [];
 
     /**
      * Creates a new site.
@@ -289,6 +294,10 @@ class Sites extends APICollection implements SessionAwareInterface
      */
     protected function getUuidByName(string $name): string
     {
+        if (isset($this->site_names[$name])) {
+            return $this->site_names[$name];
+        }
+
         $response = $this->request()->request(
             'site-names/' . $name,
             ['method' => 'get',]
@@ -298,7 +307,10 @@ class Sites extends APICollection implements SessionAwareInterface
             throw new TerminusNotFoundException($response->getData());
         }
 
-        return $response->getData()->id;
+        $id = $response->getData()->id;
+        $this->site_names[$name] = $id;
+
+        return $id;
     }
 
     /**

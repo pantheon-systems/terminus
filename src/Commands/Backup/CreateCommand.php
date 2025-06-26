@@ -18,6 +18,7 @@ class CreateCommand extends BackupCommand
      * Creates a backup of a specific site and environment.
      *
      * @authorize
+     * @interact
      *
      * @command backup:create
      *

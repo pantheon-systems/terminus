@@ -26,6 +26,7 @@ class AddCommand extends TerminusCommand implements SiteAwareInterface
      * Sets a domain associated to the environment as primary, causing all traffic to redirect to it.
      *
      * @authorize
+     * @interact
      *
      * @command domain:primary:add
      *

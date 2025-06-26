@@ -19,6 +19,7 @@ class ListCommand extends TerminusCommand
      *
      * @authorize
      * @filter-output
+     * @interact
      *
      * @command ssh-key:list
      * @aliases ssh-keys

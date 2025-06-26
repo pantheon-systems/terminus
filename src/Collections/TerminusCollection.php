@@ -94,6 +94,10 @@ abstract class TerminusCollection implements ContainerAwareInterface, RequestAwa
     public function fetch()
     {
         foreach ($this->getData() as $id => $model_data) {
+            if (!$id && !is_object($model_data)) {
+                // Empty model, just skip it.
+                continue;
+            }
             if (!is_object($model_data)) {
                 // This should always be an object, however occasionally it is returning as a string
                 // We need more information about what it is and to handle the error

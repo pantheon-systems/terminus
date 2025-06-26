@@ -14,6 +14,7 @@ class AddCommand extends TerminusCommand
      * Associates a SSH public key with the currently logged-in user.
      *
      * @authorize
+     * @interact
      *
      * @command ssh-key:add
      *

@@ -63,31 +63,6 @@ class Workflow extends TerminusModel implements
         }
     }
 
-
-    /**
-     * Check on the progress of a workflow. There is no check to prevent API
-     * flooding.
-     *
-     * @DEPRECATED 2.3.1-dev Will be removed at next major release.
-     *  Please use the constituent logic or the WorkflowProcessingTrait
-     *
-     * @return bool Whether the workflow is finished or not
-     * @throws \Pantheon\Terminus\Exceptions\TerminusException
-     */
-    public function checkProgress()
-    {
-        // Fetch the workflow status from the API.
-        $this->fetch();
-        if ($this->isFinished()) {
-            // If the workflow failed then figure out the correct output message and throw an exception.
-            if (!$this->isSuccessful()) {
-                throw new TerminusException($this->getMessage());
-            }
-            return true;
-        }
-        return false;
-    }
-
     /**
      * @return WorkflowOperations
      */
@@ -248,18 +223,6 @@ class Workflow extends TerminusModel implements
     public function isSuccessful()
     {
         return $this->get('result') == 'succeeded';
-    }
-
-    /**
-     * Returns a list of WorkflowOperations for this workflow
-     *
-     * @return WorkflowOperation[]
-     * @deprecated 1.5.1-dev Use $this->getOperations->all() for equivalent
-     *     functionality
-     */
-    public function operations()
-    {
-        return $this->getOperations()->all();
     }
 
     /**

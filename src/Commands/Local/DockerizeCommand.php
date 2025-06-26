@@ -41,6 +41,7 @@ class DockerizeCommand extends TerminusCommand implements
      *  Create new backup of your live site db and download to $HOME/pantheon-local-copies/{Site}/db
      *
      * @authorize
+     * @interact
      *
      * @command local:dockerize
      * @aliases ldz

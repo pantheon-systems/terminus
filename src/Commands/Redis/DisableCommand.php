@@ -20,6 +20,7 @@ class DisableCommand extends TerminusCommand implements SiteAwareInterface
      * Disables Redis add-on for a site.
      *
      * @authorize
+     * @interact
      *
      * @command redis:disable
      *

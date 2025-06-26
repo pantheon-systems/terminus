@@ -17,6 +17,7 @@ use Pantheon\Terminus\Config\ConfigAwareTrait;
 use Pantheon\Terminus\Exceptions\TerminusException;
 use Pantheon\Terminus\Exceptions\TerminusIcrSiteException;
 use Pantheon\Terminus\Helpers\LocalMachineHelper;
+use Pantheon\Terminus\Helpers\Utility\TraceId;
 use Pantheon\Terminus\Session\SessionAwareInterface;
 use Pantheon\Terminus\Session\SessionAwareTrait;
 use Psr\Http\Message\RequestInterface;
@@ -57,28 +58,21 @@ class Request implements
     public const HIDDEN_VALUE_REPLACEMENT = '**HIDDEN**';
 
     public const DEBUG_REQUEST_STRING = "#### REQUEST ####\n"
-    . "Headers: {headers}\n"
-    . "URI: {uri}\n"
-    . "Method: {method}\n"
-    . "Body: {body}";
+        . "Headers: {headers}\n"
+        . "URI: {uri}\n"
+        . "Method: {method}\n"
+        . "Body: {body}";
 
     public const DEBUG_RESPONSE_STRING = "#### RESPONSE ####\n"
-    . "Headers: {headers}\n"
-    . "Data: {data}\n"
-    . "Status Code: {status_code}";
+        . "Headers: {headers}\n"
+        . "Data: {data}\n"
+        . "Status Code: {status_code}";
 
     public const MAX_HEADER_LENGTH = 4096;
 
-    private static $TRACE_ID = null;
-
-     /**
-     * Generate UUID for use as distributed tracing ID and assign to static class variable
-     */
-    public static function generateTraceId()
-    {
-        self::$TRACE_ID = vsprintf('%s%s-%s-%s-%s-%s%s%s', str_split(bin2hex(random_bytes(16)), 4));
-    }
-
+    public const ENVIRONMENT_VARIABLES = [
+        'CI',
+    ];
 
     protected ClientInterface $client;
 
@@ -178,6 +172,11 @@ class Request implements
     {
         $config = $this->getConfig();
         $maxRetries = $config->get('http_max_retries', 5);
+        // Cap max retries at 10.
+        $maxRetries = $maxRetries > 10 ? 10 : $maxRetries;
+        $retryBackoff = $config->get('http_retry_backoff', 5);
+        // Retry backoff should be at least 3.
+        $retryBackoff = $retryBackoff < 3 ? 3 : $retryBackoff;
         $logger = $this->logger;
         $logWarning = function (string $message) use ($logger) {
             if ($this->output()->isVerbose()) {
@@ -192,9 +191,10 @@ class Request implements
             ?Exception $exception = null
         ) use (
             $maxRetries,
-            $logWarning
+            $logWarning,
+            $retryBackoff
         ) {
-            $logWarningOnRetry = fn(string $reason) => 0 === $retry
+            $logWarningOnRetry = fn (string $reason) => 0 === $retry
                 ? $logWarning(
                     sprintf(
                         'HTTP request %s %s has failed: %s',
@@ -218,6 +218,8 @@ class Request implements
                 // Retry on connection-related exceptions such as "Connection refused" and "Operation timed out".
                 if ($retry !== $maxRetries) {
                     $logWarningOnRetry($exception->getMessage());
+                    $logWarning(sprintf("Retrying in %s seconds.", $retryBackoff * ($retry + 1)));
+                    sleep($retryBackoff * ($retry + 1));
 
                     return true;
                 }
@@ -240,6 +242,9 @@ class Request implements
                         'Response body: {body}',
                         ['body' => $response->getBody()->getContents()]
                     );
+
+                    $logWarning(sprintf("Retrying in %s seconds.", $retryBackoff * ($retry + 1)));
+                    sleep($retryBackoff * ($retry + 1));
 
                     return true;
                 }
@@ -417,15 +422,24 @@ class Request implements
             $options
         );
         $body = $response->getBody()->getContents();
-        try {
-            $body = \json_decode(
-                $body,
-                false,
-                512,
-                JSON_THROW_ON_ERROR
-            );
-        } catch (\JsonException $jsonException) {
-            $this->logger->debug($jsonException->getMessage());
+        $statusCode = $response->getStatusCode();
+        $headers = $response->getHeaders();
+        $decoded_body = null;
+
+        // Don't attempt to decode JSON if the body is empty.
+        if (!empty($body)) {
+            try {
+                $decoded_body = \json_decode(
+                    $body,
+                    false,
+                    512,
+                    JSON_THROW_ON_ERROR
+                );
+            } catch (\JsonException $jsonException) {
+                $this->logger->debug('json_decode exception: {message}', [
+                    'message' => $jsonException->getMessage()
+                ]);
+            }
         }
 
         if ($response->getStatusCode() == 409 && $body == "icr_site") {
@@ -434,9 +448,9 @@ class Request implements
         }
 
         return new RequestOperationResult([
-            'data' => $body,
-            'headers' => $response->getHeaders(),
-            'status_code' => $response->getStatusCode(),
+            'data' => $decoded_body ?? $body,
+            'headers' => $headers,
+            'status_code' => $statusCode,
             'status_code_reason' => $response->getReasonPhrase(),
         ]);
     }
@@ -451,8 +465,9 @@ class Request implements
         return [
             'User-Agent' => $this->userAgent(),
             'Accept' => 'application/json',
-            'X-Pantheon-Trace-Id' => self::$TRACE_ID,
+            'X-Pantheon-Trace-Id' => TraceId::getTraceId(),
             'X-Pantheon-Terminus-Command' => $this->terminusCommand(),
+            'X-Pantheon-Terminus-Environment' => $this->terminusEnvironment(),
         ];
     }
 
@@ -495,6 +510,19 @@ class Request implements
         }
 
         return $candidate;
+    }
+
+    /**
+     * Returns terminus execution environment variables as json.
+     */
+    private function terminusEnvironment()
+    {
+        $values = [];
+        foreach (self::ENVIRONMENT_VARIABLES as $var) {
+            $values[$var] = $_SERVER[$var] ?? false;
+        }
+        $values['OS'] = PHP_OS;
+        return json_encode($values);
     }
 
     /**

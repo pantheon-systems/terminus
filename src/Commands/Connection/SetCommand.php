@@ -27,6 +27,7 @@ class SetCommand extends TerminusCommand implements SiteAwareInterface
      * Sets Git or SFTP connection mode on a development environment (excludes Test and Live).
      *
      * @authorize
+     * @interact
      *
      * @command connection:set
      *
@@ -78,7 +79,18 @@ class SetCommand extends TerminusCommand implements SiteAwareInterface
             throw $e;
         }
 
-        $this->processWorkflow($workflow);
+        try {
+            $this->processWorkflow($workflow);
+        } catch (TerminusException $e) {
+            if (strpos($e->getMessage(), 'build_status is building') !== false) {
+                throw new TerminusException(
+                    'Cannot switch to SFTP mode because the most recent Integrated Composer build ' .
+                    'is either still running or encountered errrors.' .
+                    'Please check your latest commit in the dashboard.'
+                );
+            }
+            throw $e;
+        }
         $this->log()->notice($workflow->getMessage());
     }
 }

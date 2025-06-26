@@ -30,6 +30,7 @@ class GetLiveDBCommand extends TerminusCommand implements
      * Create new backup of your live site db and download to $HOME/pantheon-local-copies/db
      *
      * @authorize
+     * @interact
      *
      * @command local:getLiveDB
      * @aliases ldb

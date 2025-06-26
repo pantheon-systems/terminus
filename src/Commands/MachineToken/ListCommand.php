@@ -19,6 +19,7 @@ class ListCommand extends TerminusCommand
      *
      * @authorize
      * @filter-output
+     * @interact
      *
      * @command machine-token:list
      * @aliases machine-tokens mt:list mts

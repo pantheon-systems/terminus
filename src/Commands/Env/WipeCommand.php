@@ -22,6 +22,7 @@ class WipeCommand extends TerminusCommand implements SiteAwareInterface
      * Deletes all files and database content in the environment.
      *
      * @authorize
+     * @interact
      *
      * @command env:wipe
      *

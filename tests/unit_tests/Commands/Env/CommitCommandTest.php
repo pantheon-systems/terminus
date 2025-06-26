@@ -60,9 +60,9 @@ class CommitCommandTest extends EnvCommandTest
         $this->assertNull($out);
     }
 
-  /**
-   * Tests the env:commit command when there are no changes to be committed
-   */
+    /**
+     * Tests the env:commit command when there are no changes to be committed
+     */
     public function testCommitNoChanges()
     {
         $this->environment->expects($this->once())
@@ -81,9 +81,9 @@ class CommitCommandTest extends EnvCommandTest
         $this->assertNull($out);
     }
 
-  /**
-   * Tests the env:commit command when there are no changes to be committed
-   */
+    /**
+     * Tests the env:commit command when there are no changes to be committed
+     */
     public function testCommitForce()
     {
         $message = 'Custom message.';
@@ -110,9 +110,9 @@ class CommitCommandTest extends EnvCommandTest
         $this->assertNull($out);
     }
 
-  /**
-   * Tests the env:commit command when there are no changes to be committed
-   */
+    /**
+     * Tests the env:commit command when there are no changes to be committed
+     */
     public function testCommitForceGitMode()
     {
         $this->environment->expects($this->once())

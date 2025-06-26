@@ -21,6 +21,7 @@ class DeleteCommand extends TerminusCommand implements SiteAwareInterface
      * Deletes a Multidev environment.
      *
      * @authorize
+     * @interact
      *
      * @command multidev:delete
      * @aliases env:delete

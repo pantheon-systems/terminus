@@ -256,7 +256,6 @@ class EnvironmentTest extends ModelTestCase
             'sftp_username' => $sftp_username,
             'sftp_host' => $sftp_domain,
             'sftp_port' => '2222',
-            'sftp_password' => 'Use your account password',
             'sftp_url' => "sftp://$sftp_username@$sftp_domain:$port",
             'sftp_command' => "sftp -o Port=$port $sftp_username@$sftp_domain",
         ];
@@ -854,7 +853,6 @@ class EnvironmentTest extends ModelTestCase
             'username' => 'dev.abc',
             'host' => 'appserver.dev.abc.drush.in',
             'port' => '2222',
-            'password' => 'Use your account password',
             'url' => 'sftp://dev.abc@appserver.dev.abc.drush.in:2222',
             'command' => 'sftp -o Port=2222 dev.abc@appserver.dev.abc.drush.in',
         ];
@@ -869,7 +867,6 @@ class EnvironmentTest extends ModelTestCase
             'username' => 'appserver.dev.abc',
             'host' => 'onebox',
             'port' => '2222',
-            'password' => 'Use your account password',
             'url' => 'sftp://appserver.dev.abc@onebox:2222',
             'command' => 'sftp -o Port=2222 appserver.dev.abc@onebox',
         ];
@@ -884,7 +881,6 @@ class EnvironmentTest extends ModelTestCase
             'username' => 'appserver.dev.abc',
             'host' => 'ssh.example.com',
             'port' => '2222',
-            'password' => 'Use your account password',
             'url' => 'sftp://appserver.dev.abc@ssh.example.com:2222',
             'command' => 'sftp -o Port=2222 appserver.dev.abc@ssh.example.com',
         ];
