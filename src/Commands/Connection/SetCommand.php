@@ -66,10 +66,6 @@ class SetCommand extends TerminusCommand implements SiteAwareInterface
         try {
             $mode = strtolower($mode ?? '');
             $workflow = $env->changeConnectionMode($mode);
-        } catch (TerminusEvcsSiteException $e) {
-            $this->log()->debug($e->getMessage());
-            $this->log()->notice("This command is not supported for sites using version control systems external to Pantheon.");
-            return;
         } catch (TerminusException $e) {
             $message = $e->getMessage();
             if (strpos($message, $mode) !== false) {

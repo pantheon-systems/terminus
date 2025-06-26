@@ -44,13 +44,7 @@ class CreateCommand extends BackupCommand
             ? $options['keep-for']
             : Backup::DEFAULT_TTL;
         $options['element'] = isset($options['element']) ? $this->getElement($options['element']) : null;
-        try {
-            $this->processWorkflow($env->getBackups()->create($options));
-        } catch (TerminusStaSiteException $e) {
-            $this->log()->notice("This command is not supported for this site.");
-            $this->log()->debug($e->getMessage());
-            return;
-        }
+        $this->processWorkflow($env->getBackups()->create($options));
         $this->log()->notice(
             'Created a backup of the {env} environment.',
             ['env' => $env->getName()]

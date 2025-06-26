@@ -40,12 +40,6 @@ class ListCommand extends TerminusCommand implements SiteAwareInterface
      */
     public function listBranches($site_id)
     {
-        try {
-            return $this->getRowsOfFields($this->getSiteById($site_id)->getBranches());
-        } catch (TerminusEvcsSiteException $e) {
-            $this->log()->notice("This command is not supported for sites using version control systems external to Pantheon.");
-            $this->log()->debug($e->getMessage());
-            return;
-        }
+        return $this->getRowsOfFields($this->getSiteById($site_id)->getBranches());
     }
 }
