@@ -74,6 +74,14 @@ class Request implements
         'CI',
     ];
 
+    public const EVCS_SITE_RESPONSE = 'evcs_site';
+
+    public const EVCS_SITE_EXCEPTION_MESSAGE = 'This is a site with an external version control system so this is not supported.';
+
+    public const STA_SITE_RESPONSE = 'sta_site';
+
+    public const STA_SITE_EXCEPTION_MESSAGE = 'This is not supported for this site.';
+
     protected ClientInterface $client;
 
     /**
@@ -442,9 +450,9 @@ class Request implements
             }
         }
 
-        if ($response->getStatusCode() == 409 && $body == "evcs_site") {
+        if ($response->getStatusCode() == 409 && $body == self::EVCS_SITE_RESPONSE) {
             // This request is expected to fail for an eVCS site, throw exception that will be catched down the road.
-            throw new TerminusEvcsSiteException("This is a site with an external version control system so this is not supported.");
+            throw new TerminusEvcsSiteException(self::EVCS_SITE_EXCEPTION_MESSAGE);
         }
 
         return new RequestOperationResult([

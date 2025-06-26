@@ -3,6 +3,8 @@
 namespace Pantheon\Terminus\Collections;
 
 use Pantheon\Terminus\Exceptions\TerminusException;
+use Pantheon\Terminus\Exceptions\TerminusEvcsSiteException;
+use Pantheon\Terminus\Exceptions\TerminusStaSiteException;
 use Pantheon\Terminus\Models\Environment;
 use Pantheon\Terminus\Models\Organization;
 use Pantheon\Terminus\Models\Site;
@@ -11,6 +13,7 @@ use Pantheon\Terminus\Models\User;
 use Pantheon\Terminus\Models\Workflow;
 use Pantheon\Terminus\Session\SessionAwareInterface;
 use Pantheon\Terminus\Session\SessionAwareTrait;
+use Pantheon\Terminus\Request\Request;
 
 /**
  * Class Workflows
@@ -104,6 +107,14 @@ class Workflows extends APICollection implements SessionAwareInterface
             ]
         );
         if ($results->isError()) {
+            if ($results->getStatusCode() === 409 && $results->getData() === Request::EVCS_SITE_RESPONSE) {
+                // EVCS site unsupported workflow, throw specific exception.
+                throw new TerminusEvcsSiteException(Request::EVCS_SITE_EXCEPTION_MESSAGE);
+            }
+            if ($results->getStatusCode() === 409 && $results->getData() === Request::STA_SITE_RESPONSE) {
+                // STA site unsupported workflow, throw specific exception.
+                throw new TerminusStaSiteException(Request::STA_SITE_EXCEPTION_MESSAGE);
+            }
             throw new TerminusException(
                 "Workflow Creation Failed: {error}",
                 ['error' => $results->getStatusCodeReason()]
