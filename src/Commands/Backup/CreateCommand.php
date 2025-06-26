@@ -4,7 +4,6 @@ namespace Pantheon\Terminus\Commands\Backup;
 
 use Pantheon\Terminus\Commands\WorkflowProcessingTrait;
 use Pantheon\Terminus\Models\Backup;
-use Pantheon\Terminus\Exceptions\TerminusStaSiteException;
 
 /**
  * Class CreateCommand.

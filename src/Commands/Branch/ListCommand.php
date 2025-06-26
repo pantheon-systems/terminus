@@ -7,7 +7,6 @@ use Pantheon\Terminus\Commands\TerminusCommand;
 use Pantheon\Terminus\Commands\StructuredListTrait;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
-use Pantheon\Terminus\Exceptions\TerminusEvcsSiteException;
 
 /**
  * Class ListCommand

@@ -7,7 +7,6 @@ use Pantheon\Terminus\Commands\WorkflowProcessingTrait;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 use Pantheon\Terminus\Exceptions\TerminusException;
-use Pantheon\Terminus\Exceptions\TerminusEvcsSiteException;
 
 /**
  * Class SetCommand.
