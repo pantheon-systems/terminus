@@ -76,7 +76,8 @@ class Request implements
 
     public const EVCS_SITE_RESPONSE = 'evcs_site';
 
-    public const EVCS_SITE_EXCEPTION_MESSAGE = 'This is a site with an external version control system so this is not supported.';
+    public const EVCS_SITE_EXCEPTION_MESSAGE =
+        'This is a site with an external version control system so this is not supported.';
 
     public const STA_SITE_RESPONSE = 'sta_site';
 
