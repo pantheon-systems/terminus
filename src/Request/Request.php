@@ -451,8 +451,13 @@ class Request implements
         }
 
         if ($response->getStatusCode() == 409 && $body == self::EVCS_SITE_RESPONSE) {
-            // This request is expected to fail for an eVCS site, throw exception that will be catched down the road.
+            // This request is expected to fail for an eVCS site, throw exception.
             throw new TerminusEvcsSiteException(self::EVCS_SITE_EXCEPTION_MESSAGE);
+        }
+
+        if ($response->getStatusCode() == 409 && $body == self::STA_SITE_RESPONSE) {
+            // This request is expected to fail for an STA site, throw exception.
+            throw new TerminusEvcsSiteException(self::STA_SITE_EXCEPTION_MESSAGE);
         }
 
         return new RequestOperationResult([
