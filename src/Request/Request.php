@@ -449,7 +449,7 @@ class Request implements
                 // This request is expected to fail for an unsupported site, throw exception.
                 throw new TerminusUnsupportedSiteException($decoded_body->message);
             } elseif (!empty($decoded_body) && !empty($decoded_body->reason)) {
-                // This request is expected to fail, use generic reson.
+                // This request is expected to fail, use generic reason.
                 throw new TerminusUnsupportedSiteException(
                     self::UNSUPPORTED_SITE_EXCEPTION_MESSAGE
                 );
