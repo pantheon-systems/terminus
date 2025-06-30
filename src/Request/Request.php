@@ -15,7 +15,7 @@ use League\Container\ContainerAwareInterface;
 use League\Container\ContainerAwareTrait;
 use Pantheon\Terminus\Config\ConfigAwareTrait;
 use Pantheon\Terminus\Exceptions\TerminusException;
-use Pantheon\Terminus\Exceptions\TerminusEvcsSiteException;
+use Pantheon\Terminus\Exceptions\TerminusUnsupportedSiteException;
 use Pantheon\Terminus\Helpers\LocalMachineHelper;
 use Pantheon\Terminus\Helpers\Utility\TraceId;
 use Pantheon\Terminus\Session\SessionAwareInterface;
@@ -74,14 +74,7 @@ class Request implements
         'CI',
     ];
 
-    public const EVCS_SITE_RESPONSE = 'evcs_site';
-
-    public const EVCS_SITE_EXCEPTION_MESSAGE =
-        'This is a site with an external version control system so this is not supported.';
-
-    public const STA_SITE_RESPONSE = 'sta_site';
-
-    public const STA_SITE_EXCEPTION_MESSAGE = 'This is not supported for this site.';
+    public const UNSUPPORTED_SITE_EXCEPTION_MESSAGE = 'This is not supported for this site.';
 
     protected ClientInterface $client;
 
@@ -451,14 +444,16 @@ class Request implements
             }
         }
 
-        if ($response->getStatusCode() == 409 && $body == self::EVCS_SITE_RESPONSE) {
-            // This request is expected to fail for an eVCS site, throw exception.
-            throw new TerminusEvcsSiteException(self::EVCS_SITE_EXCEPTION_MESSAGE);
-        }
-
-        if ($response->getStatusCode() == 409 && $body == self::STA_SITE_RESPONSE) {
-            // This request is expected to fail for an STA site, throw exception.
-            throw new TerminusEvcsSiteException(self::STA_SITE_EXCEPTION_MESSAGE);
+        if ($response->getStatusCode() == 409) {
+            if (!empty($decoded_body) && !empty($decoded_body->message)) {
+                // This request is expected to fail for an unsupported site, throw exception.
+                throw new TerminusUnsupportedSiteException($decoded_body->message);
+            } elseif (!empty($decoded_body) && !empty($decoded_body->reason)) {
+                // This request is expected to fail, use generic reson.
+                throw new TerminusUnsupportedSiteException(
+                    self::UNSUPPORTED_SITE_EXCEPTION_MESSAGE
+                );
+            }
         }
 
         return new RequestOperationResult([
