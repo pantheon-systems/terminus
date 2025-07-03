@@ -51,6 +51,11 @@ class WakeCommand extends TerminusCommand implements SiteAwareInterface
             ]);
             throw new TerminusException('Could not reach {target}', $wakeStatus);
         }
+        if ($env->getSite()->isNodejs()) {
+            // We do not expect a 'styx' header for Node.js sites so if we make it here, we assume success.
+            $this->log()->notice('OK >> {target} responded', $wakeStatus);
+            return;
+        }
         if (empty($wakeStatus['styx'])) {
             throw new TerminusException('Pantheon headers missing, which is not quite right.');
         }

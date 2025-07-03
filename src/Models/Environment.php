@@ -1040,12 +1040,18 @@ class Environment extends TerminusModel implements
         $success = false;
         $lastError = null;
 
+        $wakeUrl = "https://{$domain->id}/pantheon_healthcheck";
+        if ($this->getSite()->isNodejs()) {
+            // For Node.js sites, we use the root path for the health check.
+            $wakeUrl = "https://{$domain->id}";
+        }
+
         while ($attempt < $maxRetries && !$success) {
             $lastError = null;
             $attempt++;
             try {
                 $response = $this->request()->request(
-                    "https://{$domain->id}/pantheon_healthcheck"
+                    $wakeUrl,
                 );
                 $success = ($response['status_code'] === 200);
                 if ($success) {
