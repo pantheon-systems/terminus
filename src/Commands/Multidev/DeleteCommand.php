@@ -48,6 +48,14 @@ class DeleteCommand extends TerminusCommand implements SiteAwareInterface
             return;
         }
 
+        if ($options['delete-branch'] && $env->isEvcsSite()) {
+            $this->log()->warning(
+                'Cannot delete the branch for {env} because it is an external version control site.',
+                ['env' => $env->getName()]
+            );
+            $options['delete-branch'] = false;
+        }
+
         $workflow = $env->delete(['delete_branch' => $options['delete-branch'] ?? false]);
         $this->processWorkflow($workflow);
         $this->log()->notice(
