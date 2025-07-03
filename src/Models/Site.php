@@ -589,4 +589,31 @@ class Site extends TerminusModel implements
             ->addArgument($this);
         return $this->getContainer()->get($nickname)->fetch();
     }
+
+    /**
+     * @return bool
+     * @throws TerminusException
+     */
+    public function isEvcs(): bool
+    {
+        // We are using a variable that we retrieve at environment level,
+        // so we need to retrieve dev environment first.
+        $env = $this->getEnvironments()->get('dev');
+        if (empty($env)) {
+            throw new TerminusException(
+                'Site {site} does not have a dev environment.',
+                ['site' => $this->getName()]
+            );
+        }
+        return $env->isEvcsSite();
+    }
+
+    /**
+     * @return bool
+     * @throws TerminusException
+     */
+    public function isNodejs(): bool
+    {
+        return $this->get('framework') === 'nodejs';
+    }
 }
