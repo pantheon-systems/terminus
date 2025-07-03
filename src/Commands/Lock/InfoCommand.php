@@ -7,6 +7,7 @@ use Pantheon\Terminus\Commands\TerminusCommand;
 use Pantheon\Terminus\Commands\StructuredListTrait;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
+use Pantheon\Terminus\Exceptions\TerminusException;
 
 /**
  * Class InfoCommand.
@@ -40,6 +41,12 @@ class InfoCommand extends TerminusCommand implements SiteAwareInterface
      */
     public function info($site_env)
     {
-        return $this->getPropertyList($this->getEnv($site_env)->getLock());
+        $env = $this->getEnv($site_env);
+        if ($env->getSite()->isNodejs()) {
+            throw new TerminusException(
+                'Locking is not supported for Node.js sites.'
+            );
+        }
+        return $this->getPropertyList($env->getLock());
     }
 }
