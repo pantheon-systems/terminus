@@ -7,6 +7,7 @@ use Pantheon\Terminus\Commands\TerminusCommand;
 use Pantheon\Terminus\Commands\StructuredListTrait;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
+use Pantheon\Terminus\Models\TerminusModel;
 
 /**
  * Class InfoCommand.
@@ -48,5 +49,25 @@ class InfoCommand extends TerminusCommand implements SiteAwareInterface
         $this->requireSiteIsNotFrozen($site_env);
 
         return $this->getPropertyList($this->getEnv($site_env));
+    }
+
+    /**
+     * @param TerminusModel $model A model with data to extract
+     * @return PropertyList A PropertyList-type object with applied filters
+     */
+    public function getPropertyList(TerminusModel $model)
+    {
+        $properties = $model->serialize();
+        if ($model->isEvcsSite()) {
+            // Remove properties that are not applicable to EVCS sites
+            unset($properties['connection_mode']);
+        }
+        if ($model->getSite()->isNodejs()) {
+            // Remove properties that are not applicable to Node.js sites
+            unset($properties['drush_version']);
+            unset($properties['php_version']);
+            unset($properties['locked']);
+        }
+        return new PropertyList($properties);
     }
 }
