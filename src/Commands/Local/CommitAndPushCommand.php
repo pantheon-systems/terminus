@@ -54,6 +54,13 @@ class CommitAndPushCommand extends TerminusCommand implements SiteAwareInterface
                 );
             }
         }
+
+        if ($siteData->isEvcs()) {
+            throw new TerminusException(
+                'This command is not supported for sites in external version control. Please clone from your version control system.'
+            );
+        }
+
         $git = new \CzProject\GitPhp\Git();
         $repo = $git->open($siteData->getLocalCopyDir());
         $repo->addAllChanges();
