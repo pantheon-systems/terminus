@@ -56,6 +56,13 @@ class CreateCommand extends TerminusCommand implements SiteAwareInterface
     ) {
         $this->requireSiteIsNotFrozen($site_env);
         $site = $this->getSiteById($site_env);
+
+        if ($site->isEvcs()) {
+            throw new \Pantheon\Terminus\Exceptions\TerminusException(
+                'Multidev environments should be created from your external repository for this site.'
+            );
+        }
+
         $env = $this->getEnv($site_env);
 
         if (strlen($multidev) > 11) {
