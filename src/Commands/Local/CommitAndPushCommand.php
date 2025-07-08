@@ -57,7 +57,7 @@ class CommitAndPushCommand extends TerminusCommand implements SiteAwareInterface
 
         if ($siteData->isEvcs()) {
             throw new TerminusException(
-                'This command is not supported for sites with external vcs. Please clone from your external repository.'
+                'This command is not supported for sites with external vcs. Please push to your external repository.'
             );
         }
 
