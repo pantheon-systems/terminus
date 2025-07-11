@@ -26,14 +26,14 @@ jobs:
     name: Checkout & build Phar
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v3
       - name: Save repo content as artifact
         uses: actions/upload-artifact@v4
         with:
           name: full-workspace
           path: ${{ github.workspace }}
       - name: Full Composer Install
-        run: composer install --dev
+        run: composer install
       - name: Validate Code
         run: composer code:lint
       - name: Phar Build

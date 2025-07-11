@@ -11,15 +11,12 @@ use Pantheon\Terminus\Collections\SiteAuthorizations;
 use Pantheon\Terminus\Collections\SiteMetrics;
 use Pantheon\Terminus\Collections\SiteOrganizationMemberships;
 use Pantheon\Terminus\Collections\SiteUserMemberships;
-use Pantheon\Terminus\Collections\WorkflowLogsCollection;
 use Pantheon\Terminus\Collections\Workflows;
 use Pantheon\Terminus\Exceptions\TerminusException;
 use Pantheon\Terminus\Friends\LocalCopiesTrait;
 use Pantheon\Terminus\Friends\OrganizationsInterface;
 use Pantheon\Terminus\Friends\OrganizationsTrait;
 use Pantheon\Terminus\Helpers\Utility\SiteFramework;
-use Psr\Container\ContainerExceptionInterface;
-use Psr\Container\NotFoundExceptionInterface;
 
 /**
  * Class Site
