@@ -46,8 +46,7 @@ class WaitCommand extends TerminusCommand implements SiteAwareInterface
                 'Site {site} does not exist.',
                 ['site' => $site_env_id]
             );
-        }
-        else {
+        } else {
             $this->log()->notice('Waiting for workflow on site {site} environment {env}.', [
                 'site' => $site->getName(),
                 'env' => $site_env_id,
@@ -59,8 +58,7 @@ class WaitCommand extends TerminusCommand implements SiteAwareInterface
                 'Environment {env} does not exist for site {site}.',
                 ['env' => $site_env_id, 'site' => $site->getName()]
             );
-        }
-        else {
+        } else {
             $this->log()->notice('Waiting for workflow on environment {env}.', ['env' => $env->getName()]);
         }
         $env_name = $env->getName();
@@ -190,7 +188,10 @@ class WaitCommand extends TerminusCommand implements SiteAwareInterface
         $wfl = null;
         $wflc = $site->getWorkflowLogs();
         if (!$wflc instanceof WorkflowLogsCollection) {
-            throw new TerminusException('Workflow logs could not be retrieved for site: {site}', ['site' => $site->id,]);
+            throw new TerminusException(
+                'Workflow logs could not be retrieved for site: {site}',
+                ['site' => $site->id,]
+            );
         }
 
         // Remove workflows that are not for the environment $env_name.
@@ -217,14 +218,20 @@ class WaitCommand extends TerminusCommand implements SiteAwareInterface
             ]);
             $current_time = time();
             if ($end_time > 0 && $current_time >= $end_time) {
-                throw new TerminusException('Exceeded maximum wait time of {max} seconds.', ['max' => $maxWaitInSeconds]);
+                throw new TerminusException(
+                    'Exceeded maximum wait time of {max} seconds.',
+                    ['max' => $maxWaitInSeconds]
+                );
             }
         }
 
         while (!$wfl->isFinished()) {
             $current_time = time();
             if ($end_time > 0 && $current_time >= $end_time) {
-                throw new TerminusException('Exceeded maximum wait time of {max} seconds.', ['max' => $maxWaitInSeconds]);
+                throw new TerminusException(
+                    'Exceeded maximum wait time of {max} seconds.',
+                    ['max' => $maxWaitInSeconds]
+                );
             }
             $this->log()->notice('Waiting for workflow {id} to complete.', ['id' => $wfl->id,]);
             sleep($this->getConfig()->get('refresh_workflow_delay', 30));
