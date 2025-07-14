@@ -53,7 +53,7 @@ class WaitCommand extends TerminusCommand implements SiteAwareInterface
                 'env' => $site_env_id,
             ]);
         }
-        // print_r($site);
+
         if (!$env) {
             throw new TerminusException(
                 'Environment {env} does not exist for site {site}.',
