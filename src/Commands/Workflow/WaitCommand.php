@@ -196,10 +196,10 @@ class WaitCommand extends TerminusCommand implements SiteAwareInterface, Request
             $end_time = 0;
         }
 
-        // Validate commit SHA format
-        if (!preg_match('/^[0-9a-f]{40}$/', $target_commit)) {
+        // Validate commit SHA format (allow shortened hashes of 7+ characters)
+        if (!preg_match('/^[0-9a-f]{7,40}$/', $target_commit)) {
             throw new TerminusException(
-                'Commit {commit} is not a valid commit SHA.',
+                'Commit {commit} is not a valid commit SHA (must be 7-40 hexadecimal characters).',
                 ['commit' => $target_commit]
             );
         }
@@ -237,8 +237,8 @@ class WaitCommand extends TerminusCommand implements SiteAwareInterface, Request
             foreach ($workflow_logs as $log) {
                 // Check if this workflow is for the target environment
                 if (isset($log->workflow->environment) && $log->workflow->environment === $env_name) {
-                    // Check if this workflow has the target commit
-                    if (isset($log->workflow->target_commit) && $log->workflow->target_commit === $target_commit) {
+                    // Check if this workflow has the target commit (support shortened hashes)
+                    if (isset($log->workflow->target_commit) && strpos($log->workflow->target_commit, $target_commit) === 0) {
                         // Check if workflow started after our start time
                         if (isset($log->workflow->started_at) && $log->workflow->started_at >= $startTime) {
                             $matching_workflows[] = $log;
