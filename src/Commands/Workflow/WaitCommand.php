@@ -70,12 +70,12 @@ class WaitCommand extends TerminusCommand implements SiteAwareInterface, Request
         if (!$startTime) {
             $startTime = time() - 60;
         }
-        
+
         if (!empty($options['commit'])) {
             $this->waitForCommit($startTime, $site, $env_name, $options['commit'], $options['max']);
             return;
         }
-        
+
         $this->waitForWorkflow($startTime, $site, $env_name, $description, $options['max']);
     }
 
@@ -208,7 +208,7 @@ class WaitCommand extends TerminusCommand implements SiteAwareInterface, Request
             'commit' => $target_commit,
             'env' => $env_name
         ]);
-        
+
 
         $workflow = null;
         $retry_count = 0;
@@ -216,7 +216,7 @@ class WaitCommand extends TerminusCommand implements SiteAwareInterface, Request
 
         do {
             $current_time = time();
-            
+
             // Check timeout
             if ($end_time > 0 && $current_time >= $end_time) {
                 throw new TerminusException(
@@ -233,12 +233,15 @@ class WaitCommand extends TerminusCommand implements SiteAwareInterface, Request
 
             // Filter for the target environment and commit
             $matching_workflows = [];
-            
+
             foreach ($workflow_logs as $log) {
                 // Check if this workflow is for the target environment
                 if (isset($log->workflow->environment) && $log->workflow->environment === $env_name) {
                     // Check if this workflow has the target commit (support shortened hashes)
-                    if (isset($log->workflow->target_commit) && strpos($log->workflow->target_commit, $target_commit) === 0) {
+                    if (
+                        isset($log->workflow->target_commit) &&
+                        strpos($log->workflow->target_commit, $target_commit) === 0
+                    ) {
                         // Check if workflow started after our start time
                         if (isset($log->workflow->started_at) && $log->workflow->started_at >= $startTime) {
                             $matching_workflows[] = $log;
@@ -256,10 +259,10 @@ class WaitCommand extends TerminusCommand implements SiteAwareInterface, Request
             // Find the most recent matching workflow
             if (!empty($matching_workflows)) {
                 // Sort by started_at descending to get the most recent
-                usort($matching_workflows, function($a, $b) {
+                usort($matching_workflows, function ($a, $b) {
                     return $b->workflow->started_at <=> $a->workflow->started_at;
                 });
-                
+
                 $workflow = $matching_workflows[0];
                 $this->log()->notice('Found workflow {id} with description "{description}" for commit {commit}', [
                     'id' => $workflow->workflow->id,
@@ -282,7 +285,6 @@ class WaitCommand extends TerminusCommand implements SiteAwareInterface, Request
                 'max' => $max_retries
             ]);
             sleep(5);
-
         } while (!$workflow);
 
         // Now wait for the workflow to complete
@@ -316,23 +318,28 @@ class WaitCommand extends TerminusCommand implements SiteAwareInterface, Request
             }
 
             if (!$updated_workflow) {
-                throw new TerminusException('Workflow {id} disappeared during execution.', ['id' => $workflow->workflow->id]);
+                throw new TerminusException(
+                    'Workflow {id} disappeared during execution.',
+                    ['id' => $workflow->workflow->id]
+                );
             }
 
             $workflow = $updated_workflow;
-            
+
             $this->log()->debug('Workflow {id} status: {status}', [
                 'id' => $workflow->workflow->id,
                 'status' => $workflow->workflow->status ?? 'unknown'
             ]);
 
             // Check if workflow is finished
-            if (isset($workflow->workflow->status) && in_array($workflow->workflow->status, ['Success', 'Failed', 'Aborted'])) {
+            if (
+                isset($workflow->workflow->status) &&
+                in_array($workflow->workflow->status, ['Success', 'Failed', 'Aborted'])
+            ) {
                 break;
             }
 
             usleep($retry_interval * 1000);
-
         } while (true);
 
         // Check if workflow succeeded
