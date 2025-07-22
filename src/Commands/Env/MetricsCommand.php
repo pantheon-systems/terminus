@@ -84,6 +84,12 @@ class MetricsCommand extends TerminusCommand implements SiteAwareInterface
             'datapoints' => 'auto',
         ]
     ) {
+        $site = $this->getSiteById($site_env);
+        if ($site->isNodejs()) {
+            throw new TerminusException(
+                'Metrics are not yet available for Node.js sites.'
+            );
+        }
         $env = $this->getOptionalEnv($site_env);
         if (null !== $env) {
             $metrics = $env->getEnvironmentMetrics()
@@ -95,8 +101,7 @@ class MetricsCommand extends TerminusCommand implements SiteAwareInterface
                 )
                 ->serialize();
         } else {
-            $metrics = $this->getSiteById($site_env)
-                ->getSiteMetrics()
+            $metrics = $site->getSiteMetrics()
                 ->setDuration(
                     $this->selectDatapoints(
                         $options['datapoints'],
