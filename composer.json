@@ -91,10 +91,10 @@
     ],
     "code:fix": [
       "@php-cs-fixer",
-      "vendor/bin/phpcbf ./src ./tests/Functional ./tests/unit_tests --standard=psr12 -v"
+      "vendor/bin/phpcbf ./src ./tests/Functional --standard=psr12 -v"
     ],
     "cs": [
-      "vendor/bin/phpcs --standard=phpcs_ruleset.xml src tests/Functional tests/unit_tests"
+      "vendor/bin/phpcs --standard=phpcs_ruleset.xml src tests/Functional"
     ],
     "code:lint": [
       "@cs"
@@ -150,8 +150,7 @@
     ],
     "php-cs-fixer": [
       "vendor/bin/php-cs-fixer fix ./src --rules=@PSR12",
-      "vendor/bin/php-cs-fixer fix ./tests/Functional --rules=@PSR12",
-      "vendor/bin/php-cs-fixer fix ./tests/unit_tests --rules=@PSR12"
+      "vendor/bin/php-cs-fixer fix ./tests/Functional --rules=@PSR12"
     ]
   },
   "config": {
