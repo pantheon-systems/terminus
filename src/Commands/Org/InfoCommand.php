@@ -22,6 +22,7 @@ class InfoCommand extends TerminusCommand implements OrganizationAwareInterface
      * Displays information about an organization.
      *
      * @authorize
+     * @interact
      *
      * @command org:info
      * @field-labels

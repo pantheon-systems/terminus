@@ -18,6 +18,7 @@ class ListCommand extends TerminusCommand implements SiteAwareInterface
      *
      * @authorize
      * @filter-output
+     * @interact
      *
      * @command multidev:list
      * @aliases multidevs

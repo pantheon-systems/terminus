@@ -21,6 +21,7 @@ class DisableCommand extends TerminusCommand implements SiteAwareInterface
      * Disables HTTP basic authentication on the environment.
      *
      * @authorize
+     * @interact
      *
      * @command lock:disable
      *

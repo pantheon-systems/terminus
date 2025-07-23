@@ -18,6 +18,7 @@ class InfoCommand extends TerminusCommand
      * Displays information about an upstream.
      *
      * @authorize
+     * @interact
      *
      * @command upstream:info
      *

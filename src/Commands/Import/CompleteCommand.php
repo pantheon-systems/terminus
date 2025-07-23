@@ -20,6 +20,7 @@ class CompleteCommand extends TerminusCommand implements SiteAwareInterface
      * Finalizes the Pantheon import process.
      *
      * @authorize
+     * @interact
      *
      * @command import:complete
      * @aliases site:import:complete

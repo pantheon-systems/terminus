@@ -382,7 +382,6 @@ class SiteTest extends ModelTestCase
     public function testGetOrganizationMemberships()
     {
         $this->assertEquals($this->org_memberships, $this->model->getOrganizationMemberships());
-        $this->assertEquals($this->org_memberships, $this->model->getOrgMemberships());
     }
 
     /**
@@ -626,70 +625,5 @@ class SiteTest extends ModelTestCase
 
         $out = $site->getUpstream();
         $this->assertEquals($upstream, $out);
-    }
-
-    /**
-     * Tests Site::updateServiceLevel($service_level)
-     */
-    public function testUpdateServiceLevel()
-    {
-        $service_level = 'service_level';
-
-        $this->workflows->expects($this->once())
-            ->method('create')
-            ->with(
-                $this->equalTo('change_site_service_level'),
-                $this->equalTo(['params' => compact('service_level'),])
-            )
-            ->willReturn($this->workflow);
-
-        $workflow = $this->model->updateServiceLevel($service_level);
-        $this->assertEquals($workflow, $this->workflow);
-    }
-
-    /**
-     * Tests Site::updateServiceLevel($service_level) when there is no payment method available
-     */
-    public function testUpdateServiceLevelNoMethod()
-    {
-        $service_level = 'service_level';
-
-        $this->workflows->expects($this->once())
-            ->method('create')
-            ->with(
-                $this->equalTo('change_site_service_level'),
-                $this->equalTo(['params' => compact('service_level'),])
-            )
-            ->will($this->throwException(new \Exception('message', 403)));
-
-        $this->setExpectedException(
-            TerminusException::class,
-            'A payment method is required to increase the service level of this site.'
-        );
-
-        $out = $this->model->updateServiceLevel($service_level);
-        $this->assertNull($out);
-    }
-
-    /**
-     * Tests Site::updateServiceLevel($service_level) when a non-403 error occurs
-     */
-    public function testUpdateServiceLevelMiscError()
-    {
-        $service_level = 'service_level';
-        $expected_exception = new \Exception('message', 0);
-
-        $this->workflows->expects($this->once())
-            ->method('create')
-            ->with(
-                $this->equalTo('change_site_service_level'),
-                $this->equalTo(['params' => compact('service_level'),])
-            )
-            ->will($this->throwException($expected_exception));
-
-        $this->setExpectedException(get_class($expected_exception), $expected_exception->getMessage());
-
-        $out = $this->model->updateServiceLevel($service_level);
-        $this->assertNull($out);
     }
 }

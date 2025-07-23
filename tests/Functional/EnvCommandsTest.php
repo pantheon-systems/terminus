@@ -471,4 +471,18 @@ class EnvCommandsTest extends TerminusTestBase
         );
         $this->assertEquals($expectedUrl, $url);
     }
+
+    /**
+     * @test
+     * @covers \Pantheon\Terminus\Commands\Env\CodeRebuildCommand
+     *
+     * @group env
+     * @group short
+     */
+    public function testCodeRebuild()
+    {
+        $this->terminus(
+            sprintf('env:code-rebuild %s', $this->getSiteEnv())
+        );
+    }
 }

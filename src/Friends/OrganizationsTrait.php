@@ -30,13 +30,4 @@ trait OrganizationsTrait
         return $this->getContainer()
             ->get($nickname);
     }
-
-    /**
-     * @return SiteOrganizationMemberships|UserOrganizationMemberships
-     * @deprecated 1.0.1 Please use getOrganizationMemberships() instead.
-     */
-    public function getOrgMemberships()
-    {
-        return $this->getOrganizationMemberships();
-    }
 }

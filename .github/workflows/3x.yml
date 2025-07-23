@@ -1,8 +1,6 @@
-name: Terminus 3.x
+name: Terminus 4.x
 on:
   push:
-  schedule:
-    - cron: '0 6 * * *'
   workflow_dispatch:
     inputs:
       functional_tests_group:
@@ -24,18 +22,18 @@ jobs:
   checkout_build:
     runs-on: ubuntu-latest
     container:
-      image: quay.io/pantheon-public/php-ci:v7.4
+      image: quay.io/pantheon-public/php-ci:v8.2
     name: Checkout & build Phar
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v3
       - name: Save repo content as artifact
         uses: actions/upload-artifact@v4
         with:
           name: full-workspace
           path: ${{ github.workspace }}
       - name: Full Composer Install
-        run: composer install --dev
+        run: composer install
       - name: Validate Code
         run: composer code:lint
       - name: Phar Build
@@ -58,7 +56,7 @@ jobs:
     strategy:
       matrix:
         operating-system: [ 'macos-latest' ]
-        php-versions: [ '7.4', '8.2', '8.3' ]
+        php-versions: [ '8.2', '8.4' ]
       max-parallel: 1
     env:
       TERMINUS_TOKEN: ${{ secrets.TERMINUS_TOKEN }}
@@ -127,7 +125,7 @@ jobs:
     runs-on: ubuntu-latest
     name: Release
     container:
-      image: quay.io/pantheon-public/php-ci:v7.4
+      image: quay.io/pantheon-public/php-ci:v8.2
     needs: [ functional ]
     if: ${{ startsWith(github.ref, 'refs/tags/')  && github.repository == 'pantheon-systems/terminus' }}
     steps:

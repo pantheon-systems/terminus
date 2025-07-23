@@ -13,6 +13,7 @@ class StatusCommand extends UpdatesCommand
      * Displays a whether there are updates available from the upstream for a site environment.
      *
      * @authorize
+     * @interact
      *
      * @command upstream:updates:status
      *

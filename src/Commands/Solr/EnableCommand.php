@@ -20,6 +20,7 @@ class EnableCommand extends TerminusCommand implements SiteAwareInterface
      * Enables Solr add-on for a site.
      *
      * @authorize
+     * @interact
      *
      * @command solr:enable
      *

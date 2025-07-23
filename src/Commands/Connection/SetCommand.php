@@ -26,6 +26,7 @@ class SetCommand extends TerminusCommand implements SiteAwareInterface
      * Sets Git or SFTP connection mode on a development environment (excludes Test and Live).
      *
      * @authorize
+     * @interact
      *
      * @command connection:set
      *

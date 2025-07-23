@@ -29,6 +29,7 @@ class SearchCommand extends PluginBaseCommand
     /**
      * Search for available Terminus plugins.
      *
+     * @interact
      * @command self:plugin:search
      * @aliases self:plugin:find self:plugin:locate plugin:search plugin:find
      *     plugin:locate

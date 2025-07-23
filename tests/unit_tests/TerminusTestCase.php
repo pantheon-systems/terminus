@@ -1,6 +1,6 @@
 <?php
 
-namespace Pantheon\Terminus\Tests\Unit;
+namespace Pantheon\Terminus\UnitTests;
 
 use PHPUnit\Framework\TestCase;
 

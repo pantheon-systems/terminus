@@ -51,6 +51,12 @@ abstract class SSHBaseCommand extends TerminusCommand implements SiteAwareInterf
     {
         $this->site = $this->getSiteById($site_env);
         $this->environment = $this->getEnv($site_env);
+
+        if ($this->site->isNodejs()) {
+            throw new TerminusProcessException(
+                'This command is not supported for Node.js sites.'
+            );
+        }
     }
 
     /**

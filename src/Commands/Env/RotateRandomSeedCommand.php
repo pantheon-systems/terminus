@@ -22,6 +22,7 @@ class RotateRandomSeedCommand extends TerminusCommand implements SiteAwareInterf
      * Rotate random seed for the environment.
      *
      * @authorize
+     * @interact
      *
      * @command env:rotate-random-seed
      * @aliases env:rotate-seed

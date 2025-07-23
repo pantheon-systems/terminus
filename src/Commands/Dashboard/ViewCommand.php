@@ -20,6 +20,7 @@ class ViewCommand extends TerminusCommand implements SiteAwareInterface
      * Displays the URL for the Pantheon Dashboard or opens the Dashboard in a browser.
      *
      * @authorize
+     * @interact
      *
      * @command dashboard:view
      * @aliases dashboard

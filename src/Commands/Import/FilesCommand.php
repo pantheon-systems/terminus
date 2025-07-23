@@ -21,6 +21,7 @@ class FilesCommand extends TerminusCommand implements SiteAwareInterface
      * Imports a file archive to the environment.
      *
      * @authorize
+     * @interact
      *
      * @command import:files
      *

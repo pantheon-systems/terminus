@@ -14,6 +14,7 @@ class AddCommand extends TagCommand
      * Adds a tag on a site within an organization.
      *
      * @authorize
+     * @interact
      *
      * @command tag:add
      *

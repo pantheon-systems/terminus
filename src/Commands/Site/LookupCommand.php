@@ -17,6 +17,7 @@ class LookupCommand extends SiteCommand
      * Displays the UUID of a site given its name.
      *
      * @authorize
+     * @interact
      *
      * @command site:lookup
      *

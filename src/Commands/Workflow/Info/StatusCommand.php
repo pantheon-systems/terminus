@@ -17,6 +17,7 @@ class StatusCommand extends InfoBaseCommand
      * Displays the status of a workflow.
      *
      * @authorize
+     * @interact
      *
      * @command workflow:info:status
      *

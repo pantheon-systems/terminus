@@ -18,6 +18,7 @@ class InfoCommand extends SiteCommand
      * Displays information about a site plan.
      *
      * @authorize
+     * @interact
      *
      * @command plan:info
      *

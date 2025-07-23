@@ -19,6 +19,7 @@ class ListCommand extends SiteCommand
      *
      * @authorize
      * @filter-output
+     * @interact
      *
      * @command plan:list
      * @aliases plans

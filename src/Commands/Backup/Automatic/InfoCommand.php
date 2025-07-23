@@ -19,6 +19,7 @@ class InfoCommand extends TerminusCommand implements SiteAwareInterface
      * Displays the hour when daily backups are created and the day of the week when weekly backups are created.
      *
      * @authorize
+     * @interact
      *
      * @command backup:automatic:info
      *

@@ -9,6 +9,7 @@ use Pantheon\Terminus\Helpers\LocalMachineHelper;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 use Robo\Contract\ConfigAwareInterface;
+use Pantheon\Terminus\Exceptions\TerminusException;
 
 /**
  * Class CloneCommand.
@@ -24,6 +25,7 @@ class CloneCommand extends TerminusCommand implements SiteAwareInterface, Config
      * CLone a copy of the site code into $HOME/pantheon-local-copies
      *
      * @authorize
+     * @interact
      *
      * @command local:clone
      * @aliases lc
@@ -46,6 +48,13 @@ class CloneCommand extends TerminusCommand implements SiteAwareInterface, Config
         array $options = ['site_dir' => null, 'override' => null, 'branch' => 'master']
     ): string {
         $site = $this->getSiteById($site_id);
+
+        if ($site->isEvcs()) {
+            throw new TerminusException(
+                'This command is not supported for sites with external vcs. Please clone from your external repository.'
+            );
+        }
+
         $env = $site->getEnvironments()->get('dev');
 
         $gitUrl = $env->connectionInfo()['git_url'] ?? null;

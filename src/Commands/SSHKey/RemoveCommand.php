@@ -14,6 +14,7 @@ class RemoveCommand extends TerminusCommand
      * Disassociates a SSH public key from the currently logged-in user.
      *
      * @authorize
+     * @interact
      *
      * @command ssh-key:remove
      * @aliases ssh-key:rm

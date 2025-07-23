@@ -42,6 +42,7 @@ class CloneContentCommand extends TerminusCommand implements SiteAwareInterface
      * sites in your install.  See https://docs.pantheon.io/guides/multisite/search-replace.
      *
      * @authorize
+     * @interact
      *
      * @command env:clone-content
      *
