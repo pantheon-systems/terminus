@@ -63,8 +63,6 @@ abstract class TerminusCommand implements
     /**
      * Confirm that the user wants to continue with the command.
      *
-     * @deprecated 1.0.0 This is not the correct way to do this and will be removed in the future. Use with caution.
-     *
      * @param $confirm_text
      * @param array $replacements
      * @return bool|string

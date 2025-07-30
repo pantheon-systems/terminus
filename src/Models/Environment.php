@@ -258,7 +258,7 @@ class Environment extends TerminusModel implements
         );
 
         // Can only Use Git on dev/multidev environments
-        if (!in_array($this->id, ['test', 'live',])) {
+        if (!in_array($this->id, ['test', 'live',]) && !$this->isEvcsSite()) {
             $git_info = $this->gitConnectionInfo();
             $info = array_merge(
                 array_combine(
@@ -268,6 +268,13 @@ class Environment extends TerminusModel implements
                     array_values($git_info)
                 ),
                 $info
+            );
+        }
+
+        if (empty($info)) {
+            throw new TerminusException(
+                'No connection information available for {env} environment for this site.',
+                ['env' => $this->id,]
             );
         }
 
@@ -281,6 +288,10 @@ class Environment extends TerminusModel implements
      */
     public function cacheserverConnectionInfo()
     {
+        if ($this->getSite()->isNodejs()) {
+            // No database for Node.js sites
+            return [];
+        }
         $env_vars = $this->fetchEnvironmentVars();
         $port = $env_vars['CACHE_PORT'] ?? null;
         $password = $env_vars['CACHE_PASSWORD'] ?? null;
@@ -327,6 +338,10 @@ class Environment extends TerminusModel implements
      */
     public function databaseConnectionInfo()
     {
+        if ($this->getSite()->isNodejs()) {
+            // No database for Node.js sites
+            return [];
+        }
         $env_vars = $this->fetchEnvironmentVars();
         $domain = "dbserver.{$this->id}.{$this->getSite()->id}.drush.in";
         $port = $env_vars['DB_PORT'] ?? null;
@@ -965,6 +980,10 @@ class Environment extends TerminusModel implements
      */
     public function sftpConnectionInfo()
     {
+        if ($this->isEvcsSite()) {
+            // No SFTP for EVCS sites
+            return [];
+        }
         $site = $this->getSite();
         if (!empty($ssh_host = $this->getConfig()->get('ssh_host'))) {
             $username = "appserver.{$this->id}.{$site->id}";
@@ -1021,12 +1040,18 @@ class Environment extends TerminusModel implements
         $success = false;
         $lastError = null;
 
+        $wakeUrl = "https://{$domain->id}/pantheon_healthcheck";
+        if ($this->getSite()->isNodejs()) {
+            // For Node.js sites, we use the root path for the health check.
+            $wakeUrl = "https://{$domain->id}";
+        }
+
         while ($attempt < $maxRetries && !$success) {
             $lastError = null;
             $attempt++;
             try {
                 $response = $this->request()->request(
-                    "https://{$domain->id}/pantheon_healthcheck"
+                    $wakeUrl,
                 );
                 $success = ($response['status_code'] === 200);
                 if ($success) {
@@ -1124,6 +1149,26 @@ class Environment extends TerminusModel implements
             return false;
         }
         return $response['data']->BUILD_STEP;
+    }
+
+    /**
+     * Checks if the environment belongs to an eVCS site.
+     *
+     * @return bool
+     */
+    public function isEvcsSite()
+    {
+        $path = sprintf(
+            'sites/%s/environments/%s/variables',
+            $this->getSite()->id,
+            $this->id
+        );
+        $options = ['method' => 'get',];
+        $response = $this->request()->request($path, $options);
+        if (empty($response['data']) || !isset($response['data']->IS_EVCS_SITE)) {
+            return false;
+        }
+        return $response['data']->IS_EVCS_SITE;
     }
 
 

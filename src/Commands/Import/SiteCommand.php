@@ -22,6 +22,7 @@ class SiteCommand extends TerminusCommand implements SiteAwareInterface
      *  Imports a site archive (code, database, and files) to the site.
      *
      * @authorize
+     * @interact
      *
      * @command import:site
      * @aliases site:import

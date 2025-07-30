@@ -17,6 +17,7 @@ class RemoveCommand extends TerminusCommand
      * Removes a user from an organization.
      *
      * @authorize
+     * @interact
      *
      * @command org:people:remove
      * @aliases org:people:rm org:ppl:remove org:ppl:rm

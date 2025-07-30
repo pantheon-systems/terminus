@@ -19,6 +19,9 @@ class DiffStatCommand extends TerminusCommand implements SiteAwareInterface
     /**
      * Displays the diff of uncommitted code changes on a development environment.
      *
+     * @interact
+     * @authorize
+     *
      * @command env:diffstat
      *
      * @param string $site_env Site & development environment in the format `site-name.env`

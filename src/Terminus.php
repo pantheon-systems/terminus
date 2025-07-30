@@ -11,6 +11,8 @@ use League\Container\ContainerAwareTrait;
 use Pantheon\Terminus\Collections\SavedTokens;
 use Pantheon\Terminus\Collections\Sites;
 use Pantheon\Terminus\Config\ConfigAwareTrait;
+use Pantheon\Terminus\DataStore\DataStoreAwareInterface;
+use Pantheon\Terminus\DataStore\DataStoreAwareTrait;
 use Pantheon\Terminus\DataStore\FileStore;
 use Pantheon\Terminus\Helpers\LocalMachineHelper;
 use Pantheon\Terminus\Helpers\Traits\CommandExecutorTrait;
@@ -48,6 +50,7 @@ use Symfony\Component\Filesystem\Filesystem;
 use SelfUpdate\SelfUpdateCommand;
 use Pantheon\Terminus\Hooks\CommandTracker;
 use Symfony\Component\EventDispatcher\EventDispatcher;
+use Pantheon\Terminus\Update\UpdateChecker;
 
 /**
  * Class Terminus
@@ -57,6 +60,7 @@ use Symfony\Component\EventDispatcher\EventDispatcher;
 class Terminus implements
     ConfigAwareInterface,
     ContainerAwareInterface,
+    DataStoreAwareInterface,
     LoggerAwareInterface,
     IOAwareInterface
 {
@@ -65,6 +69,7 @@ class Terminus implements
     use LoggerAwareTrait;
     use CommandExecutorTrait;
     use IO;
+    use DataStoreAwareTrait;
 
     /**
      * @var \Robo\Runner
@@ -130,6 +135,17 @@ EOD;
         $this->setLogger($container->get('logger'));
         $this->addBuiltInCommandsAndHooks();
         $this->addPluginsCommandsAndHooks();
+
+        // Configure the data store for the update checker
+        $cache_store = new FileStore($this->getConfig()->get('cache_dir'));
+        $this->setDataStore($cache_store);
+
+        // Configure and run the update checker
+        $update_checker = new Update\UpdateChecker($cache_store);
+        $update_checker->setConfig($this->getConfig());
+        $update_checker->setContainer($this->getContainer());
+        $update_checker->setLogger($this->logger);
+        $update_checker->run();
 
         $container->get('eventDispatcher')->addSubscriber($container->get('Pantheon\Terminus\Hooks\CommandTracker'));
 
@@ -269,9 +285,6 @@ EOD;
         $container->add(\Pantheon\Terminus\Models\UserOrganizationMembership::class);
         $container->add(\Pantheon\Terminus\Models\UserSiteMembership::class);
         $container->add(\Pantheon\Terminus\Models\Workflow::class);
-        $container->add(\Pantheon\Terminus\Models\WorkflowLog::class);
-        $container->add(\Pantheon\Terminus\Models\WorkflowLogActor::class);
-        $container->add(\Pantheon\Terminus\Models\WorkflowLogInfo::class);
         $container->add(\Pantheon\Terminus\Models\WorkflowOperation::class);
 
         // Collections
@@ -301,7 +314,6 @@ EOD;
         $container->add(\Pantheon\Terminus\Collections\Upstreams::class);
         $container->add(\Pantheon\Terminus\Collections\UserOrganizationMemberships::class);
         $container->add(\Pantheon\Terminus\Collections\UserSiteMemberships::class);
-        $container->add(\Pantheon\Terminus\Collections\WorkflowLogsCollection::class);
         $container->add(\Pantheon\Terminus\Collections\WorkflowOperations::class);
         $container->add(\Pantheon\Terminus\Collections\Workflows::class);
     }
@@ -313,8 +325,10 @@ EOD;
     {
         // List of all hooks and commands. Update via 'composer update-class-lists'
         $this->commands = [
+            'Consolidation\\Filter\\Hooks\\FilterHooks',
             'Pantheon\\Terminus\\Hooks\\Authorizer',
             'Pantheon\\Terminus\\Hooks\\CommandTracker',
+            'Pantheon\\Terminus\\Hooks\\Interacter',
             'Pantheon\\Terminus\\Hooks\\RoleValidator',
             'Pantheon\\Terminus\\Hooks\\SiteEnvLookup',
             'Pantheon\\Terminus\\Commands\\AliasesCommand',
@@ -419,7 +433,6 @@ EOD;
             'Pantheon\\Terminus\\Commands\\Self\\Plugin\\SearchCommand',
             'Pantheon\\Terminus\\Commands\\Self\\Plugin\\UninstallCommand',
             'Pantheon\\Terminus\\Commands\\Self\\Plugin\\UpdateCommand',
-            'Pantheon\\Terminus\\Commands\\ServiceLevel\\SetCommand',
             'Pantheon\\Terminus\\Commands\\Site\\CreateCommand',
             'Pantheon\\Terminus\\Commands\\Site\\DeleteCommand',
             'Pantheon\\Terminus\\Commands\\Site\\InfoCommand',

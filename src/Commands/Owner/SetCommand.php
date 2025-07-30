@@ -21,6 +21,7 @@ class SetCommand extends TerminusCommand implements SiteAwareInterface
      * Change the owner of a site
      *
      * @authorize
+     * @interact
      *
      * @command owner:set
      *

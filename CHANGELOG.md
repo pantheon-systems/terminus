@@ -1,7 +1,27 @@
 # Change Log
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org)
 
-## 4.0.0-dev -
+## 4.0.2-dev
+
+## 4.0.1 - 2025-05-19
+
+### Fixed
+
+- env:code-rebuild command should no longer throw a fatal error (#2694)
+
+## 4.0.0 - 2025-05-07
+
+### Added
+
+- Readd update check and prompt to update when running an old Terminus version (#2669)
+- Prompt for missing required arguments when in interactive mode (#2684)
+
+### Fixed
+
+- Response json_decode should fallback to original body text (#2687)
+- Simplify env:wake command (#2689)
+
+## 4.0.0-alpha1 - 2025-03-06
 
 ### Added
 
@@ -10,6 +30,10 @@ All notable changes to this project will be documented in this file. This projec
 ### Removed
 
 - Support for PHP versions prior to 8.2
+
+## 3.6.2 - 2025-03-03
+- Pass verbose flag to ssh if terminus is in verbose mode (#2663)
+- Bug fix: backup:restore with --file parameter restores backups multiple ties (#2664)
 
 ## 3.6.1 - 2024-12-04
 

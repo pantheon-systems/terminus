@@ -23,6 +23,7 @@ class AddCommand extends TerminusCommand implements SiteAwareInterface
      * Note: An invite will be sent if the email is not associated with a Pantheon account.
      *
      * @authorize
+     * @interact
      *
      * @command site:team:add
      *

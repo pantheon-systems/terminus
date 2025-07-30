@@ -19,6 +19,7 @@ class ListCommand extends TerminusCommand
      *
      * @authorize
      * @filter-output
+     * @interact
      *
      * @command org:people:list
      * @aliases org:ppl:list

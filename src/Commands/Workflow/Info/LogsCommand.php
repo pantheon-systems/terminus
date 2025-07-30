@@ -12,6 +12,7 @@ class LogsCommand extends InfoBaseCommand
      * Displays the details of Quicksilver operation logs.
      *
      * @authorize
+     * @interact
      *
      * @command workflow:info:logs
      *

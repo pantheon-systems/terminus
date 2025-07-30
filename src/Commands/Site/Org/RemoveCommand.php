@@ -21,6 +21,7 @@ class RemoveCommand extends TerminusCommand implements SiteAwareInterface
      * Disassociates a supporting organization from a site.
      *
      * @authorize
+     * @interact
      *
      * @command site:org:remove
      * @aliases site:org:rm

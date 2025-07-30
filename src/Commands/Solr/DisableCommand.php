@@ -20,6 +20,7 @@ class DisableCommand extends TerminusCommand implements SiteAwareInterface
      * Disables Solr add-on for a site.
      *
      * @authorize
+     * @interact
      *
      * @command solr:disable
      *

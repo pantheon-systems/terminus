@@ -20,6 +20,7 @@ class EnableCommand extends TerminusCommand implements SiteAwareInterface
      * Enables New Relic for a site.
      *
      * @authorize
+     * @interact
      *
      * @command new-relic:enable
      *

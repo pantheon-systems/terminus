@@ -51,6 +51,12 @@ abstract class SSHBaseCommand extends TerminusCommand implements SiteAwareInterf
     {
         $this->site = $this->getSiteById($site_env);
         $this->environment = $this->getEnv($site_env);
+
+        if ($this->site->isNodejs()) {
+            throw new TerminusProcessException(
+                'This command is not supported for Node.js sites.'
+            );
+        }
     }
 
     /**
@@ -372,7 +378,13 @@ abstract class SSHBaseCommand extends TerminusCommand implements SiteAwareInterf
     {
         $sftp = $this->environment->sftpConnectionInfo();
         $command = $this->getConfig()->get('ssh_command');
-
+        if ($this->output()->isDebug()) {
+            $command .= ' -vvv';
+        } elseif ($this->output()->isVeryVerbose()) {
+            $command .= ' -vv';
+        } elseif ($this->output()->isVerbose()) {
+            $command .= ' -v';
+        }
         return vsprintf(
             '%s -T %s@%s -p %s -o "StrictHostKeyChecking=no" -o "AddressFamily inet"',
             [$command, $sftp['username'], $this->lookupHostViaAlternateNameserver($sftp['host']), $sftp['port']]

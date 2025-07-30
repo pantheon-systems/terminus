@@ -20,6 +20,7 @@ class RemoveCommand extends TerminusCommand implements SiteAwareInterface
      * Disassociates the active payment method from a site.
      *
      * @authorize
+     * @interact
      *
      * @command payment-method:remove
      * @aliases pm:remove pm:rm
