@@ -20,6 +20,7 @@ class CodeLogCommand extends TerminusCommand implements SiteAwareInterface
      * Displays the code log for the environment.
      *
      * @authorize
+     * @interact
      *
      * @command env:code-log
      *

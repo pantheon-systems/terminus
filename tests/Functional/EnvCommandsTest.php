@@ -61,6 +61,26 @@ class EnvCommandsTest extends TerminusTestBase
      */
     public function testDeployCommand()
     {
+
+        // Test that the command works when plugins are not installed.
+        [$output, $exitCode, $error] = static::callTerminus(
+            sprintf('env:deploy %s.%s', $this->getSiteName(), $this->getMdEnv()),
+            null,
+            $this->env
+        );
+
+        $this->assertNotEquals(
+            0,
+            $exitCode,
+            'env:deploy should fail if a multidev environment is given'
+        );
+
+        $this->assertStringContainsString(
+            'This command should only be used to deploy to test or live environments',
+            $error,
+            'env:deploy should fail if a multidev environment is given'
+        );
+
         $this->terminus(
             sprintf('env:deploy %s.%s', $this->getSiteName(), 'live')
         );
@@ -299,10 +319,64 @@ class EnvCommandsTest extends TerminusTestBase
      * @group env
      * @group short
      */
-    public function testMetricsCommand()
+    public function testMetricsEnvCommand()
     {
         $metrics = $this->terminusJsonResponse(
             sprintf('env:metrics %s', $this->getSiteEnv())
+        );
+        $this->assertIsArray($metrics);
+        $this->assertNotEmpty($metrics);
+        $this->assertArrayHasKey(
+            'timeseries',
+            $metrics,
+            'Metrics should have "timeseries" field.'
+        );
+        $metric = array_shift($metrics['timeseries']);
+        $this->assertIsArray($metric);
+        $this->assertNotEmpty($metric);
+        $this->assertArrayHasKey(
+            'datetime',
+            $metric,
+            'A metric should have "datetime" field.'
+        );
+        $this->assertArrayHasKey(
+            'visits',
+            $metric,
+            'A metric should have "visits" field.'
+        );
+        $this->assertArrayHasKey(
+            'pages_served',
+            $metric,
+            'A metric should have "pages_served" field.'
+        );
+        $this->assertArrayHasKey(
+            'cache_hits',
+            $metric,
+            'A metric should have "cache_hits" field.'
+        );
+        $this->assertArrayHasKey(
+            'cache_misses',
+            $metric,
+            'A metric should have "cache_misses" field.'
+        );
+        $this->assertArrayHasKey(
+            'cache_hit_ratio',
+            $metric,
+            'A metric should have "cache_hit_ratio" field.'
+        );
+    }
+
+    /**
+     * @test
+     * @covers \Pantheon\Terminus\Commands\Env\MetricsCommand
+     *
+     * @group env
+     * @group short
+     */
+    public function testMetricsSiteCommand()
+    {
+        $metrics = $this->terminusJsonResponse(
+            sprintf('env:metrics %s', $this->getSiteName())
         );
         $this->assertIsArray($metrics);
         $this->assertNotEmpty($metrics);
@@ -396,5 +470,19 @@ class EnvCommandsTest extends TerminusTestBase
             $this->getSiteName()
         );
         $this->assertEquals($expectedUrl, $url);
+    }
+
+    /**
+     * @test
+     * @covers \Pantheon\Terminus\Commands\Env\CodeRebuildCommand
+     *
+     * @group env
+     * @group short
+     */
+    public function testCodeRebuild()
+    {
+        $this->terminus(
+            sprintf('env:code-rebuild %s', $this->getSiteEnv())
+        );
     }
 }

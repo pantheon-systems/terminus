@@ -12,6 +12,7 @@ class RemoveCommand extends TagCommand
      * Removes a tag from a site within an organization.
      *
      * @authorize
+     * @interact
      *
      * @command tag:remove
      * @aliases tag:rm

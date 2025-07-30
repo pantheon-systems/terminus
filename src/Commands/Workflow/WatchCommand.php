@@ -30,6 +30,7 @@ class WatchCommand extends TerminusCommand implements SiteAwareInterface
      * Streams new and finished workflows from a site to the console.
      *
      * @authorize
+     * @interact
      *
      * @command workflow:watch
      *

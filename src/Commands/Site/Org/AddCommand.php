@@ -22,6 +22,7 @@ class AddCommand extends TerminusCommand implements SiteAwareInterface
      * Associates a supporting organization with a site.
      *
      * @authorize
+     * @interact
      *
      * @command site:org:add
      *

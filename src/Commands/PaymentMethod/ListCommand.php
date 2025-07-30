@@ -19,6 +19,7 @@ class ListCommand extends TerminusCommand
      *
      * @authorize
      * @filter-output
+     * @interact
      *
      * @command payment-method:list
      * @aliases payment-methods pm:list pms

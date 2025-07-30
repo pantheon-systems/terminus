@@ -3,6 +3,7 @@
 namespace Pantheon\Terminus\Collections;
 
 use Pantheon\Terminus\Exceptions\TerminusException;
+use Pantheon\Terminus\Exceptions\TerminusUnsupportedSiteException;
 use Pantheon\Terminus\Models\Environment;
 use Pantheon\Terminus\Models\Organization;
 use Pantheon\Terminus\Models\Site;
@@ -11,6 +12,7 @@ use Pantheon\Terminus\Models\User;
 use Pantheon\Terminus\Models\Workflow;
 use Pantheon\Terminus\Session\SessionAwareInterface;
 use Pantheon\Terminus\Session\SessionAwareTrait;
+use Pantheon\Terminus\Request\Request;
 
 /**
  * Class Workflows
@@ -104,6 +106,18 @@ class Workflows extends APICollection implements SessionAwareInterface
             ]
         );
         if ($results->isError()) {
+            if ($results->getStatusCode() == 409) {
+                $decoded_body = json_decode($results->getData(), false);
+                if (!empty($decoded_body) && !empty($decoded_body->message)) {
+                    // This request is expected to fail for an unsupported site, throw exception.
+                    throw new TerminusUnsupportedSiteException($decoded_body->message);
+                } elseif (!empty($decoded_body) && !empty($decoded_body->reason)) {
+                    // This request is expected to fail, use generic reason.
+                    throw new TerminusUnsupportedSiteException(
+                        Request::UNSUPPORTED_SITE_EXCEPTION_MESSAGE
+                    );
+                }
+            }
             throw new TerminusException(
                 "Workflow Creation Failed: {error}",
                 ['error' => $results->getStatusCodeReason()]

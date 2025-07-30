@@ -1,7 +1,0 @@
-# Coveralls Configuration
-
-#repo_token: your_token # we don't have one yet
-service_name: travis-ci
-
-coverage_clover: tests/logs/clover.xml
-json_path: tests/logs/coveralls-upload.json

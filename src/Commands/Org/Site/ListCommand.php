@@ -22,6 +22,7 @@ class ListCommand extends TerminusCommand implements SiteAwareInterface
      *
      * @authorize
      * @filter-output
+     * @interact
      *
      * @command org:site:list
      * @aliases org:sites

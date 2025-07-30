@@ -15,6 +15,7 @@ class ViewCommand extends TerminusCommand implements SiteAwareInterface
      * Displays the URL for the environment or opens the environment in a browser.
      *
      * @authorize
+     * @interact
      *
      * @command env:view
      * @aliases site:view

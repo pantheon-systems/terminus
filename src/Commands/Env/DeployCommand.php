@@ -25,6 +25,7 @@ class DeployCommand extends TerminusCommand implements SiteAwareInterface
      *   - Deploying the Live environment will deploy code from the Test environment.
      *
      * @authorize
+     * @interact
      *
      * @command env:deploy
      * @aliases deploy
@@ -50,6 +51,10 @@ class DeployCommand extends TerminusCommand implements SiteAwareInterface
         $this->requireSiteIsNotFrozen($site_env);
         $site = $this->getSiteById($site_env);
         $env = $this->getEnv($site_env);
+
+        if ($env->getName() != 'test' && $env->getName() != 'live') {
+            throw new TerminusException('This command should only be used to deploy to test or live environments.');
+        }
 
         $annotation = $options['note'];
         if ($env->isInitialized()) {

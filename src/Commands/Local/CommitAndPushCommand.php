@@ -30,6 +30,7 @@ class CommitAndPushCommand extends TerminusCommand implements SiteAwareInterface
      * Commit local changes to remote repository.
      *
      * @authorize
+     * @interact
      *
      * @command local:commitAndPush
      * @aliases lcp
@@ -53,6 +54,13 @@ class CommitAndPushCommand extends TerminusCommand implements SiteAwareInterface
                 );
             }
         }
+
+        if ($siteData->isEvcs()) {
+            throw new TerminusException(
+                'This command is not supported for sites with external vcs. Please push to your external repository.'
+            );
+        }
+
         $git = new \CzProject\GitPhp\Git();
         $repo = $git->open($siteData->getLocalCopyDir());
         $repo->addAllChanges();

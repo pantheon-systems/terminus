@@ -35,13 +35,14 @@ class CloneContentCommand extends TerminusCommand implements SiteAwareInterface
      * Clones database/files from one environment to another environment.
      * WordPress sites will search the database for the default domain and
      * replace it with the target environment's domain unless you specify
-     * a different search/replace string with --search-for and --replace-with.
+     * a different search/replace string with --from-url and --to-url.
      *
      * IMPORTANT NOTE: if you have a WordPress Multisite installation, you
      * will need an entry in your pantheon.yml in order to search all the
-     * sites in your install.  See http://pantheon.io/some/link/in/docs.
+     * sites in your install.  See https://docs.pantheon.io/guides/multisite/search-replace.
      *
      * @authorize
+     * @interact
      *
      * @command env:clone-content
      *

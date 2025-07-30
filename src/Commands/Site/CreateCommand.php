@@ -4,6 +4,8 @@ namespace Pantheon\Terminus\Commands\Site;
 
 use Pantheon\Terminus\Commands\WorkflowProcessingTrait;
 use Pantheon\Terminus\Exceptions\TerminusException;
+use Pantheon\Terminus\Helpers\Traits\WaitForWakeTrait;
+use Pantheon\Terminus\Models\Environment;
 
 /**
  * Class CreateCommand.
@@ -13,11 +15,13 @@ use Pantheon\Terminus\Exceptions\TerminusException;
 class CreateCommand extends SiteCommand
 {
     use WorkflowProcessingTrait;
+    use WaitForWakeTrait;
 
     /**
      * Creates a new site.
      *
      * @authorize
+     * @interact
      *
      * @command site:create
      *
@@ -33,6 +37,7 @@ class CreateCommand extends SiteCommand
      *
      * @throws \GuzzleHttp\Exception\GuzzleException
      * @throws \Pantheon\Terminus\Exceptions\TerminusException
+     * @throws \Exception
      */
 
     public function create($site_name, $label, $upstream_id, $options = ['org' => null, 'region' => null,])
@@ -72,7 +77,11 @@ class CreateCommand extends SiteCommand
         if ($site = $this->getSiteById($workflow->get('waiting_for_task')->site_id)) {
             $this->log()->notice('Deploying CMS...');
             $this->processWorkflow($site->deployProduct($upstream->id));
-            $this->log()->notice('Deployed CMS');
+            $this->log()->notice('Waiting for site availability...');
+            $env = $site->getEnvironments()->get('dev');
+            if ($env instanceof Environment) {
+                $this->waitForWake($env, $this->logger);
+            }
         }
     }
 }

@@ -21,6 +21,7 @@ class InfoCommand extends TerminusCommand implements SiteAwareInterface
      * Provides information for HTTPS on being used for the environment.
      *
      * @authorize
+     * @interact
      *
      * @command https:info
      *

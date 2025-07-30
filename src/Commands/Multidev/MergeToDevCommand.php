@@ -21,6 +21,7 @@ class MergeToDevCommand extends TerminusCommand implements SiteAwareInterface
      * Merges code commits from a Multidev environment into the Dev environment.
      *
      * @authorize
+     * @interact
      *
      * @command multidev:merge-to-dev
      * @aliases env:merge-to-dev

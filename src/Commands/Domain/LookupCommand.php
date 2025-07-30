@@ -22,6 +22,7 @@ class LookupCommand extends TerminusCommand implements SiteAwareInterface
      * Note: Only sites for which the user is authorized will appear.
      *
      * @authorize
+     * @interact
      *
      * @command domain:lookup
      *

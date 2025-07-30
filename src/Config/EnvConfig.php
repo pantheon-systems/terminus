@@ -10,6 +10,8 @@ class EnvConfig extends TerminusConfig
 {
     protected $source_name = 'Environment Variable';
 
+    protected $defaults = [];
+
     /**
      * EnvConfig constructor.
      */

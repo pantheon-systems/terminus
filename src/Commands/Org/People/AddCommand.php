@@ -17,6 +17,7 @@ class AddCommand extends TerminusCommand
      * Adds a user to an organization.
      *
      * @authorize
+     * @interact
      *
      * @command org:people:add
      * @aliases org:ppl:add

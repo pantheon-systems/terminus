@@ -19,6 +19,7 @@ class AddCommand extends TerminusCommand implements SiteAwareInterface
      * Associates a domain with the environment.
      *
      * @authorize
+     * @interact
      *
      * @command domain:add
      *

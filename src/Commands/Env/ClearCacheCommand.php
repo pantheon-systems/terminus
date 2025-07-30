@@ -22,6 +22,7 @@ class ClearCacheCommand extends TerminusCommand implements SiteAwareInterface
      * Clears caches for the environment.
      *
      * @authorize
+     * @interact
      *
      * @command env:clear-cache
      * @aliases env:cc

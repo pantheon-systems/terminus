@@ -13,6 +13,8 @@ class DotEnvConfig extends TerminusConfig
      */
     protected $file;
 
+    protected $defaults = [];
+
     /**
      * DotEnvConfig constructor.
      */

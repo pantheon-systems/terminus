@@ -32,6 +32,7 @@ class GetLiveFilesCommand extends TerminusCommand implements
      * Create new backup of your live site FILES folder and download to $HOME/pantheon-local-copies/files
      *
      * @authorize
+     * @interact
      *
      * @command local:getLiveFiles
      * @aliases lf

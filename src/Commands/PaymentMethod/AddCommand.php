@@ -20,6 +20,7 @@ class AddCommand extends TerminusCommand implements SiteAwareInterface
      * Associates an existing payment method with a site.
      *
      * @authorize
+     * @interact
      *
      * @command payment-method:add
      * @aliases pm:add

@@ -15,6 +15,8 @@ class ListCommand extends UserListCommand
      * Displays the list of upstreams belonging to an organization.
      *
      * @filter-output
+     * @authorize
+     * @interact
      * @command org:upstream:list
      * @aliases org:upstreams
      *

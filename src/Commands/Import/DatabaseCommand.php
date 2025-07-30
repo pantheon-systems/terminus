@@ -23,6 +23,7 @@ class DatabaseCommand extends TerminusCommand implements SiteAwareInterface
      * Use with caution to avoid accidental database deletion.
      *
      * @authorize
+     * @interact
      *
      * @command import:database
      * @aliases import:db

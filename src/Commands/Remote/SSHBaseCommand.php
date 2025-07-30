@@ -9,6 +9,7 @@ use Pantheon\Terminus\Models\Environment;
 use Pantheon\Terminus\Models\Site;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
+use Pantheon\Terminus\Helpers\Utility\TraceId;
 use Symfony\Component\Process\Process;
 
 /**
@@ -50,6 +51,12 @@ abstract class SSHBaseCommand extends TerminusCommand implements SiteAwareInterf
     {
         $this->site = $this->getSiteById($site_env);
         $this->environment = $this->getEnv($site_env);
+
+        if ($this->site->isNodejs()) {
+            throw new TerminusProcessException(
+                'This command is not supported for Node.js sites.'
+            );
+        }
     }
 
     /**
@@ -70,39 +77,114 @@ abstract class SSHBaseCommand extends TerminusCommand implements SiteAwareInterf
      * Executes the command remotely.
      *
      * @param array $command_args
+     * @param int $retries Number of times to retry the command on failure.
      *
      * @throws \Pantheon\Terminus\Exceptions\TerminusProcessException
      */
-    protected function executeCommand(array $command_args)
+    protected function executeCommand(array $command_args, int $retries = 0)
     {
         $this->validateEnvironment($this->environment);
 
-        $command_summary = $this->getCommandSummary($command_args);
-        $command_line = $this->getCommandLine($command_args);
+        // Retrieve the trace ID from the TraceId class
+        $trace_id = TraceId::getTraceId();
 
-        $ssh_data = $this->sendCommandViaSsh($command_line);
+        // Prepare the environment variables
+        $env_vars = [
+            'TRACE_ID' => $trace_id
+        ];
 
-        $this->log()->notice('Command: {site}.{env} -- {command} [Exit: {exit}]', [
-            'site'    => $this->site->getName(),
-            'env'     => $this->environment->id,
-            'command' => $command_summary,
-            'exit'    => $ssh_data['exit_code'],
-        ]);
+        // Get the combined command line
+        $command_line = $this->getCommandLine($command_args, $env_vars);
 
-        if ($ssh_data['exit_code'] != 0) {
-            throw new TerminusProcessException($ssh_data['output'], [], $ssh_data['exit_code']);
-        }
+        // Log the trace ID for user visibility only in debug mode
+        $this->log()->debug('Trace ID: {trace_id}', ['trace_id' => $trace_id]);
+
+        $attempt = 0;
+        $max_attempts = $retries + 1;
+
+        do {
+            // Send the combined command line via SSH
+            $ssh_data = $this->sendCommandViaSsh($command_line, $env_vars);
+
+            $command_summary = $this->getCommandSummary($command_args);
+            // Log the command execution
+            $this->log()->notice(
+                'Command: {site}.{env} -- {command} [Exit: {exit}] (Attempt {attempt}/{max_attempts})',
+                [
+                    'site' => $this->site->getName(),
+                    'env' => $this->environment->id,
+                    'command' => $command_summary,
+                    'exit' => $ssh_data['exit_code'],
+                    'attempt' => $attempt + 1,
+                    'max_attempts' => $max_attempts,
+                ]
+            );
+
+            // Handle any errors in the command execution
+            if ($ssh_data['exit_code'] == 0) {
+                return;
+            }
+
+            // Check if the failure is permanent
+            if ($this->isPermanentFailure($ssh_data['exit_code'])) {
+                $this->log()->error('Permanent failure detected. Aborting retries. Exit code: {exit_code}', [
+                    'exit_code' => $ssh_data['exit_code']
+                ]);
+                break;
+            }
+
+            $attempt++;
+        } while ($attempt < $max_attempts);
+
+        $error_message = sprintf(
+            'Command: %s.%s -- %s [Exit: %d] (All attempts failed)',
+            $this->site->getName(),
+            $this->environment->id,
+            $command_summary,
+            $ssh_data['exit_code']
+        );
+
+        $this->log()->error($error_message);
+
+        throw new TerminusProcessException($ssh_data['output'], [], $ssh_data['exit_code']);
+    }
+
+    /**
+     * Determines if a failure is permanent based on the exit code.
+     *
+     * @param int $exit_code
+     * @return bool
+     */
+    protected function isPermanentFailure(int $exit_code): bool
+    {
+        // Define the exit codes that indicate a permanent failure
+        $permanent_failure_exit_codes = [
+            2,   // Invalid arguments
+            126, // Command cannot execute (permission denied)
+            127, // Command not found
+        ];
+
+        return in_array($exit_code, $permanent_failure_exit_codes, true);
     }
 
     /**
      * Sends a command to an environment via SSH.
      *
      * @param string $command The command to be run on the platform
+     * @param array $env_vars The environment variables to include in the SSH command
      */
-    protected function sendCommandViaSsh($command)
+    protected function sendCommandViaSsh($command, array $env_vars = [])
     {
-        $ssh_command = $this->getConnectionString() . ' ' . escapeshellarg($command);
-        $this->logger->debug('shell command: {command}', [ 'command' => $command ]);
+        // Convert env_vars array into a series of key=value strings
+        $env_vars_string = '';
+        foreach ($env_vars as $key => $value) {
+            $env_vars_string .= sprintf('-o SetEnv="%s=%s" ', $key, $value);
+        }
+
+        // Construct the SSH command without environment variables in SSH options
+        $ssh_command = $this->getConnectionString() . ' ' . $env_vars_string . escapeshellarg($command);
+
+        $this->logger->debug('shell command: {command}', ['command' => $ssh_command]);
         if ($this->getConfig()->get('test_mode')) {
             return $this->divertForTestMode($ssh_command);
         }
@@ -247,13 +329,29 @@ abstract class SSHBaseCommand extends TerminusCommand implements SiteAwareInterf
      * Returns the command-line args.
      *
      * @param string[] $command_args
+     * @param array $env_vars
      *
-     * @return string
+     * @return array
+     *   Elements are as follows:
+     *     string command_line The command line string
+     *     array env_vars The environment variables
      */
-    private function getCommandLine($command_args)
+    private function getCommandLine($command_args, $env_vars)
     {
-        array_unshift($command_args, $this->command);
-        return implode(" ", $this->escapeArguments($command_args));
+        // Convert env_vars array into a series of key=value strings
+        $env_vars_string = '';
+        foreach ($env_vars as $key => $value) {
+            $env_vars_string .= sprintf('%s=%s ', $key, strtr($value, '-', '_'));
+        }
+
+        // Construct the command line with environment variables and the command arguments
+        $command_line =
+            $env_vars_string
+            . implode(" ", $this->escapeArguments(array_merge([$this->command], $command_args)));
+
+        $this->log()->debug('getCommandLine: {command_line}', ['command_line' => $command_line]);
+
+        return $command_line;
     }
 
     /**
@@ -280,10 +378,16 @@ abstract class SSHBaseCommand extends TerminusCommand implements SiteAwareInterf
     {
         $sftp = $this->environment->sftpConnectionInfo();
         $command = $this->getConfig()->get('ssh_command');
-
+        if ($this->output()->isDebug()) {
+            $command .= ' -vvv';
+        } elseif ($this->output()->isVeryVerbose()) {
+            $command .= ' -vv';
+        } elseif ($this->output()->isVerbose()) {
+            $command .= ' -v';
+        }
         return vsprintf(
             '%s -T %s@%s -p %s -o "StrictHostKeyChecking=no" -o "AddressFamily inet"',
-            [$command, $sftp['username'], $this->lookupHostViaAlternateNameserver($sftp['host']), $sftp['port'],]
+            [$command, $sftp['username'], $this->lookupHostViaAlternateNameserver($sftp['host']), $sftp['port']]
         );
     }
 

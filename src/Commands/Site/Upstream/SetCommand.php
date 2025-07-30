@@ -18,6 +18,7 @@ class SetCommand extends SiteCommand
      * Changes a site upstream.
      *
      * @authorize
+     * @interact
      *
      * @command site:upstream:set
      *

@@ -9,6 +9,7 @@ use Pantheon\Terminus\Helpers\LocalMachineHelper;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 use Robo\Contract\ConfigAwareInterface;
+use Pantheon\Terminus\Exceptions\TerminusException;
 
 /**
  * Class CloneCommand.
@@ -24,6 +25,7 @@ class CloneCommand extends TerminusCommand implements SiteAwareInterface, Config
      * CLone a copy of the site code into $HOME/pantheon-local-copies
      *
      * @authorize
+     * @interact
      *
      * @command local:clone
      * @aliases lc
@@ -37,19 +39,27 @@ class CloneCommand extends TerminusCommand implements SiteAwareInterface, Config
      *
      * @option site_dir Custom directory for the local copy. By default, the site name is used
      * @option override Override the local copy if exists
+     * @option branch The branch to clone. Default is master
      *
      * @usage <site> Clone's a local copy into "$HOME/pantheon-local-copies"
      */
-    public function clone(string $site_id, array $options = ['site_dir' => null, 'override' => null]): string
-    {
+    public function clone(
+        string $site_id,
+        array $options = ['site_dir' => null, 'override' => null, 'branch' => 'master']
+    ): string {
         $site = $this->getSiteById($site_id);
+
+        if ($site->isEvcs()) {
+            throw new TerminusException(
+                'This command is not supported for sites with external vcs. Please clone from your external repository.'
+            );
+        }
+
         $env = $site->getEnvironments()->get('dev');
 
         $gitUrl = $env->connectionInfo()['git_url'] ?? null;
         $localCopyDir = $site->getLocalCopyDir($options['site_dir'] ?? null);
-
-        // @todo This value should come from somewhere else.
-        $devBranch = 'master';
+        $devBranch = $options['branch'];
 
         try {
             /** @var \Pantheon\Terminus\Helpers\LocalMachineHelper $localMachineHelper */

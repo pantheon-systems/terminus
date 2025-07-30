@@ -36,7 +36,7 @@ class PaymentMethods extends UserOwnedCollection
      * @throws TerminusException When there is more than one matching payment method
      * @throws TerminusNotFoundException When there are no matching payment methods
      */
-    public function get($id): ?TerminusModel
+    public function get($id): TerminusModel
     {
         $payment_methods = $this->all();
         if (isset($payment_methods[$id])) {
