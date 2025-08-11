@@ -40,6 +40,14 @@ class CodeRebuildCommand extends TerminusCommand implements SiteAwareInterface
         $site = $this->getSiteById($site_env);
         $env = $this->getEnv($site_env);
 
+        if ($site->isEvcs()) {
+            if (($env->getName() === 'test' || $env->getName() === 'live') && !$site->isNodejs()) {
+                // Rebuilding for test/live is only supported for Node.js sites.
+                throw new TerminusException('Rebuilding for test/live is only supported for Node.js sites.');
+            }
+            return $this->rebuildFromVcs($site->get('id'), $env->getName());
+        }
+
         if ($env->getName() === 'test' || $env->getName() === 'live') {
             throw new TerminusException('Test and live are not valid environments for this command.');
         }
@@ -55,5 +63,24 @@ class CodeRebuildCommand extends TerminusCommand implements SiteAwareInterface
 
         $this->processWorkflow($workflow);
         $this->log()->notice($workflow->getMessage());
+    }
+
+    /**
+     * Rebuild from latest vcs event.
+     */
+    protected function rebuildFromVcs(string $site_id, string $env)
+    {
+        $path = sprintf("/vcs/v1/site-details/%s/environments/%s/rebuild", $site_id, $env);
+        $response = $this->request()->request($path, [
+            'method' => 'POST',
+            'json' => [],
+        ]);
+        if ($response->getStatusCode() !== 200) {
+            throw new TerminusException(
+                'Failed to rebuild from VCS for site {site} environment {env}. Response: {response}. Status Code: {status_code}',
+                ['site' => $site_id, 'env' => $env, 'response' => $response->getBody(), 'status_code' => $response->getStatusCode()]
+            );
+        }
+        $this->log()->info("Rebuild is now happening for site {site} environment {env}.", ['site' => $site_id, 'env' => $env]);
     }
 }
