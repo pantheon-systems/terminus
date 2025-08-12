@@ -7,16 +7,19 @@ use Pantheon\Terminus\Commands\WorkflowProcessingTrait;
 use Pantheon\Terminus\Exceptions\TerminusException;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
+use Pantheon\Terminus\Request\RequestAwareInterface;
+use Pantheon\Terminus\Request\RequestAwareTrait;
 
 /**
  * Class CodeRebuildCommand.
  *
  * @package Pantheon\Terminus\Commands\Env
  */
-class CodeRebuildCommand extends TerminusCommand implements SiteAwareInterface
+class CodeRebuildCommand extends TerminusCommand implements SiteAwareInterface, RequestAwareInterface
 {
     use SiteAwareTrait;
     use WorkflowProcessingTrait;
+    use RequestAwareTrait;
 
     /**
      * Moves code to the specified environment's runtime from the associated git branch, retriggering Composer builds for sites using Integrated Composer. (Not applicable for Test and Live environments which run on git tags made from the Dev environment's git history.)
@@ -70,17 +73,42 @@ class CodeRebuildCommand extends TerminusCommand implements SiteAwareInterface
      */
     protected function rebuildFromVcs(string $site_id, string $env)
     {
-        $path = sprintf("/vcs/v1/site-details/%s/environments/%s/rebuild", $site_id, $env);
+        $path = sprintf("%s/vcs/v1/site-details/%s/environments/%s/rebuild", $this->getBaseURI(), $site_id, $env);
         $response = $this->request()->request($path, [
             'method' => 'POST',
             'json' => [],
+            'headers' => [
+                'Authorization' => sprintf(
+                    'Bearer %s',
+                    $this->session()->get('session')
+                ),
+            ],
         ]);
         if ($response->getStatusCode() !== 200) {
             throw new TerminusException(
                 'Failed to rebuild from VCS for site {site} environment {env}. Response: {response}. Status Code: {status_code}',
-                ['site' => $site_id, 'env' => $env, 'response' => $response->getBody(), 'status_code' => $response->getStatusCode()]
+                ['site' => $site_id, 'env' => $env, 'response' => $response->getData(), 'status_code' => $response->getStatusCode()]
             );
         }
         $this->log()->info("Rebuild is now happening for site {site} environment {env}.", ['site' => $site_id, 'env' => $env]);
+    }
+
+    /**
+     * Get API Base Uri.
+     */
+    /**
+     * Parses the base URI for requests.
+     *
+     * @return string
+     */
+    private function getBaseURI()
+    {
+        $config = $this->getConfig();
+        return sprintf(
+            '%s://%s:%s',
+            $config->get('protocol'),
+            $config->get('host'),
+            $config->get('port')
+        );
     }
 }
