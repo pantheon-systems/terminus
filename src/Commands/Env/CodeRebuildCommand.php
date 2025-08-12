@@ -90,7 +90,10 @@ class CodeRebuildCommand extends TerminusCommand implements SiteAwareInterface, 
                 ['site' => $site_id, 'env' => $env, 'status_code' => $response->getStatusCode()]
             );
         }
-        $this->log()->info("Rebuild is now happening for site {site} environment {env}.", ['site' => $site_id, 'env' => $env]);
+        $this->log()->info(
+            "Rebuild is now happening for site {site} environment {env}.",
+            ['site' => $site_id, 'env' => $env]
+        );
     }
 
     /**
