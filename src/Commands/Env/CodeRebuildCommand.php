@@ -84,10 +84,10 @@ class CodeRebuildCommand extends TerminusCommand implements SiteAwareInterface, 
                 ),
             ],
         ]);
-        if ($response->getStatusCode() !== 200) {
+        if ($response->getStatusCode() !== 201) {
             throw new TerminusException(
-                'Failed to rebuild from VCS for site {site} environment {env}. Response: {response}. Status Code: {status_code}',
-                ['site' => $site_id, 'env' => $env, 'response' => $response->getData(), 'status_code' => $response->getStatusCode()]
+                'Failed to rebuild from VCS for site {site} environment {env}. Status Code: {status_code}',
+                ['site' => $site_id, 'env' => $env, 'status_code' => $response->getStatusCode()]
             );
         }
         $this->log()->info("Rebuild is now happening for site {site} environment {env}.", ['site' => $site_id, 'env' => $env]);
