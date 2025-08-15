@@ -71,7 +71,7 @@ class CodeRebuildCommand extends TerminusCommand implements SiteAwareInterface, 
     /**
      * Rebuild from latest vcs event.
      */
-    protected function rebuildFromVcs(string $site_id, string $env)
+    public function rebuildFromVcs(string $site_id, string $env)
     {
         $path = sprintf("%s/vcs/v1/site-details/%s/environments/%s/rebuild", $this->getBaseURI(), $site_id, $env);
         $response = $this->request()->request($path, [
