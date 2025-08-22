@@ -310,6 +310,11 @@ class EnvCommandsTest extends TerminusTestBase
             $envInfo,
             'Environment info should have "php_version" field.'
         );
+        $this->assertArrayHasKey(
+            'php_runtime_generation',
+            $envInfo,
+            'Environment info should have "php_runtime_generation" field.'
+        );
     }
 
     /**
