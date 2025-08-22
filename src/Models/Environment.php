@@ -690,7 +690,7 @@ class Environment extends TerminusModel implements
      */
     public function getPHPRuntimeGeneration()
     {
-        return $this->settings('php_runtime_generation');
+         return $this->settings('appserver_runtime')->php_runtime_generation;
     }
 
     /**
