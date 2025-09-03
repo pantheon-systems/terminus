@@ -1,12 +1,12 @@
 # Change Log
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org)
 
-## 4.0.2
+## 4.0.2 - 2025-09-05
 
 ### Added
 
 - Added PHP Runtime Generation version to `env:info` command output (#2714)
-- eVCS support for various commands (#2505, #2699, #2704, #2711)
+- GitHub integration support for various commands (#2505, #2699, #2704, #2711)
 
 ### Fixed
 
