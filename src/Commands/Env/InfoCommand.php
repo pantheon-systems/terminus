@@ -36,6 +36,7 @@ class InfoCommand extends TerminusCommand implements SiteAwareInterface
      *     connection_mode: Connection Mode
      *     php_version: PHP Version
      *     drush_version: Drush Version
+     *     php_runtime_generation: PHP Runtime Generation
      * @param string $site_env Site & environment in the format `site-name.env`
      *
      * @return \Consolidation\OutputFormatters\StructuredData\PropertyList
@@ -67,6 +68,7 @@ class InfoCommand extends TerminusCommand implements SiteAwareInterface
             unset($properties['drush_version']);
             unset($properties['php_version']);
             unset($properties['locked']);
+            unset($properties['php_runtime_generation']);
         }
         return new PropertyList($properties);
     }

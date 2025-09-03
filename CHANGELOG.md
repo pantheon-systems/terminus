@@ -3,6 +3,10 @@ All notable changes to this project will be documented in this file. This projec
 
 ## 4.0.2-dev
 
+### Added
+
+- Added PHP Runtime Generation version to `env:info` command output (#2714)
+
 ## 4.0.1 - 2025-05-19
 
 ### Fixed

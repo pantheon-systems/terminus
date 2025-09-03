@@ -684,6 +684,16 @@ class Environment extends TerminusModel implements
     }
 
     /**
+     * Gets the PHP runtime generation of this environment
+     *
+     * @return string
+     */
+    public function getPHPRuntimeGeneration()
+    {
+         return $this->settings('appserver_runtime')->php_runtime_generation;
+    }
+
+    /**
      * @return UpstreamStatus
      */
     public function getUpstreamStatus()
@@ -947,6 +957,7 @@ class Environment extends TerminusModel implements
             'initialized' => $this->isInitialized(),
             'connection_mode' => $this->get('connection_mode'),
             'php_version' => $this->getPHPVersion(),
+            'php_runtime_generation' => $this->getPHPRuntimeGeneration(),
         ];
     }
 
