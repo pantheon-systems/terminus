@@ -143,30 +143,17 @@ class Organization extends TerminusModel implements
 
     /**
      * Fetch a single site membership directly by site ID or name
-     * 
+     *
      * @param string $site_identifier The site ID or name to fetch membership for
      * @return OrganizationSiteMembership
      * @throws \Pantheon\Terminus\Exceptions\TerminusNotFoundException
      */
-    public function getSiteMembership($site_identifier)
+    public function getSiteMembership($site_uuid)
     {
-        $site_uuid = $site_identifier;
-        
-        // If the identifier is not a UUID, resolve the name to UUID
-        if (!preg_match('/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i', $site_identifier)) {
-            $response = $this->request->request("site-names/{$site_identifier}");
-            if (!isset($response['data']->id)) {
-                throw new \Pantheon\Terminus\Exceptions\TerminusNotFoundException(
-                    "Could not find a site identified by {$site_identifier}."
-                );
-            }
-            $site_uuid = $response['data']->id;
-        }
-        
         $response = $this->request->request(
             "organizations/{$this->id}/memberships/sites/{$site_uuid}"
         );
-        
+
         $nickname = \uniqid(__FUNCTION__ . '-');
         $this->getContainer()->add($nickname, OrganizationSiteMembership::class)
             ->addArgument($response['data'])
