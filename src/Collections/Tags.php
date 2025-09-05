@@ -43,7 +43,7 @@ class Tags extends APICollection
     {
         $params = [$tag => ['sites' => [$this->org_site_membership->getSite()->id,],],];
         $this->request->request(
-            "organizations/{$this->org_site_membership->getOrganization()->id}/tags",
+            "organizations/{$this->org_site_membership->id}/tags",
             ['method' => 'put', 'form_params' => $params,]
         );
         $this->getContainer()->add($this->collected_class)
