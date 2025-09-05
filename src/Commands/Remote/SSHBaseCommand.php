@@ -376,7 +376,7 @@ abstract class SSHBaseCommand extends TerminusCommand implements SiteAwareInterf
      */
     private function getConnectionString()
     {
-        $sftp = $this->environment->sftpConnectionInfo();
+        $sftp = $this->environment->sftpConnectionInfo('ssh');
         $command = $this->getConfig()->get('ssh_command');
         if ($this->output()->isDebug()) {
             $command .= ' -vvv';

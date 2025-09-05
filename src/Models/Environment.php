@@ -987,11 +987,14 @@ class Environment extends TerminusModel implements
     /**
      * Gives SFTP connection info for this environment
      *
+     * @params string $purpose The purpose of the connection info. This is used to
+     * determine whether it should be returned for EVCS sites or not.
+     *
      * @return array
      */
-    public function sftpConnectionInfo()
+    public function sftpConnectionInfo($purpose = 'general')
     {
-        if ($this->isEvcsSite()) {
+        if ($this->isEvcsSite() && $purpose !== "ssh") {
             // No SFTP for EVCS sites
             return [];
         }
