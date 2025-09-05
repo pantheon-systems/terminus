@@ -987,7 +987,8 @@ class Environment extends TerminusModel implements
     /**
      * Gives sftp connection info for this environment.
      */
-    public function sftpConnectionInfo() {
+    public function sftpConnectionInfo()
+    {
         if ($this->isEvcsSite()) {
             // No SFTP for EVCS sites
             return [];
