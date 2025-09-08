@@ -163,7 +163,10 @@ class OrgCommandsTest extends TerminusTestBase
     public function testOrgSiteListCommandWithLabelField()
     {
         $orgSites = $this->terminusJsonResponse(
-            "org:site:list --fields=id,label" . $this->getOrg()
+            sprintf(
+                "org:site:list --fields=id,label %s",
+                $this->getOrg()
+            )
         );
         $this->assertIsArray(
             $orgSites,
