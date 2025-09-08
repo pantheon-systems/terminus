@@ -198,7 +198,11 @@ class OrgCommandsTest extends TerminusTestBase
     {
         $partial_site_name = substr($this->getSiteName(), 0, -1);
         $orgSites = $this->terminusJsonResponse(
-            "org:site:list --fields=id,label --filter='label*=" . $partial_site_name . "' " . $this->getOrg()
+            sprintf(
+                "org:site:list --fields=id,label --filter='label*=%s' %s",
+                $partial_site_name,
+                $this->getOrg()
+            )
         );
         $this->assertIsArray(
             $orgSites,
