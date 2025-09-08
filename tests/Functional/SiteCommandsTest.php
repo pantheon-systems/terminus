@@ -34,6 +34,24 @@ class SiteCommandsTest extends TerminusTestBase
 
     /**
      * @test
+     * @covers \Pantheon\Terminus\Commands\Site\ListCommand
+     *
+     * @group site
+     * @group short
+     */
+    public function testSiteListCommandWithLabelField()
+    {
+        $siteList = $this->terminusJsonResponse(sprintf('site:list --org=%s --fields=id,label', $this->getOrg()));
+        $this->assertIsArray($siteList);
+        $this->assertGreaterThan(0, count($siteList));
+
+        $site = array_shift($siteList);
+        $this->assertArrayHasKey('id', $site);
+        $this->assertArrayHasKey('label', $site);
+    }
+
+    /**
+     * @test
      * @covers \Pantheon\Terminus\Commands\Site\Org\ListCommand
      *
      * @group site
