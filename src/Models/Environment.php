@@ -985,9 +985,7 @@ class Environment extends TerminusModel implements
     }
 
     /**
-     * Gives SFTP connection info for this environment
-     *
-     * @return array
+     * Gives sftp connection info for this environment.
      */
     public function sftpConnectionInfo()
     {
@@ -995,6 +993,16 @@ class Environment extends TerminusModel implements
             // No SFTP for EVCS sites
             return [];
         }
+        return $this->sshConnectionInfo();
+    }
+
+    /**
+     * Gives ssh connection info for this environment
+     *
+     * @return array
+     */
+    public function sshConnectionInfo()
+    {
         $site = $this->getSite();
         if (!empty($ssh_host = $this->getConfig()->get('ssh_host'))) {
             $username = "appserver.{$this->id}.{$site->id}";
