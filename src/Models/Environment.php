@@ -684,6 +684,16 @@ class Environment extends TerminusModel implements
     }
 
     /**
+     * Gets the PHP runtime generation of this environment
+     *
+     * @return string
+     */
+    public function getPHPRuntimeGeneration()
+    {
+         return $this->settings('appserver_runtime')->php_runtime_generation;
+    }
+
+    /**
      * @return UpstreamStatus
      */
     public function getUpstreamStatus()
@@ -947,6 +957,7 @@ class Environment extends TerminusModel implements
             'initialized' => $this->isInitialized(),
             'connection_mode' => $this->get('connection_mode'),
             'php_version' => $this->getPHPVersion(),
+            'php_runtime_generation' => $this->getPHPRuntimeGeneration(),
         ];
     }
 
@@ -974,9 +985,7 @@ class Environment extends TerminusModel implements
     }
 
     /**
-     * Gives SFTP connection info for this environment
-     *
-     * @return array
+     * Gives sftp connection info for this environment.
      */
     public function sftpConnectionInfo()
     {
@@ -984,6 +993,16 @@ class Environment extends TerminusModel implements
             // No SFTP for EVCS sites
             return [];
         }
+        return $this->sshConnectionInfo();
+    }
+
+    /**
+     * Gives ssh connection info for this environment
+     *
+     * @return array
+     */
+    public function sshConnectionInfo()
+    {
         $site = $this->getSite();
         if (!empty($ssh_host = $this->getConfig()->get('ssh_host'))) {
             $username = "appserver.{$this->id}.{$site->id}";
