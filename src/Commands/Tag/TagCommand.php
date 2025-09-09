@@ -13,6 +13,7 @@ use Pantheon\Terminus\Site\SiteAwareTrait;
 abstract class TagCommand extends TerminusCommand implements SiteAwareInterface
 {
     use SiteAwareTrait;
+    
     /**
      * @param $site_identifier
      * @param $org_id
