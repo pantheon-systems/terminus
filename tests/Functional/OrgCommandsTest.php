@@ -186,7 +186,7 @@ class OrgCommandsTest extends TerminusTestBase
         $this->assertArrayHasKey(
             'label',
             $site,
-            "Sites from org list should have a name property"
+            "Sites from org list should have a label property"
         );
     }
 
