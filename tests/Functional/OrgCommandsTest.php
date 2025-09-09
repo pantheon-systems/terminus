@@ -155,6 +155,85 @@ class OrgCommandsTest extends TerminusTestBase
 
     /**
      * @test
+     * @covers \Pantheon\Terminus\Commands\Org\Site\ListCommand
+     *
+     * @group org
+     * @group short
+     */
+    public function testOrgSiteListCommandWithLabelField()
+    {
+        $orgSites = $this->terminusJsonResponse(
+            sprintf(
+                "org:site:list --fields=id,label %s",
+                $this->getOrg()
+            )
+        );
+        $this->assertIsArray(
+            $orgSites,
+            "Response from org list should be an array of orgs"
+        );
+        $site = array_shift($orgSites);
+
+        $this->assertIsArray(
+            $site,
+            "row from org list array of orgs should be an org item"
+        );
+        $this->assertArrayHasKey(
+            'id',
+            $site,
+            "Sites from org list should have an id property"
+        );
+        $this->assertArrayHasKey(
+            'label',
+            $site,
+            "Sites from org list should have a label property"
+        );
+    }
+
+    /**
+     * @test
+     * @covers \Pantheon\Terminus\Commands\Org\Site\ListCommand
+     *
+     * @group org
+     * @group short
+     */
+    public function testOrgSiteListCommandWithLabelFilter()
+    {
+        $partial_site_name = substr($this->getSiteName(), 0, -1);
+        $orgSites = $this->terminusJsonResponse(
+            sprintf(
+                "org:site:list --fields=id,label --filter='label*=%s' %s",
+                $partial_site_name,
+                $this->getOrg()
+            )
+        );
+        $this->assertIsArray(
+            $orgSites,
+            "Response from org list should be an array of orgs"
+        );
+
+        $this->assertGreaterThan(0, count($orgSites));
+
+        $site = array_shift($orgSites);
+
+        $this->assertIsArray(
+            $site,
+            "row from org list array of orgs should be an org item"
+        );
+        $this->assertArrayHasKey(
+            'id',
+            $site,
+            "Sites from org list should have an id property"
+        );
+        $this->assertArrayHasKey(
+            'label',
+            $site,
+            "Sites from org list should have a name property"
+        );
+    }
+
+    /**
+     * @test
      * @covers \Pantheon\Terminus\Commands\Org\Upstream\ListCommand
      *
      * @group org

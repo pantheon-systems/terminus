@@ -29,6 +29,7 @@ class ListCommand extends TerminusCommand implements SiteAwareInterface
      *
      * @field-labels
      *     name: Name
+     *     label: Label
      *     id: ID
      *     plan_name: Plan
      *     framework: Framework
@@ -36,6 +37,7 @@ class ListCommand extends TerminusCommand implements SiteAwareInterface
      *     created: Created
      *     tags: Tags
      *     frozen: Is Frozen?
+     * @default-fields name,id,plan_name,framework,owner,created,tags,frozen
      * @return RowsOfFields
      *
      * @param string $organization Organization name, label, or ID
