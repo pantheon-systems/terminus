@@ -8,6 +8,7 @@ use Pantheon\Terminus\Collections\OrganizationSiteMemberships;
 use Pantheon\Terminus\Collections\OrganizationUpstreams;
 use Pantheon\Terminus\Collections\OrganizationUserMemberships;
 use Pantheon\Terminus\Collections\Workflows;
+use Pantheon\Terminus\Models\OrganizationSiteMembership;
 use Pantheon\Terminus\Friends\ProfileInterface;
 use Pantheon\Terminus\Friends\ProfileTrait;
 use Pantheon\Terminus\Friends\SitesInterface;
@@ -138,6 +139,26 @@ class Organization extends TerminusModel implements
                 ->get($nickname);
         }
         return $this->site_memberships;
+    }
+
+    /**
+     * Fetch a single site membership directly by site ID or name
+     *
+     * @param string $site_uuid The site ID fetch membership for
+     * @return OrganizationSiteMembership
+     * @throws \Pantheon\Terminus\Exceptions\TerminusNotFoundException
+     */
+    public function getSiteMembership($site_uuid)
+    {
+        $response = $this->request->request(
+            "organizations/{$this->id}/memberships/sites/{$site_uuid}"
+        );
+
+        $nickname = \uniqid(__FUNCTION__ . '-');
+        $this->getContainer()->add($nickname, OrganizationSiteMembership::class)
+            ->addArgument($response['data'])
+            ->addArgument(['organization' => $this]);
+        return $this->getContainer()->get($nickname);
     }
 
     /**

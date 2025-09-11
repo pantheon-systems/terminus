@@ -20,9 +20,9 @@ class Tag extends TerminusModel
         $this->request->request(
             sprintf(
                 'organizations/%s/tags/%s/sites?entity=%s',
-                $membership->getOrganization()->id,
+                $membership->attributes->organization_id,
                 $this->id,
-                $membership->getSite()->id
+                $membership->attributes->site_id
             ),
             ['method' => 'delete',]
         );
