@@ -144,7 +144,7 @@ class Organization extends TerminusModel implements
     /**
      * Fetch a single site membership directly by site ID or name
      *
-     * @param string $site_identifier The site ID or name to fetch membership for
+     * @param string $site_uuid The site ID fetch membership for
      * @return OrganizationSiteMembership
      * @throws \Pantheon\Terminus\Exceptions\TerminusNotFoundException
      */
