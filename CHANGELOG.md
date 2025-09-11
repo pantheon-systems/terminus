@@ -1,7 +1,18 @@
 # Change Log
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org)
 
-## 4.0.3-dev
+## 4.0.3 - 2025-09-11
+
+### Added
+
+- Make site label available in `site:list` and `org:site:list` commands (#2708)
+- Add a debug log message to `workflow:wait` printing the workflow start time (#2703)
+
+### Fixed
+- Fix regression for drush/wp-cli commands on eVCS sites (#2719)
+- Un-deprecated `--tags` parameter on `org:site:list` command (#2709)
+- Remove unnecessary api call from `tag:add` and `tag:list` causing unnecessary load and timeouts (#2718)
+
 
 ## 4.0.2 - 2025-09-05
 
