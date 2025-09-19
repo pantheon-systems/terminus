@@ -31,6 +31,7 @@ class ListCommand extends TerminusCommand
      *     category: Category
      *     type: Type
      *     framework: Framework
+     *     repository_url: Repository URL
      *     organization: Organization
      * @option all Show all upstreams
      * @option framework DEPRECATED Framework filter
