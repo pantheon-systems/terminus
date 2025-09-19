@@ -111,18 +111,20 @@ class WaitCommand extends TerminusCommand implements SiteAwareInterface, Request
         do {
             $current_time = time();
             if ($maxNotFoundAttempts && $not_found_attempts === $maxNotFoundAttempts) {
-                throw new TerminusException(
+                $this->log()->warning(
                     "Attempted '{max}' times, giving up waiting for workflow to be found",
                     ['max' => $maxNotFoundAttempts]
                 );
+                return;
             }
 
-            // Check if the timeout has been reached and throw an exception if so.
+            // Check if the timeout has been reached and log warning if so.
             if ($end_time > 0 && $current_time >= $end_time) {
-                throw new TerminusException(
-                    'Workflow timed out after {timeout} seconds.',
+                $this->log()->warning(
+                    'Waited \'{timeout}\' seconds, giving up waiting for workflow to finish',
                     ['timeout' => $maxWaitInSeconds]
                 );
+                return;
             }
             $site = $this->getSiteById($site->id);
             $workflows->reset();
@@ -171,10 +173,11 @@ class WaitCommand extends TerminusCommand implements SiteAwareInterface, Request
         }
         do {
             if ($end_time > 0 && $current_time >= $end_time) {
-                throw new TerminusException(
-                    'Workflow timed out after {timeout} seconds.',
+                $this->log()->warning(
+                    'Waited \'{timeout}\' seconds, giving up waiting for workflow to finish',
                     ['timeout' => $maxWaitInSeconds]
                 );
+                return;
             }
             $workflow->fetch();
             usleep($retry_interval * 1000);
@@ -226,10 +229,11 @@ class WaitCommand extends TerminusCommand implements SiteAwareInterface, Request
 
             // Check timeout
             if ($end_time > 0 && $current_time >= $end_time) {
-                throw new TerminusException(
-                    'Workflow with commit {commit} timed out after {timeout} seconds.',
+                $this->log()->warning(
+                    'Waited \'{timeout}\' seconds, giving up waiting for workflow with commit {commit} to finish',
                     ['commit' => $target_commit, 'timeout' => $maxWaitInSeconds]
                 );
+                return;
             }
 
             // Fetch workflow logs using the logs/workflows endpoint
@@ -281,10 +285,11 @@ class WaitCommand extends TerminusCommand implements SiteAwareInterface, Request
 
             $retry_count++;
             if ($retry_count >= $max_retries) {
-                throw new TerminusException(
+                $this->log()->warning(
                     'Workflow with commit {commit} not found after {retries} attempts.',
                     ['commit' => $target_commit, 'retries' => $max_retries]
                 );
+                return;
             }
 
             $this->log()->debug('Workflow not found, retrying... ({retry}/{max})', [
@@ -305,10 +310,11 @@ class WaitCommand extends TerminusCommand implements SiteAwareInterface, Request
         do {
             $current_time = time();
             if ($end_time > 0 && $current_time >= $end_time) {
-                throw new TerminusException(
-                    'Workflow timed out after {timeout} seconds.',
+                $this->log()->warning(
+                    'Waited \'{timeout}\' seconds, giving up waiting for workflow to finish',
                     ['timeout' => $maxWaitInSeconds]
                 );
+                return;
             }
 
             // Re-fetch workflow logs to get updated status
