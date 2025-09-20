@@ -27,7 +27,11 @@ class UpstreamCommandsTest extends TerminusTestBase
         $this->assertArrayHasKey('label', $upstreamInfo, 'An upstream should have "label" field.');
         $this->assertArrayHasKey('machine_name', $upstreamInfo, 'An upstream should have "machine_name" field.');
         $this->assertArrayHasKey('type', $upstreamInfo, 'An upstream should have "type" field.');
-        $this->assertArrayNotHasKey('repository_url', $upstreamInfo, 'An upstream should not have "repository_url" field by default.');
+        $this->assertArrayNotHasKey(
+            'repository_url',
+            $upstreamInfo,
+            'An upstream should not have "repository_url" field by default.'
+        );
     }
 
     /**
@@ -46,7 +50,11 @@ class UpstreamCommandsTest extends TerminusTestBase
         $upstreamInfo = array_shift($upstreamList);
         $this->assertArrayHasKey('id', $upstreamInfo, 'An upstream should have "id" field.');
         $this->assertArrayHasKey('label', $upstreamInfo, 'An upstream should have "label" field.');
-        $this->assertArrayHasKey('repository_url', $upstreamInfo, 'An upstream should have "repository_url" field when explicitly requested.');
+        $this->assertArrayHasKey(
+            'repository_url',
+            $upstreamInfo,
+            'An upstream should have "repository_url" field when explicitly requested.'
+        );
     }
 
     /**
