@@ -455,6 +455,11 @@ class EnvCommandsTest extends TerminusTestBase
             $env,
             'An environment should have "initialized" field.'
         );
+        $this->assertArrayHasKey(
+            'php_runtime_generation',
+            $env,
+            'An environment should have "php_runtime_generation" field.'
+        );
     }
 
     /**
