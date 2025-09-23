@@ -17,13 +17,13 @@ If any of these steps should fail, abort the release-cutting process.
 5. Commit and push your update branch and open a pull request to merge into the target branch tested in **Step 2** above (e.g. `3.x`).
    1. Get approval from someone authorized to approve Terminus PRs and merge this into your target branch.
 
-6. Test your work to ensure that Composer won't have trouble installing the application.
-   1. Create a new directory anywhere but in Terminus and change into it before running the test.
-   2. Run this command. Answer `n` (No) if prompted to use another composer.json file in a directory above yours.
+6. ~~Test your work to ensure that Composer won't have trouble installing the application.~~
+   1. ~~Create a new directory anywhere but in Terminus and change into it before running the test.~~
+   2. ~~Run this command. Answer `n` (No) if prompted to use another composer.json file in a directory above yours.~~
       ```
       composer require pantheon-systems/terminus:3.x-dev
       ```
-   3. If there are no errors, you can delete the directory and proceed.
+   3. ~~If there are no errors, you can delete the directory and proceed.~~
 
 7. Create a CCB Ticket and get approval from the change committee. [https://getpantheon.atlassian.net/secure/CreateIssue.jspa?issuetype=ccb-change-request&pid=14450](https://getpantheon.atlassian.net/secure/CreateIssue.jspa?issuetype=ccb-change-request&pid=14450)
 

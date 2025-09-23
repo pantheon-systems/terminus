@@ -18,6 +18,7 @@
 - Upon PR merge to default, automation drafts a new release PR
   - Updates the version in config/constants.yml
   - Updates the CHANGELOG
+  - Maybe? Creates a draft CCB ticket??? - Phil says there should not be "Draft" CCB tickets lingering around long term
   - Phil's proposal: new branch is created from previous release, pushes it to github, creates new branch from 'dev' with above changes, PR targets previous release branch.
 - When we decide we want to create a new release, we "just" merge that PR
   - Creates the new tag
@@ -27,6 +28,7 @@
 - Publishing release (no longer draft) fires new automation
   - Creates the PR against homebrew
   - Creates a PR to update documentation repo
+    - This step is complicated enough that it might be best to have an LLM do it.
   - Create a PR to draft a "release note" in documention repo
 - Note: this would make the default branch
 - Move the 2 approvals requirement from PR merge to default to the creation of a release
