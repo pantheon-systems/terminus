@@ -20,7 +20,10 @@ class UpdateClassLists
         );
         sort($hooks);
         sort($commands);
-        $all = array_merge($hooks, $commands);
+        $consolidation_hooks = [
+            'Consolidation\\Filter\\Hooks\\FilterHooks',
+        ];
+        $all = array_merge($consolidation_hooks, $hooks, $commands);
         $all = array_map(
             function ($item) {
                 return str_replace('\\', '\\\\', var_export($item, true));
