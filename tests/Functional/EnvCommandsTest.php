@@ -455,10 +455,32 @@ class EnvCommandsTest extends TerminusTestBase
             $env,
             'An environment should have "initialized" field.'
         );
+    }
+
+    /**
+     * @test
+     * @covers \Pantheon\Terminus\Commands\Env\ListCommand
+     *
+     * @group env
+     * @group short
+     */
+    public function testListCommandWithPHPRuntimeGeneration()
+    {
+        $envs = $this->terminusJsonResponse(
+            sprintf('env:list %s --fields=id,php_runtime_generation', $this->getSiteName())
+        );
+        $this->assertIsArray($envs);
+        $env = array_shift($envs);
+
+        $this->assertArrayHasKey(
+            'id',
+            $env,
+            'An environment should have "id" field.'
+        );
         $this->assertArrayHasKey(
             'php_runtime_generation',
             $env,
-            'An environment should have "php_runtime_generation" field.'
+            'An environment should have "php_runtime_generation" field when explicitly requested.'
         );
     }
 
