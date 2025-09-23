@@ -27,6 +27,34 @@ class UpstreamCommandsTest extends TerminusTestBase
         $this->assertArrayHasKey('label', $upstreamInfo, 'An upstream should have "label" field.');
         $this->assertArrayHasKey('machine_name', $upstreamInfo, 'An upstream should have "machine_name" field.');
         $this->assertArrayHasKey('type', $upstreamInfo, 'An upstream should have "type" field.');
+        $this->assertArrayNotHasKey(
+            'repository_url',
+            $upstreamInfo,
+            'An upstream should not have "repository_url" field by default.'
+        );
+    }
+
+    /**
+     * Test UpstreamListCommand with repository_url field
+     *
+     * @test
+     * @covers \Pantheon\Terminus\Commands\Upstream\ListCommand
+     *
+     * @group upstream
+     * @group short
+     */
+    public function testUpstreamListCommandWithRepositoryUrl()
+    {
+        $upstreamList = $this->terminusJsonResponse('upstream:list --fields=id,label,repository_url');
+        $this->assertIsArray($upstreamList);
+        $upstreamInfo = array_shift($upstreamList);
+        $this->assertArrayHasKey('id', $upstreamInfo, 'An upstream should have "id" field.');
+        $this->assertArrayHasKey('label', $upstreamInfo, 'An upstream should have "label" field.');
+        $this->assertArrayHasKey(
+            'repository_url',
+            $upstreamInfo,
+            'An upstream should have "repository_url" field when explicitly requested.'
+        );
     }
 
     /**
