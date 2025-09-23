@@ -36,7 +36,7 @@ class ListCommand extends TerminusCommand implements SiteAwareInterface
      *     initialized: Initialized
      *     php_runtime_generation: PHP Runtime Generation
      * @default-fields id,created,domain,connection_mode,locked,initialized
-     
+
     * @return RowsOfFields
      *
      * @param string $site_id Site name
