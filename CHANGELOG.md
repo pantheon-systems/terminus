@@ -3,6 +3,10 @@ All notable changes to this project will be documented in this file. This projec
 
 ## 4.0.4-dev
 
+### Added
+
+- Add "PHP Runtime Generation" (php_runtime_generation) to the `env:list` command (#2729)
+
 ## 4.0.3 - 2025-09-11
 
 ### Added
