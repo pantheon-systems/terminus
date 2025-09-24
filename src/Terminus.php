@@ -83,6 +83,16 @@ class Terminus implements
     private Application $application;
 
     /**
+     * @var callable[]
+     */
+    private $cleanup_handlers = [];
+
+    /**
+     * @var static
+     */
+    private static $instance;
+
+    /**
      * Object constructor
      *
      * @param \Robo\Config\Config $config
@@ -91,6 +101,7 @@ class Terminus implements
      */
     public function __construct(Config $config, InputInterface $input, OutputInterface $output)
     {
+        self::$instance = $this;
         $this->setConfig($config);
         $this->setInput($input);
         $this->setOutput($output);
@@ -514,6 +525,10 @@ EOD;
         if ($output === null) {
             $output = $this->output();
         }
+
+        // Set up signal handlers for graceful shutdown
+        $this->setupSignalHandlers();
+
         $config = $this->getConfig();
         if (!empty($cassette = $config->get('vcr_cassette')) && !empty($mode = $config->get('vcr_mode'))) {
             $this->startVCR(array_merge(compact('cassette'), compact('mode')));
@@ -523,6 +538,82 @@ EOD;
             $this->stopVCR();
         }
         return $status_code;
+    }
+
+    /**
+     * Set up signal handlers for graceful shutdown
+     */
+    private function setupSignalHandlers(): void
+    {
+        if (!function_exists('pcntl_signal')) {
+            // pcntl extension not available, signal handling not possible
+            return;
+        }
+
+        // Handle SIGINT (Ctrl+C) and SIGTERM
+        pcntl_signal(SIGINT, [$this, 'handleSignal']);
+        pcntl_signal(SIGTERM, [$this, 'handleSignal']);
+
+        // Enable signal handling
+        pcntl_async_signals(true);
+    }
+
+    /**
+     * Handle signals for graceful shutdown
+     *
+     * @param int $signal The signal number
+     */
+    public function handleSignal(int $signal): void
+    {
+        $this->logger->notice('Received signal {signal}, performing cleanup...', ['signal' => $signal]);
+
+        $this->cleanup();
+
+        // Restore default signal handler and re-raise the signal
+        pcntl_signal($signal, SIG_DFL);
+        posix_kill(posix_getpid(), $signal);
+    }
+
+    /**
+     * Get the current Terminus instance
+     *
+     * @return static|null
+     */
+    public static function getInstance(): ?self
+    {
+        return self::$instance;
+    }
+
+    /**
+     * Register a cleanup handler that will be called during signal handling
+     *
+     * @param callable $handler The cleanup handler function
+     */
+    public function registerCleanupHandler(callable $handler): void
+    {
+        $this->cleanup_handlers[] = $handler;
+    }
+
+    /**
+     * Perform cleanup operations
+     */
+    private function cleanup(): void
+    {
+        try {
+            // Call all registered cleanup handlers
+            foreach ($this->cleanup_handlers as $handler) {
+                try {
+                    call_user_func($handler);
+                } catch (\Exception $e) {
+                    $this->logger->error('Error in cleanup handler: {message}', ['message' => $e->getMessage()]);
+                }
+            }
+
+            // Clear any active locks or temporary files
+            $this->logger->notice('Cleanup completed.');
+        } catch (\Exception $e) {
+            $this->logger->error('Error during cleanup: {message}', ['message' => $e->getMessage()]);
+        }
     }
 
     /**
