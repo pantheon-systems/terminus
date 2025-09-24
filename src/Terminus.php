@@ -605,7 +605,10 @@ EOD;
     public function handleSignal(int $signal): void
     {
         $this->logger->notice('Received signal {signal}, performing cleanup...', ['signal' => $signal]);
-        $this->logger->debug('Signal handler called with {count} cleanup handlers registered', ['count' => count($this->cleanup_handlers)]);
+        $this->logger->debug(
+            'Signal handler called with {count} cleanup handlers registered',
+            ['count' => count($this->cleanup_handlers)]
+        );
 
         $this->cleanup();
 
@@ -632,7 +635,10 @@ EOD;
     public function registerCleanupHandler(callable $handler): void
     {
         $this->cleanup_handlers[] = $handler;
-        $this->logger->debug('Cleanup handler registered. Total handlers: {count}', ['count' => count($this->cleanup_handlers)]);
+        $this->logger->debug(
+            'Cleanup handler registered. Total handlers: {count}',
+            ['count' => count($this->cleanup_handlers)]
+        );
     }
 
     /**
@@ -650,7 +656,10 @@ EOD;
                     call_user_func($handler);
                     $this->logger->debug('Cleanup handler {index} completed successfully', ['index' => $index]);
                 } catch (\Exception $e) {
-                    $this->logger->error('Error in cleanup handler {index}: {message}', ['index' => $index, 'message' => $e->getMessage()]);
+                    $this->logger->error(
+                        'Error in cleanup handler {index}: {message}',
+                        ['index' => $index, 'message' => $e->getMessage()]
+                    );
                 }
             }
 
