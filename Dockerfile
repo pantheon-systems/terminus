@@ -2,7 +2,7 @@
 FROM composer:2 AS composer
 
 # --- Build Layer ---
-FROM php:8.3-cli-alpine AS build
+FROM php:8.4-cli-alpine AS build
 
 # Install dependencies for building PHAR
 RUN apk add --no-cache bash git wget
@@ -19,13 +19,13 @@ COPY . .
 RUN composer install --no-interaction --no-dev --optimize-autoloader
 
 # Install Box for PHAR building
-RUN wget https://github.com/box-project/box/releases/download/4.5.1/box.phar -O /usr/local/bin/box && chmod +x /usr/local/bin/box
+RUN wget https://github.com/box-project/box/releases/download/4.6.7/box.phar -O /usr/local/bin/box && chmod +x /usr/local/bin/box
 
 # Build PHAR file
 RUN ./scripts/phar_build.sh
 
 # --- Runtime Layer ---
-FROM php:8.3-cli-alpine
+FROM php:8.4-cli-alpine
 
 # Install Git, Unzip, and Wget dependencies
 RUN apk add --no-cache git openssh
