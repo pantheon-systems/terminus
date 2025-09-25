@@ -80,7 +80,7 @@ sudo ln -s ~/terminus/terminus /usr/local/bin/terminus
 Terminus can also be built and run as a Docker container, rather than relying on system version of PHP and other dependencies.
 
 ```bash
-docker build . -f Dockerfile -t terminus
+docker build . -t terminus
 ```
 
 In order to store configuration and install plugins, Terminus requires a persistent data directory. If you only plan to run Terminus via Docker, please run the following command to create a Docker data volume:

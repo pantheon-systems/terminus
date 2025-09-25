@@ -49,6 +49,17 @@ jobs:
           path: terminus.phar
           if-no-files-found: error
 
+  build_docker_image:
+    runs-on: ubuntu-latest
+    name: Build Docker image
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Build Docker image
+        run: docker build . -t terminus
+      - name: Run built Docker image
+        run: docker run terminus art
+
   functional:
     runs-on: ${{ matrix.operating-system }}
     name: Functional testing matrix - PHP ${{ matrix.php-versions }} on ${{ matrix.operating-system }}
