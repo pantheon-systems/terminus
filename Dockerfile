@@ -1,16 +1,14 @@
+# --- Composer Layer ---
+FROM composer:2 AS composer
+
 # --- Build Layer ---
-FROM php:8.2-cli AS build
+FROM php:8.3-cli-alpine AS build
 
 # Install dependencies for building PHAR
-RUN apt-get update && \
-    apt-get install --no-install-recommends -y \
-        git \
-        unzip \
-        wget && \
-    rm -rf /var/lib/apt/lists/*
+RUN apk add --no-cache bash git wget
 
 # Install Composer
-COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+COPY --from=composer /usr/bin/composer /usr/bin/composer
 
 WORKDIR /app
 
@@ -27,7 +25,10 @@ RUN wget https://github.com/box-project/box/releases/download/4.5.1/box.phar -O 
 RUN ./scripts/phar_build.sh
 
 # --- Runtime Layer ---
-FROM php:8.2-cli-alpine
+FROM php:8.3-cli-alpine
+
+# Install Git, Unzip, and Wget dependencies
+RUN apk add --no-cache git openssh
 
 # Create a non-root user and group
 RUN addgroup -S terminus && adduser -S terminus -G terminus
@@ -36,9 +37,6 @@ RUN addgroup -S terminus && adduser -S terminus -G terminus
 USER terminus
 
 WORKDIR /app
-
-# Copy Git
-RUN apk add --no-cache git unzip wget
 
 # Copy Composer from build layer
 COPY --from=build /usr/bin/composer /usr/bin/composer

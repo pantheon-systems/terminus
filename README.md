@@ -93,9 +93,9 @@ The container can be run of 2 different ways:
 
 - Directly using `docker` (or `podman`, etc.):
 
-        docker run -tv terminus:/root/.terminus terminus:latest art
+        docker run -tv terminus:/root/.terminus terminus:latest self:info
 
 - Alternatively implement an alias in your local environment:
 
         alias terminus="docker run -tv ~/.terminus:/root/.terminus terminus:latest"
-        terminus art
+        terminus self:info
