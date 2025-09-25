@@ -74,3 +74,28 @@ chmod +x terminus
 ./terminus self:update
 sudo ln -s ~/terminus/terminus /usr/local/bin/terminus
 ```
+
+### Standalone Docker container
+
+Terminus can also be built and run as a Docker container, rather than relying on system version of PHP and other dependencies.
+
+```bash
+docker build . -f Dockerfile -t terminus
+```
+
+In order to store configuration and install plugins, Terminus requires a persistent data directory. If you only plan to run Terminus via Docker, please run the following command to create a Docker data volume:
+
+```bash
+docker volume create terminus --ignore
+```
+
+The container can be run of 2 different ways:
+
+- Directly using `docker` (or `podman`, etc.):
+
+        docker run -tv terminus:/root/.terminus terminus:latest art
+
+- Alternatively implement an alias in your local environment:
+
+        alias terminus="docker run -tv ~/.terminus:/root/.terminus terminus:latest"
+        terminus art
