@@ -2,7 +2,12 @@
 FROM php:8.2-cli AS build
 
 # Install dependencies for building PHAR
-RUN apt-get update && apt-get install -y git unzip wget && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && \
+    apt-get install --no-install-recommends -y \
+        git \
+        unzip \
+        wget && \
+    rm -rf /var/lib/apt/lists/*
 
 # Install Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
@@ -23,6 +28,12 @@ RUN ./scripts/phar_build.sh
 
 # --- Runtime Layer ---
 FROM php:8.2-cli-alpine
+
+# Create a non-root user and group
+RUN addgroup -S terminus && adduser -S terminus -G terminus
+
+# Switch to non-root user
+USER terminus
 
 WORKDIR /app
 
