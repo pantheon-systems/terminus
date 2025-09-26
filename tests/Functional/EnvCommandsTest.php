@@ -327,7 +327,7 @@ class EnvCommandsTest extends TerminusTestBase
     public function testInfoCommandWithDrushVersion()
     {
         $envInfo = $this->terminusJsonResponse(
-            sprintf('env:info %s --field=drush_version', $this->getSiteEnv())
+            sprintf('env:info %s --fields=drush_version', $this->getSiteEnv())
         );
         $this->assertArrayHasKey(
             'drush_version',
