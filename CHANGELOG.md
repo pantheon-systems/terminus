@@ -7,6 +7,11 @@ All notable changes to this project will be documented in this file. This projec
 
 - Add "PHP Runtime Generation" (php_runtime_generation) and "PHP Version" (php_version) to the `env:list` command (#2729, #2732)
 
+### Fixed
+
+- Fix workflow:wait timeout to use warnings instead of errors (#2724)
+- Preserve consolidation filter hook when running composer update class list (#2728)
+
 ## 4.0.3 - 2025-09-11
 
 ### Added
