@@ -10,7 +10,6 @@ All notable changes to this project will be documented in this file. This projec
 ### Fixed
 
 - Fix workflow:wait timeout to use warnings instead of errors (#2724)
-- Preserve consolidation filter hook when running composer update class list (#2728)
 
 ## 4.0.3 - 2025-09-11
 
