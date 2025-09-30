@@ -59,7 +59,12 @@ If any of these steps should fail, abort the release-cutting process.
          3. Run `git branch -vv` to check current branch and if `main` branch is behind at all.
          4. Run `git status` to check for clean working directory.  If current directory is unclean, `git stash` all changes with a brief message about when and why stash created.
          5. Change to `main` branch if not on it already.
-         6. Ensure main branch fully matches remote by fast-forwarding if branch has not diverged.  If branch has diverged, move local version to a new branch `main-dirty-YYYYMMDD` and update `main` to exactly match origin.
+         6. Ensure main branch fully matches remote by fast-forwarding if branch has not diverged.  If branch has diverged, move local version to a new branch and update `main` to exactly match origin:
+            ```
+            git checkout -b main-dirty-$(date +%Y%m%d)
+            git checkout main
+            git reset --hard origin/main
+            ```
       2. If the documentation repo is not visible in your workspace, `git clone` it in your available workspace but avoid inadvertently committing as a git submodule.
    2. Create a new branch for this release.
    3. Update the supported versions page [https://github.com/pantheon-systems/documentation/edit/main/source/content/terminus/10-supported-terminus.md](https://github.com/pantheon-systems/documentation/edit/main/source/content/terminus/10-supported-terminus.md).
@@ -67,8 +72,8 @@ If any of these steps should fail, abort the release-cutting process.
       2. For the most recent release on your major branch, fill in the **EOL Date**. This will be today's date plus one year. Terminus versions EOL 1 year after they are no longer the latest.
       3. If applicable, remove all but one old versions from the list that are more than one year _past EOL_. If any versions are removed, the last line in the list should read `X.Y.Z or earlier`.
       4. If applicable, update the Terminus [PHP Version Compatibility Matrix](https://docs.pantheon.io/terminus/supported-terminus#php-version-compatibility-matrix). This will be contextually clear from the changes in this release.
-   11. Create a new "Release Note" file in `source/releasenotes` for this release. You can use the previous release note as a starting point.
-   12. Create a new draft PR
+   5. Create a new "Release Note" file in `source/releasenotes` for this release. You can use the previous release note as a starting point.
+   6. Create a new draft PR
       1. Set the PR title to `Terminus Release X.Y.Z - Version Updates` and do the following in the PR template:
          1. Use this for your **Summary** section:
             `**[Version Updates](https://docs.pantheon.io/terminus/supported-terminus)** - Terminus Release X.Y.Z`
@@ -89,7 +94,7 @@ If any of these steps should fail, abort the release-cutting process.
 9. Once the release is published, edit the notes to include the changes from this release. It's convenient to simply copy the markdown from [https://github.com/pantheon-systems/terminus/edit/4.x/CHANGELOG.md](https://github.com/pantheon-systems/terminus/edit/4.x/CHANGELOG.md). Omit the release number and date when copying.
 10. For releases `3.x` or later, a PR will be created in the [Homebrew formula](https://github.com/pantheon-systems/homebrew-external) repository. Find it and merge it to release to Homebrew.
 11. Update the major terminus branch (e.g. `4.x`) "back to dev".  The new "dev version" number will be `a.b.c+1-dev`, where `a.b.c` is the version we just released.
-   1. Create new branch `back_to_<dev version>
+   1. Create new branch `back_to_<dev_version>`
    2. Update version in `config/constants.yml`.
    3. In `CHANGELOG.md`, add a new heading above the latest release.
    4. Commit, push, and create a "Back to dev" PR.
