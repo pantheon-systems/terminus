@@ -176,6 +176,10 @@ class Environment extends TerminusModel implements
         if (!empty($options['from_url']) && !empty($options['to_url'])) {
             $params['wp_replace_siteurl']['from_url'] = $options['from_url'];
             $params['wp_replace_siteurl']['to_url'] = $options['to_url'];
+        } else {
+            // Automatically detect environment URLs for search-replace
+            $params['wp_replace_siteurl']['from_url'] = 'https://' . $from_env->domain();
+            $params['wp_replace_siteurl']['to_url'] = 'https://' . $this->domain();
         }
         return $this->getWorkflows()->create(
             'clone_database',
