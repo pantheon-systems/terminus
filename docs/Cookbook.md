@@ -12,4 +12,5 @@ for SITE in $(terminus org:site:list $ORG --format=string --field=name); do
 done
 ```
 
+In the snippet, `SITE` is being declared implicitly as part of the loop, but `$ORG` and `$EMAIL` need to be defined as environment variables, or replaced with the relevant values.
 
