@@ -1,11 +1,15 @@
 # Change Log
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org)
 
-## 4.0.4-dev
+## 4.1.0 - 2025-09-29
 
 ### Added
 
 - Add "PHP Runtime Generation" (php_runtime_generation) and "PHP Version" (php_version) to the `env:list` command (#2729, #2732)
+
+### Fixed
+
+- Fix workflow:wait timeout to use warnings instead of errors (#2724)
 
 ## 4.0.3 - 2025-09-11
 
