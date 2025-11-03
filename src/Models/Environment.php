@@ -625,7 +625,7 @@ class Environment extends TerminusModel implements
      */
     public function getDrushVersion()
     {
-        return $this->settings('drush_version');
+        return $this->settings('appserver_runtime')->drush_version;
     }
 
     /**
@@ -961,6 +961,7 @@ class Environment extends TerminusModel implements
             'initialized' => $this->isInitialized(),
             'connection_mode' => $this->get('connection_mode'),
             'php_version' => $this->getPHPVersion(),
+            'drush_version' => $this->getDrushVersion(),
             'php_runtime_generation' => $this->getPHPRuntimeGeneration(),
         ];
     }

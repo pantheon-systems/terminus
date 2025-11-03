@@ -319,6 +319,29 @@ class EnvCommandsTest extends TerminusTestBase
 
     /**
      * @test
+     * @covers \Pantheon\Terminus\Commands\Env\InfoCommand
+     *
+     * @group env
+     * @group short
+     */
+    public function testInfoCommandWithDrushVersion()
+    {
+        $envInfo = $this->terminusJsonResponse(
+            sprintf('env:info %s --fields=drush_version', $this->getSiteEnv())
+        );
+        $this->assertArrayHasKey(
+            'drush_version',
+            $envInfo,
+            'Environment info should have "drush_version" field when explicitly requested.'
+        );
+        $this->assertNotEmpty(
+            $envInfo['drush_version'],
+            'Environment info "drush_version" should not be empty.'
+        );
+    }
+
+    /**
+     * @test
      * @covers \Pantheon\Terminus\Commands\Env\MetricsCommand
      *
      * @group env

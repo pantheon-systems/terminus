@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file. This projec
 ### Added
 
 ### Fixed
+- Fix output of drush_version in `env:info` (#2736)
 
 ## 4.1.0 - 2025-09-29
 
