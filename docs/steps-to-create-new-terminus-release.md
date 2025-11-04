@@ -31,23 +31,91 @@ If any of these steps should fail, abort the release-cutting process.
       3. This PR can be merged after CCB approval.
 
 6. Draft a Jira ticket in "CCB" project to get approval from the "Change Control Board":
-   1. **Create CCB Change Request** using Atlassian MCP tools (preferred) or web interface:
-      - **Project:** CCB
-      - **Issue Type:** CCB Change Request
-      - **Squad:** Developer Experience (11058)
-      - **Service/Component:** terminus
-      - **Summary:** Terminus X.Y.Z Release
-      - **Business Justification:** Describe customer benefits
-      - **Testing:** Reference GitHub Actions + manual testing against production
-      - **Rollback Plan:** Emergency hotfix release to previous version
-      - **Code Review Link:** GitHub PR URL
-      - **Risk Assessment:** Typically low risk for additive features
-      - **Monitoring Plans:** User feedback in Slack/support tickets.
-      - **Feature Flag:** None (client-side tool)
-      - **Urgency:** Normal
-      - **Tested in Sandbox:** No
-   2. **Link to related tickets:** Include a link to the original DEVX ticket.
-   3. **Leave in Draft status** until ready for CCB review.  Ready for CCB review after release PR is _approved_.
+   1. **Create CCB Change Request** using Atlassian MCP tools with the following approach:
+
+      **Important:** CCB textarea fields require Atlassian Document Format (ADF), which is a JSON structure. Plain text will be rejected with "Operation value must be an Atlassian Document Format" error.
+
+      Use `mcp__atlassian__createJiraIssue` with these parameters:
+      - **cloudId:** `12519b81-57b5-457a-bee5-0534438e646b`
+      - **projectKey:** `CCB`
+      - **issueTypeName:** `CCB Change Request`
+      - **summary:** `Terminus X.Y.Z Release`
+      - **description:** Markdown description of the release
+      - **additional_fields:** JSON object with these fields:
+        - `customfield_12050`: Squad - `{"id": "11058"}` (Developer Experience)
+        - `customfield_13303`: Urgency - `{"id": "12071"}` (Normal)
+        - `customfield_13304`: Service/Component - `"terminus"` (plain string)
+        - `customfield_13313`: Feature Flag - ADF format (see example below)
+        - `customfield_13314`: Business Justification - ADF format
+        - `customfield_13315`: Risk of NOT deploying - ADF format
+        - `customfield_13319`: Customer Impact Monitoring - ADF format
+        - `customfield_13320`: Pantheon Internal Monitoring - ADF format
+        - `customfield_13322`: Testing and Validation - ADF format
+        - `customfield_13323`: Testing Signoff - `{"accountId": "712020:949f07e7-2e08-4b5a-a6f9-072413aa303d"}`
+        - `customfield_13324`: Roll back plan - ADF format
+        - `customfield_13325`: Code Review Links - ADF format
+        - `customfield_13418`: Tested in Sandbox - `{"id": "12263"}` (No)
+        - `customfield_13413`: Is this change risky - `{"id": "12261"}` (No)
+        - `customfield_13479`: Customer site downtime - `{"id": "12395"}` (No)
+
+      **ADF Format Example** (for text fields):
+      ```json
+      {
+        "version": 1,
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Your text here"
+              }
+            ]
+          }
+        ]
+      }
+      ```
+
+      For bullet lists in ADF:
+      ```json
+      {
+        "version": 1,
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [{"type": "text", "text": "Introduction text"}]
+          },
+          {
+            "type": "bulletList",
+            "content": [
+              {
+                "type": "listItem",
+                "content": [
+                  {
+                    "type": "paragraph",
+                    "content": [{"type": "text", "text": "First item"}]
+                  }
+                ]
+              },
+              {
+                "type": "listItem",
+                "content": [
+                  {
+                    "type": "paragraph",
+                    "content": [{"type": "text", "text": "Second item"}]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+      ```
+
+   2. **Link to related tickets:** Add a comment to both CCB ticket and DEVX ticket using `mcp__atlassian__addCommentToJiraIssue` to cross-reference them.
+   3. **Leave in Draft status** until ready for CCB review. Ready for CCB review after release PR is _approved_.
    4. **Manual creation URL (if needed):** [https://getpantheon.atlassian.net/secure/CreateIssue.jspa?issuetype=ccb-change-request&pid=14450](https://getpantheon.atlassian.net/secure/CreateIssue.jspa?issuetype=ccb-change-request&pid=14450)
    5. Proceed to next step, which can be prepared in advance of approvals.
 
