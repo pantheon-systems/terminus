@@ -132,7 +132,15 @@ EOD;
         $this->addDefaultArgumentsAndOptions($application);
         $this->configureContainer();
         Robo::finalizeContainer($this->getContainer());
-        $this->setLogger($container->get('logger'));
+
+        // Configure the logger to use timestamps
+        $logger = $container->get('logger');
+        if ($logger instanceof \Consolidation\Log\Logger) {
+            $timestampedStyler = new \Pantheon\Terminus\Log\TimestampedLogOutputStyler();
+            $logger->setLogOutputStyler($timestampedStyler);
+        }
+
+        $this->setLogger($logger);
         $this->addBuiltInCommandsAndHooks();
         $this->addPluginsCommandsAndHooks();
 
