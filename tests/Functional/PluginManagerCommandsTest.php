@@ -156,6 +156,85 @@ class PluginManagerCommandsTest extends TerminusTestBase
     }
 
     /**
+     * @test
+     * @covers \Pantheon\Terminus\Commands\Self\Plugin\InstallCommand
+     *
+     * Regression test to verify that COMPOSER_AUDIT_BLOCK_INSECURE environment variable
+     * is properly forwarded to Composer subprocess during plugin installation.
+     *
+     * This test verifies the fix for the bug where COMPOSER_AUDIT_BLOCK_INSECURE=0
+     * was not being forwarded to Composer, causing plugin installations to fail
+     * with security advisory errors even when the user explicitly opted out.
+     *
+     * Uses terminus-build-tools-plugin which has known security advisories in its
+     * dependencies (e.g., symfony/process v5.4.40, twig/twig v3.11.1) to verify
+     * that the env var forwarding actually works end-to-end.
+     *
+     * @group plugins
+     * @group long
+     */
+    public function testPluginInstallRespectsComposerAuditBlockInsecureEnv()
+    {
+        $filesystem = new Filesystem();
+        // Use a plugin with known security advisories to test the env forwarding
+        $testPluginPackage = 'pantheon-systems/terminus-build-tools-plugin';
+
+        // Clean up.
+        $filesystem->remove([
+            $this->getPluginsDir(),
+            $this->getPlugins2Dir(),
+            $this->getDependenciesBaseDir(),
+            $this->getBaseDir(),
+        ]);
+
+        // Uninstall plugin if it exists
+        $this->terminus('self:plugin:uninstall ' . $testPluginPackage, [], false);
+
+        // Test that plugin installation works with COMPOSER_AUDIT_BLOCK_INSECURE=0 set.
+        // This verifies that the environment variable is properly forwarded to Composer.
+        // Without this env var, Composer 2.9.1+ would block the installation due to
+        // security advisories in the plugin's dependencies.
+        $env = array_merge($this->env, ['COMPOSER_AUDIT_BLOCK_INSECURE' => '0']);
+        [$output, $exitCode, $error] = static::callTerminus(
+            sprintf('self:plugin:install %s', $testPluginPackage),
+            null,
+            $env
+        );
+
+        // The installation should succeed (exit code 0) when COMPOSER_AUDIT_BLOCK_INSECURE=0 is set.
+        // If the env var is not forwarded, Composer would fail with security advisory errors.
+        $this->assertEquals(
+            0,
+            $exitCode,
+            sprintf(
+                'Plugin installation should succeed with COMPOSER_AUDIT_BLOCK_INSECURE=0. ' .
+                'If this fails, the env var may not be forwarded to Composer. ' .
+                'Output: %s, Error: %s',
+                $output,
+                $error
+            )
+        );
+
+        // Verify the plugin was actually installed
+        $this->assertStringContainsString(
+            sprintf('Installed %s', $testPluginPackage),
+            $output . $error,
+            'Plugin installation output should indicate success.'
+        );
+
+        // Verify no security advisory blocking errors in the output
+        $combinedOutput = $output . $error;
+        $this->assertStringNotContainsString(
+            'are affected by security advisories',
+            $combinedOutput,
+            'Plugin installation should not show security advisory blocking errors when COMPOSER_AUDIT_BLOCK_INSECURE=0 is set.'
+        );
+
+        // Cleanup
+        $this->terminus('self:plugin:uninstall ' . $testPluginPackage, [], false);
+    }
+
+    /**
      * Install Terminus 2 plugins.
      *
      * @param array $plugins

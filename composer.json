@@ -57,7 +57,8 @@
     "psr-4": {
       "Pantheon\\Terminus\\Tests\\Functional\\": "tests/Functional/",
       "Pantheon\\Terminus\\FeatureTests\\": "tests/features/bootstrap/",
-      "Pantheon\\Terminus\\Scripts\\": "scripts/"
+      "Pantheon\\Terminus\\Scripts\\": "scripts/",
+      "Pantheon\\Terminus\\UnitTests\\": "tests/unit_tests/"
     },
     "classmap": [
       "scripts/UpdateClassLists.php"
@@ -109,6 +110,12 @@
     ],
     "test:behat": [
       "SHELL_INTERACTIVE=true TERMINUS_TEST_MODE=1 behat --colors --config tests/config/behat.yml --stop-on-failure --suite=default"
+    ],
+    "test:unit": [
+      "vendor/bin/phpunit --colors=always -c ./phpunit.unit.xml --debug --do-not-cache-result --verbose --stop-on-failure"
+    ],
+    "tests:unit": [
+      "@test:unit"
     ],
     "test:short": [
       "XDEBUG_MODE=coverage vendor/bin/phpunit --colors=always -c ./phpunit.xml --debug --group=short --do-not-cache-result --verbose --stop-on-failure"

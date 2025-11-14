@@ -180,7 +180,91 @@ class LocalMachineHelper implements ConfigAwareInterface, ContainerAwareInterfac
         $config = $this->getConfig();
         $process->setTimeout($config->get('timeout'));
 
+        // Forward environment variables to the subprocess.
+        // This allows users to control Composer behavior (e.g., COMPOSER_AUDIT_BLOCK_INSECURE)
+        // and other subprocess behavior via TERMINUS_FORWARD_ENV.
+        $forwardedVars = $this->getForwardedEnvironment();
+        if (!empty($forwardedVars)) {
+            // Merge forwarded vars with the current process environment.
+            // We need to get all environment variables and merge with forwarded ones.
+            // Use getenv() to get actual environment variables (not all $_SERVER keys are env vars).
+            $currentEnv = [];
+            // Get all environment variables using getenv() for each known env var from $_SERVER
+            // This ensures we only get actual environment variables, not other $_SERVER keys.
+            foreach ($_SERVER as $key => $value) {
+                if (is_string($key) && is_string($value)) {
+                    // Verify this is actually an environment variable by checking getenv()
+                    $envValue = getenv($key);
+                    if ($envValue !== false) {
+                        $currentEnv[$key] = $envValue;
+                    }
+                }
+            }
+            // Also check $_ENV for any additional variables
+            foreach ($_ENV as $key => $value) {
+                if (is_string($key) && is_string($value) && !isset($currentEnv[$key])) {
+                    $currentEnv[$key] = $value;
+                }
+            }
+            // Merge: start with current env, then override with forwarded vars
+            $env = array_merge($currentEnv, $forwardedVars);
+            $process->setEnv($env);
+        }
+
         return $process;
+    }
+
+    /**
+     * Gets the environment variables that should be forwarded to subprocesses.
+     *
+     * This method:
+     * - Always forwards Composer-related environment variables (e.g., COMPOSER_AUDIT_BLOCK_INSECURE)
+     *   to allow users to control Composer's security audit behavior during plugin installation.
+     * - Forwards any variables specified in TERMINUS_FORWARD_ENV (comma-separated list).
+     *
+     * Note: We do not globally disable Composer audits. We only respect explicit user
+     * instructions via environment variables.
+     *
+     * @return array Environment variables to forward (key => value pairs), or empty array if none to forward
+     */
+    protected function getForwardedEnvironment(): array
+    {
+        $forwardedVars = [];
+
+        // Always forward Composer-related environment variables if they are set.
+        // This allows users to override Composer's security audit behavior.
+        $composerEnvVars = [
+            'COMPOSER_AUDIT_BLOCK_INSECURE',
+            'COMPOSER_ALLOW_SUPERUSER',
+            'COMPOSER_DISABLE_XDEBUG_WARN',
+            'COMPOSER_MEMORY_LIMIT',
+            'COMPOSER_MIRROR_PATH_REPOS',
+            'COMPOSER_NO_INTERACTION',
+            'COMPOSER_PROCESS_TIMEOUT',
+        ];
+
+        foreach ($composerEnvVars as $var) {
+            $value = getenv($var);
+            if ($value !== false) {
+                $forwardedVars[$var] = $value;
+            }
+        }
+
+        // Check for TERMINUS_FORWARD_ENV (comma-separated list of env var names to forward).
+        $terminusForwardEnv = getenv('TERMINUS_FORWARD_ENV');
+        if ($terminusForwardEnv !== false && !empty($terminusForwardEnv)) {
+            $varsToForward = array_map('trim', explode(',', $terminusForwardEnv));
+            foreach ($varsToForward as $varName) {
+                if (!empty($varName)) {
+                    $value = getenv($varName);
+                    if ($value !== false) {
+                        $forwardedVars[$varName] = $value;
+                    }
+                }
+            }
+        }
+
+        return $forwardedVars;
     }
 
     /**
