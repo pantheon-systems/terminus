@@ -227,7 +227,8 @@ class PluginManagerCommandsTest extends TerminusTestBase
         $this->assertStringNotContainsString(
             'are affected by security advisories',
             $combinedOutput,
-            'Plugin installation should not show security advisory blocking errors when COMPOSER_AUDIT_BLOCK_INSECURE=0 is set.'
+            'Plugin installation should not show security advisory blocking errors '
+            . 'when COMPOSER_AUDIT_BLOCK_INSECURE=0 is set.'
         );
 
         // Cleanup
