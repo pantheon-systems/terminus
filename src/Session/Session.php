@@ -119,7 +119,7 @@ class Session implements
     {
         return (
             isset($this->data->session)
-            && ($this->data->expires_at >= time() || (bool)$this->config->get(
+            && ($this->data->expires_at >= (time() + 60) || (bool)$this->config->get(
                 'test_mode'
             ))
         );
