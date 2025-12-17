@@ -117,9 +117,10 @@ class Session implements
      */
     public function isActive()
     {
+        // Consider a session expired if it is already about to expire (less than 1 minute).
         return (
             isset($this->data->session)
-            && ($this->data->expires_at >= time() || (bool)$this->config->get(
+            && ($this->data->expires_at >= (time() + 60) || (bool)$this->config->get(
                 'test_mode'
             ))
         );
