@@ -65,16 +65,6 @@ class CreateCommand extends TerminusCommand implements SiteAwareInterface
 
         $env = $this->getEnv($site_env);
 
-        if (strlen($multidev) > 11) {
-            $multidev = substr($multidev, 0, 11);
-            $this->output()->write(
-                sprintf(
-                    'Pantheon puts an 11 character limit on env names. Your name has been truncated to: %s',
-                    $multidev
-                )
-            );
-        }
-
         $workflow = $site->getEnvironments()->create($multidev, $env, $options);
         $this->processWorkflow($workflow);
 
