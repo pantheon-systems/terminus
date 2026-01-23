@@ -880,7 +880,12 @@ class Environment extends TerminusModel implements
             return true;
         }
 
-        return $this->settings('is_initialized');
+        $initialized = $this->settings('is_initialized');
+        // Fail safe - if we can't confirm it's NOT initialized, assume it IS
+        if ($initialized === null) {
+            return true;
+        }
+        return $initialized;
     }
 
     /**
