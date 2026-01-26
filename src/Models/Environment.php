@@ -400,16 +400,25 @@ class Environment extends TerminusModel implements
      */
     public function countDeployableCommits()
     {
+        $env_commits = $this->getCommits()->all();
         $parent_environment = $this->getParentEnvironment();
         $number_of_commits = 0;
         if ($parent_environment instanceof Environment) {
             $parent_commits = $parent_environment->getCommits()->all();
             foreach ($parent_commits as $commit) {
-                $labels = $commit->get('labels');
-                $number_of_commits += (int)(
-                    !in_array($this->id, $labels)
-                    && in_array($parent_environment->id, $labels)
-                );
+                $hash = $commit->get('hash');
+                $found = false;
+                foreach ($env_commits as $env_commit) {
+                    if ($env_commit->get('hash') === $hash) {
+                        $found = true;
+                        break;
+                    }
+                }
+                if ($found) {
+                    // No need to continue checking commits.
+                    break;
+                }
+                $number_of_commits++;
             }
         }
         return $number_of_commits;
