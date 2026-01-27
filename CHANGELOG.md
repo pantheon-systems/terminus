@@ -1,11 +1,17 @@
 # Change Log
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org)
 
-## 4.1.2-dev
+## 4.1.2 - 2026-01-27
 
 ### Added
 
+- Add timestamps to all logger output messages (#2745)
+
 ### Fixed
+
+- Consider a session active only if it's valid for more than 1 minute (#2758)
+- Handle if is_initialized doesn't return a value (#2760)
+- Do not rely on commit labels, instead compare commits between 2 envs (#2761)
 
 ## 4.1.1 - 2025-11-04
 
