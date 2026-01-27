@@ -27,6 +27,7 @@ class PluginDiscovery implements
      */
     public const BLACKLIST = [
         'pantheon-systems/terminus-aliases-plugin',
+        'pantheon-systems/terminus-secrets-manager-plugin',
     ];
 
     /**
