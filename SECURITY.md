@@ -36,8 +36,8 @@ for the plugin. The default behavior of Composer checks all dependencies against
 the published list of known security vulnerabilities, and will cause the plugin
 operation to fail if any insecure dependencies exist. Pantheon has disabled this
 behavior for Terminus and Terminus plugins by setting `config.audit.block-insecure` to
-`false` in Terminus' composer.json file. This allows customers Continuous Integration
-workflows to keep working, even if they need to install Terminus plugins with
-dependencies with published security advisories. 
+`false` in Terminus' composer.json file. Pantheon issues timely updates for Terminus to 
+mitigate security risks. However, we’ve disabled the Composer audit to prevent unnecessary 
+noise that might disrupt the user experience." 
 
 Use `terminus self:update` to update Terminus to the latest available version.
