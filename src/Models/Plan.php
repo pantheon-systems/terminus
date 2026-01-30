@@ -24,7 +24,7 @@ class Plan extends TerminusModel implements SiteInterface
     /**
      * @inheritdoc
      */
-    public function __construct($attributes = null, array $options = [])
+    public function __construct(mixed $attributes = null, array $options = [])
     {
         if (
             ($attributes !== null) && property_exists(

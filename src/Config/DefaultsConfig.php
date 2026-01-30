@@ -50,7 +50,7 @@ class DefaultsConfig extends TerminusConfig
      * @return string
      * @throws \Pantheon\Terminus\Exceptions\TerminusException
      */
-    protected function getTerminusRoot($current_dir = null)
+    protected function getTerminusRoot(?string $current_dir = null)
     {
         if (is_null($current_dir)) {
             $current_dir = dirname(__DIR__);

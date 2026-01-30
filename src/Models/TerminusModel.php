@@ -53,7 +53,7 @@ abstract class TerminusModel implements
      * @param object $attributes Attributes of this model
      * @param array $options Options with which to configure this model
      */
-    public function __construct($attributes = null, array $options = [])
+    public function __construct(mixed $attributes = null, array $options = [])
     {
         if (isset($options['collection'])) {
             $this->collection = $options['collection'];

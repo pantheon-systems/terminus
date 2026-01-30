@@ -129,7 +129,7 @@ class Backups extends EnvironmentOwnedCollection
      * @param string $element Name of the element type to filter by
      * @return Backup[]
      */
-    public function getBackupsByElement($element = null)
+    public function getBackupsByElement(?string $element = null)
     {
         return array_filter(
             $this->all(),
@@ -186,7 +186,7 @@ class Backups extends EnvironmentOwnedCollection
      * @param string $element Element requested (i.e. code, db, or files)
      * @return Backup[] An array of Backup objects
      */
-    public function getFinishedBackups($element = null)
+    public function getFinishedBackups(?string $element = null)
     {
         $all_backups = !is_null($element) ? $this->getBackupsByElement($element) : $this->all();
         $finished_backups = array_filter($all_backups, function ($backup) {

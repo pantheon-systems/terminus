@@ -109,9 +109,9 @@ class DocBlock
 
     /**
      * CONSTRUCTOR.
-     * @param String $comment The text of the docblock
+     * @param String|null $comment The text of the docblock
      */
-    public function __construct($comment = null)
+    public function __construct(?string $comment = null)
     {
         if ($comment) {
             $this->setComment($comment);

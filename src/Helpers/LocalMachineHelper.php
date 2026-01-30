@@ -36,9 +36,10 @@ class LocalMachineHelper implements ConfigAwareInterface, ContainerAwareInterfac
      * Executes the given command on the local machine and return the exit code and output.
      *
      * @param string $cmd The command to execute
+     * @param callable|null $callback A callback function for process output
      * @return array The command output and exit_code
      */
-    public function exec($cmd, $callback = null)
+    public function exec(string $cmd, ?callable $callback = null)
     {
         $process = $this->getProcess($cmd);
         $process->run($callback);

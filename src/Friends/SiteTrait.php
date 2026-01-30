@@ -18,7 +18,7 @@ trait SiteTrait
     /**
      * @inheritdoc
      */
-    public function __construct($attributes = null, array $options = [])
+    public function __construct(mixed $attributes = null, array $options = [])
     {
         if (isset($options['site'])) {
             $this->setSite($options['site']);

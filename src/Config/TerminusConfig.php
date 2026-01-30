@@ -105,7 +105,7 @@ class TerminusConfig extends \Robo\Config\Config
      *
      * @return mixed
      */
-    public function get($key, $defaultOverride = null)
+    public function get($key, mixed $defaultOverride = null)
     {
         $value = parent::get($key, $defaultOverride);
         // Replace placeholders.
