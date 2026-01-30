@@ -21,7 +21,7 @@ trait SitesTrait
             /** @var \Pantheon\Terminus\Models\SiteOrganizationMembership|\Pantheon\Terminus\Models\SiteUserMembership $membership */
             $site = $membership->getSite();
             if ($site && $site->id) {
-                $sites[$site->id] = $site;                
+                $sites[$site->id] = $site;
             }
         }
         return $sites;
