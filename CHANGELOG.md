@@ -1,11 +1,16 @@
 # Change Log
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org)
 
-## 4.1.2-dev
+## 4.1.3 - 2026-01-29
 
 ### Added
+- Add timestamps to all logger output messages (#2745)
 
 ### Fixed
+- Disable audit for plugins to resolve Composer security warnings blocking plugin installation (#2766)
+- Fix environment comparison to not rely on commit labels (#2761)
+- Handle cases where is_initialized doesn't return a value (#2760)
+- Consider a session active only if it's valid for more than 1 minute (#2758)
 
 ## 4.1.1 - 2025-11-04
 
