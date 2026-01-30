@@ -13,7 +13,7 @@
   "minimum-stability": "stable",
   "prefer-stable": true,
   "require": {
-    "php": ">=7.4",
+    "php": ">=8.2",
     "ext-json": "*",
     "composer/semver": "^3",
     "consolidation/comments": "^1.0.2 || ^2",
