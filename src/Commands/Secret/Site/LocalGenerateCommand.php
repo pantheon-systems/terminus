@@ -63,7 +63,8 @@ class LocalGenerateCommand extends SecretBaseCommand implements SiteAwareInterfa
         if ($ret === false) {
             throw new TerminusException('Unable to write to file: ' . $filepath);
         }
-        $this->log()->notice(sprintf("Secrets file written to: %s. Please review this file and adjust accordingly for your local usage.", $filepath));
+        $message = "Secrets file written to: %s. Please review this file and adjust accordingly for your local usage.";
+        $this->log()->notice(sprintf($message, $filepath));
     }
 
     /**
@@ -90,5 +91,4 @@ class LocalGenerateCommand extends SecretBaseCommand implements SiteAwareInterfa
 
         return $result;
     }
-
 }

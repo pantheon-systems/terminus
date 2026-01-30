@@ -104,5 +104,4 @@ class ListCommand extends SecretBaseCommand implements SiteAwareInterface
 
         return $result;
     }
-
 }

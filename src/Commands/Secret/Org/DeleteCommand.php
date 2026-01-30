@@ -40,7 +40,8 @@ class DeleteCommand extends SecretBaseCommand
     public function deleteSecret(string $org_id, string $name, array $options = [
         'env' => null,
         'debug' => false,
-    ]) {
+    ])
+    {
         $org = $this->session()->getUser()->getOrganizationMemberships()->get($org_id)->getOrganization();
         if (empty($org)) {
             $this->log()->error('Either the org is unavailable or you dont have permission to access it..');

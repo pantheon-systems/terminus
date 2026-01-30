@@ -64,7 +64,11 @@ class SetCommand extends SecretBaseCommand implements SiteAwareInterface
         $framework = $site->get('framework');
 
         if ($framework != 'nodejs' && version_compare($php_version, '8.0', '<')) {
-            $this->log()->warning('Secrets are only supported on PHP {supported} environments. This environment is running PHP {php_version}.', ['supported' => '>=8.0', 'php_version' => $php_version]);
+            $this->log()->warning(
+                'Secrets are only supported on PHP {supported} environments. ' .
+                'This environment is running PHP {php_version}.',
+                ['supported' => '>=8.0', 'php_version' => $php_version]
+            );
         }
 
         $this->setupRequest();

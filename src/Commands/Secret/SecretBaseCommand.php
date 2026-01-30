@@ -22,7 +22,7 @@ abstract class SecretBaseCommand extends TerminusCommand implements SecretsApiAw
     use SecretsApiAwareTrait;
     use RequestAwareTrait;
 
-    const REDACTED_VALUE = '[REDACTED]';
+    public const REDACTED_VALUE = '[REDACTED]';
 
 
     /**

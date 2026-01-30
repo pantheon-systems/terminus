@@ -221,9 +221,9 @@ class SecretsApi
                 $url = sprintf('%s/%s/%s/secrets/%s', $this->getBaseURI(), $workspaceType, $workspaceId, $name);
                 unset($options['json']['name']);
                 $result = $this->request()->request($url, $options);
-            }
-            else {
-                $result->setData(sprintf("Secret '%s' already exists. To update the value, omit type and scopes options.", $name));
+            } else {
+                $message = "Secret '%s' already exists. To update the value, omit type and scopes options.";
+                $result->setData(sprintf($message, $name));
             }
         }
         return $result;

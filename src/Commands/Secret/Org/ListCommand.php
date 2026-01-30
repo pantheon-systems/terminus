@@ -65,5 +65,4 @@ class ListCommand extends SecretBaseCommand
         ];
         return $this->getTableFromData($result, $print_options);
     }
-
 }
