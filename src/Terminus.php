@@ -156,6 +156,7 @@ EOD;
         $update_checker->run();
 
         $container->get('eventDispatcher')->addSubscriber($container->get('Pantheon\Terminus\Hooks\CommandTracker'));
+        $container->get('eventDispatcher')->addSubscriber($container->get('Pantheon\Terminus\Hooks\PluginReloader'));
 
         // We can't use Robo\Application addSelfUpdateCommand because if plugin manager is running it won't be a phar from there.
         if (!empty(\Phar::running())) {
@@ -240,6 +241,9 @@ EOD;
 
         // Command Tracker
         $container->add(CommandTracker::class);
+
+        // Plugin Reloader
+        $container->add('Pantheon\Terminus\Hooks\PluginReloader');
 
         // Install our command cache into the command factory
         $commandCacheDir = $this->getConfig()->get('command_cache_dir');
@@ -337,6 +341,7 @@ EOD;
             'Pantheon\\Terminus\\Hooks\\Authorizer',
             'Pantheon\\Terminus\\Hooks\\CommandTracker',
             'Pantheon\\Terminus\\Hooks\\Interacter',
+            'Pantheon\\Terminus\\Hooks\\PluginReloader',
             'Pantheon\\Terminus\\Hooks\\RoleValidator',
             'Pantheon\\Terminus\\Hooks\\SiteEnvLookup',
             'Pantheon\\Terminus\\Commands\\AliasesCommand',
