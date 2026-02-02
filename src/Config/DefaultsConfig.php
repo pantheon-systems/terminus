@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Pantheon\Terminus\Config;
 
 use Pantheon\Terminus\Exceptions\TerminusException;
@@ -13,7 +15,7 @@ class DefaultsConfig extends TerminusConfig
     /**
      * @var string
      */
-    protected $source_name = 'Default';
+    protected string $source_name = 'Default';
 
     protected $defaults = [];
 
@@ -38,7 +40,7 @@ class DefaultsConfig extends TerminusConfig
      *
      * @return string
      */
-    protected function getPhpBinary()
+    protected function getPhpBinary(): string
     {
         return defined('PHP_BINARY') ? PHP_BINARY : 'php';
     }
@@ -50,7 +52,7 @@ class DefaultsConfig extends TerminusConfig
      * @return string
      * @throws \Pantheon\Terminus\Exceptions\TerminusException
      */
-    protected function getTerminusRoot(?string $current_dir = null)
+    protected function getTerminusRoot(?string $current_dir = null): string
     {
         if (is_null($current_dir)) {
             $current_dir = dirname(__DIR__);
@@ -77,7 +79,7 @@ class DefaultsConfig extends TerminusConfig
      *
      * @return string
      */
-    protected function getTerminusScript()
+    protected function getTerminusScript(): string
     {
         $debug           = debug_backtrace();
         $script_location = array_pop($debug);
@@ -98,7 +100,7 @@ class DefaultsConfig extends TerminusConfig
      *
      * @return string
      */
-    protected function getHomeDir()
+    protected function getHomeDir(): string|false
     {
         $home = getenv('HOME');
         if (!$home) {

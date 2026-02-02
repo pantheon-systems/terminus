@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Pantheon\Terminus\Request;
 
 use Exception;
@@ -81,7 +83,7 @@ class Request implements
     /**
      * @var array Names of the values to strip from debug output
      */
-    protected $sensitive_data = ['machine_token', 'Authorization', 'session',];
+    protected array $sensitive_data = ['machine_token', 'Authorization', 'session',];
 
     /**
      * Download file from target URL.
@@ -96,7 +98,7 @@ class Request implements
      * @throws \Psr\Container\ContainerExceptionInterface
      * @throws \Psr\Container\NotFoundExceptionInterface
      */
-    public function download($url, $target, bool $overwrite = false)
+    public function download(string $url, string $target, bool $overwrite = false): void
     {
         if (is_dir($target)) {
             if (substr($target, -1) == DIRECTORY_SEPARATOR) {
@@ -281,7 +283,7 @@ class Request implements
      *
      * @return string
      */
-    private function getBaseURI()
+    private function getBaseURI(): string
     {
         $config = $this->getConfig();
         return sprintf(
@@ -306,7 +308,7 @@ class Request implements
      * @throws GuzzleException
      * @throws TerminusException
      */
-    public function pagedRequest($path, array $options = [])
+    public function pagedRequest(string $path, array $options = []): array
     {
         $limit = $options['limit'] ?? self::PAGED_REQUEST_ENTRY_LIMIT;
 
@@ -469,7 +471,7 @@ class Request implements
      *
      * @return array
      */
-    private function getDefaultHeaders()
+    private function getDefaultHeaders(): array
     {
         return [
             'User-Agent' => $this->userAgent(),
@@ -485,7 +487,7 @@ class Request implements
      *
      * @return string
      */
-    private function userAgent()
+    private function userAgent(): string
     {
         $config = $this->getConfig();
         return sprintf(
@@ -501,7 +503,7 @@ class Request implements
      *
      * @return string
      */
-    private function terminusCommand()
+    private function terminusCommand(): string
     {
         $input = $this->getContainer()->get('input');
         $candidate = json_encode([
@@ -524,7 +526,7 @@ class Request implements
     /**
      * Returns terminus execution environment variables as json.
      */
-    private function terminusEnvironment()
+    private function terminusEnvironment(): string
     {
         $values = [];
         foreach (self::ENVIRONMENT_VARIABLES as $var) {
@@ -541,7 +543,7 @@ class Request implements
      *
      * @return array
      */
-    private function stripSensitiveInfo($data = [])
+    private function stripSensitiveInfo(?array $data = []): ?array
     {
         if (is_array($data)) {
             foreach ($this->sensitive_data as $key) {

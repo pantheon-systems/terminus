@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Pantheon\Terminus\Helpers\Utility;
 
 /**
@@ -14,9 +16,9 @@ class DocBlock
      * @param  String $class The class name
      * @return DocBlock
      */
-    public static function ofClass($class)
+    public static function ofClass(string $class): ?DocBlock
     {
-        return DocBlock::of(new ReflectionClass($class));
+        return DocBlock::of(new \ReflectionClass($class));
     }
 
     /**
@@ -25,9 +27,9 @@ class DocBlock
      * @param  String $property The name of the property
      * @return DocBlock
      */
-    public static function ofProperty($class, $property)
+    public static function ofProperty(string $class, string $property): ?DocBlock
     {
-        return DocBlock::of(new ReflectionProperty($class, $property));
+        return DocBlock::of(new \ReflectionProperty($class, $property));
     }
 
     /**
@@ -35,9 +37,9 @@ class DocBlock
      * @param  String $function The name of the function
      * @return DocBlock
      */
-    public static function ofFunction($function)
+    public static function ofFunction(string $function): ?DocBlock
     {
-        return DocBlock::of(new ReflectionFunction($function));
+        return DocBlock::of(new \ReflectionFunction($function));
     }
 
     /**
@@ -46,9 +48,9 @@ class DocBlock
      * @param  String $method The name of the method
      * @return DocBlock
      */
-    public static function ofMethod($class, $method)
+    public static function ofMethod(string $class, string $method): ?DocBlock
     {
-        return DocBlock::of(new ReflectionMethod($class, $method));
+        return DocBlock::of(new \ReflectionMethod($class, $method));
     }
 
     /**
@@ -56,7 +58,7 @@ class DocBlock
      * @param  Reflector $ref A reflector object defining `getDocComment`.
      * @return DocBlock
      */
-    public static function of($ref)
+    public static function of(object $ref): ?DocBlock
     {
         if (method_exists($ref, 'getDocComment')) {
             return new DocBlock($ref->getDocComment());
@@ -75,17 +77,17 @@ class DocBlock
      *
      * @type Array
      */
-    public static $vectors = array(
+    public static array $vectors = [
         'param' => ['type', 'var', 'desc'],
         'return' => ['type', 'desc'],
         'step' => ['name'],
-    );
+    ];
 
     /**
      * The description of the symbol
      * @type String
      */
-    public $desc;
+    public string $desc = '';
 
     /**
      * The tags defined in the docblock.
@@ -99,13 +101,13 @@ class DocBlock
      *
      * @type Array
      */
-    public $tags;
+    public array $tags = [];
 
     /**
      * The entire DocBlock comment that was parsed.
      * @type String
      */
-    public $comment;
+    public ?string $comment = null;
 
     /**
      * CONSTRUCTOR.
@@ -122,10 +124,10 @@ class DocBlock
      * Set and parse the docblock comment.
      * @param String $comment The docblock
      */
-    public function setComment($comment)
+    public function setComment(string $comment): void
     {
         $this->desc = '';
-        $this->tags = array();
+        $this->tags = [];
         $this->comment = $comment;
 
         $this->parseComment($comment);
@@ -135,7 +137,7 @@ class DocBlock
      * Parse the comment into the component parts and set the state of the object.
      * @param  String $comment The docblock
      */
-    protected function parseComment($comment)
+    protected function parseComment(string $comment): void
     {
         // Strip the opening and closing tags of the docblock
         $comment = substr($comment, 3, -2);
@@ -203,9 +205,9 @@ class DocBlock
      * @param  String $tag The name of the @tag to check for
      * @return bool
      */
-    public function hasTag($tag)
+    public function hasTag(string $tag): bool
     {
-        return is_array($this->tags) && array_key_exists($tag, $this->tags);
+        return array_key_exists($tag, $this->tags);
     }
 
     /**
@@ -213,7 +215,7 @@ class DocBlock
      * @param  String $tag
      * @return Array
      */
-    public function tag($tag)
+    public function tag(string $tag): ?array
     {
         return $this->hasTag($tag) ? $this->tags[$tag] : null;
     }
@@ -224,7 +226,7 @@ class DocBlock
      * @param  string $sep The seperator for concatenating
      * @return String
      */
-    public function tagImplode($tag, $sep = ' ')
+    public function tagImplode(string $tag, string $sep = ' '): ?string
     {
         return $this->hasTag($tag) ? implode($sep, $this->tags[$tag]) : null;
     }
@@ -234,7 +236,7 @@ class DocBlock
      * @param  String $tag
      * @return Array
      */
-    public function tagMerge($tag)
+    public function tagMerge(string $tag): ?array
     {
         return $this->hasTag($tag) ? array_merge_recursive($this->tags[$tag]) : null;
     }
@@ -248,7 +250,7 @@ class DocBlock
      * @param  String $str
      * @return bool
      */
-    public static function isTagged($str)
+    public static function isTagged(string $str): bool
     {
         return isset($str[1]) && $str[0] == '@' && ctype_alpha($str[1]);
     }
@@ -258,7 +260,7 @@ class DocBlock
      * @param  String $str
      * @return String|null
      */
-    public static function strTag($str)
+    public static function strTag(string $str): ?string
     {
         if (preg_match('/^@[a-z0-9_]+/', $str, $matches)) {
             return $matches[0];

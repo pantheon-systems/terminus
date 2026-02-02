@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Pantheon\Terminus\Helpers\AliasEmitters;
 
 use Consolidation\Comments\Comments;
@@ -7,8 +9,8 @@ use Symfony\Component\Yaml\Yaml;
 
 class DrushYmlEditor
 {
-    protected $dir;
-    protected $comments;
+    protected string $dir;
+    protected ?Comments $comments = null;
 
     /**
      * DrushYmlEditor constructor
@@ -16,7 +18,7 @@ class DrushYmlEditor
      * @param string $dir
      *   Location where yml config file is located.
      */
-    public function __construct($dir)
+    public function __construct(string $dir)
     {
         $this->dir = $dir;
     }
@@ -26,7 +28,7 @@ class DrushYmlEditor
      *
      * @return string
      */
-    public function getDrushConfig()
+    public function getDrushConfig(): mixed
     {
         $drushYmlPath = $this->getDrushYmlPath();
 
@@ -47,7 +49,7 @@ class DrushYmlEditor
      *
      * @return string
      */
-    public function getDrushYmlPath()
+    public function getDrushYmlPath(): string
     {
         return $this->dir . "/drush.yml";
     }
@@ -58,7 +60,7 @@ class DrushYmlEditor
      * @param array $drushYml
      *   Structured content to write into yml file.
      */
-    public function writeDrushConfig($drushYml)
+    public function writeDrushConfig(array $drushYml): int|false
     {
         $drushYmlPath = $this->getDrushYmlPath();
         $drushYml = Yaml::dump($drushYml, PHP_INT_MAX, 2);

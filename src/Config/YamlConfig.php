@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Pantheon\Terminus\Config;
 
 use Symfony\Component\Yaml\Yaml;
@@ -16,7 +18,7 @@ class YamlConfig extends TerminusConfig
      * YamlConfig constructor.
      * @param string $yml_path The path to the yaml file.
      */
-    public function __construct($yml_path)
+    public function __construct(string $yml_path)
     {
         parent::__construct();
 

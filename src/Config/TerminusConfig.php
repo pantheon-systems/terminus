@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Pantheon\Terminus\Config;
 
 /**
@@ -11,17 +13,17 @@ class TerminusConfig extends \Robo\Config\Config
     /**
      * @var string
      */
-    protected $constant_prefix = 'TERMINUS_';
+    protected string $constant_prefix = 'TERMINUS_';
 
     /**
      * @var array
      */
-    protected $sources = [];
+    protected array $sources = [];
 
     /**
      * @var string
      */
-    protected $source_name = 'Unknown';
+    protected string $source_name = 'Unknown';
 
     /**
      * Replaces missing combine function
@@ -44,11 +46,11 @@ class TerminusConfig extends \Robo\Config\Config
      * @param string $value The value of the named config var
      * @return boolean|null
      */
-    public function ensureDirExists($name, $value)
+    public function ensureDirExists(string $name, string $value): ?bool
     {
         if (
-            strpos($name ?? '', 'TERMINUS_') !== false
-            && strpos($name ?? '', '_DIR') !== false
+            strpos($name, 'TERMINUS_') !== false
+            && strpos($name, '_DIR') !== false
             && $value != '~'
         ) {
             try {
@@ -66,7 +68,7 @@ class TerminusConfig extends \Robo\Config\Config
      *
      * @param \Pantheon\Terminus\Config\TerminusConfig $in
      */
-    public function extend(TerminusConfig $in)
+    public function extend(TerminusConfig $in): void
     {
         foreach ($in->keys() as $key) {
             $this->set($key, $in->get($key));
@@ -81,7 +83,7 @@ class TerminusConfig extends \Robo\Config\Config
      * @param string $path A path to set the directory separators for
      * @return string
      */
-    public function fixDirectorySeparators($path)
+    public function fixDirectorySeparators(?string $path): string
     {
         return str_replace(['/', '\\',], DIRECTORY_SEPARATOR, $path ?? '');
     }
@@ -92,7 +94,7 @@ class TerminusConfig extends \Robo\Config\Config
      * @param string $datetime A Unix datetime to format
      * @return string Returns a formatted datetime
      */
-    public function formatDatetime($datetime)
+    public function formatDatetime(string|int $datetime): string
     {
         return date($this->get('date_format'), (int)$datetime);
     }
@@ -121,7 +123,7 @@ class TerminusConfig extends \Robo\Config\Config
      * @param string $key The key to get the constant name for.
      * @return string
      */
-    public function getConstantFromKey($key)
+    public function getConstantFromKey(string $key): string
     {
         $key = strtoupper($this->constant_prefix . $key);
         return $key;
@@ -133,7 +135,7 @@ class TerminusConfig extends \Robo\Config\Config
      * @param $key
      * @return string
      */
-    public function getSource($key)
+    public function getSource(string $key): string
     {
         return isset($this->sources[$key]) ? $this->sources[$key] : $this->getSourceName();
     }
@@ -143,7 +145,7 @@ class TerminusConfig extends \Robo\Config\Config
      *
      * @return string
      */
-    public function getSourceName()
+    public function getSourceName(): string
     {
         return $this->source_name;
     }
@@ -152,7 +154,7 @@ class TerminusConfig extends \Robo\Config\Config
      * Return all of the keys in the Config
      * @return array
      */
-    public function keys()
+    public function keys(): array
     {
         return array_keys($this->export());
     }
@@ -162,7 +164,7 @@ class TerminusConfig extends \Robo\Config\Config
      *
      * @return array Associative array of data for output
      */
-    public function serialize()
+    public function serialize(): array
     {
         return [
             'php_binary_path'     => $this->get('php'),
@@ -198,9 +200,9 @@ class TerminusConfig extends \Robo\Config\Config
      * @param string $constant_name The name of a constant to get a key for
      * @return string
      */
-    protected function getKeyFromConstant($constant_name)
+    protected function getKeyFromConstant(string $constant_name): string
     {
-        $key = strtolower(str_replace($this->constant_prefix ?? '', '', $constant_name ?? ''));
+        $key = strtolower(str_replace($this->constant_prefix, '', $constant_name));
         return $key;
     }
 
@@ -210,9 +212,9 @@ class TerminusConfig extends \Robo\Config\Config
      * @param $key
      * @return boolean
      */
-    protected function keyIsConstant($key)
+    protected function keyIsConstant(string $key): bool
     {
-        return strpos($key ?? '', $this->constant_prefix) === 0;
+        return strpos($key, $this->constant_prefix) === 0;
     }
 
     /**
@@ -221,7 +223,7 @@ class TerminusConfig extends \Robo\Config\Config
      * @param string $string The string to perform replacements on
      * @return string $string The modified string
      */
-    protected function replacePlaceholders($string)
+    protected function replacePlaceholders(string $string): string
     {
         $regex = '~\[\[(.*?)\]\]~';
         preg_match_all($regex, $string, $matches);
@@ -244,7 +246,7 @@ class TerminusConfig extends \Robo\Config\Config
      * @param $key
      * @param $source
      */
-    protected function setSource($key, $source)
+    protected function setSource(string $key, string $source): void
     {
         $this->sources[$key] = $source;
     }
@@ -252,7 +254,7 @@ class TerminusConfig extends \Robo\Config\Config
     /**
      * @param mixed $source_name
      */
-    protected function setSourceName($source_name)
+    protected function setSourceName(string $source_name): void
     {
         $this->source_name = $source_name;
     }
