@@ -543,7 +543,7 @@ class Request implements
      *
      * @return array
      */
-    private function stripSensitiveInfo(?array $data = []): ?array
+    private function stripSensitiveInfo(mixed $data = []): mixed
     {
         if (is_array($data)) {
             foreach ($this->sensitive_data as $key) {
