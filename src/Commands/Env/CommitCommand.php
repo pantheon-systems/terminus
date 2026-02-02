@@ -4,6 +4,7 @@ namespace Pantheon\Terminus\Commands\Env;
 
 use Pantheon\Terminus\Commands\TerminusCommand;
 use Pantheon\Terminus\Commands\WorkflowProcessingTrait;
+use Pantheon\Terminus\Enums\ConnectionMode;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 
@@ -49,7 +50,7 @@ class CommitCommand extends TerminusCommand implements SiteAwareInterface
             }
         }
 
-        if ($env->get('connection_mode') !== 'sftp') {
+        if ($env->get('connection_mode') !== ConnectionMode::Sftp->value) {
             $this->log()->warning('You can only commit code in an environment that is set to sftp mode.');
             return;
         }

@@ -10,6 +10,7 @@ use Pantheon\Terminus\Collections\Commits;
 use Pantheon\Terminus\Collections\Domains;
 use Pantheon\Terminus\Collections\EnvironmentMetrics;
 use Pantheon\Terminus\Collections\Workflows;
+use Pantheon\Terminus\Enums\ConnectionMode;
 use Pantheon\Terminus\Exceptions\TerminusException;
 use Pantheon\Terminus\Friends\SiteInterface;
 use Pantheon\Terminus\Friends\SiteTrait;
@@ -99,34 +100,32 @@ class Environment extends TerminusModel implements
     /**
      * Changes connection mode
      *
-     * @param string $value Connection mode, "git" or "sftp"
+     * @param string|ConnectionMode $mode Connection mode, "git" or "sftp"
      *
      * @return Workflow
      * @throws TerminusException Thrown when the requested or the mode is
      *     already set or is not either "git" or "sftp".
      */
-    public function changeConnectionMode($mode)
+    public function changeConnectionMode(string|ConnectionMode $mode): Workflow
     {
-        if ($mode === $this->get('connection_mode')) {
+        $connectionMode = $mode instanceof ConnectionMode
+            ? $mode
+            : ConnectionMode::tryFrom($mode);
+
+        if ($connectionMode === null) {
             throw new TerminusException(
-                'The connection mode is already set to {mode}.',
-                compact('mode')
+                'You must specify the mode as either sftp or git.'
             );
         }
-        switch ($mode) {
-            case 'git':
-                $workflow_name = 'enable_git_mode';
-                break;
-            case 'sftp':
-                $workflow_name = 'enable_on_server_development';
-                break;
-            default:
-                throw new TerminusException(
-                    'You must specify the mode as either sftp or git.'
-                );
+
+        if ($connectionMode->value === $this->get('connection_mode')) {
+            throw new TerminusException(
+                'The connection mode is already set to {mode}.',
+                ['mode' => $connectionMode->value]
+            );
         }
 
-        return $this->getWorkflows()->create($workflow_name);
+        return $this->getWorkflows()->create($connectionMode->workflowName());
     }
 
     /**
@@ -774,9 +773,9 @@ class Environment extends TerminusModel implements
      *
      * @return bool
      */
-    public function hasUncommittedChanges()
+    public function hasUncommittedChanges(): bool
     {
-        return ($this->get('connection_mode') === 'sftp') && (count(
+        return ($this->get('connection_mode') === ConnectionMode::Sftp->value) && (count(
             (array)$this->get('diffstat')
         ) !== 0);
     }
@@ -1140,16 +1139,11 @@ class Environment extends TerminusModel implements
      */
     protected function parseAttributes(object $data): object
     {
-        if (
-            property_exists(
-                $data,
-                'on_server_development'
-            ) && (bool)$data->on_server_development
-        ) {
-            $data->connection_mode = 'sftp';
-        } else {
-            $data->connection_mode = 'git';
-        }
+        $data->connection_mode = (
+            property_exists($data, 'on_server_development')
+            && (bool)$data->on_server_development
+        ) ? ConnectionMode::Sftp->value : ConnectionMode::Git->value;
+
         if (!property_exists($data, 'php_version')) {
             $data->php_version = $this->getSite()->get('php_version');
         }
