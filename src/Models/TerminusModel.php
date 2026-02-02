@@ -64,7 +64,7 @@ abstract class TerminusModel implements
         if (is_object($attributes)) {
             $this->attributes = $this->parseAttributes($attributes);
             if (isset($this->attributes->id)) {
-                $this->id = $this->attributes->id;
+                $this->id = (string) $this->attributes->id;
             }
         }
     }
