@@ -19,7 +19,7 @@ class SiteMetrics extends SiteOwnedCollection
     /**
      * @var string
      */
-    protected $collected_class = Metric::class;
+    protected string $collected_class = Metric::class;
 
     /**
      * @var string base URL to fetch

@@ -14,7 +14,7 @@ class Branches extends SiteOwnedCollection
     /**
      * @var string
      */
-    protected $collected_class = Branch::class;
+    protected string $collected_class = Branch::class;
     /**
      * @var Site
      */
@@ -27,9 +27,9 @@ class Branches extends SiteOwnedCollection
     /**
      * Fetches from API and instantiates its model instances with data it assembled from the request
      *
-     * @return Branches $this
+     * @return static $this
      */
-    public function fetch()
+    public function fetch(): static
     {
         foreach ($this->getData() as $id => $sha) {
             $this->add((object)['id' => $id, 'sha' => $sha,]);

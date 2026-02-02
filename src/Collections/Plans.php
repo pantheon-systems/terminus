@@ -14,7 +14,7 @@ class Plans extends SiteOwnedCollection
     /**
      * @var string
      */
-    protected $collected_class = Plan::class;
+    protected string $collected_class = Plan::class;
     /**
      * @var string
      */

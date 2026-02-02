@@ -16,7 +16,7 @@ class UserOrganizationMemberships extends UserOwnedCollection
     /**
      * @var string
      */
-    protected $collected_class = UserOrganizationMembership::class;
+    protected string $collected_class = UserOrganizationMembership::class;
     /**
      * @var boolean
      */
@@ -29,7 +29,7 @@ class UserOrganizationMemberships extends UserOwnedCollection
     /**
      * @return array|void
      */
-    public function serialize()
+    public function serialize(): array
     {
         return array_map(
             function ($member) {

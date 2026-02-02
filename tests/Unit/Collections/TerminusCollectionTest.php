@@ -13,10 +13,10 @@ use Pantheon\Terminus\Tests\Unit\UnitTestCase;
  */
 class ConcreteTestCollection extends TerminusCollection
 {
-    protected $collected_class = ConcreteCollectionTestModel::class;
+    protected string $collected_class = ConcreteCollectionTestModel::class;
 
     // Override all() to not call fetch() for simpler testing
-    public function all()
+    public function all(): array
     {
         if (is_null($this->models)) {
             $this->models = [];

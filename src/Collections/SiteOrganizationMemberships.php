@@ -18,7 +18,7 @@ class SiteOrganizationMemberships extends SiteOwnedCollection
     /**
      * @var string
      */
-    protected $collected_class = SiteOrganizationMembership::class;
+    protected string $collected_class = SiteOrganizationMembership::class;
     /**
      * @var boolean
      */

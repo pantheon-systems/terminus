@@ -14,7 +14,7 @@ class Commits extends EnvironmentOwnedCollection
     /**
      * @var string
      */
-    protected $collected_class = Commit::class;
+    protected string $collected_class = Commit::class;
     /**
      * @var string
      */

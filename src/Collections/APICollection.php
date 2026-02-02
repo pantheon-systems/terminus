@@ -27,7 +27,7 @@ abstract class APICollection extends TerminusCollection
      * @throws \GuzzleHttp\Exception\GuzzleException
      * @throws \Pantheon\Terminus\Exceptions\TerminusException
      */
-    public function getData()
+    public function getData(): array
     {
         if (empty(parent::getData())) {
             $this->setData(array_filter((array)$this->requestData()));

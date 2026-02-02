@@ -20,7 +20,7 @@ class Backups extends EnvironmentOwnedCollection
     /**
      * @var string
      */
-    protected $collected_class = Backup::class;
+    protected string $collected_class = Backup::class;
     /**
      * @var string
      */
@@ -71,9 +71,9 @@ class Backups extends EnvironmentOwnedCollection
     /**
      * Fetches model data from API and instantiates its model instances only if a filename is present in the model data
      *
-     * @return Backups $this
+     * @return static $this
      */
-    public function fetch(): Backups
+    public function fetch(): static
     {
         foreach ($this->getData() as $id => $model_data) {
             if (isset($model_data->filename)) {

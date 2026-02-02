@@ -17,7 +17,7 @@ class Tags extends APICollection
     /**
      * @var string
      */
-    protected $collected_class = Tag::class;
+    protected string $collected_class = Tag::class;
     /**
      * @var OrganizationSiteMembership
      */
@@ -58,7 +58,7 @@ class Tags extends APICollection
     /**
      * @inheritdoc
      */
-    public function fetch(array $options = [])
+    public function fetch(array $options = []): static
     {
         foreach ($options as $tag_string) {
             if (is_string($tag_string)) {
