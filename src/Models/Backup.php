@@ -22,7 +22,7 @@ class Backup extends TerminusModel implements EnvironmentInterface
     /**
      * @var array
      */
-    public static $date_attributes = ['date', 'expiry',];
+    public static array $date_attributes = ['date', 'expiry',];
 
     /**
      * Determines whether the backup has been completed or not
@@ -121,7 +121,7 @@ class Backup extends TerminusModel implements EnvironmentInterface
     /**
      * @return string[]
      */
-    public function getReferences()
+    public function getReferences(): array
     {
         return [$this->id, $this->get('filename'),];
     }
@@ -186,7 +186,7 @@ class Backup extends TerminusModel implements EnvironmentInterface
      *
      * @return array Associative array of data for output
      */
-    public function serialize()
+    public function serialize(): array
     {
         return [
             'file' => $this->get('filename'),
@@ -202,7 +202,7 @@ class Backup extends TerminusModel implements EnvironmentInterface
     /**
      * @inheritdoc
      */
-    protected function parseAttributes($data)
+    protected function parseAttributes(object $data): object
     {
         [$data->scheduled_for, $data->archive_type, $data->type] = explode(
             '_',

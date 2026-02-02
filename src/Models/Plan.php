@@ -19,7 +19,7 @@ class Plan extends TerminusModel implements SiteInterface
     /**
      * @var string
      */
-    protected $url = 'sites/{site_id}/plan';
+    protected string $url = 'sites/{site_id}/plan';
 
     /**
      * @inheritdoc
@@ -64,7 +64,7 @@ class Plan extends TerminusModel implements SiteInterface
     /**
      * @return string[]
      */
-    public function getReferences()
+    public function getReferences(): array
     {
         return [$this->id, $this->getSku(),];
     }
@@ -122,7 +122,7 @@ class Plan extends TerminusModel implements SiteInterface
      *
      * @return array Associative array of data for output
      */
-    public function serialize()
+    public function serialize(): array
     {
         return [
             'billing_cycle' => $this->get('billing_cycle'),

@@ -13,7 +13,7 @@ interface SiteJoinInterface
     /**
      * @return string[]
      */
-    public function getReferences();
+    public function getReferences(): array;
 
     /**
      * @return Site Returns a Site-type object

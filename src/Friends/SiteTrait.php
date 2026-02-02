@@ -40,7 +40,7 @@ trait SiteTrait
     /**
      * @return string
      */
-    public function getUrl()
+    public function getUrl(): string
     {
         return str_replace('{site_id}', $this->getSite()->id ?? '', parent::getUrl());
     }

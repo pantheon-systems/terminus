@@ -14,9 +14,9 @@ class ConcreteTestModel extends TerminusModel
 {
     public const PRETTY_NAME = 'test model';
 
-    protected $url = 'sites/{id}';
+    protected string $url = 'sites/{id}';
 
-    public static $date_attributes = ['created_at', 'updated_at'];
+    public static array $date_attributes = ['created_at', 'updated_at'];
 }
 
 /**

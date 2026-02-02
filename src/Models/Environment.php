@@ -32,12 +32,12 @@ class Environment extends TerminusModel implements
     /**
      * @var array
      */
-    public static $date_attributes = ['created',];
+    public static array $date_attributes = ['created',];
 
     /**
      * @var string
      */
-    protected $url = 'sites/{site_id}/environments/{id}';
+    protected string $url = 'sites/{site_id}/environments/{id}';
 
     /**
      * @var Backups
@@ -964,7 +964,7 @@ class Environment extends TerminusModel implements
      *
      * @return array Associative array of data for output
      */
-    public function serialize()
+    public function serialize(): array
     {
         return [
             'id' => $this->id,
@@ -1136,7 +1136,7 @@ class Environment extends TerminusModel implements
      *
      * @return object $data
      */
-    protected function parseAttributes($data)
+    protected function parseAttributes(object $data): object
     {
         if (
             property_exists(

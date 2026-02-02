@@ -41,7 +41,7 @@ class OrganizationUserMembership extends TerminusModel implements
     /**
      * @inheritdoc
      */
-    public function serialize()
+    public function serialize(): array
     {
         return array_merge(
             $this->getUser()->serialize(),

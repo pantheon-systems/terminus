@@ -13,7 +13,7 @@ interface OrganizationJoinInterface
     /**
      * @return string[]
      */
-    public function getReferences();
+    public function getReferences(): array;
 
     /**
      * @return Organization Returns a Organization-type object

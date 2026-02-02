@@ -33,7 +33,7 @@ class SavedToken extends TerminusModel implements
     /**
      * @return string[]
      */
-    public function getReferences()
+    public function getReferences(): array
     {
         return [$this->id, $this->get('token')];
     }
@@ -78,7 +78,7 @@ class SavedToken extends TerminusModel implements
     /**
      * @inheritdoc
      */
-    protected function parseAttributes($data)
+    protected function parseAttributes(object $data): object
     {
         if (property_exists($data, 'email')) {
             $data->id = $data->email;

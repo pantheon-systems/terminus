@@ -14,7 +14,7 @@ class NewRelic extends AddOnModel
     /**
      * @var string
      */
-    protected $url = 'sites/{site_id}/new-relic';
+    protected string $url = 'sites/{site_id}/new-relic';
 
     /**
      * Disables New Relic
@@ -53,7 +53,7 @@ class NewRelic extends AddOnModel
      *
      * @return array Associative array of data for output
      */
-    public function serialize()
+    public function serialize(): array
     {
         $this->fetch();
 
