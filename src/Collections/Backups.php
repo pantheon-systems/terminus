@@ -2,6 +2,7 @@
 
 namespace Pantheon\Terminus\Collections;
 
+use Pantheon\Terminus\Enums\BackupElement;
 use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
 use Pantheon\Terminus\Models\Backup;
 use Pantheon\Terminus\Models\Workflow;
@@ -52,16 +53,18 @@ class Backups extends EnvironmentOwnedCollection
         $options = array_merge($default_options, $arg_options);
 
         $params = [
-            'code'       => false,
-            'database'   => false,
-            'files'      => false,
-            'entry_type' => 'backup',
+            BackupElement::Code->value     => false,
+            BackupElement::Database->value => false,
+            BackupElement::Files->value    => false,
+            'entry_type'                   => 'backup',
         ];
 
         if (!is_null($element = $options['element'])) {
             $params[$element] = true;
         } else {
-            $params['code'] = $params['database'] = $params['files'] = true;
+            $params[BackupElement::Code->value] = true;
+            $params[BackupElement::Database->value] = true;
+            $params[BackupElement::Files->value] = true;
         }
         $params['ttl'] = self::convertDaysToSeconds($options['keep-for']);
 
@@ -206,9 +209,9 @@ class Backups extends EnvironmentOwnedCollection
      *
      * @return string[] An array of valid elements
      */
-    public function getValidElements()
+    public function getValidElements(): array
     {
-        return ['code', 'files', 'database', 'db',];
+        return BackupElement::validInputs();
     }
 
     /**
