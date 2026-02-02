@@ -233,7 +233,7 @@ class Request implements
                     ['error' => $exception->getMessage()]
                 );
             } else {
-                if (preg_match('/[2,4]0\d/', $response->getStatusCode())) {
+                if (preg_match('/[2,4]0\d/', (string) $response->getStatusCode())) {
                     // Do not retry on 20x or 40x responses.
                     return false;
                 }
