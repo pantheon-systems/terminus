@@ -1,11 +1,15 @@
 # Change Log
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org)
 
-## 4.1.4-dev
+## 4.1.4 - 2026-02-02
 
 ### Added
 
+- Add support for PHP 8.5 (#2769)
+
 ### Fixed
+
+- Ensure plugins composer.json also disables audit block-insecure for plugin operations (#2772)
 
 ## 4.1.3 - 2026-01-29
 
