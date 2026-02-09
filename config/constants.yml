@@ -53,6 +53,9 @@ TERMINUS_ORG:  null
 # Region
 TERMINUS_COMMAND_SITE_OPTIONS_REGION: null
 
+# Feature Flags
+TERMINUS_SITE_CREATE_REQUIRE_ORG: false
+
 # Package Settings
 TERMINUS_BREW_TAP:               '*** TBD ***'
 TERMINUS_BREW_PACKAGE:           'pantheon-systems/external/terminus'

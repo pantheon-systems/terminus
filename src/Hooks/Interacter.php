@@ -180,6 +180,10 @@ class Interacter implements ConfigAwareInterface, ContainerAwareInterface, Sessi
                 }
                 $functionName = 'get' . ucfirst($type) . 'List';
                 if (method_exists($this, $functionName)) {
+                    // Override allow_empty for org if feature flag requires it.
+                    if ($type === 'organization' && $this->getConfig()->get('site_create_require_org')) {
+                        $allow_empty = false;
+                    }
                     return $io->choice($description, $this->$functionName($allow_empty));
                 } else {
                     throw new TerminusException('Unknown type: {type}', ['type' => $type]);

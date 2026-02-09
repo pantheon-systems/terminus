@@ -160,6 +160,36 @@ class SiteCommandsTest extends TerminusTestBase
 
     /**
      * @test
+     * @covers \Pantheon\Terminus\Commands\Site\CreateCommand
+     *
+     * @group site
+     * @group short
+     */
+    public function testSiteCreateWarnsWhenOrgMissingAndFlagEnabled()
+    {
+        if (!getenv('TERMINUS_SITE_CREATE_REQUIRE_ORG')) {
+            $this->markTestSkipped('TERMINUS_SITE_CREATE_REQUIRE_ORG not enabled');
+        }
+
+        $siteName = uniqid('test-site-');
+        $output = $this->terminus(
+            sprintf('site:create %s %s drupal9', $siteName, $siteName),
+            [],
+            false
+        );
+
+        $this->assertStringContainsString(
+            'Creating sites without an organization will be deprecated',
+            $output
+        );
+        $this->assertStringContainsString(
+            '--org parameter will be required',
+            $output
+        );
+    }
+
+    /**
+     * @test
      * @covers \Pantheon\Terminus\Commands\Site\LabelCommand
      *
      * @group site
