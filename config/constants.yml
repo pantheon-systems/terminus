@@ -54,7 +54,8 @@ TERMINUS_ORG:  null
 TERMINUS_COMMAND_SITE_OPTIONS_REGION: null
 
 # Feature Flags
-TERMINUS_SITE_CREATE_REQUIRE_ORG: false
+TERMINUS_SITE_CREATE_WARN_ORG: false    # Phase 1: Show deprecation warning
+TERMINUS_SITE_CREATE_REQUIRE_ORG: false # Phase 2: Block site creation
 
 # Package Settings
 TERMINUS_BREW_TAP:               '*** TBD ***'

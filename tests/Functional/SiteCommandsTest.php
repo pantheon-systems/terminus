@@ -165,10 +165,10 @@ class SiteCommandsTest extends TerminusTestBase
      * @group site
      * @group short
      */
-    public function testSiteCreateWarnsWhenOrgMissingAndFlagEnabled()
+    public function testSiteCreateWarnsWhenOrgMissingAndWarnFlagEnabled()
     {
-        if (!getenv('TERMINUS_SITE_CREATE_REQUIRE_ORG')) {
-            $this->markTestSkipped('TERMINUS_SITE_CREATE_REQUIRE_ORG not enabled');
+        if (!getenv('TERMINUS_SITE_CREATE_WARN_ORG')) {
+            $this->markTestSkipped('TERMINUS_SITE_CREATE_WARN_ORG not enabled');
         }
 
         $siteName = uniqid('test-site-');
@@ -184,6 +184,32 @@ class SiteCommandsTest extends TerminusTestBase
         );
         $this->assertStringContainsString(
             '--org parameter will be required',
+            $output
+        );
+    }
+
+    /**
+     * @test
+     * @covers \Pantheon\Terminus\Commands\Site\CreateCommand
+     *
+     * @group site
+     * @group short
+     */
+    public function testSiteCreateRequiresOrgWhenRequireFlagEnabled()
+    {
+        if (!getenv('TERMINUS_SITE_CREATE_REQUIRE_ORG')) {
+            $this->markTestSkipped('TERMINUS_SITE_CREATE_REQUIRE_ORG not enabled');
+        }
+
+        $siteName = uniqid('test-site-');
+        $output = $this->terminus(
+            sprintf('site:create %s %s drupal9', $siteName, $siteName),
+            [],
+            false
+        );
+
+        $this->assertStringContainsString(
+            'An organization must be defined to create a site',
             $output
         );
     }

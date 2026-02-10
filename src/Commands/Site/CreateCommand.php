@@ -45,14 +45,19 @@ class CreateCommand extends SiteCommand
             throw new TerminusException('The site name {site_name} is already taken.', compact('site_name'));
         }
 
-        // Warn about org requirement when feature flag is enabled.
-        if ($this->config->get('site_create_require_org') && empty($options['org'])) {
+        // Phase 1: Warn about org requirement when feature flag is enabled.
+        if ($this->config->get('site_create_warn_org') && empty($options['org'])) {
             $this->log()->warning(
                 'Creating sites without an organization will be deprecated. ' .
                 'In the future, the --org parameter will be required. ' .
                 'Please update your scripts to include --org. ' .
                 'Learn more: https://docs.pantheon.io/guides/account-mgmt/workspace-sites-teams/workspaces'
             );
+        }
+
+        // Phase 2: Require org when enforcement flag is enabled.
+        if ($this->config->get('site_create_require_org') && empty($options['org'])) {
+            throw new TerminusException('An organization must be defined to create a site.');
         }
 
         $workflow_options = [
