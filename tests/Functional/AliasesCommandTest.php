@@ -111,5 +111,26 @@ class AliasesCommandTest extends TerminusTestBase
     tty: false
 EOF;
         $this->assertEquals($expected_drush_9_site_alias, $drush_9_site_alias_in_file);
+
+        // Test --custom-domains flag
+        $this->terminus(sprintf('drush:aliases --only=%s --custom-domains', $this->getSiteName()));
+
+        // Re-read the Drush 9 site alias file to check for custom domain entries
+        $drush_9_site_alias_with_custom_domains = trim(file_get_contents($drush_9_site_alias_file_path));
+
+        // The output should now contain explicit entries for dev, test, and live environments
+        // when custom domains are configured (and still contain the wildcard)
+        $this->assertTrue(
+            false !== strpos($drush_9_site_alias_with_custom_domains, "'dev':") ||
+            false !== strpos($drush_9_site_alias_with_custom_domains, "'live':") ||
+            false !== strpos($drush_9_site_alias_with_custom_domains, "'test':"),
+            'Drush 9 alias file with --custom-domains should contain explicit environment entries (dev, test, or live)'
+        );
+
+        // Wildcard entry should still be present
+        $this->assertTrue(
+            false !== strpos($drush_9_site_alias_with_custom_domains, "'*':"),
+            'Drush 9 alias file with --custom-domains should still contain wildcard entry'
+        );
     }
 }
