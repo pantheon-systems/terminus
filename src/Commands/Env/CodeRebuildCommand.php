@@ -76,7 +76,7 @@ class CodeRebuildCommand extends TerminusCommand implements SiteAwareInterface, 
         $path = sprintf("%s/vcs/v1/site-details/%s/environments/%s/rebuild", $this->getBaseURI(), $site_id, $env);
         $response = $this->request()->request($path, [
             'method' => 'POST',
-            'json' => [],
+            'json' => new \stdClass(),
             'headers' => [
                 'Authorization' => sprintf(
                     'Bearer %s',
