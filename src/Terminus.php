@@ -264,6 +264,7 @@ EOD;
         $container->add(\Pantheon\Terminus\Models\Commit::class);
         $container->add(\Pantheon\Terminus\Models\DNSRecord::class);
         $container->add(\Pantheon\Terminus\Models\Domain::class);
+        $container->add(\Pantheon\Terminus\Models\Elasticsearch::class);
         $container->add(\Pantheon\Terminus\Models\Environment::class);
         $container->add(\Pantheon\Terminus\Models\Lock::class);
         $container->add(\Pantheon\Terminus\Models\MachineToken::class);
@@ -429,6 +430,8 @@ EOD;
             'Pantheon\\Terminus\\Commands\\SSHKey\\AddCommand',
             'Pantheon\\Terminus\\Commands\\SSHKey\\ListCommand',
             'Pantheon\\Terminus\\Commands\\SSHKey\\RemoveCommand',
+            'Pantheon\\Terminus\\Commands\\Search\\DisableCommand',
+            'Pantheon\\Terminus\\Commands\\Search\\EnableCommand',
             'Pantheon\\Terminus\\Commands\\Self\\ClearCacheCommand',
             'Pantheon\\Terminus\\Commands\\Self\\ConfigDumpCommand',
             'Pantheon\\Terminus\\Commands\\Self\\ConsoleCommand',
