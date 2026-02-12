@@ -56,21 +56,14 @@ class EnableCommand extends TerminusCommand implements SiteAwareInterface
         }
 
         $this->processWorkflow($workflow);
+        $this->log()->notice($workflow->getMessage());
 
-        // Display custom success message with proper capitalization
-        if ($workflow->isSuccessful()) {
-            if ($flavor === 'elasticsearch') {
-                $this->log()->notice('Enabled Elasticsearch for {site}.', ['site' => $site_id]);
-                $this->log()->notice(
-                    'Read the documentation to complete the Elasticsearch configuration for your site: ' .
-                    'https://docs.pantheon.io/pantheon-search'
-                );
-            } else {
-                $this->log()->notice('Enabled Solr for {site}.', ['site' => $site_id]);
-            }
-        } else {
-            // If workflow failed, show the API error message
-            $this->log()->notice($workflow->getMessage());
+        // Provide documentation link for successful Elasticsearch enablement
+        if ($flavor === 'elasticsearch' && $workflow->isSuccessful()) {
+            $this->log()->notice(
+                'Read the documentation to complete the Elasticsearch configuration for your site: ' .
+                'https://docs.pantheon.io/pantheon-search'
+            );
         }
     }
 
