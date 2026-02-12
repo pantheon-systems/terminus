@@ -105,15 +105,7 @@ class EnableCommand extends TerminusCommand implements SiteAwareInterface
             );
         }
 
-        // Check WordPress sites have Elasticsearch entitlement
-        if ($flavor === 'elasticsearch' && $framework->isWordpressFramework()) {
-            $elasticsearch_feature = $site->getFeature('elasticsearch');
-            if ($elasticsearch_feature === null || $elasticsearch_feature === false) {
-                throw new TerminusException(
-                    'This site does not have Elasticsearch enabled. ' .
-                    'Please contact support or use --flavor=solr for Solr indexing.'
-                );
-            }
-        }
+        // WordPress sites: Let the API workflow validate Elasticsearch entitlement
+        // The workflow will fail with an appropriate error if not entitled
     }
 }
