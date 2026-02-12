@@ -106,8 +106,10 @@ class EnableCommand extends TerminusCommand implements SiteAwareInterface
     private function validateFlavorForFramework($flavor, $framework, $site)
     {
         // Block Drupal sites from using Elasticsearch
-        if ($flavor === 'elasticsearch' &&
-            ($framework->isDrupal7Framework() || $framework->isDrupal8Framework())) {
+        if (
+            $flavor === 'elasticsearch' &&
+            ($framework->isDrupal7Framework() || $framework->isDrupal8Framework())
+        ) {
             throw new TerminusException(
                 'Elasticsearch is not supported for Drupal sites. Please use Solr instead.'
             );
