@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file. This projec
 
 ### Added
 
+- Add `search:enable` and `search:disable` commands for managing search indexing
+
+### Deprecated
+
+- `solr:enable` and `solr:disable` commands are deprecated in favor of `search:enable` and `search:disable`
+
 ### Fixed
 
 ## 4.1.4 - 2026-02-02
