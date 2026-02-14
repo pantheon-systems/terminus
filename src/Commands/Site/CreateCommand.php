@@ -28,11 +28,10 @@ class CreateCommand extends SiteCommand
      * @param string $site_name Site name
      * @param string $label Site label
      * @param string $upstream_id Upstream name or UUID
-     * @option org Organization name, label, or ID
+     * @option org Organization name, label, or ID (recommended; will be required in the future)
      * @option region Specify the service region where the site should be
      *   created. See documentation for valid regions.
      *
-     * @usage <site> <label> <upstream> Creates a new site named <site>, human-readably labeled <label>, using code from <upstream>.
      * @usage <site> <label> <upstream> --org=<org> Creates a new site named <site>, human-readably labeled <label>, using code from <upstream>, associated with <organization>.
      *
      * @throws \GuzzleHttp\Exception\GuzzleException
@@ -44,6 +43,21 @@ class CreateCommand extends SiteCommand
     {
         if ($this->sites()->nameIsTaken($site_name)) {
             throw new TerminusException('The site name {site_name} is already taken.', compact('site_name'));
+        }
+
+        // Phase 1: Warn about org requirement when feature flag is enabled.
+        if ($this->config->get('site_create_warn_org') && empty($options['org'])) {
+            $this->log()->warning(
+                'Creating sites without an organization will be deprecated. ' .
+                'In the future, the --org parameter will be required. ' .
+                'Please update your scripts to include --org. ' .
+                'Learn more: https://docs.pantheon.io/guides/account-mgmt/workspace-sites-teams/workspaces'
+            );
+        }
+
+        // Phase 2: Require org when enforcement flag is enabled.
+        if ($this->config->get('site_create_require_org') && empty($options['org'])) {
+            throw new TerminusException('An organization must be defined to create a site.');
         }
 
         $workflow_options = [
