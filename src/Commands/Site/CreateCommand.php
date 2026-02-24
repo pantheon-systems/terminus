@@ -28,7 +28,7 @@ class CreateCommand extends SiteCommand
      * @param string $site_name Site name
      * @param string $label Site label
      * @param string $upstream_id Upstream name or UUID
-     * @option org Organization name, label, or ID
+     * @option org Organization name, label, or ID (required starting Q2 2026)
      * @option region Specify the service region where the site should be
      *   created. See documentation for valid regions.
      *
@@ -66,12 +66,28 @@ class CreateCommand extends SiteCommand
         if (!is_null($org_id = $options['org'])) {
             $org = $user->getOrganizationMemberships()->get($org_id)->getOrganization();
             $workflow_options['organization_id'] = $org->id;
+        } else {
+            $this->log()->warning(
+                'Starting in Q2 2026, all new sites will be required to belong to an organization. '
+                . 'Use the --org option to specify an organization when creating a site.'
+            );
         }
 
         // Create the site.
         $this->log()->notice('Creating a new site...');
         $workflow = $this->sites()->create($workflow_options);
-        $this->processWorkflow($workflow);
+        try {
+            $this->processWorkflow($workflow);
+        } catch (TerminusException $e) {
+            if (is_null($options['org']) && stripos($e->getMessage(), 'organization') !== false) {
+                throw new TerminusException(
+                    'Site creation requires an organization. Use the --org option to specify one. '
+                    . 'Example: terminus site:create {site_name} {label} {upstream_id} --org=<org-name>',
+                    compact('site_name', 'label', 'upstream_id')
+                );
+            }
+            throw $e;
+        }
 
         // Deploy the upstream.
         if ($site = $this->getSiteById($workflow->get('waiting_for_task')->site_id)) {
