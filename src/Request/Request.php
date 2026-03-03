@@ -10,6 +10,7 @@ use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Handler\StreamHandler;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Middleware;
+use GuzzleHttp\Promise\Utils as PromiseUtils;
 use GuzzleHttp\RequestOptions;
 use League\Container\ContainerAwareInterface;
 use League\Container\ContainerAwareTrait;
@@ -532,6 +533,246 @@ class Request implements
         }
         $values['OS'] = PHP_OS;
         return json_encode($values);
+    }
+
+    /**
+     * Execute multiple requests concurrently using Guzzle promises.
+     *
+     * @param array $requests Array of request specifications:
+     *   [
+     *     'key' => ['path' => 'api/path', 'options' => [...]],
+     *     ...
+     *   ]
+     * @param array $options Global options:
+     *   - 'continue_on_error' => bool (default: true) - Continue if some requests fail
+     *   - 'concurrency' => int (default: 10) - Max concurrent requests
+     *
+     * @return array Array of results keyed by request key:
+     *   [
+     *     'key' => [
+     *       'success' => true|false,
+     *       'result' => RequestOperationResult (if success),
+     *       'error' => Exception (if failure)
+     *     ],
+     *     ...
+     *   ]
+     *
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     */
+    public function requestConcurrent(array $requests, array $options = []): array
+    {
+        // Default options
+        $defaults = [
+            'continue_on_error' => true,
+            'concurrency' => $this->getConfig()->get('concurrent_max_concurrency', 10),
+        ];
+        $options = array_merge($defaults, $options);
+
+        // Check if concurrent enabled
+        if (!$this->getConfig()->get('concurrent_requests_enabled', true)) {
+            return $this->requestSequential($requests);
+        }
+
+        $client = $this->getAsyncClient();
+        $promises = [];
+
+        // Build promises for all requests
+        foreach ($requests as $key => $request_spec) {
+            $path = $request_spec['path'];
+            $req_options = $request_spec['options'] ?? [];
+
+            // Build PSR-7 request
+            $psr7Request = $this->buildPsr7Request($path, $req_options);
+
+            // Create async promise
+            $promises[$key] = $client->sendAsync($psr7Request, $req_options);
+        }
+
+        // Execute all promises concurrently
+        $this->logger->info('Executing {count} concurrent requests', ['count' => count($promises)]);
+        $settled = PromiseUtils::settle($promises)->wait();
+
+        // Transform results
+        return $this->transformSettledResults($settled, $options);
+    }
+
+    /**
+     * Get async-capable Guzzle client.
+     *
+     * @param string $base_uri Optional base URI override
+     * @return ClientInterface
+     */
+    private function getAsyncClient($base_uri = null): ClientInterface
+    {
+        $config = $this->getConfig();
+
+        // Use CurlMultiHandler for async (or StreamHandler as fallback)
+        if (extension_loaded('curl')) {
+            $handler = new \GuzzleHttp\Handler\CurlMultiHandler();
+        } else {
+            $handler = new StreamHandler();
+        }
+
+        $stack = HandlerStack::create($handler);
+        $stack->push(Middleware::retry($this->createRetryDecider()));
+
+        $params = $config->get('client_options') + [
+            'base_uri' => ($base_uri === null) ? $this->getBaseURI() : $base_uri,
+            RequestOptions::VERIFY => (bool)$config->get('verify_host_cert', true),
+            'handler' => $stack,
+            'timeout' => $config->get('concurrent_timeout', 30),
+        ];
+
+        $host_cert = $config->get('host_cert');
+        if ($host_cert !== null) {
+            $params[RequestOptions::CERT] = $host_cert;
+        }
+
+        return new Client($params);
+    }
+
+    /**
+     * Build PSR-7 request from path and options.
+     *
+     * @param string $path API path
+     * @param array $options Request options
+     * @return RequestInterface
+     */
+    private function buildPsr7Request(string $path, array $options = []): RequestInterface
+    {
+        $method = isset($options['method']) ? strtoupper($options['method']) : 'GET';
+        $headers = $this->getDefaultHeaders();
+
+        // Merge custom headers
+        if (isset($options['headers'])) {
+            $headers = array_merge($headers, $options['headers']);
+        }
+
+        // Build URI
+        if (strpos($path ?? '', '://') === false) {
+            $uri = "{$this->getBaseURI()}/api/$path";
+            // Add authorization for non-machine-token requests
+            $parts = explode('/', $path);
+            $part = array_pop($parts);
+            if ($part !== 'machine-token') {
+                $headers['Authorization'] = sprintf(
+                    'Bearer %s',
+                    $this->session()->get('session')
+                );
+            }
+        } else {
+            $uri = $path;
+        }
+
+        // Build body
+        $body = null;
+        if (isset($options['form_params'])) {
+            $body = json_encode($options['form_params'], JSON_UNESCAPED_SLASHES);
+            $headers['Content-Type'] = 'application/json';
+            $headers['Content-Length'] = strlen($body);
+        }
+
+        return new \GuzzleHttp\Psr7\Request($method, $uri, $headers, $body);
+    }
+
+    /**
+     * Transform settled promise results into standardized format.
+     *
+     * @param array $settled Settled promise results from Utils::settle()
+     * @param array $options Options (continue_on_error, etc.)
+     * @return array Transformed results
+     */
+    private function transformSettledResults(array $settled, array $options): array
+    {
+        $results = [];
+        $successes = 0;
+        $failures = 0;
+
+        foreach ($settled as $key => $result) {
+            if ($result['state'] === 'fulfilled') {
+                $response = $result['value'];
+                $results[$key] = [
+                    'success' => true,
+                    'result' => new RequestOperationResult([
+                        'data' => $this->decodeResponse($response),
+                        'headers' => $response->getHeaders(),
+                        'status_code' => $response->getStatusCode(),
+                        'status_code_reason' => $response->getReasonPhrase(),
+                    ]),
+                    'error' => null,
+                ];
+                $successes++;
+            } else {
+                $exception = $result['reason'];
+                $results[$key] = [
+                    'success' => false,
+                    'result' => null,
+                    'error' => $exception,
+                ];
+                $failures++;
+
+                $this->logger->warning('Concurrent request failed for {key}: {error}', [
+                    'key' => $key,
+                    'error' => $exception->getMessage(),
+                ]);
+            }
+        }
+
+        $this->logger->info('Concurrent requests complete: {successes} succeeded, {failures} failed', [
+            'successes' => $successes,
+            'failures' => $failures,
+        ]);
+
+        return $results;
+    }
+
+    /**
+     * Decode response body into object/array.
+     *
+     * @param ResponseInterface $response HTTP response
+     * @return mixed Decoded JSON object, or raw body string
+     */
+    private function decodeResponse(ResponseInterface $response)
+    {
+        $body = $response->getBody()->getContents();
+        if (empty($body)) {
+            return null;
+        }
+
+        try {
+            return \json_decode($body, false, 512, JSON_THROW_ON_ERROR);
+        } catch (\JsonException $e) {
+            $this->logger->debug('JSON decode failed: {message}', ['message' => $e->getMessage()]);
+            return $body;
+        }
+    }
+
+    /**
+     * Fallback: execute requests sequentially (when concurrent disabled).
+     *
+     * @param array $requests Array of request specifications
+     * @return array Results in same format as requestConcurrent()
+     */
+    private function requestSequential(array $requests): array
+    {
+        $results = [];
+        foreach ($requests as $key => $request_spec) {
+            try {
+                $result = $this->request($request_spec['path'], $request_spec['options'] ?? []);
+                $results[$key] = [
+                    'success' => true,
+                    'result' => $result,
+                    'error' => null,
+                ];
+            } catch (\Exception $e) {
+                $results[$key] = [
+                    'success' => false,
+                    'result' => null,
+                    'error' => $e,
+                ];
+            }
+        }
+        return $results;
     }
 
     /**
