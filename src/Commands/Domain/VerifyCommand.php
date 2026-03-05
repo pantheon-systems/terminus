@@ -48,7 +48,7 @@ class VerifyCommand extends TerminusCommand implements SiteAwareInterface, Reque
 
         $response = $this->request()->request($url, [
             'method' => 'POST',
-            'json' => new \stdClass(),
+            'json' => ['challenge_type' => 'dns-01'],
         ]);
 
         if ($response->isError()) {
@@ -72,6 +72,31 @@ class VerifyCommand extends TerminusCommand implements SiteAwareInterface, Reque
                     'site' => $site->getName(),
                     'env' => $env->getName(),
                 ]
+            );
+            return;
+        }
+
+        // Display the TXT record value if available in the response.
+        if (is_object($data) && isset($data->token)) {
+            $this->log()->warning(
+                'Ownership of {domain} on {site}.{env} has not been verified yet.',
+                [
+                    'domain' => $domain,
+                    'site' => $site->getName(),
+                    'env' => $env->getName(),
+                ]
+            );
+            $this->log()->notice(
+                'Add the following TXT record to your DNS provider:' . PHP_EOL
+                . '  Name:  _acme-challenge.{domain}' . PHP_EOL
+                . '  Value: {token}',
+                [
+                    'domain' => $domain,
+                    'token' => $data->token,
+                ]
+            );
+            $this->log()->notice(
+                'Once the TXT record is in place, re-run this command to verify.'
             );
         } else {
             $this->log()->warning(
