@@ -16,6 +16,7 @@ class DomainCommandsTest extends TerminusTestBase
      * @covers \Pantheon\Terminus\Commands\Domain\ListCommand
      * @covers \Pantheon\Terminus\Commands\Domain\LookupCommand
      * @covers \Pantheon\Terminus\Commands\Domain\RemoveCommand
+     * @covers \Pantheon\Terminus\Commands\Domain\VerifyCommand
      * @covers \Pantheon\Terminus\Commands\Domain\Primary\AddCommand
      * @covers \Pantheon\Terminus\Commands\Domain\Primary\RemoveCommand
      *
@@ -37,6 +38,12 @@ class DomainCommandsTest extends TerminusTestBase
         $domainList = $this->terminusJsonResponse(sprintf('domain:list %s', $siteEnv));
         $domains = array_column($domainList, 'id');
         $this->assertContains($testDomain, $domains, 'Domain list should contain added domain');
+
+        // Verify domain ownership - expected to report not yet verified since no TXT record exists.
+        $verifyOutput = $this->terminusWithStderrRedirected(
+            sprintf('domain:verify %s %s', $siteEnv, $testDomain)
+        );
+        $this->assertNotEmpty($verifyOutput, 'domain:verify should produce output');
 
         $lookUpResult = $this->terminusJsonResponse(sprintf('domain:lookup %s', $testDomain));
         $this->assertIsArray($lookUpResult);
