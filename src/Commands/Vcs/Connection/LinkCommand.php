@@ -76,7 +76,10 @@ class LinkCommand extends TerminusCommand implements RequestAwareInterface
             'vcs_type' => $vcs_installation->alias,
         ]);
         $this->log()->notice('  Source Pantheon Org: {source_org}', ['source_org' => $source_pantheon_org->getLabel()]);
-        $this->log()->notice('  Destination Pantheon Org: {dest_org}', ['dest_org' => $destination_pantheon_org->getLabel()]);
+        $this->log()->notice(
+            '  Destination Pantheon Org: {dest_org}',
+            ['dest_org' => $destination_pantheon_org->getLabel()]
+        );
 
         if (!$this->confirm('Do you want to proceed with linking this VCS organization?')) {
             $this->log()->warning('Operation cancelled.');
@@ -169,7 +172,8 @@ class LinkCommand extends TerminusCommand implements RequestAwareInterface
 
         if (empty($orgs_with_vcs)) {
             throw new TerminusException(
-                'No Pantheon organizations found with VCS connections. Please use vcs:connection:add to add a VCS connection first.'
+                'No Pantheon organizations found with VCS connections.'
+                    . ' Please use vcs:connection:add to add a VCS connection first.'
             );
         }
 
@@ -249,7 +253,10 @@ class LinkCommand extends TerminusCommand implements RequestAwareInterface
         }
 
         // Multiple matches - prompt user to select
-        $this->log()->notice('VCS organization "{vcs_org}" found in multiple Pantheon organizations:', ['vcs_org' => $vcs_org_name]);
+        $this->log()->notice(
+            'VCS organization "{vcs_org}" found in multiple Pantheon organizations:',
+            ['vcs_org' => $vcs_org_name]
+        );
 
         $org_choices = [];
         foreach ($matching_orgs as $idx => $match) {

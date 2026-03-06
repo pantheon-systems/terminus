@@ -52,13 +52,19 @@ class AddCommand extends TerminusCommand implements RequestAwareInterface
     {
         $vcsProvider = $options['vcs-provider'] ?? 'github';
         if ($vcsProvider !== 'github') {
-            throw new TerminusException('Unsupported VCS provider: {provider}. Only "github" is supported.', ['provider' => $vcsProvider]);
+            throw new TerminusException(
+                'Unsupported VCS provider: {provider}. Only "github" is supported.',
+                ['provider' => $vcsProvider]
+            );
         }
         $organization = $this->session()->getUser()->getOrganizationMemberships()->get(
             $organization
         )->getOrganization();
 
-        $this->log()->warning("Keep in mind that any member of the selected Pantheon Workspace will be able to list and create repositories in the selected VCS organization.");
+        $this->log()->warning(
+            "Keep in mind that any member of the selected Pantheon Workspace"
+                . " will be able to list and create repositories in the selected VCS organization."
+        );
 
         $this->connectGithub($organization, $options);
     }
@@ -69,7 +75,12 @@ class AddCommand extends TerminusCommand implements RequestAwareInterface
         // Store the process so we can stop it later.
         $this->serverProcess = $process;
 
-        $auth_links_resp = $this->getVcsClient()->getAuthLinks($organization->id, $this->session()->getUser()->id, "cms-drupal", $url);
+        $auth_links_resp = $this->getVcsClient()->getAuthLinks(
+            $organization->id,
+            $this->session()->getUser()->id,
+            "cms-drupal",
+            $url
+        );
         $auth_links = $auth_links_resp['data'] ?? null;
         $this->log()->debug('VCS Auth Links: {auth_links}', ['auth_links' => print_r($auth_links, true)]);
         $auth_url = null;

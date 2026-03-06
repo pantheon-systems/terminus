@@ -139,7 +139,9 @@ class CreateCommand extends SiteCommand implements RequestAwareInterface, SiteAw
         // Validate Node.js sites cannot use Pantheon-hosted repositories
         if ($upstream->get('framework') === 'nodejs' && $vcs_provider === 'pantheon') {
             throw new TerminusException(
-                'Node.js sites cannot be created with Pantheon-hosted repositories. Please specify an external VCS provider using --vcs-provider (e.g., --vcs-provider=github).'
+                'Node.js sites cannot be created with Pantheon-hosted repositories.'
+                    . ' Please specify an external VCS provider using --vcs-provider'
+                    . ' (e.g., --vcs-provider=github).'
             );
         }
 
@@ -322,7 +324,10 @@ class CreateCommand extends SiteCommand implements RequestAwareInterface, SiteAw
             $this->log()->notice('Pantheon Dashboard: {url}', ['url' => $dashboard_url]);
         } else {
             // This shouldn't happen if the create workflow succeeded and returned an ID, but good to handle.
-            throw new TerminusException('Failed to retrieve site object (ID: {id}) after creation workflow succeeded.', ['id' => $site_id]);
+            throw new TerminusException(
+                'Failed to retrieve site object (ID: {id}) after creation workflow succeeded.',
+                ['id' => $site_id]
+            );
         }
     }
 
@@ -411,7 +416,10 @@ class CreateCommand extends SiteCommand implements RequestAwareInterface, SiteAw
      */
     protected function createExternallyHostedSite($site_name, $label, Upstream $upstream, User $user, array $options)
     {
-        $this->log()->notice('Starting creation process for site with external VCS ({vcs-provider})...', ['vcs-provider' => $options['vcs-provider']]);
+        $this->log()->notice(
+            'Starting creation process for site with external VCS ({vcs-provider})...',
+            ['vcs-provider' => $options['vcs-provider']]
+        );
 
         $input = $this->input();
         $output = $this->output();
@@ -440,7 +448,10 @@ class CreateCommand extends SiteCommand implements RequestAwareInterface, SiteAw
             $pantheon_org = $membership->getOrganization();
         } catch (TerminusNotFoundException $e) {
             // This should have been caught earlier, but double-check
-            throw new TerminusException('Pantheon organization "{org}" not found or you are not a member.', ['org' => $org_id]);
+            throw new TerminusException(
+                'Pantheon organization "{org}" not found or you are not a member.',
+                ['org' => $org_id]
+            );
         }
 
         // 2. Determine Site Type & Platform
@@ -450,7 +461,10 @@ class CreateCommand extends SiteCommand implements RequestAwareInterface, SiteAw
         // 3. Get existing installations + link to create new installation.
         $installations_resp = $vcs_client->getInstallations($pantheon_org->id, $user->id);
         $existing_installations_data = $installations_resp['data'] ?? [];
-        $this->log()->debug('Existing installations: {installations}', ['installations' => print_r($existing_installations_data, true)]);
+        $this->log()->debug(
+            'Existing installations: {installations}',
+            ['installations' => print_r($existing_installations_data, true)]
+        );
 
         list($url, $flag_file, $process) = $this->startTemporaryServer();
         // Store the process so we can stop it later.
@@ -486,7 +500,10 @@ class CreateCommand extends SiteCommand implements RequestAwareInterface, SiteAw
         if (!empty($existing_installations_data)) {
             foreach ($existing_installations_data as $installation) {
                 // Filter for current VCS provider and backend installations
-                if (strtolower($installation->alias) !== $vcs_provider || $installation->installation_type == 'front-end') {
+                if (
+                    strtolower($installation->alias) !== $vcs_provider
+                    || $installation->installation_type == 'front-end'
+                ) {
                     continue;
                 }
                 $installations[$installation->installation_id] = new Installation(
@@ -494,17 +511,24 @@ class CreateCommand extends SiteCommand implements RequestAwareInterface, SiteAw
                     $installation->alias,
                     $installation->login_name
                 );
-                $installations_map[strtolower($installation->login_name)] = $installation->installation_id;
+                $instKey = strtolower($installation->login_name);
+                $installations_map[$instKey] = $installation->installation_id;
             }
         }
-         $this->log()->debug('Found {count} existing GitHub installations for Org {org}: {names}', [
-            'count' => count($installations),
-            'org' => $pantheon_org->id,
-            'names' => implode(', ', array_keys($installations_map))
-         ]);
+        $this->log()->debug(
+            'Found {count} existing GitHub installations for Org {org}: {names}',
+            [
+                'count' => count($installations),
+                'org' => $pantheon_org->id,
+                'names' => implode(', ', array_keys($installations_map)),
+            ]
+        );
 
         $this->log()->debug('Installation map: {map}', ['map' => print_r($installations_map, true)]);
-        $this->log()->debug('Existing installations: {installations}', ['installations' => print_r($installations, true)]);
+        $this->log()->debug(
+            'Existing installations: {installations}',
+            ['installations' => print_r($installations, true)]
+        );
 
         $installation_id = null;
 
@@ -522,13 +546,21 @@ class CreateCommand extends SiteCommand implements RequestAwareInterface, SiteAw
             // We need to prompt the user for a installation; either because vcs_org was not provided or it didn't match an existing installation.
             if (!$is_interactive) {
                 // Non-interactive mode, vcs_org not provided or not found
-                throw new TerminusException('--vcs-org is required to match an existing installation in non-interactive mode when --vcs-provider is not Pantheon.');
+                throw new TerminusException(
+                    '--vcs-org is required to match an existing installation'
+                        . ' in non-interactive mode when --vcs-provider is not Pantheon.'
+                );
             }
             if (!empty($installations)) {
                 // Prompt user to choose from existing or add new
                 $choices = [];
                 foreach ($installations as $id => $inst) {
-                    $choices[$inst->getLoginName()] = sprintf("%s: %s (%s)", $inst->getVendor(), $inst->getLoginName(), $id);
+                    $choices[$inst->getLoginName()] = sprintf(
+                        "%s: %s (%s)",
+                        $inst->getVendor(),
+                        $inst->getLoginName(),
+                        $id
+                    );
                 }
                 $choices[self::ADD_NEW_ORG_TEXT] = 'new';
 
@@ -548,7 +580,10 @@ class CreateCommand extends SiteCommand implements RequestAwareInterface, SiteAw
                     $installation_id = $installations_map[strtolower($vcs_org_name)];
                 }
 
-                $this->log()->info('Selected to go with {installation} installation.', ['installation' => $installation_human_name]);
+                $this->log()->info(
+                    'Selected to go with {installation} installation.',
+                    ['installation' => $installation_human_name]
+                );
             } else {
                 // No existing installations found, prompt for new.
                 $installation_id = 'new';
@@ -566,14 +601,23 @@ class CreateCommand extends SiteCommand implements RequestAwareInterface, SiteAw
             $existing_installation = false;
             $success = $this->handleNewInstallation($vcs_provider, $auth_url, $flag_file, $options);
             if (!$success) {
-                throw new TerminusException('Error authorizing with VCS service: Timeout waiting for authorization to complete.');
+                throw new TerminusException(
+                    'Error authorizing with VCS service:'
+                        . ' Timeout waiting for authorization to complete.'
+                );
             }
             $installations_resp = $vcs_client->getInstallations($pantheon_org->id, $user->id);
             $new_existing_installations_data = $installations_resp['data'] ?? [];
-            $this->log()->debug('New existing installations: {installations}', ['installations' => print_r($new_existing_installations_data, true)]);
+            $this->log()->debug(
+                'New existing installations: {installations}',
+                ['installations' => print_r($new_existing_installations_data, true)]
+            );
             // Look for a new installation that wasn't in the previous list.
             foreach ($new_existing_installations_data as $installation) {
-                if (strtolower($installation->alias) !== $vcs_provider || $installation->installation_type == 'front-end') {
+                if (
+                    strtolower($installation->alias) !== $vcs_provider
+                    || $installation->installation_type == 'front-end'
+                ) {
                     continue;
                 }
                 if (!isset($installations[$installation->installation_id])) {
@@ -585,7 +629,13 @@ class CreateCommand extends SiteCommand implements RequestAwareInterface, SiteAw
         }
 
         // 5. Validate repository exists (or not) depending on create-repo option.
-        $this->validateRepositoryExistsOrNot($vcs_client, $repo_name, $pantheon_org->id, $installation_id, $create_repo);
+        $this->validateRepositoryExistsOrNot(
+            $vcs_client,
+            $repo_name,
+            $pantheon_org->id,
+            $installation_id,
+            $create_repo
+        );
 
         // 6. Use workflow for all sites
         $this->createExternallyHostedSiteViaWorkflow(
@@ -683,7 +733,10 @@ class CreateCommand extends SiteCommand implements RequestAwareInterface, SiteAw
         // Get the created site
         $site = $this->getSiteById($site_uuid);
         if (!$site) {
-            throw new TerminusException('Failed to retrieve site object (ID: {id}) after workflow completion.', ['id' => $site_uuid]);
+            throw new TerminusException(
+                'Failed to retrieve site object (ID: {id}) after workflow completion.',
+                ['id' => $site_uuid]
+            );
         }
 
         // Get repository URL from VCS client
@@ -718,12 +771,18 @@ class CreateCommand extends SiteCommand implements RequestAwareInterface, SiteAw
                 'Error waiting for dev environment to wake: {error_message}',
                 ['error_message' => $e->getMessage()]
             );
-            $this->log()->warning('The site and repository have been created, but the dev environment may be not yet available.');
+            $this->log()->warning(
+                'The site and repository have been created,'
+                    . ' but the dev environment may be not yet available.'
+            );
         }
 
         // Final Success Message
         $this->log()->notice('---');
-        $this->log()->notice('Site "{site}" created successfully with external repository!', ['site' => $site->getName()]);
+        $this->log()->notice(
+            'Site "{site}" created successfully with external repository!',
+            ['site' => $site->getName()]
+        );
         if ($target_repo_url) {
             $this->log()->notice('Repository: {url}', ['url' => $target_repo_url]);
         }
@@ -771,14 +830,16 @@ class CreateCommand extends SiteCommand implements RequestAwareInterface, SiteAw
         // If we are creating the repo, it must not exist.
         if ($create_repo && $repo_exists) {
             throw new TerminusException(
-                'Repository "{repo}" already exists in the selected VCS organization. Cannot create it. Please choose a different repository name.',
+                'Repository "{repo}" already exists in the selected VCS organization.'
+                    . ' Cannot create it. Please choose a different repository name.',
                 ['repo' => $repo_name]
             );
         }
         // If we are linking to an existing repo, it must exist.
         if (!$create_repo && !$repo_exists) {
             throw new TerminusException(
-                'Repository "{repo}" does not exist in the selected VCS organization. Cannot link it. Please create the repository first.',
+                'Repository "{repo}" does not exist in the selected VCS organization.'
+                    . ' Cannot link it. Please create the repository first.',
                 ['repo' => $repo_name]
             );
         }
@@ -844,7 +905,10 @@ class CreateCommand extends SiteCommand implements RequestAwareInterface, SiteAw
             case 'nodejs':
                 return 'nodejs';
             default:
-                throw new TerminusException('Framework {framework} not currently supported for external VCS site creation.', compact('framework'));
+                throw new TerminusException(
+                    'Framework {framework} not currently supported for external VCS site creation.',
+                    compact('framework')
+                );
         }
     }
 
@@ -866,9 +930,18 @@ class CreateCommand extends SiteCommand implements RequestAwareInterface, SiteAw
      * Handle new installation based on VCS provider.
      * Currently only supports GitHub.
      */
-    protected function handleNewInstallation(string $vcs_provider, string $auth_url, string $flag_file, array $options): bool
-    {
-        $this->log()->warning("Important: Connecting this application grants all members of this Pantheon Workspace the ability to list and create repositories in the attached GitHub Organization, regardless of their individual GitHub permissions.");
+    protected function handleNewInstallation(
+        string $vcs_provider,
+        string $auth_url,
+        string $flag_file,
+        array $options
+    ): bool {
+        $this->log()->warning(
+            "Important: Connecting this application grants all members of this"
+                . " Pantheon Workspace the ability to list and create repositories"
+                . " in the attached GitHub Organization, regardless of their"
+                . " individual GitHub permissions."
+        );
         switch ($vcs_provider) {
             case 'github':
                 return $this->handleGithubNewInstallation($auth_url, $flag_file, self::AUTH_LINK_TIMEOUT);
@@ -886,7 +959,10 @@ class CreateCommand extends SiteCommand implements RequestAwareInterface, SiteAw
     {
         $token = $options['vcs-token'] ?? null;
         if (empty($token) && !$this->input()->isInteractive()) {
-            throw new TerminusException('GitLab installation requires a token. Please provide --vcs-token or run interactively.');
+            throw new TerminusException(
+                'GitLab installation requires a token.'
+                    . ' Please provide --vcs-token or run interactively.'
+            );
         }
         if (empty($token)) {
             // @TODO Write correct instructions.
@@ -934,7 +1010,10 @@ class CreateCommand extends SiteCommand implements RequestAwareInterface, SiteAw
         ];
         $data = $this->getVcsClient()->installWithToken($post_data);
         if (!$data['success']) {
-            throw new TerminusException("An error happened while authorizing: {error_message}", ['error_message' => $data['data']]);
+            throw new TerminusException(
+                "An error happened while authorizing: {error_message}",
+                ['error_message' => $data['data']]
+            );
         }
 
         return true;
@@ -952,13 +1031,23 @@ class CreateCommand extends SiteCommand implements RequestAwareInterface, SiteAw
             throw new TerminusException('Repository name cannot be empty.');
         }
         if (strlen($repo_name) > 100) {
-            throw new TerminusException('Repository name "{name}" is too long. Maximum length is 100 characters.', ['name' => $repo_name]);
+            throw new TerminusException(
+                'Repository name "{name}" is too long. Maximum length is 100 characters.',
+                ['name' => $repo_name]
+            );
         }
         if (preg_match('/[^a-zA-Z0-9\-]/', $repo_name)) {
-            throw new TerminusException('Repository name "{name}" contains invalid characters. Only alphanumeric and dashes are allowed.', ['name' => $repo_name]);
+            throw new TerminusException(
+                'Repository name "{name}" contains invalid characters.'
+                    . ' Only alphanumeric and dashes are allowed.',
+                ['name' => $repo_name]
+            );
         }
         if (!preg_match('/[a-zA-Z0-9]/', $repo_name)) {
-            throw new TerminusException('Repository name "{name}" must contain at least one alphanumeric character.', ['name' => $repo_name]);
+            throw new TerminusException(
+                'Repository name "{name}" must contain at least one alphanumeric character.',
+                ['name' => $repo_name]
+            );
         }
         if (preg_match('/^-/', $repo_name)) {
             throw new TerminusException('Repository name "{name}" cannot begin with a dash.', ['name' => $repo_name]);

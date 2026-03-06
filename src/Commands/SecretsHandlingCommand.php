@@ -14,7 +14,11 @@ use League\Container\ContainerAwareTrait;
 use Pantheon\Terminus\Request\RequestAwareInterface;
 use Pantheon\Terminus\VcsApi\VcsClientAwareTrait;
 
-class SecretsHandlingCommand implements SiteAwareInterface, LoggerAwareInterface, ContainerAwareInterface, RequestAwareInterface
+class SecretsHandlingCommand implements
+    SiteAwareInterface,
+    LoggerAwareInterface,
+    ContainerAwareInterface,
+    RequestAwareInterface
 {
     use SiteAwareTrait;
     use LoggerAwareTrait;
@@ -74,7 +78,10 @@ class SecretsHandlingCommand implements SiteAwareInterface, LoggerAwareInterface
 
         $this->logger->notice('Application rebuild triggered for environment "{env}".', ['env' => $env]);
         if (!$env_name) {
-            $this->logger->notice('You may want to rebuild a different environment using "{command}"', ['command' => 'terminus node:build:rebuild <site>.<env>.']);
+            $this->logger->notice(
+                'You may want to rebuild a different environment using "{command}"',
+                ['command' => 'terminus node:build:rebuild <site>.<env>.']
+            );
         }
     }
 }

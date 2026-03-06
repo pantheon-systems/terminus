@@ -59,7 +59,9 @@ class NodeBuildRebuildCommand extends TerminusCommand implements SiteAwareInterf
         $env_name = $env->getName();
 
         $this->log()->notice(
-            'Triggering rebuild for {site} environment {env}' . ($commit_id ? ' from commit {commit}' : ' from latest commit') . '...',
+            'Triggering rebuild for {site} environment {env}'
+                . ($commit_id ? ' from commit {commit}' : ' from latest commit')
+                . '...',
             [
                 'site' => $site->getName(),
                 'env' => $env_name,
@@ -100,7 +102,8 @@ class NodeBuildRebuildCommand extends TerminusCommand implements SiteAwareInterf
         } catch (TerminusException $e) {
             if (strpos($e->getMessage(), '404') !== false && $commit_id) {
                 throw new TerminusException(
-                    'Commit {commit} not found for {site} environment {env}. Please verify the commit exists in the repository.',
+                    'Commit {commit} not found for {site} environment {env}.'
+                        . ' Please verify the commit exists in the repository.',
                     [
                         'commit' => $commit_id,
                         'site' => $site->getName(),

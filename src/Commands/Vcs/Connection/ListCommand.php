@@ -51,12 +51,21 @@ class ListCommand extends TerminusCommand implements RequestAwareInterface
             $organization
         )->getOrganization();
 
-        $installations_resp = $this->getVcsClient()->getInstallations($organization->id, $this->session()->getUser()->id);
+        $installations_resp = $this->getVcsClient()->getInstallations(
+            $organization->id,
+            $this->session()->getUser()->id
+        );
         $existing_installations_data = $installations_resp['data'] ?? [];
-        $this->log()->debug('Existing installations: {installations}', ['installations' => print_r($existing_installations_data, true)]);
+        $this->log()->debug(
+            'Existing installations: {installations}',
+            ['installations' => print_r($existing_installations_data, true)]
+        );
 
         if (count($existing_installations_data) === 0) {
-            $this->log()->info('No connected VCS installations found for organization {org}.', ['org' => $organization->name]);
+            $this->log()->info(
+                'No connected VCS installations found for organization {org}.',
+                ['org' => $organization->name]
+            );
             return new RowsOfFields([]);
         }
 

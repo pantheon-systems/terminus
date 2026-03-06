@@ -178,7 +178,11 @@ class Client implements ConfigAwareInterface
             'method' => 'GET',
         ];
 
-        return $this->requestApi(sprintf('installation/user/%s/org/%s', $user_id, $org_id), $request_options, "X-Pantheon-Session");
+        return $this->requestApi(
+            sprintf('installation/user/%s/org/%s', $user_id, $org_id),
+            $request_options,
+            "X-Pantheon-Session"
+        );
     }
 
     /**
