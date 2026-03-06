@@ -7,7 +7,6 @@ namespace Pantheon\Terminus\Commands\NodeLogs;
  */
 class NodeLogsBuildGetCommand extends NodeLogsBaseCommand
 {
-
     /**
      * Print the build log.
      *

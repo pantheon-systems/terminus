@@ -13,7 +13,6 @@ use Pantheon\Terminus\Site\SiteAwareTrait;
  */
 class NodeLogsBaseCommand extends SiteCommand implements SiteAwareInterface, RequestAwareInterface
 {
-
     use SiteAwareTrait;
     use RequestAwareTrait;
 

@@ -7,7 +7,6 @@ namespace Pantheon\Terminus\Commands\NodeLogs;
  */
 class NodeLogsRuntimeGetCommand extends NodeLogsBaseCommand
 {
-
     /**
      * Print the run time log for last 24 hours.
      *
