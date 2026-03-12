@@ -6,11 +6,13 @@ use Pantheon\Terminus\Exceptions\TerminusException;
 use Pantheon\Terminus\Models\Workflow;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Output\OutputInterface;
+use Pantheon\Terminus\ProgressBars\TerminusProgressBar;
 
 /**
  * Class WorkflowProgressBar
  *
  * A progress bar that tracks the progress of a workflow.
+ * TODO: Integrate this code back into Terminus core WorkflowProgressBar.
  *
  * @package Pantheon\Terminus\ProgressBars
  */
@@ -40,9 +42,21 @@ class WorkflowProgressBar extends TerminusProgressBar
      * Runs the progress bar until completion.
      * @throws TerminusException
      */
-    public function cycle()
+    public function cycle(int $timeout = 0)
     {
+        $current_time = time();
+        if ($timeout > 0) {
+            $end_time = $current_time + $timeout;
+        } else {
+            $end_time = 0;
+        }
         while ($this->update()) {
+            if ($end_time > 0 && $current_time >= $end_time) {
+                throw new TerminusException(
+                    'Workflow timed out after {timeout} seconds.',
+                    ['timeout' => $timeout]
+                );
+            }
             $this->sleep();
         }
     }
