@@ -13,7 +13,7 @@ use Pantheon\Terminus\Request\RequestAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\VcsApi\Installation;
 use Pantheon\Terminus\VcsApi\VcsClientAwareTrait;
-use Pantheon\Terminus\WorkflowWaitTrait;
+use Pantheon\Terminus\Commands\WorkflowProcessingTrait;
 use Pantheon\Terminus\Commands\Site\SiteCommand;
 use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Question\ChoiceQuestion;
@@ -32,7 +32,7 @@ use Pantheon\Terminus\Traits\GithubInstallTrait;
 class CreateCommand extends SiteCommand implements RequestAwareInterface, SiteAwareInterface
 {
     use WaitForWakeTrait;
-    use WorkflowWaitTrait;
+    use WorkflowProcessingTrait;
     use VcsClientAwareTrait;
     use GithubInstallTrait;
 
