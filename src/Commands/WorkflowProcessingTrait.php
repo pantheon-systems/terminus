@@ -39,6 +39,7 @@ trait WorkflowProcessingTrait
             $end_time = 0;
         }
         do {
+            $current_time = time();
             if ($end_time > 0 && $current_time >= $end_time) {
                 throw new TerminusException(
                     'Workflow timed out after {timeout} seconds.',
