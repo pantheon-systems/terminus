@@ -1,11 +1,38 @@
 # Change Log
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org)
 
-## 4.1.2-dev
+## 4.1.5-dev
 
 ### Added
 
+- Add `search:enable` and `search:disable` commands for managing search indexing
+
+### Deprecated
+
+- `solr:enable` and `solr:disable` commands are deprecated in favor of `search:enable` and `search:disable`
+
 ### Fixed
+
+## 4.1.4 - 2026-02-02
+
+### Added
+
+- Add support for PHP 8.5 (#2769)
+
+### Fixed
+
+- Ensure plugins composer.json also disables audit block-insecure for plugin operations (#2772)
+
+## 4.1.3 - 2026-01-29
+
+### Added
+- Add timestamps to all logger output messages (#2745)
+
+### Fixed
+- Disable audit for plugins to resolve Composer security warnings blocking plugin installation (#2766)
+- Fix environment comparison to not rely on commit labels (#2761)
+- Handle cases where is_initialized doesn't return a value (#2760)
+- Consider a session active only if it's valid for more than 1 minute (#2758)
 
 ## 4.1.1 - 2025-11-04
 

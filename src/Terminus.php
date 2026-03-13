@@ -264,6 +264,7 @@ EOD;
         $container->add(\Pantheon\Terminus\Models\Commit::class);
         $container->add(\Pantheon\Terminus\Models\DNSRecord::class);
         $container->add(\Pantheon\Terminus\Models\Domain::class);
+        $container->add(\Pantheon\Terminus\Models\Elasticsearch::class);
         $container->add(\Pantheon\Terminus\Models\Environment::class);
         $container->add(\Pantheon\Terminus\Models\Lock::class);
         $container->add(\Pantheon\Terminus\Models\MachineToken::class);
@@ -379,6 +380,7 @@ EOD;
             'Pantheon\\Terminus\\Commands\\Env\\ViewCommand',
             'Pantheon\\Terminus\\Commands\\Env\\WakeCommand',
             'Pantheon\\Terminus\\Commands\\Env\\WipeCommand',
+            'Pantheon\\Terminus\\Commands\\Github\\GithubVcsCommand',
             'Pantheon\\Terminus\\Commands\\HTTPS\\InfoCommand',
             'Pantheon\\Terminus\\Commands\\HTTPS\\RemoveCommand',
             'Pantheon\\Terminus\\Commands\\HTTPS\\SetCommand',
@@ -402,9 +404,14 @@ EOD;
             'Pantheon\\Terminus\\Commands\\Multidev\\ListCommand',
             'Pantheon\\Terminus\\Commands\\Multidev\\MergeFromDevCommand',
             'Pantheon\\Terminus\\Commands\\Multidev\\MergeToDevCommand',
+            'Pantheon\\Terminus\\Commands\\NodeLogs\\NodeLogsBaseCommand',
+            'Pantheon\\Terminus\\Commands\\NodeLogs\\NodeLogsBuildGetCommand',
+            'Pantheon\\Terminus\\Commands\\NodeLogs\\NodeLogsRuntimeGetCommand',
             'Pantheon\\Terminus\\Commands\\NewRelic\\DisableCommand',
             'Pantheon\\Terminus\\Commands\\NewRelic\\EnableCommand',
             'Pantheon\\Terminus\\Commands\\NewRelic\\InfoCommand',
+            'Pantheon\\Terminus\\Commands\\NodeBuildRebuildCommand',
+            'Pantheon\\Terminus\\Commands\\NodeBuildsListCommand',
             'Pantheon\\Terminus\\Commands\\Org\\InfoCommand',
             'Pantheon\\Terminus\\Commands\\Org\\ListCommand',
             'Pantheon\\Terminus\\Commands\\Org\\People\\AddCommand',
@@ -418,6 +425,7 @@ EOD;
             'Pantheon\\Terminus\\Commands\\PaymentMethod\\AddCommand',
             'Pantheon\\Terminus\\Commands\\PaymentMethod\\ListCommand',
             'Pantheon\\Terminus\\Commands\\PaymentMethod\\RemoveCommand',
+            'Pantheon\\Terminus\\Commands\\PauseBuildCommand',
             'Pantheon\\Terminus\\Commands\\Plan\\InfoCommand',
             'Pantheon\\Terminus\\Commands\\Plan\\ListCommand',
             'Pantheon\\Terminus\\Commands\\Plan\\SetCommand',
@@ -426,9 +434,12 @@ EOD;
             'Pantheon\\Terminus\\Commands\\Remote\\DrushCommand',
             'Pantheon\\Terminus\\Commands\\Remote\\SSHBaseCommand',
             'Pantheon\\Terminus\\Commands\\Remote\\WPCommand',
+            'Pantheon\\Terminus\\Commands\\ResumeBuildCommand',
             'Pantheon\\Terminus\\Commands\\SSHKey\\AddCommand',
             'Pantheon\\Terminus\\Commands\\SSHKey\\ListCommand',
             'Pantheon\\Terminus\\Commands\\SSHKey\\RemoveCommand',
+            'Pantheon\\Terminus\\Commands\\Search\\DisableCommand',
+            'Pantheon\\Terminus\\Commands\\Search\\EnableCommand',
             'Pantheon\\Terminus\\Commands\\Secret\\Org\\DeleteCommand',
             'Pantheon\\Terminus\\Commands\\Secret\\Org\\ListCommand',
             'Pantheon\\Terminus\\Commands\\Secret\\Org\\SetCommand',
@@ -437,6 +448,7 @@ EOD;
             'Pantheon\\Terminus\\Commands\\Secret\\Site\\ListCommand',
             'Pantheon\\Terminus\\Commands\\Secret\\Site\\LocalGenerateCommand',
             'Pantheon\\Terminus\\Commands\\Secret\\Site\\SetCommand',
+            'Pantheon\\Terminus\\Commands\\SecretsHandlingCommand',
             'Pantheon\\Terminus\\Commands\\Self\\ClearCacheCommand',
             'Pantheon\\Terminus\\Commands\\Self\\ConfigDumpCommand',
             'Pantheon\\Terminus\\Commands\\Self\\ConsoleCommand',
@@ -478,6 +490,9 @@ EOD;
             'Pantheon\\Terminus\\Commands\\Upstream\\Updates\\ListCommand',
             'Pantheon\\Terminus\\Commands\\Upstream\\Updates\\StatusCommand',
             'Pantheon\\Terminus\\Commands\\Upstream\\Updates\\UpdatesCommand',
+            'Pantheon\\Terminus\\Commands\\Vcs\\Connection\\AddCommand',
+            'Pantheon\\Terminus\\Commands\\Vcs\\Connection\\LinkCommand',
+            'Pantheon\\Terminus\\Commands\\Vcs\\Connection\\ListCommand',
             'Pantheon\\Terminus\\Commands\\Workflow\\Info\\InfoBaseCommand',
             'Pantheon\\Terminus\\Commands\\Workflow\\Info\\LogsCommand',
             'Pantheon\\Terminus\\Commands\\Workflow\\Info\\OperationsCommand',

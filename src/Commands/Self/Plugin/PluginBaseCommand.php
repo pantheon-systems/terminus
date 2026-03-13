@@ -369,6 +369,7 @@ abstract class PluginBaseCommand extends TerminusCommand
             $this->runCommand("composer --working-dir=$path init --name=$package_name -n");
             $this->runCommand("composer --working-dir=$path config minimum-stability dev");
             $this->runCommand("composer --working-dir=$path config prefer-stable true");
+            $this->runCommand("composer --working-dir=$path config audit.block-insecure false");
         }
     }
 
