@@ -29,6 +29,7 @@ class PluginDiscovery implements
         'pantheon-systems/terminus-aliases-plugin',
         'pantheon-systems/terminus-node-logs-plugin',
         'pantheon-systems/terminus-repository-plugin',
+        'pantheon-systems/terminus-secrets-manager-plugin',
     ];
 
     /**
