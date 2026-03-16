@@ -1,17 +1,19 @@
 # Change Log
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org)
 
-## 4.1.5-dev
+## 4.1.5 - 2026-03-16
 
 ### Added
 
-- Add `search:enable` and `search:disable` commands for managing search indexing
+- [SITE-5394] Add `search:enable` and `search:disable` commands for managing Elasticsearch search indexing (#2783, #2784)
 
 ### Deprecated
 
 - `solr:enable` and `solr:disable` commands are deprecated in favor of `search:enable` and `search:disable`
 
 ### Fixed
+
+- Empty body should be object, not array (#2780)
 
 ## 4.1.4 - 2026-02-02
 
