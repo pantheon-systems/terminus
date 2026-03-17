@@ -44,7 +44,7 @@ class RepositoryCommandsTest extends TerminusTestBase
 
     /**
      * @test
-     * @covers \Pantheon\Terminus\Commands\NodeBuildsListCommand
+     * @covers \Pantheon\Terminus\Commands\Node\BuildsListCommand
      *
      * @group repository
      * @group long
