@@ -62,36 +62,52 @@ class VerifyCommand extends TerminusCommand implements SiteAwareInterface, Reque
             );
         }
 
-        // Fetch the domain details to check verification status and challenge info.
+        // Poll the domain endpoint to check if verification completed.
+        // The POST triggers async verification, so we need to wait and check.
         $domainUrl = sprintf(
             'sites/%s/environments/%s/domains/%s',
             $site->id,
             $env->id,
             rawurlencode($domain)
         );
-        $domainResponse = $this->request()->request($domainUrl, [
-            'method' => 'get',
-        ]);
-        $data = $domainResponse->getData();
 
-        // Check if already verified.
-        if (
-            is_object($data)
-            && !empty($data->ownership_status)
-            && $data->ownership_status->preprovision_result->status === 'success'
-        ) {
-            $this->log()->notice(
-                'Ownership of {domain} on {site}.{env} has been verified.',
-                [
-                    'domain' => $domain,
-                    'site' => $site->getName(),
-                    'env' => $env->getName(),
-                ]
-            );
-            return;
+        $this->log()->notice('Verifying ownership of {domain}...', ['domain' => $domain]);
+
+        $data = null;
+        for ($i = 0; $i < 12; $i++) {
+            sleep(5);
+            $domainResponse = $this->request()->request($domainUrl, [
+                'method' => 'get',
+            ]);
+            $data = $domainResponse->getData();
+
+            if (
+                is_object($data)
+                && !empty($data->ownership_status)
+                && $data->ownership_status->preprovision_result->status === 'success'
+            ) {
+                $this->log()->notice(
+                    'Ownership of {domain} on {site}.{env} has been verified.',
+                    [
+                        'domain' => $domain,
+                        'site' => $site->getName(),
+                        'env' => $env->getName(),
+                    ]
+                );
+                return;
+            }
+
+            // If status is not in_progress, stop polling — it won't resolve by waiting.
+            if (
+                is_object($data)
+                && !empty($data->ownership_status)
+                && $data->ownership_status->preprovision_result->status !== 'in_progress'
+            ) {
+                break;
+            }
         }
 
-        // Display the DNS challenge info if available.
+        // Verification did not complete — display the DNS challenge info if available.
         $this->log()->warning(
             'Ownership of {domain} on {site}.{env} has not been verified yet.',
             [
