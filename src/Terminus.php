@@ -366,6 +366,7 @@ EOD;
             'Pantheon\\Terminus\\Commands\\Domain\\Primary\\AddCommand',
             'Pantheon\\Terminus\\Commands\\Domain\\Primary\\RemoveCommand',
             'Pantheon\\Terminus\\Commands\\Domain\\RemoveCommand',
+            'Pantheon\\Terminus\\Commands\\Domain\\VerifyCommand',
             'Pantheon\\Terminus\\Commands\\Env\\ClearCacheCommand',
             'Pantheon\\Terminus\\Commands\\Env\\CloneContentCommand',
             'Pantheon\\Terminus\\Commands\\Env\\CodeLogCommand',
