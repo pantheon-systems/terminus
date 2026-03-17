@@ -62,9 +62,24 @@ class VerifyCommand extends TerminusCommand implements SiteAwareInterface, Reque
             );
         }
 
-        $data = $response->getData();
+        // Fetch the domain details to check verification status and challenge info.
+        $domainUrl = sprintf(
+            'sites/%s/environments/%s/domains/%s',
+            $site->id,
+            $env->id,
+            rawurlencode($domain)
+        );
+        $domainResponse = $this->request()->request($domainUrl, [
+            'method' => 'get',
+        ]);
+        $data = $domainResponse->getData();
 
-        if (is_object($data) && isset($data->verified) && $data->verified) {
+        // Check if already verified.
+        if (
+            is_object($data)
+            && !empty($data->ownership_status)
+            && $data->ownership_status->preprovision_result->status === 'success'
+        ) {
             $this->log()->notice(
                 'Ownership of {domain} on {site}.{env} has been verified.',
                 [
@@ -76,37 +91,37 @@ class VerifyCommand extends TerminusCommand implements SiteAwareInterface, Reque
             return;
         }
 
-        // Display the TXT record value if available in the response.
-        if (is_object($data) && isset($data->token)) {
-            $this->log()->warning(
-                'Ownership of {domain} on {site}.{env} has not been verified yet.',
-                [
-                    'domain' => $domain,
-                    'site' => $site->getName(),
-                    'env' => $env->getName(),
-                ]
-            );
+        // Display the DNS challenge info if available.
+        $this->log()->warning(
+            'Ownership of {domain} on {site}.{env} has not been verified yet.',
+            [
+                'domain' => $domain,
+                'site' => $site->getName(),
+                'env' => $env->getName(),
+            ]
+        );
+
+        if (
+            is_object($data)
+            && !empty($data->acme_preauthorization_challenges)
+            && !empty($data->acme_preauthorization_challenges->{'dns-01'})
+        ) {
+            $dnsChallenge = $data->acme_preauthorization_challenges->{'dns-01'};
             $this->log()->notice(
-                'Add the following TXT record to your DNS provider:' . PHP_EOL
-                . '  Name:  _acme-challenge.{domain}' . PHP_EOL
-                . '  Value: {token}',
+                'Add the following TXT record to your DNS provider:' . PHP_EOL . PHP_EOL
+                . '  Name:  {key}' . PHP_EOL
+                . '  Value: {value}' . PHP_EOL,
                 [
-                    'domain' => $domain,
-                    'token' => $data->token,
+                    'key' => $dnsChallenge->verification_key ?? '_acme-challenge.' . $domain,
+                    'value' => $dnsChallenge->verification_value,
                 ]
             );
             $this->log()->notice(
                 'Once the TXT record is in place, re-run this command to verify.'
             );
         } else {
-            $this->log()->warning(
-                'Ownership of {domain} on {site}.{env} has not been verified yet. '
-                . 'Ensure your DNS TXT record is configured correctly.',
-                [
-                    'domain' => $domain,
-                    'site' => $site->getName(),
-                    'env' => $env->getName(),
-                ]
+            $this->log()->notice(
+                'Ensure your DNS TXT record is configured correctly.'
             );
         }
     }
