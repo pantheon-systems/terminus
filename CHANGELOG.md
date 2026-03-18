@@ -1,7 +1,7 @@
 # Change Log
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org)
 
-## 4.2.0-rc.1 - 2026-03-16
+## 4.2.0-rc.1 - 2026-03-18
 
 ### Added
 
@@ -9,6 +9,8 @@ All notable changes to this project will be documented in this file. This projec
 - Merge terminus-repository-plugin into core (#2792)
 - Merge terminus-node-logs-plugin into core (#2791)
 - Add `search:enable` and `search:disable` commands for managing search indexing (#2783, #2784)
+- Add `domain:verify` command for domain ownership verification (#2790)
+- Add `node:builds:wait` command for STA site deployments (#2798)
 
 ### Deprecated
 
