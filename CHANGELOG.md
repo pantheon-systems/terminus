@@ -1,6 +1,12 @@
 # Change Log
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org)
 
+## 4.1.6 - 2026-03-18
+
+### Added
+
+- Add `domain:verify` command for domain ownership verification (#2790)
+
 ## 4.1.5 - 2026-03-16
 
 ### Added
