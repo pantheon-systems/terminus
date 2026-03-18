@@ -261,6 +261,7 @@ EOD;
         $container->add(\Pantheon\Terminus\Models\Backup::class);
         $container->add(\Pantheon\Terminus\Models\Binding::class);
         $container->add(\Pantheon\Terminus\Models\Branch::class);
+        $container->add(\Pantheon\Terminus\Models\Build::class);
         $container->add(\Pantheon\Terminus\Models\Commit::class);
         $container->add(\Pantheon\Terminus\Models\DNSRecord::class);
         $container->add(\Pantheon\Terminus\Models\Domain::class);
@@ -300,6 +301,7 @@ EOD;
         $container->add(\Pantheon\Terminus\Collections\Backups::class);
         $container->add(\Pantheon\Terminus\Collections\Bindings::class);
         $container->add(\Pantheon\Terminus\Collections\Branches::class);
+        $container->add(\Pantheon\Terminus\Collections\Builds::class);
         $container->add(\Pantheon\Terminus\Collections\Commits::class);
         $container->add(\Pantheon\Terminus\Collections\DNSRecords::class);
         $container->add(\Pantheon\Terminus\Collections\Domains::class);
@@ -405,14 +407,15 @@ EOD;
             'Pantheon\\Terminus\\Commands\\Multidev\\ListCommand',
             'Pantheon\\Terminus\\Commands\\Multidev\\MergeFromDevCommand',
             'Pantheon\\Terminus\\Commands\\Multidev\\MergeToDevCommand',
-            'Pantheon\\Terminus\\Commands\\NodeLogs\\NodeLogsBaseCommand',
-            'Pantheon\\Terminus\\Commands\\NodeLogs\\NodeLogsBuildGetCommand',
-            'Pantheon\\Terminus\\Commands\\NodeLogs\\NodeLogsRuntimeGetCommand',
             'Pantheon\\Terminus\\Commands\\NewRelic\\DisableCommand',
             'Pantheon\\Terminus\\Commands\\NewRelic\\EnableCommand',
             'Pantheon\\Terminus\\Commands\\NewRelic\\InfoCommand',
-            'Pantheon\\Terminus\\Commands\\NodeBuildRebuildCommand',
-            'Pantheon\\Terminus\\Commands\\NodeBuildsListCommand',
+            'Pantheon\\Terminus\\Commands\\NodeLogs\\NodeLogsBaseCommand',
+            'Pantheon\\Terminus\\Commands\\NodeLogs\\NodeLogsBuildGetCommand',
+            'Pantheon\\Terminus\\Commands\\NodeLogs\\NodeLogsRuntimeGetCommand',
+            'Pantheon\\Terminus\\Commands\\Node\\BuildsListCommand',
+            'Pantheon\\Terminus\\Commands\\Node\\BuildsRebuildCommand',
+            'Pantheon\\Terminus\\Commands\\Node\\BuildsWaitCommand',
             'Pantheon\\Terminus\\Commands\\Org\\InfoCommand',
             'Pantheon\\Terminus\\Commands\\Org\\ListCommand',
             'Pantheon\\Terminus\\Commands\\Org\\People\\AddCommand',
@@ -423,10 +426,10 @@ EOD;
             'Pantheon\\Terminus\\Commands\\Org\\Site\\RemoveCommand',
             'Pantheon\\Terminus\\Commands\\Org\\Upstream\\ListCommand',
             'Pantheon\\Terminus\\Commands\\Owner\\SetCommand',
+            'Pantheon\\Terminus\\Commands\\PauseBuildCommand',
             'Pantheon\\Terminus\\Commands\\PaymentMethod\\AddCommand',
             'Pantheon\\Terminus\\Commands\\PaymentMethod\\ListCommand',
             'Pantheon\\Terminus\\Commands\\PaymentMethod\\RemoveCommand',
-            'Pantheon\\Terminus\\Commands\\PauseBuildCommand',
             'Pantheon\\Terminus\\Commands\\Plan\\InfoCommand',
             'Pantheon\\Terminus\\Commands\\Plan\\ListCommand',
             'Pantheon\\Terminus\\Commands\\Plan\\SetCommand',

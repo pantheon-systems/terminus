@@ -1,6 +1,6 @@
 <?php
 
-namespace Pantheon\Terminus\Commands;
+namespace Pantheon\Terminus\Commands\Node;
 
 use Pantheon\Terminus\Commands\Import\SiteCommand;
 use Pantheon\Terminus\Commands\StructuredListTrait;
@@ -13,7 +13,7 @@ use Pantheon\Terminus\Build\BuildAwareTrait;
 /**
  * Fetch the list of builds for a site.
  */
-class NodeBuildsListCommand extends SiteCommand implements SiteAwareInterface, RequestAwareInterface
+class BuildsListCommand extends SiteCommand implements SiteAwareInterface, RequestAwareInterface
 {
     use BuildAwareTrait;
     use SiteAwareTrait;
@@ -84,7 +84,7 @@ class NodeBuildsListCommand extends SiteCommand implements SiteAwareInterface, R
      *
      * @return array|string|null
      */
-    private function getFromUrl(string $url)
+    protected function getFromUrl(string $url)
     {
         $protocol = $this->getConfig()->get('protocol');
         $host = $this->getConfig()->get('host');

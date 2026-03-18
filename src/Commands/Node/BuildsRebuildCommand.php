@@ -1,6 +1,6 @@
 <?php
 
-namespace Pantheon\Terminus\Commands;
+namespace Pantheon\Terminus\Commands\Node;
 
 use Pantheon\Terminus\Commands\TerminusCommand;
 use Pantheon\Terminus\Exceptions\TerminusException;
@@ -10,11 +10,11 @@ use Pantheon\Terminus\Request\RequestAwareInterface;
 use Pantheon\Terminus\VcsApi\VcsClientAwareTrait;
 
 /**
- * Class NodeBuildRebuildCommand.
+ * Class BuildsRebuildCommand.
  *
- * @package Pantheon\Terminus\Commands
+ * @package Pantheon\Terminus\Commands\Node
  */
-class NodeBuildRebuildCommand extends TerminusCommand implements SiteAwareInterface, RequestAwareInterface
+class BuildsRebuildCommand extends TerminusCommand implements SiteAwareInterface, RequestAwareInterface
 {
     use SiteAwareTrait;
     use VcsClientAwareTrait;
