@@ -1,6 +1,12 @@
 # Change Log
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org)
 
+## 4.1.7 - 2026-03-23
+
+### Fixed
+
+- Fix `domain:verify` to display DNS challenge details when unverified and poll for verification status (#2797)
+
 ## 4.1.6 - 2026-03-18
 
 ### Added
