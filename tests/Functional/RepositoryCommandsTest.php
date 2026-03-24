@@ -19,6 +19,7 @@ class RepositoryCommandsTest extends TerminusTestBase
     {
         $this->assertCommandExists('node:builds:list');
         $this->assertCommandExists('node:builds:rebuild');
+        $this->assertCommandExists('node:builds:rollback');
         $this->assertCommandExists('vcs:connection:add');
         $this->assertCommandExists('vcs:connection:link');
         $this->assertCommandExists('vcs:connection:list');
