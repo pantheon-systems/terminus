@@ -27,6 +27,7 @@ class Build extends TerminusModel
             'status' => $data->status,
             'branch' => $data->environment->branch,
             'commit' => $data->commit ?? '',
+            'deployed' => !empty($data->release_id) ? 'true' : 'false',
             'created' => $data->created,
         ];
     }
