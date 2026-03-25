@@ -2,8 +2,6 @@
 
 namespace Pantheon\Terminus\Commands\Node;
 
-use GuzzleHttp\Exception\ClientException;
-use GuzzleHttp\Exception\ServerException;
 use Pantheon\Terminus\Commands\TerminusCommand;
 use Pantheon\Terminus\Exceptions\TerminusException;
 use Pantheon\Terminus\Site\SiteAwareInterface;
@@ -105,38 +103,18 @@ class BuildsRollbackCommand extends TerminusCommand implements SiteAwareInterfac
             ],
         ];
 
-        try {
-            $this->request()->request($url, $options);
-        } catch (ClientException $e) {
-            $message = $this->extractErrorMessage($e);
+        $result = $this->request()->request($url, $options);
+        $statusCode = $result->getStatusCode();
+
+        if ($statusCode < 200 || $statusCode >= 300) {
+            $data = $result->getData();
+            $message = 'Rollback request failed.';
+            if (is_object($data) && !empty($data->error)) {
+                $message = $data->error;
+            } elseif (is_string($data) && !empty(trim($data))) {
+                $message = trim($data);
+            }
             throw new TerminusException($message);
-        } catch (ServerException $e) {
-            $message = $this->extractErrorMessage($e);
-            throw new TerminusException($message);
         }
-    }
-
-    /**
-     * Extract an error message from a Guzzle exception response body.
-     *
-     * @param \GuzzleHttp\Exception\RequestException $e
-     *
-     * @return string
-     */
-    private function extractErrorMessage($e): string
-    {
-        $response = $e->getResponse();
-        if ($response === null) {
-            return $e->getMessage();
-        }
-
-        $body = (string) $response->getBody();
-        // Try to extract a message from the response body (plain text from http.Error)
-        $trimmed = trim($body);
-        if (!empty($trimmed)) {
-            return $trimmed;
-        }
-
-        return sprintf('Request failed with status code %d.', $response->getStatusCode());
     }
 }
