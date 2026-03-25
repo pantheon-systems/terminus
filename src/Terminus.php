@@ -415,6 +415,7 @@ EOD;
             'Pantheon\\Terminus\\Commands\\NodeLogs\\NodeLogsRuntimeGetCommand',
             'Pantheon\\Terminus\\Commands\\Node\\BuildsListCommand',
             'Pantheon\\Terminus\\Commands\\Node\\BuildsRebuildCommand',
+            'Pantheon\\Terminus\\Commands\\Node\\BuildsRollbackCommand',
             'Pantheon\\Terminus\\Commands\\Node\\BuildsWaitCommand',
             'Pantheon\\Terminus\\Commands\\Org\\InfoCommand',
             'Pantheon\\Terminus\\Commands\\Org\\ListCommand',
