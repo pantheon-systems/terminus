@@ -26,9 +26,9 @@ jobs:
     name: Checkout & build Phar
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3.6.0
       - name: Save repo content as artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: full-workspace
           path: ${{ github.workspace }}
@@ -45,7 +45,7 @@ jobs:
           export PATH=~/box/vendor/bin:$PATH
           composer phar:build
       - name: Save terminus.phar as artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: terminus-phar
           path: terminus.phar
@@ -80,32 +80,32 @@ jobs:
     needs: [ checkout_build ]
     steps:
       - name: Install SSH key
-        uses: webfactory/ssh-agent@v0.9.0
+        uses: webfactory/ssh-agent@a6f90b1f127823b31d4d4a8d96047790581349bd # v0.9.1
         with:
           ssh-private-key: ${{ secrets.TERMINUS_SITE_OWNER_SSH_PRIVATE_KEY }}
       - run: brew update && brew upgrade icu4c
         if: runner.os == 'macOS'
         continue-on-error: true
       - name: Setup PHP with PECL extension
-        uses: shivammathur/setup-php@v2
+        uses: shivammathur/setup-php@44454db4f0199b8b9685a5d763dc37cbf79108e1 # v2
         with:
           php-version: ${{ matrix.php-versions }}
           extensions: gd, mbstring, zip, ssh2-1.4.1, pcov
           coverage: pcov
           ini-values: error_reporting=E_ALL
       - name: Download repo content from artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
         with:
           name: full-workspace
       - name: Download terminus.phar as artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
         with:
           name: terminus-phar
       - name: Install Composer Dependencies
         run: composer install --no-interaction --prefer-dist
       - name: Setup tmate session
         if: ${{ github.event.inputs.tmate_enabled == 1 }}
-        uses: mxschmitt/action-tmate@v3
+        uses: mxschmitt/action-tmate@c0afd6f790e3a5564914980036ebf83216678101 # v3.23
       - name: Functional Tests (short)
         if: ${{ github.event_name == 'push' || github.event_name == 'schedule' || github.event.inputs.functional_tests_group == 'all' }}
         run: composer test:short
@@ -133,11 +133,11 @@ jobs:
     if: ${{ startsWith(github.ref, 'refs/tags/')  && github.repository == 'pantheon-systems/terminus' }}
     steps:
       - name: Download terminus.phar as artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
         with:
           name: terminus-phar
       - name: Release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@de2c0eb89ae2a093876385947365aca7b0e5f844 # v1
         with:
           files: terminus.phar
         env:
@@ -150,7 +150,7 @@ jobs:
     if: ${{ startsWith(github.ref, 'refs/tags/')  && github.repository == 'pantheon-systems/terminus' }}
     steps:
       - name: Bump Homebrew formula
-        uses: dawidd6/action-homebrew-bump-formula@v3
+        uses: dawidd6/action-homebrew-bump-formula@baf2b60c51fc1f8453c884b0c61052668a71bd1d # v3.11.0
         with:
           token: ${{secrets.HOMEBREW_GITHUB_API_TOKEN}}
           tap: pantheon-systems/external
