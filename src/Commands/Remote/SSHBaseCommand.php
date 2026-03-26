@@ -10,6 +10,7 @@ use Pantheon\Terminus\Models\Site;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 use Pantheon\Terminus\Helpers\Utility\TraceId;
+use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Process\Process;
 
 /**
@@ -320,7 +321,7 @@ abstract class SSHBaseCommand extends TerminusCommand implements SiteAwareInterf
             if (Process::ERR === $type) {
                 $stderr->write($buffer);
             } else {
-                $output->write($buffer);
+                $output->write($buffer, false, OutputInterface::OUTPUT_RAW);
             }
         };
     }
