@@ -35,6 +35,7 @@ class BuildsListCommand extends SiteCommand implements SiteAwareInterface, Reque
      *   branch: Branch/Tag
      *   commit: Commit
      *   deployed: Deployed
+     *   active: Active
      *   created: Created
      *   completed: Completed
      *
