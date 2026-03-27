@@ -11,7 +11,7 @@ use Pantheon\Terminus\Site\SiteAwareTrait;
 use Pantheon\Terminus\Build\BuildAwareTrait;
 
 /**
- * Fetch the list of builds for a site.
+ * List builds and their deployment status for a site environment.
  */
 class BuildsListCommand extends SiteCommand implements SiteAwareInterface, RequestAwareInterface
 {
@@ -21,7 +21,12 @@ class BuildsListCommand extends SiteCommand implements SiteAwareInterface, Reque
     use StructuredListTrait;
 
     /**
-     * Print the list of builds to the log.
+     * List builds and their deployment status for a site environment.
+     *
+     * The "deployed" field indicates whether the build was successfully deployed.
+     * The "active" field indicates whether the build is the one currently serving
+     * traffic in the environment. After a rollback, the active build may differ
+     * from the most recently deployed build.
      *
      * @authorize
      * @filter-output
