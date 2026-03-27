@@ -85,11 +85,6 @@ class MetricsCommand extends TerminusCommand implements SiteAwareInterface
         ]
     ) {
         $site = $this->getSiteById($site_env);
-        if ($site->isNodejs()) {
-            throw new TerminusException(
-                'Metrics are not yet available for Node.js sites.'
-            );
-        }
         $env = $this->getOptionalEnv($site_env);
         if (null !== $env) {
             $metrics = $env->getEnvironmentMetrics()
