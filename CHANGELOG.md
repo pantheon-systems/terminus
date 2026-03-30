@@ -1,6 +1,12 @@
 # Change Log
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org)
 
+## 4.1.8 - 2026-03-30
+
+### Changed
+
+- [NCX-77] Warn users when creating sites without `--org`, ahead of Q2 2026 requirement that all sites belong to an organization (#2786)
+
 ## 4.1.7 - 2026-03-23
 
 ### Fixed
