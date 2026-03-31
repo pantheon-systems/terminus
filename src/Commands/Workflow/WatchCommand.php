@@ -15,7 +15,10 @@ class WatchCommand extends TerminusCommand implements SiteAwareInterface
 {
     use SiteAwareTrait;
 
-    public const WORKFLOWS_WATCH_INTERVAL = 5;
+    public const WORKFLOWS_WATCH_INTERVAL_FAST  = 10; // poll interval for the first ~5 minutes
+    public const WORKFLOWS_WATCH_INTERVAL_SLOW  = 30; // poll interval after warmup
+    public const WORKFLOWS_WATCH_WARMUP         = 30; // number of fast polls before slowing down (~5 min)
+    public const WORKFLOWS_WATCH_DEFAULT_TIMEOUT = 15; // default timeout in minutes (0 = unlimited)
     /**
      * @var array We keep track of workflows that have been printed. This is necessary because the local clock may
      * drift from the server's clock, causing events to be printed twice.
@@ -34,32 +37,38 @@ class WatchCommand extends TerminusCommand implements SiteAwareInterface
      *
      * @command workflow:watch
      *
-     * @option integer $checks Times to query
+     * @option integer $timeout Minutes before giving up (default: 15). Pass 0 for no limit.
      *
      * @usage <site> Streams new and finished workflows from <site> to the console.
      *
      * @param string $site_id Site name
-     * @param null[] $options
+     * @param array $options
      *
      * @throws \GuzzleHttp\Exception\GuzzleException
      * @throws \Pantheon\Terminus\Exceptions\TerminusException
      * @throws \Psr\Container\ContainerExceptionInterface
      * @throws \Psr\Container\NotFoundExceptionInterface
      */
-    public function watch($site_id, $options = ['checks' => null])
+    public function watch($site_id, $options = ['timeout' => self::WORKFLOWS_WATCH_DEFAULT_TIMEOUT])
     {
         $site = $this->getSiteById($site_id);
-        if (!is_null($number_of_checks = $options['checks'])) {
-            $number_of_checks = (int)$number_of_checks;
-        }
+        $timeout  = (int)$options['timeout'] * 60; // convert minutes to seconds; 0 = unlimited
+        $poll_count = 0;
+        $elapsed    = 0;
 
         $this->log()->notice('Watching workflows...');
         $site->getWorkflows()->fetchWithOperations();
         while (true) {
+            $poll_count++;
+            $interval = ($poll_count <= self::WORKFLOWS_WATCH_WARMUP)
+                ? self::WORKFLOWS_WATCH_INTERVAL_FAST
+                : self::WORKFLOWS_WATCH_INTERVAL_SLOW;
+            $this->sleep($interval);
+            $elapsed += $interval;
+
+            // Clear cached data
             $last_wf_created_at = $site->getWorkflows()->lastCreatedAt();
             $last_wf_finished_at = $site->getWorkflows()->lastFinishedAt();
-            sleep(self::WORKFLOWS_WATCH_INTERVAL);
-            // Clear cached data
             $site->getWorkflows()->setData([]);
             $site->getWorkflows()->fetchWithOperations();
 
@@ -80,7 +89,12 @@ class WatchCommand extends TerminusCommand implements SiteAwareInterface
                     }
                 }
             }
-            if (!is_null($number_of_checks) && (--$number_of_checks < 1)) {
+
+            if ($timeout > 0 && $elapsed >= $timeout) {
+                $this->log()->warning(
+                    'Workflow watch timed out after {minutes} minutes. Use --timeout=0 for no limit.',
+                    ['minutes' => $timeout / 60]
+                );
                 break;
             }
         }
@@ -162,5 +176,15 @@ class WatchCommand extends TerminusCommand implements SiteAwareInterface
     protected function startedNoticeAlreadyEmitted($workflow)
     {
         return in_array($workflow->id, $this->started);
+    }
+
+    /**
+     * Pause execution for a number of seconds. Extracted for testability.
+     *
+     * @param int $seconds
+     */
+    protected function sleep(int $seconds): void
+    {
+        sleep($seconds);
     }
 }
