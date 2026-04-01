@@ -762,19 +762,28 @@ class CreateCommand extends SiteCommand implements RequestAwareInterface, SiteAw
             }
         }
 
-        // Wait for the dev environment to be ready.
-        try {
-            $this->waitForDevEnvironment($site, $preferred_platform);
-        } catch (TerminusException $e) {
-            // If the dev environment fails to wake, log a warning.
-            $this->log()->warning(
-                'Error waiting for dev environment to wake: {error_message}',
-                ['error_message' => $e->getMessage()]
+        // Wait for the dev environment to be ready (COS sites only).
+        // For STA (Node.js) sites, skip waiting and suggest using `node:builds:wait`.
+        if ($preferred_platform === 'sta') {
+            $this->log()->notice(
+                'Site creation succeeded! The dev environment build is in progress.'
+                    . ' You can watch the build status using: terminus node:builds:wait {site}.dev',
+                ['site' => $site->getName()]
             );
-            $this->log()->warning(
-                'The site and repository have been created,'
-                    . ' but the dev environment may be not yet available.'
-            );
+        } else {
+            try {
+                $this->waitForDevEnvironment($site, $preferred_platform);
+            } catch (TerminusException $e) {
+                // If the dev environment fails to wake, log a warning.
+                $this->log()->warning(
+                    'Error waiting for dev environment to wake: {error_message}',
+                    ['error_message' => $e->getMessage()]
+                );
+                $this->log()->warning(
+                    'The site and repository have been created,'
+                        . ' but the dev environment may be not yet available.'
+                );
+            }
         }
 
         // Final Success Message
