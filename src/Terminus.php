@@ -445,6 +445,7 @@ EOD;
             'Pantheon\\Terminus\\Commands\\SSHKey\\RemoveCommand',
             'Pantheon\\Terminus\\Commands\\Search\\DisableCommand',
             'Pantheon\\Terminus\\Commands\\Search\\EnableCommand',
+            'Pantheon\\Terminus\\Commands\\Search\\StatusCommand',
             'Pantheon\\Terminus\\Commands\\Secret\\Org\\DeleteCommand',
             'Pantheon\\Terminus\\Commands\\Secret\\Org\\ListCommand',
             'Pantheon\\Terminus\\Commands\\Secret\\Org\\SetCommand',
