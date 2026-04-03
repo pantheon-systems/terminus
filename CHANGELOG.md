@@ -1,6 +1,12 @@
 # Change Log
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org)
 
+## 4.2.0-rc.2 - 2026-04-02
+
+### Fixed
+
+- Fix PHP 8.2 deprecation warnings for dynamic property creation in Site model (#2813)
+
 ## 4.2.0-rc.1 - 2026-03-18
 
 ### Added
