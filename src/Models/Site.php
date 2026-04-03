@@ -87,6 +87,11 @@ class Site extends TerminusModel implements
     protected $solr;
 
     /**
+     * @var Elasticsearch
+     */
+    protected $elasticsearch;
+
+    /**
      * @var SiteUserMemberships
      */
     protected $user_memberships;
@@ -402,6 +407,20 @@ class Site extends TerminusModel implements
             $this->solr = $this->getContainer()->get($nickname);
         }
         return $this->solr;
+    }
+
+    /**
+     * @return Elasticsearch
+     */
+    public function getElasticsearch()
+    {
+        if (empty($this->elasticsearch)) {
+            $nickname = \uniqid(__FUNCTION__ . "-");
+            $this->getContainer()->add($nickname, Elasticsearch::class)
+                ->addArguments([null, ['site' => $this]]);
+            $this->elasticsearch = $this->getContainer()->get($nickname);
+        }
+        return $this->elasticsearch;
     }
 
     /**
