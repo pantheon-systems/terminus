@@ -160,6 +160,28 @@ class SiteCommandsTest extends TerminusTestBase
 
     /**
      * @test
+     * @covers \Pantheon\Terminus\Commands\Site\InfoCommand
+     *
+     * @group site
+     * @group short
+     */
+    public function testSiteInfoIncludesObjectCacheAndSearch()
+    {
+        $siteInfo = $this->terminusJsonResponse(sprintf('site:info %s', $this->getSiteName()));
+        $this->assertIsArray($siteInfo);
+        $this->assertArrayHasKey('object_cache', $siteInfo);
+        $this->assertIsBool($siteInfo['object_cache']);
+        $this->assertArrayHasKey('search', $siteInfo);
+        $this->assertContains($siteInfo['search'], [
+            'Elasticsearch',
+            'Elasticsearch, Solr',
+            'Solr',
+            'Disabled',
+        ]);
+    }
+
+    /**
+     * @test
      * @covers \Pantheon\Terminus\Commands\Site\LabelCommand
      *
      * @group site

@@ -1,6 +1,12 @@
 # Change Log
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org)
 
+## 4.2.0-rc.2 - 2026-04-02
+
+### Added
+
+- Add Object Cache and Search status rows to `site:info` output (#2812)
+
 ## 4.2.0-rc.1 - 2026-03-18
 
 ### Added
