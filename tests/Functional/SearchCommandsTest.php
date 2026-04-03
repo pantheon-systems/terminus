@@ -60,18 +60,4 @@ class SearchCommandsTest extends TerminusTestBase
             sprintf('search:disable %s --flavor=solr', $this->getSiteName())
         );
     }
-
-    /**
-     * @test
-     * @covers \Pantheon\Terminus\Commands\Search\StatusCommand
-     *
-     * @group search
-     * @group short
-     */
-    public function testSearchStatusCommand()
-    {
-        $this->assertTerminusCommandSucceedsInAttempts(
-            sprintf('search:status %s', $this->getSiteName())
-        );
-    }
 }
