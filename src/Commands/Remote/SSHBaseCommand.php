@@ -307,20 +307,19 @@ abstract class SSHBaseCommand extends TerminusCommand implements SiteAwareInterf
     }
 
     /**
-     * Returns the output callback for the process.
+     * Returns the output callback for the process. This is only
+     * used when tty mode is false (e.g. in interactive mode),
+     * as the tty already echos output streams when in use.
      *
      * @return \Closure
      */
     private function getOutputCallback()
     {
-        $output = $this->output();
-        $stderr = $this->stderr();
-
         return function ($type, $buffer) use ($output, $stderr) {
             if (Process::ERR === $type) {
-                $stderr->write($buffer);
+                fwrite(STDERR, $buffer);
             } else {
-                $output->write($buffer);
+                fwrite(STDOUT, $buffer);
             }
         };
     }
