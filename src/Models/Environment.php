@@ -1080,8 +1080,8 @@ class Environment extends TerminusModel implements
 
         $wakeUrl = "https://{$domain->id}/pantheon_healthcheck";
         if ($this->getSite()->isNodejs()) {
-            // For Node.js sites, we use the root path for the health check.
-            $wakeUrl = "https://{$domain->id}";
+            // For Node.js sites, we use a different check.
+            $wakeUrl = "https://{$domain->id}/pantheon-platform/readycheck";
         }
 
         while ($attempt < $maxRetries && !$success) {
