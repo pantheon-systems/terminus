@@ -1,6 +1,14 @@
 # Change Log
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org)
 
+## [Unreleased]
+
+### Changed
+
+- `workflow:watch` now uses a two-phase poll interval: 10s for the first ~5 minutes (30 polls), then 30s steady-state (#)
+- `workflow:watch` now times out after 15 minutes by default instead of running indefinitely; use `--timeout=<minutes>` to adjust, or `--timeout=0` for no limit (#)
+- `workflow:watch` `--checks` option replaced by `--timeout` (in minutes) (#)
+
 ## 4.2.0-rc.1 - 2026-03-18
 
 ### Added
