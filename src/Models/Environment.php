@@ -1095,7 +1095,6 @@ class Environment extends TerminusModel implements
                 if ($success) {
                     return [
                         'success' => true,
-                        'styx' => $response['headers']['X-Pantheon-Styx-Hostname'],
                         'response' => $response,
                         'target' => $domain->id,
                     ];
