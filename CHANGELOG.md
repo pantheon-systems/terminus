@@ -1,6 +1,13 @@
 # Change Log
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org)
 
+## 4.1.9 - 2026-04-08
+
+### Fixed
+
+- Fix SSH command output formatting when streaming (#2814)
+- Fix `env:wake` by removing X-Pantheon-Styx-Hostname header requirement (#2815)
+
 ## 4.1.8 - 2026-03-30
 
 ### Changed
