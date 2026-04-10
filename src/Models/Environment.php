@@ -1080,8 +1080,8 @@ class Environment extends TerminusModel implements
 
         $wakeUrl = "https://{$domain->id}/pantheon_healthcheck";
         if ($this->getSite()->isNodejs()) {
-            // For Node.js sites, we use the root path for the health check.
-            $wakeUrl = "https://{$domain->id}";
+            // For Node.js sites, we use a different check.
+            $wakeUrl = "https://{$domain->id}/pantheon-platform/readycheck";
         }
 
         while ($attempt < $maxRetries && !$success) {
@@ -1095,7 +1095,6 @@ class Environment extends TerminusModel implements
                 if ($success) {
                     return [
                         'success' => true,
-                        'styx' => $response['headers']['X-Pantheon-Styx-Hostname'],
                         'response' => $response,
                         'target' => $domain->id,
                     ];
