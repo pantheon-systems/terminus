@@ -766,8 +766,9 @@ class CreateCommand extends SiteCommand implements RequestAwareInterface, SiteAw
         // For STA (Node.js) sites, skip waiting and suggest using `node:builds:wait`.
         if ($preferred_platform === 'sta') {
             $this->log()->notice(
-                'Site creation succeeded! The dev environment build is in progress.'
-                    . ' You can watch the build status using: terminus node:builds:wait {site}.dev',
+                'Site created successfully.'
+                    . ' Push a commit to the connected Git repository to trigger your first build.'
+                    . ' You can then watch the build status using: terminus node:builds:wait {site}.dev',
                 ['site' => $site->getName()]
             );
         } else {
