@@ -1,7 +1,7 @@
 # Change Log
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org)
 
-## 4.2.0-rc.1 - 2026-03-18
+## 4.2.0 - 2026-04-13
 
 ### Added
 
@@ -11,6 +11,11 @@ All notable changes to this project will be documented in this file. This projec
 - Add `search:enable` and `search:disable` commands for managing search indexing (#2783, #2784)
 - Add `domain:verify` command for domain ownership verification (#2790)
 - Add `node:builds:wait` command for STA site deployments (#2798)
+- Add `node:builds:rollback` command (#2803)
+- Add active column to builds list command (#2807)
+- Add deployed field to builds command (#2801)
+- Skip waiting for dev environment on Node.js site creation (#2810)
+- Allow node sites to use metrics command (#2806)
 
 ### Deprecated
 
@@ -19,6 +24,15 @@ All notable changes to this project will be documented in this file. This projec
 ### Fixed
 
 - Empty body should be object, not array (#2780)
+- Fix domain:verify to display DNS challenge details when unverified (#2797)
+- Do not use output formatter when streaming ssh output (#2814)
+- Remove X-Pantheon-Styx-Hostname header requirement from env:wake (#2815)
+- Update check in env:wake for node sites (#2816)
+- Update Node.js site creation notice to reflect actual build trigger (#2819)
+
+### Changed
+
+- Update and pin GitHub Actions to latest versions (#2753)
 
 ## 4.1.4 - 2026-02-02
 
