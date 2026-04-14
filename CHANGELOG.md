@@ -10,8 +10,6 @@ All notable changes to this project will be documented in this file. This projec
 - Merge terminus-secrets-manager-plugin into core (#2764)
 - Merge terminus-repository-plugin into core (#2792)
 - Merge terminus-node-logs-plugin into core (#2791)
-- Add `search:enable` and `search:disable` commands for managing search indexing (#2783, #2784)
-- Add `domain:verify` command for domain ownership verification (#2790)
 - Add `node:builds:wait` command for STA site deployments (#2798)
 - Add `node:builds:rollback` command (#2803)
 - Add active column to builds list command (#2807)
@@ -19,16 +17,8 @@ All notable changes to this project will be documented in this file. This projec
 - Skip waiting for dev environment on Node.js site creation (#2810)
 - Allow node sites to use metrics command (#2806)
 
-### Deprecated
-
-- `solr:enable` and `solr:disable` commands are deprecated in favor of `search:enable` and `search:disable`
-
 ### Fixed
 
-- Empty body should be object, not array (#2780)
-- Fix domain:verify to display DNS challenge details when unverified (#2797)
-- Do not use output formatter when streaming ssh output (#2814)
-- Remove X-Pantheon-Styx-Hostname header requirement from env:wake (#2815)
 - Update check in env:wake for node sites (#2816)
 - Update Node.js site creation notice to reflect actual build trigger (#2819)
 
