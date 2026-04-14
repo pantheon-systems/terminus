@@ -94,7 +94,7 @@ class Site extends TerminusModel implements
     /**
      * @var SiteFramework
      */
-    protected $framework;
+    public $framework;
 
     /**
      * @var SiteMetrics
