@@ -99,7 +99,7 @@ class Site extends TerminusModel implements
     /**
      * @var SiteMetrics
      */
-    protected $site_metrics;
+    public $site_metrics;
 
     /**
      * @var SiteUserMemberships
