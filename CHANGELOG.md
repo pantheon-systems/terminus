@@ -1,30 +1,34 @@
 # Change Log
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org)
 
-## 4.2.0-rc.2 - 2026-04-02
+## 4.2.1-dev
 
 ### Fixed
 
 - Fix PHP 8.2 deprecation warnings for dynamic property creation in Site model (#2813)
 
-## 4.2.0-rc.1 - 2026-03-18
+## 4.2.0 - 2026-04-13
 
 ### Added
 
 - Merge terminus-secrets-manager-plugin into core (#2764)
 - Merge terminus-repository-plugin into core (#2792)
 - Merge terminus-node-logs-plugin into core (#2791)
-- Add `search:enable` and `search:disable` commands for managing search indexing (#2783, #2784)
-- Add `domain:verify` command for domain ownership verification (#2790)
 - Add `node:builds:wait` command for STA site deployments (#2798)
-
-### Deprecated
-
-- `solr:enable` and `solr:disable` commands are deprecated in favor of `search:enable` and `search:disable`
+- Add `node:builds:rollback` command (#2803)
+- Add active column to builds list command (#2807)
+- Add deployed field to builds command (#2801)
+- Skip waiting for dev environment on Node.js site creation (#2810)
+- Allow node sites to use metrics command (#2806)
 
 ### Fixed
 
-- Empty body should be object, not array (#2780)
+- Update check in env:wake for node sites (#2816)
+- Update Node.js site creation notice to reflect actual build trigger (#2819)
+
+### Changed
+
+- Update and pin GitHub Actions to latest versions (#2753)
 
 ## 4.1.4 - 2026-02-02
 
