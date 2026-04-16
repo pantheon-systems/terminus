@@ -40,7 +40,7 @@ class InfoCommand extends SiteCommand
      *     owner: Owner
      *     frozen: Is Frozen?
      *     last_frozen_at: Date Last Frozen
-     *     object_cache: Object Cache
+     *     has_object_cache: Object Cache
      *     search: Search
      * @return PropertyList
      *

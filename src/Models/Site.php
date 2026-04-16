@@ -524,7 +524,7 @@ class Site extends TerminusModel implements
             'region' => $this->get('preferred_zone_label'),
             'frozen' => $this->isFrozen(),
             'last_frozen_at' => $this->get('last_frozen_at'),
-            'object_cache' => !empty($settings->allow_cacheserver),
+            'has_object_cache' => !empty($settings->allow_cacheserver),
             'search' => $this->getSearchStatus($settings),
             'tags' => '',
         ];
