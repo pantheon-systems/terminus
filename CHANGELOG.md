@@ -1,7 +1,11 @@
 # Change Log
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org)
 
-## 4.2.1-dev
+## 4.2.1-rc.1 - 2026-04-29
+
+### Fixed
+
+- Fix premature pagination stop in `org:site:list` when API returns short pages (#2829)
 
 ## 4.2.0 - 2026-04-13
 
