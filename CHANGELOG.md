@@ -7,6 +7,7 @@ All notable changes to this project will be documented in this file. This projec
 
 - Fix premature pagination stop in `org:site:list` when API returns short pages (#2829)
 - Only include `wp_replace_siteurl` if site is WordPress (#2825)
+- Warn when creating sites without `--org` and provide actionable error if creation fails due to missing org (#2786)
 
 ## 4.2.0 - 2026-04-13
 
