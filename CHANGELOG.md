@@ -32,6 +32,41 @@ All notable changes to this project will be documented in this file. This projec
 
 - Update and pin GitHub Actions to latest versions (#2753)
 
+## 4.1.9 - 2026-04-09
+
+### Fixed
+
+- Fix SSH command output formatting when streaming (#2814)
+- Fix `env:wake` by removing X-Pantheon-Styx-Hostname header requirement (#2815)
+
+## 4.1.8 - 2026-03-30
+
+### Changed
+
+- Warn users when creating sites without --org, ahead of Q2 2026 requirement that all sites belong to an organization (#2786)
+
+## 4.1.7 - 2026-03-24
+
+### Fixed
+
+- Fix `domain:verify` to display DNS challenge details when unverified and poll for verification status (#2797)
+
+## 4.1.6 - 2026-03-18
+
+### Added
+
+- Add `search:enable` and `search:disable` commands for managing search indexing (#2783, #2784)
+  - Coming soon to WordPress - these commands are currently non-functional for WP sites until Elasticsearch platform compatibility is added
+- Add `domain:verify` command for domain ownership verification (#2790)
+
+### Deprecated
+
+- `solr:enable` and `solr:disable` commands are deprecated in favor of `search:enable` and `search:disable`
+
+### Fixed
+
+- Empty body should be object, not array (#2780)
+
 ## 4.1.4 - 2026-02-02
 
 ### Added
