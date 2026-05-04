@@ -451,8 +451,6 @@ class CreateCommand extends SiteCommand implements RequestAwareInterface, SiteAw
         $repo_name = $options['repository-name'] ?? $site_name;
         $create_repo = $options['create-repo'];
 
-        // 0. Validate repo name.
-        $this->validateRepositoryName($repo_name);
         $this->log()->debug('Repository name: {repo_name}', ['repo_name' => $repo_name]);
 
 
@@ -642,14 +640,17 @@ class CreateCommand extends SiteCommand implements RequestAwareInterface, SiteAw
             }
         }
 
-        // 5. Validate repository exists (or not) depending on create-repo option.
-        $this->validateRepositoryExistsOrNot(
-            $vcs_client,
+        // 5. Validate repository name and existence via VCS service.
+        $validation = $vcs_client->validateRepositoryName(
             $repo_name,
             $pantheon_org->id,
             $installation_id,
-            $create_repo
+            !$create_repo
         );
+        if (!($validation['data']->valid ?? false)) {
+            $errors = (array) ($validation['data']->errors ?? ['Invalid repository name.']);
+            throw new TerminusException(implode(' ', $errors));
+        }
 
         // 6. Use workflow for all sites
         $this->createExternallyHostedSiteViaWorkflow(
@@ -836,40 +837,6 @@ class CreateCommand extends SiteCommand implements RequestAwareInterface, SiteAw
     }
 
     /**
-     * Validates repository existence based on create_repo flag.
-     */
-    private function validateRepositoryExistsOrNot($vcs_client, $repo_name, $org_id, $installation_id, $create_repo)
-    {
-        $existing_repos = $vcs_client->searchRepositories($repo_name, $org_id, $installation_id);
-        $repo_exists = false;
-        if ($existing_repos['data']) {
-            foreach ($existing_repos['data'] as $repo) {
-                if (strtolower($repo->name) === strtolower($repo_name)) {
-                    $repo_exists = true;
-                    break;
-                }
-            }
-        }
-
-        // If we are creating the repo, it must not exist.
-        if ($create_repo && $repo_exists) {
-            throw new TerminusException(
-                'Repository "{repo}" already exists in the selected VCS organization.'
-                    . ' Cannot create it. Please choose a different repository name.',
-                ['repo' => $repo_name]
-            );
-        }
-        // If we are linking to an existing repo, it must exist.
-        if (!$create_repo && !$repo_exists) {
-            throw new TerminusException(
-                'Repository "{repo}" does not exist in the selected VCS organization.'
-                    . ' Cannot link it. Please create the repository first.',
-                ['repo' => $repo_name]
-            );
-        }
-    }
-
-    /**
      * Clone the repository using the converted SSH URL.
      */
     private function cloneRepo($repo_url)
@@ -1041,44 +1008,6 @@ class CreateCommand extends SiteCommand implements RequestAwareInterface, SiteAw
         }
 
         return true;
-    }
-
-    /**
-     * Validates repository name according to GitHub naming rules.
-     *
-     * @param string $repo_name Repository name to validate
-     * @throws TerminusException if validation fails
-     */
-    protected function validateRepositoryName(string $repo_name): void
-    {
-        if (empty($repo_name)) {
-            throw new TerminusException('Repository name cannot be empty.');
-        }
-        if (strlen($repo_name) > 100) {
-            throw new TerminusException(
-                'Repository name "{name}" is too long. Maximum length is 100 characters.',
-                ['name' => $repo_name]
-            );
-        }
-        if (preg_match('/[^a-zA-Z0-9\-]/', $repo_name)) {
-            throw new TerminusException(
-                'Repository name "{name}" contains invalid characters.'
-                    . ' Only alphanumeric and dashes are allowed.',
-                ['name' => $repo_name]
-            );
-        }
-        if (!preg_match('/[a-zA-Z0-9]/', $repo_name)) {
-            throw new TerminusException(
-                'Repository name "{name}" must contain at least one alphanumeric character.',
-                ['name' => $repo_name]
-            );
-        }
-        if (preg_match('/^-/', $repo_name)) {
-            throw new TerminusException('Repository name "{name}" cannot begin with a dash.', ['name' => $repo_name]);
-        }
-        if (preg_match('/-$/', $repo_name)) {
-            throw new TerminusException('Repository name "{name}" cannot end with a dash.', ['name' => $repo_name]);
-        }
     }
 
     /**
