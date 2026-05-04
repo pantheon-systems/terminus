@@ -61,7 +61,7 @@ class CreateCommand extends SiteCommand implements RequestAwareInterface, SiteAw
      * @param string $site_name Site name (machine name)
      * @param string $label Site label (human-readable name)
      * @param string $upstream_id Upstream name or UUID (e.g., wordpress, drupal-composer-managed)
-     * @option org Organization name, label, or ID. Required if --vcs-provider=github is used.
+     * @option org Organization name, label, or ID (required starting Q2 2026). Required if --vcs-provider=github is used.
      * @option region Specify the service region where the site should be created. See documentation for valid regions.
      * @option vcs-provider VCS provider for the site repository (e.g., github, pantheon). Default is pantheon.
      * @option vcs-org Name of the Github organization containing the repository. Required if --vcs-provider=github is used.
@@ -291,13 +291,27 @@ class CreateCommand extends SiteCommand implements RequestAwareInterface, SiteAw
                 );
             }
         } else {
-             $this->log()->notice('Site will be owned by the current user: {email}', ['email' => $user->get('email')]);
+            $this->log()->warning(
+                'Starting in Q2 2026, all new sites will be required to belong to an organization. '
+                . 'Use the --org option to specify an organization when creating a site.'
+            );
         }
 
         // Create the site record via Pantheon API
         $this->log()->notice('Submitting site creation request to Pantheon API...');
         $workflow = $this->sites()->create($workflow_options);
-        $this->processWorkflow($workflow);
+        try {
+            $this->processWorkflow($workflow);
+        } catch (TerminusException $e) {
+            if (is_null($options['org']) && stripos($e->getMessage(), 'organization') !== false) {
+                throw new TerminusException(
+                    'Site creation requires an organization. Use the --org option to specify one. '
+                    . 'Example: terminus site:create {site_name} {label} {upstream_id} --org=<org-name>',
+                    compact('site_name', 'label', 'upstream_id')
+                );
+            }
+            throw $e;
+        }
         $this->log()->notice('Pantheon site record created successfully.');
 
         // Deploy the upstream CMS code
