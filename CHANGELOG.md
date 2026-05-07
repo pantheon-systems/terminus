@@ -11,6 +11,14 @@ All notable changes to this project will be documented in this file. This projec
 - Only include `wp_replace_siteurl` if site is WordPress (#2825)
 - Warn when creating sites without `--org` and provide actionable error if creation fails due to missing org (#2786)
 
+## 4.2.0-rc.2 - 2026-04-02
+
+### Added
+
+- Add Object Cache and Search status rows to `site:info` output (#2812)
+
+## 4.2.0-rc.1 - 2026-03-18
+
 ## 4.2.0 - 2026-04-13
 
 ### Added
