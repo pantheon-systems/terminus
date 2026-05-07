@@ -3,6 +3,10 @@ All notable changes to this project will be documented in this file. This projec
 
 ## 4.2.2-dev
 
+### Added
+
+- Add Object Cache and Search status rows to `site:info` output (#2812)
+
 ## 4.2.1 - 2026-04-30
 
 ### Fixed

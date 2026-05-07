@@ -524,6 +524,8 @@ class Site extends TerminusModel implements
             'region' => $this->get('preferred_zone_label'),
             'frozen' => $this->isFrozen(),
             'last_frozen_at' => $this->get('last_frozen_at'),
+            'has_object_cache' => !empty($settings->allow_cacheserver),
+            'search' => $this->getSearchStatus($settings),
             'tags' => '',
         ];
         if (isset($this->tags)) {
@@ -622,6 +624,29 @@ class Site extends TerminusModel implements
             );
         }
         return $env->isEvcsSite();
+    }
+
+    /**
+     * Returns a human-readable search status string.
+     *
+     * @param object|null $settings
+     * @return string
+     */
+    private function getSearchStatus($settings): string
+    {
+        $solr = !empty($settings->allow_indexserver);
+        $es = !empty($settings->allow_elasticsearch);
+
+        if ($es && $solr) {
+            return 'Elasticsearch, Solr';
+        }
+        if ($es) {
+            return 'Elasticsearch';
+        }
+        if ($solr) {
+            return 'Solr';
+        }
+        return 'Disabled';
     }
 
     /**
