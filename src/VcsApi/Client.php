@@ -252,6 +252,30 @@ class Client implements ConfigAwareInterface
     }
 
     /**
+     * Validate a repository name and check existence via the VCS service.
+     */
+    public function validateRepositoryName(
+        string $repo_name,
+        string $org_id,
+        string $installation_id,
+        bool $skip_create = false
+    ): array {
+        $request_options = [
+            'method' => 'GET',
+        ];
+
+        $path = sprintf(
+            'repository/validate-name?name=%s&org_id=%s&installation_id=%s&skip_create=%s',
+            urlencode($repo_name),
+            $org_id,
+            $installation_id,
+            $skip_create ? 'true' : 'false'
+        );
+
+        return $this->requestApi($path, $request_options, "X-Pantheon-Session");
+    }
+
+    /**
      * Performs the request to API path.
      *
      * @param string $path

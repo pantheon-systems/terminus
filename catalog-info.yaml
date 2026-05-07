@@ -1,0 +1,12 @@
+---
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: terminus
+  description: The Pantheon CLI — a standalone utility for performing operations on the Pantheon Platform
+  annotations:
+    github.com/project-slug: pantheon-systems/terminus
+spec:
+  type: service
+  lifecycle: production
+  owner: developer-experience
