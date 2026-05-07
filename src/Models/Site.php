@@ -97,11 +97,6 @@ class Site extends TerminusModel implements
     public $framework;
 
     /**
-     * @var SiteMetrics
-     */
-    public $site_metrics;
-
-    /**
      * @var SiteUserMemberships
      */
     protected $user_memberships;
