@@ -3,6 +3,7 @@
 namespace Pantheon\Terminus\Commands\Org\Site;
 
 use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
+use Consolidation\OutputFormatters\Transformations\ReorderFields;
 use Pantheon\Terminus\Commands\TerminusCommand;
 use Pantheon\Terminus\Commands\StructuredListTrait;
 use Pantheon\Terminus\Site\SiteAwareInterface;
@@ -16,6 +17,18 @@ class ListCommand extends TerminusCommand implements SiteAwareInterface
 {
     use SiteAwareTrait;
     use StructuredListTrait;
+
+    private const FIELD_LABELS = [
+        'name' => 'Name',
+        'label' => 'Label',
+        'id' => 'ID',
+        'plan_name' => 'Plan',
+        'framework' => 'Framework',
+        'owner' => 'Owner',
+        'created' => 'Created',
+        'tags' => 'Tags',
+        'frozen' => 'Is Frozen?',
+    ];
 
     /**
      * Displays the list of sites associated with an organization.
@@ -56,6 +69,8 @@ class ListCommand extends TerminusCommand implements SiteAwareInterface
         $organization,
         $options = ['plan' => null, 'tag' => null, 'tags' => null, 'upstream' => null,]
     ) {
+        (new ReorderFields())->reorder($this->input()->getOption('fields'), self::FIELD_LABELS, []);
+
         $org = $this->session()->getUser()->getOrganizationMemberships()->get($organization)->getOrganization();
         $this->sites->fetch(['org_id' => $org->id,]);
         if (isset($options['plan']) && !is_null($plan = $options['plan'])) {
