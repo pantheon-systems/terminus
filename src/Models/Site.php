@@ -92,6 +92,11 @@ class Site extends TerminusModel implements
     protected $elasticsearch;
 
     /**
+     * @var SiteFramework
+     */
+    public $framework;
+
+    /**
      * @var SiteUserMemberships
      */
     protected $user_memberships;

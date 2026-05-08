@@ -15,6 +15,10 @@ All notable changes to this project will be documented in this file. This projec
 - Only include `wp_replace_siteurl` if site is WordPress (#2825)
 - Warn when creating sites without `--org` and provide actionable error if creation fails due to missing org (#2786)
 
+### Fixed
+
+- Fix PHP 8.2 deprecation warnings for dynamic property creation in Site model (#2813)
+
 ## 4.2.0 - 2026-04-13
 
 ### Added
