@@ -61,7 +61,7 @@ class CreateCommand extends SiteCommand implements RequestAwareInterface, SiteAw
      * @param string $site_name Site name (machine name)
      * @param string $label Site label (human-readable name)
      * @param string $upstream_id Upstream name or UUID (e.g., wordpress, drupal-composer-managed)
-     * @option org Organization name, label, or ID. Required if --vcs-provider=github is used.
+     * @option org Organization name, label, or ID (required starting Q2 2026). Required if --vcs-provider=github is used.
      * @option region Specify the service region where the site should be created. See documentation for valid regions.
      * @option vcs-provider VCS provider for the site repository (e.g., github, pantheon). Default is pantheon.
      * @option vcs-org Name of the Github organization containing the repository. Required if --vcs-provider=github is used.
@@ -291,13 +291,27 @@ class CreateCommand extends SiteCommand implements RequestAwareInterface, SiteAw
                 );
             }
         } else {
-             $this->log()->notice('Site will be owned by the current user: {email}', ['email' => $user->get('email')]);
+            $this->log()->warning(
+                'Starting in Q2 2026, all new sites will be required to belong to an organization. '
+                . 'Use the --org option to specify an organization when creating a site.'
+            );
         }
 
         // Create the site record via Pantheon API
         $this->log()->notice('Submitting site creation request to Pantheon API...');
         $workflow = $this->sites()->create($workflow_options);
-        $this->processWorkflow($workflow);
+        try {
+            $this->processWorkflow($workflow);
+        } catch (TerminusException $e) {
+            if (is_null($options['org']) && stripos($e->getMessage(), 'organization') !== false) {
+                throw new TerminusException(
+                    'Site creation requires an organization. Use the --org option to specify one. '
+                    . 'Example: terminus site:create {site_name} {label} {upstream_id} --org=<org-name>',
+                    compact('site_name', 'label', 'upstream_id')
+                );
+            }
+            throw $e;
+        }
         $this->log()->notice('Pantheon site record created successfully.');
 
         // Deploy the upstream CMS code
@@ -437,8 +451,6 @@ class CreateCommand extends SiteCommand implements RequestAwareInterface, SiteAw
         $repo_name = $options['repository-name'] ?? $site_name;
         $create_repo = $options['create-repo'];
 
-        // 0. Validate repo name.
-        $this->validateRepositoryName($repo_name);
         $this->log()->debug('Repository name: {repo_name}', ['repo_name' => $repo_name]);
 
 
@@ -628,14 +640,17 @@ class CreateCommand extends SiteCommand implements RequestAwareInterface, SiteAw
             }
         }
 
-        // 5. Validate repository exists (or not) depending on create-repo option.
-        $this->validateRepositoryExistsOrNot(
-            $vcs_client,
+        // 5. Validate repository name and existence via VCS service.
+        $validation = $vcs_client->validateRepositoryName(
             $repo_name,
             $pantheon_org->id,
             $installation_id,
-            $create_repo
+            !$create_repo
         );
+        if (!($validation['data']->valid ?? false)) {
+            $errors = (array) ($validation['data']->errors ?? ['Invalid repository name.']);
+            throw new TerminusException(implode(' ', $errors));
+        }
 
         // 6. Use workflow for all sites
         $this->createExternallyHostedSiteViaWorkflow(
@@ -766,8 +781,9 @@ class CreateCommand extends SiteCommand implements RequestAwareInterface, SiteAw
         // For STA (Node.js) sites, skip waiting and suggest using `node:builds:wait`.
         if ($preferred_platform === 'sta') {
             $this->log()->notice(
-                'Site creation succeeded! The dev environment build is in progress.'
-                    . ' You can watch the build status using: terminus node:builds:wait {site}.dev',
+                'Site created successfully.'
+                    . ' Push a commit to the connected Git repository to trigger your first build.'
+                    . ' You can then watch the build status using: terminus node:builds:wait {site}.dev',
                 ['site' => $site->getName()]
             );
         } else {
@@ -817,40 +833,6 @@ class CreateCommand extends SiteCommand implements RequestAwareInterface, SiteAw
             }
         } catch (\Throwable $t) {
             $this->log()->warning('Could not clean up site: {error}', ['error' => $t->getMessage()]);
-        }
-    }
-
-    /**
-     * Validates repository existence based on create_repo flag.
-     */
-    private function validateRepositoryExistsOrNot($vcs_client, $repo_name, $org_id, $installation_id, $create_repo)
-    {
-        $existing_repos = $vcs_client->searchRepositories($repo_name, $org_id, $installation_id);
-        $repo_exists = false;
-        if ($existing_repos['data']) {
-            foreach ($existing_repos['data'] as $repo) {
-                if (strtolower($repo->name) === strtolower($repo_name)) {
-                    $repo_exists = true;
-                    break;
-                }
-            }
-        }
-
-        // If we are creating the repo, it must not exist.
-        if ($create_repo && $repo_exists) {
-            throw new TerminusException(
-                'Repository "{repo}" already exists in the selected VCS organization.'
-                    . ' Cannot create it. Please choose a different repository name.',
-                ['repo' => $repo_name]
-            );
-        }
-        // If we are linking to an existing repo, it must exist.
-        if (!$create_repo && !$repo_exists) {
-            throw new TerminusException(
-                'Repository "{repo}" does not exist in the selected VCS organization.'
-                    . ' Cannot link it. Please create the repository first.',
-                ['repo' => $repo_name]
-            );
         }
     }
 
@@ -1026,44 +1008,6 @@ class CreateCommand extends SiteCommand implements RequestAwareInterface, SiteAw
         }
 
         return true;
-    }
-
-    /**
-     * Validates repository name according to GitHub naming rules.
-     *
-     * @param string $repo_name Repository name to validate
-     * @throws TerminusException if validation fails
-     */
-    protected function validateRepositoryName(string $repo_name): void
-    {
-        if (empty($repo_name)) {
-            throw new TerminusException('Repository name cannot be empty.');
-        }
-        if (strlen($repo_name) > 100) {
-            throw new TerminusException(
-                'Repository name "{name}" is too long. Maximum length is 100 characters.',
-                ['name' => $repo_name]
-            );
-        }
-        if (preg_match('/[^a-zA-Z0-9\-]/', $repo_name)) {
-            throw new TerminusException(
-                'Repository name "{name}" contains invalid characters.'
-                    . ' Only alphanumeric and dashes are allowed.',
-                ['name' => $repo_name]
-            );
-        }
-        if (!preg_match('/[a-zA-Z0-9]/', $repo_name)) {
-            throw new TerminusException(
-                'Repository name "{name}" must contain at least one alphanumeric character.',
-                ['name' => $repo_name]
-            );
-        }
-        if (preg_match('/^-/', $repo_name)) {
-            throw new TerminusException('Repository name "{name}" cannot begin with a dash.', ['name' => $repo_name]);
-        }
-        if (preg_match('/-$/', $repo_name)) {
-            throw new TerminusException('Repository name "{name}" cannot end with a dash.', ['name' => $repo_name]);
-        }
     }
 
     /**
