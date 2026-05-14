@@ -1,6 +1,6 @@
 <?php
 
-namespace Pantheon\Terminus\Commands\Ghes;
+namespace Pantheon\Terminus\Commands\Vcs\GithubHost;
 
 use Pantheon\Terminus\Commands\TerminusCommand;
 use Pantheon\Terminus\Exceptions\TerminusException;
@@ -13,7 +13,7 @@ use Symfony\Component\Process\Process;
  * Registers a GitHub Enterprise Server instance with Pantheon EVCS
  * via the GitHub App manifest flow.
  */
-class RegisterCommand extends TerminusCommand implements RequestAwareInterface
+class AddCommand extends TerminusCommand implements RequestAwareInterface
 {
     use VcsClientAwareTrait;
 
@@ -34,8 +34,8 @@ class RegisterCommand extends TerminusCommand implements RequestAwareInterface
      *
      * @authorize
      *
-     * @command ghes:register
-     * @aliases ghes-register
+     * @command vcs:github-host:add
+     * @aliases vcs-github-host-add
      *
      * @option hostname GitHub Enterprise Server hostname (e.g. ghes.example.com)
      *
@@ -43,7 +43,7 @@ class RegisterCommand extends TerminusCommand implements RequestAwareInterface
      *
      * @usage --hostname=ghes.example.com Registers a GHES instance with Pantheon.
      */
-    public function register(array $options = ['hostname' => null])
+    public function add(array $options = ['hostname' => null])
     {
         $hostname = $options['hostname'] ?? null;
         if (empty($hostname)) {

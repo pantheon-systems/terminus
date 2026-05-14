@@ -383,7 +383,7 @@ EOD;
             'Pantheon\\Terminus\\Commands\\Env\\ViewCommand',
             'Pantheon\\Terminus\\Commands\\Env\\WakeCommand',
             'Pantheon\\Terminus\\Commands\\Env\\WipeCommand',
-            'Pantheon\\Terminus\\Commands\\Ghes\\RegisterCommand',
+            'Pantheon\\Terminus\\Commands\\Vcs\\GithubHost\\AddCommand',
             'Pantheon\\Terminus\\Commands\\Github\\GithubVcsCommand',
             'Pantheon\\Terminus\\Commands\\HTTPS\\InfoCommand',
             'Pantheon\\Terminus\\Commands\\HTTPS\\RemoveCommand',
