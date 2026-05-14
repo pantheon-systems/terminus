@@ -276,6 +276,37 @@ class Client implements ConfigAwareInterface
     }
 
     /**
+     * Get the GHES app manifest for provisioning.
+     *
+     * @throws \Pantheon\Terminus\Exceptions\TerminusException
+     */
+    public function getProvisionManifest(string $hostname): array
+    {
+        $request_options = [
+            'method' => 'GET',
+        ];
+
+        $path = 'provision/manifest?hostname=' . urlencode($hostname);
+
+        return $this->requestApi($path, $request_options, "X-Pantheon-Session");
+    }
+
+    /**
+     * Provision a GHES instance with app credentials.
+     *
+     * @throws \Pantheon\Terminus\Exceptions\TerminusException
+     */
+    public function provision(array $data): array
+    {
+        $request_options = [
+            'method' => 'POST',
+            'json' => $data,
+        ];
+
+        return $this->requestApi('provision', $request_options, "X-Pantheon-Session");
+    }
+
+    /**
      * Performs the request to API path.
      *
      * @param string $path
