@@ -37,18 +37,14 @@ class AddCommand extends TerminusCommand implements RequestAwareInterface
      * @command vcs:github-host:add
      * @aliases vcs-github-host-add
      *
-     * @option hostname GitHub Enterprise Server hostname (e.g. ghes.example.com)
+     * @param string $hostname GitHub Enterprise Server hostname (e.g. ghes.example.com)
      *
      * @throws \Pantheon\Terminus\Exceptions\TerminusException
      *
-     * @usage --hostname=ghes.example.com Registers a GHES instance with Pantheon.
+     * @usage ghes.example.com Registers a GHES instance with Pantheon.
      */
-    public function add(array $options = ['hostname' => null])
+    public function add(string $hostname)
     {
-        $hostname = $options['hostname'] ?? null;
-        if (empty($hostname)) {
-            throw new TerminusException('The --hostname option is required.');
-        }
 
         $hostname = $this->sanitizeHostname($hostname);
         $ghesBaseUrl = "https://{$hostname}";
