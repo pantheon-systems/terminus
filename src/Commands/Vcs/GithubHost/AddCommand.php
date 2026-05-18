@@ -116,7 +116,10 @@ class AddCommand extends TerminusCommand implements RequestAwareInterface
 
         $credentials = json_decode($credentialsJson, true);
         if (json_last_error() !== JSON_ERROR_NONE) {
-            throw new TerminusException('Invalid JSON in {file}: ' . json_last_error_msg(), ['file' => $credentials_file]);
+            throw new TerminusException(
+                'Invalid JSON in {file}: ' . json_last_error_msg(),
+                ['file' => $credentials_file]
+            );
         }
 
         $this->validateCredentials($credentials);
@@ -201,12 +204,14 @@ if ($path === '/callback') {
     }
     file_put_contents('FLAG_FILE', 'done');
 
-    $convUrl = htmlspecialchars('GHES_BASE_URL' . '/api/v3/app-manifests/' . $code . '/conversions', ENT_QUOTES, 'UTF-8');
+    $apiPath = '/api/v3/app-manifests/' . $code . '/conversions';
+    $convUrl = htmlspecialchars('GHES_BASE_URL' . $apiPath, ENT_QUOTES, 'UTF-8');
     echo <<<HTML
 <!DOCTYPE html>
 <html><head><title>GHES Registration</title></head><body>
 <h2>Exchanging code for app credentials...</h2>
-<p>This page will submit to your GHES instance. After it responds, <strong>copy the entire JSON</strong> and paste it into your terminal.</p>
+<p>This page will submit to your GHES instance.
+After it responds, <strong>save the JSON</strong> to the credentials file.</p>
 <form id="conv" method="post" action="{$convUrl}">
   <input type="submit" value="Exchange Code Now" style="font-size:1.2em;padding:10px 20px;">
 </form>
