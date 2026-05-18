@@ -38,12 +38,14 @@ class AddCommand extends TerminusCommand implements RequestAwareInterface
      * @aliases vcs-github-host-add
      *
      * @param string $hostname GitHub Enterprise Server hostname (e.g. ghes.example.com)
+     * @param string $credentials_file Path to save/read the JSON credentials file
      *
      * @throws \Pantheon\Terminus\Exceptions\TerminusException
      *
      * @usage ghes.example.com Registers a GHES instance with Pantheon.
+     * @usage ghes.example.com /tmp/ghes-creds.json Registers using a custom credentials file path.
      */
-    public function add(string $hostname)
+    public function add(string $hostname, string $credentials_file = 'creds.json')
     {
 
         $hostname = $this->sanitizeHostname($hostname);
@@ -89,13 +91,30 @@ class AddCommand extends TerminusCommand implements RequestAwareInterface
         $this->log()->notice('Callback received from GHES.');
         $this->log()->notice('');
         $this->log()->notice('A JSON response should now be visible in your browser.');
-        $this->log()->notice('Copy the entire JSON and paste it below.');
+        $this->log()->notice('Save the entire JSON to: {file}', ['file' => realpath('.') . '/' . $credentials_file]);
+        $this->log()->notice('Then press Enter to continue, or wait 5 minutes to auto-proceed.');
         $this->log()->notice('');
 
-        $credentialsJson = $this->promptForJson();
+        $this->waitForConfirmation(self::CALLBACK_TIMEOUT);
+
+        if (!file_exists($credentials_file)) {
+            throw new TerminusException(
+                'Credentials file not found: {file}',
+                ['file' => $credentials_file]
+            );
+        }
+
+        $credentialsJson = file_get_contents($credentials_file);
+        if ($credentialsJson === false) {
+            throw new TerminusException(
+                'Unable to read credentials file: {file}',
+                ['file' => $credentials_file]
+            );
+        }
+
         $credentials = json_decode($credentialsJson, true);
         if (json_last_error() !== JSON_ERROR_NONE) {
-            throw new TerminusException('Invalid JSON: ' . json_last_error_msg());
+            throw new TerminusException('Invalid JSON in {file}: ' . json_last_error_msg(), ['file' => $credentials_file]);
         }
 
         $this->validateCredentials($credentials);
@@ -258,38 +277,23 @@ SERVERSCRIPT;
         }
     }
 
-    private function promptForJson(): string
+    private function waitForConfirmation(int $timeout): void
     {
         $handle = fopen('php://stdin', 'r');
         if ($handle === false) {
-            throw new TerminusException('Unable to read from stdin.');
+            return;
         }
 
-        $this->output()->write('Paste JSON credentials: ');
+        stream_set_blocking($handle, false);
+        $start = time();
 
-        $lines = [];
-        $braceDepth = 0;
-        $started = false;
-
-        while (($line = fgets($handle)) !== false) {
-            $trimmed = trim($line);
-            if (!$started && $trimmed === '') {
-                continue;
+        while ((time() - $start) < $timeout) {
+            $line = fgets($handle);
+            if ($line !== false) {
+                return;
             }
-
-            $lines[] = $line;
-            $braceDepth += substr_count($line, '{') - substr_count($line, '}');
-
-            if (!$started && str_contains($trimmed, '{')) {
-                $started = true;
-            }
-
-            if ($started && $braceDepth <= 0) {
-                break;
-            }
+            usleep(500000);
         }
-
-        return implode('', $lines);
     }
 
     private function validateCredentials(array $credentials): void
