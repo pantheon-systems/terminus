@@ -38,15 +38,17 @@ class AddCommand extends TerminusCommand implements RequestAwareInterface
      * @aliases vcs-github-host-add
      *
      * @param string $hostname GitHub Enterprise Server hostname (e.g. ghes.example.com)
-     * @param string $credentials_file Path to save/read the JSON credentials file
+     *
+     * @option credentials-file Path to save/read the JSON credentials file (default: creds.json)
      *
      * @throws \Pantheon\Terminus\Exceptions\TerminusException
      *
      * @usage ghes.example.com Registers a GHES instance with Pantheon.
-     * @usage ghes.example.com /tmp/ghes-creds.json Registers using a custom credentials file path.
+     * @usage ghes.example.com --credentials-file=/tmp/ghes-creds.json Registers using a custom credentials file path.
      */
-    public function add(string $hostname, string $credentials_file = 'creds.json')
+    public function add(string $hostname, array $options = ['credentials-file' => 'creds.json'])
     {
+        $credentials_file = $options['credentials-file'];
 
         $hostname = $this->sanitizeHostname($hostname);
         $ghesBaseUrl = "https://{$hostname}";
