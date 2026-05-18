@@ -51,7 +51,7 @@ class AddCommand extends TerminusCommand implements RequestAwareInterface
 
         $this->log()->notice('Fetching app manifest for {hostname}...', ['hostname' => $hostname]);
         $manifestResponse = $this->getVcsClient()->getProvisionManifest($hostname);
-        $manifest = (array) ($manifestResponse->data ?? $manifestResponse);
+        $manifest = (array) ($manifestResponse['data'] ?? $manifestResponse);
 
         $port = $this->findAvailablePort();
         $localBaseUrl = "http://127.0.0.1:{$port}";
