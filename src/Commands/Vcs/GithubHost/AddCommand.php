@@ -138,14 +138,12 @@ class AddCommand extends TerminusCommand implements RequestAwareInterface
         $this->stopServer();
         @unlink($serverScript);
 
-        $vcsHostId = $result['vcs_host_id'] ?? $result['data']->vcs_host_id ?? 'unknown';
         $slug = $provisionPayload['slug'];
 
         $this->log()->notice('');
         $this->log()->notice('========================================');
         $this->log()->notice(' GHES Instance Registered Successfully!');
         $this->log()->notice('========================================');
-        $this->log()->notice(' VCS Host ID:  {id}', ['id' => $vcsHostId]);
         $this->log()->notice(' App Name:     {name}', ['name' => $provisionPayload['name']]);
         $this->log()->notice(' App ID:       {id}', ['id' => $provisionPayload['app_id']]);
         $this->log()->notice(' Slug:         {slug}', ['slug' => $slug]);
