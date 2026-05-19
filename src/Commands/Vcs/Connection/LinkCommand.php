@@ -35,7 +35,7 @@ class LinkCommand extends TerminusCommand implements RequestAwareInterface
      * @param string $destination_org Destination Pantheon organization name, label, or ID (where the VCS connection will be linked).
      * @option vcs-org VCS organization name (e.g., GitHub organization name). If not provided, you'll be prompted to select from available VCS organizations.
      * @option source-org Source Pantheon organization name, label, or ID that already has the VCS connection. If not provided and multiple organizations have the same VCS connection, you'll be prompted to select one.
-     * @option github-host Hostname of a GitHub Enterprise Server instance (e.g., ghes.example.com) to disambiguate VCS organizations across different hosts.
+     * @option vcs-host Hostname of a GitHub Enterprise Server instance (e.g., ghes.example.com) to disambiguate VCS organizations across different hosts.
      *
      * @throws \Pantheon\Terminus\Exceptions\TerminusException
      *
@@ -53,13 +53,13 @@ class LinkCommand extends TerminusCommand implements RequestAwareInterface
         array $options = [
             'vcs-org' => null,
             'source-org' => null,
-            'github-host' => null,
+            'vcs-host' => null,
         ]
     ) {
         $user = $this->session()->getUser();
         $vcs_org = $options['vcs-org'];
         $source_org = $options['source-org'];
-        $github_host = $options['github-host'] ?? null;
+        $github_host = $options['vcs-host'] ?? null;
 
         // Get and validate destination organization
         $destination_pantheon_org = $this->getAndValidateOrganization($destination_org, 'destination');
@@ -147,11 +147,11 @@ class LinkCommand extends TerminusCommand implements RequestAwareInterface
             if (!$vcs_installation) {
                 if ($github_host) {
                     throw new TerminusException(
-                        'VCS organization "{vcs_org}" on GitHub host "{github_host}" not found in source Pantheon organization "{source_org}".'
-                            . ' Register the host first using: vcs:github-host:add {github_host}',
+                        'VCS organization "{vcs_org}" on host "{vcs_host}" not found in source Pantheon organization "{source_org}".'
+                            . ' Register the host first using: vcs:github-host:add {vcs_host}',
                         [
                             'vcs_org' => $vcs_org,
-                            'github_host' => $github_host,
+                            'vcs_host' => $github_host,
                             'source_org' => $source_pantheon_org->getLabel(),
                         ]
                     );

@@ -70,7 +70,7 @@ class CreateCommand extends SiteCommand implements RequestAwareInterface, SiteAw
      * @option create-repo Whether to create a repository in the VCS provider. Default is true.
      * @option repository-name Name of the repository to create in the VCS provider. Only applies if --vcs-provider is not Pantheon.
      * @option skip-clone-repo Do not clone the repository after creation. Default is false.
-     * @option github-host Hostname of a GitHub Enterprise Server instance (e.g., ghes.example.com). Only valid with --vcs-provider=github. Must be registered via vcs:github-host:add first.
+     * @option vcs-host Hostname of a GitHub Enterprise Server instance (e.g., ghes.example.com). Only valid with --vcs-provider=github. Must be registered via vcs:github-host:add first.
      *
      * @usage <site> <label> <upstream> Creates a new Pantheon-hosted site named <site>, labeled <label>, using code from <upstream>.
      * @usage <site> <label> <upstream> --org=<org> Creates site associated with <organization>, with a Pantheon-hosted git repository.
@@ -93,15 +93,15 @@ class CreateCommand extends SiteCommand implements RequestAwareInterface, SiteAw
             'create-repo' => true,
             'repository-name' => null,
             'skip-clone-repo' => false,
-            'github-host' => null,
+            'vcs-host' => null,
         ]
     ) {
         $vcs_provider = strtolower($options['vcs-provider']);
         $org_id = $options['org'];
 
-        if (!empty($options['github-host']) && $vcs_provider !== 'github') {
+        if (!empty($options['vcs-host']) && $vcs_provider !== 'github') {
             throw new TerminusException(
-                'The --github-host option is only valid with --vcs-provider=github.'
+                'The --vcs-host option is only valid with --vcs-provider=github.'
             );
         }
 
@@ -490,7 +490,7 @@ class CreateCommand extends SiteCommand implements RequestAwareInterface, SiteAw
         // Store the process so we can stop it later.
         $this->serverProcess = $process;
 
-        $github_host = $options['github-host'] ?? null;
+        $github_host = $options['vcs-host'] ?? null;
         $auth_links_resp = $vcs_client->getAuthLinks($pantheon_org->id, $user->id, $site_type, $url, $github_host);
         $auth_links = $auth_links_resp['data'] ?? null;
         $this->log()->debug('VCS Auth Links: {auth_links}', ['auth_links' => print_r($auth_links, true)]);

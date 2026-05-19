@@ -41,7 +41,7 @@ class AddCommand extends TerminusCommand implements RequestAwareInterface
      *
      * @param string $organization Organization name, label, or ID.
      * @option vcs-provider VCS provider for the site repository (e.g., github, pantheon). Default (and only) is github.
-     * @option github-host Hostname of a GitHub Enterprise Server instance (e.g., ghes.example.com). Must be registered via vcs:github-host:add first.
+     * @option vcs-host Hostname of a GitHub Enterprise Server instance (e.g., ghes.example.com). Must be registered via vcs:github-host:add first.
      *
      * @throws \Pantheon\Terminus\Exceptions\TerminusException
      *
@@ -49,7 +49,7 @@ class AddCommand extends TerminusCommand implements RequestAwareInterface
      */
     public function connectionAdd(string $organization, array $options = [
         'vcs-provider' => 'github',
-        'github-host' => null,
+        'vcs-host' => null,
     ])
     {
         $vcsProvider = $options['vcs-provider'] ?? 'github';
@@ -77,7 +77,7 @@ class AddCommand extends TerminusCommand implements RequestAwareInterface
         // Store the process so we can stop it later.
         $this->serverProcess = $process;
 
-        $github_host = $options['github-host'] ?? null;
+        $github_host = $options['vcs-host'] ?? null;
         $auth_links_resp = $this->getVcsClient()->getAuthLinks(
             $organization->id,
             $this->session()->getUser()->id,
