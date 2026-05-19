@@ -217,7 +217,13 @@ class Client implements ConfigAwareInterface
     /**
      * Get auth links.
      */
-    public function getAuthLinks(string $org_uuid, string $user_uuid, string $site_type, string $callback_url, ?string $github_host = null): array
+    public function getAuthLinks(
+        string $org_uuid,
+        string $user_uuid,
+        string $site_type,
+        string $callback_url,
+        ?string $github_host = null
+    ): array
     {
         $json = [
             'user_uuid' => $user_uuid,

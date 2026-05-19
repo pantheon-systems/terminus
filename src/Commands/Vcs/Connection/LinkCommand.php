@@ -137,7 +137,13 @@ class LinkCommand extends TerminusCommand implements RequestAwareInterface
      * @return array [$source_organization, $vcs_installation]
      * @throws \Pantheon\Terminus\Exceptions\TerminusException
      */
-    protected function determineSourceAndVcsOrg($user, $vcs_org, $source_org, $destination_org, ?string $github_host = null)
+    protected function determineSourceAndVcsOrg(
+        $user,
+        $vcs_org,
+        $source_org,
+        $destination_org,
+        ?string $github_host = null
+    )
     {
         // Case 1: Both VCS org and source org are provided
         if ($vcs_org && $source_org) {
@@ -147,7 +153,8 @@ class LinkCommand extends TerminusCommand implements RequestAwareInterface
             if (!$vcs_installation) {
                 if ($github_host) {
                     throw new TerminusException(
-                        'VCS organization "{vcs_org}" on host "{vcs_host}" not found in source Pantheon organization "{source_org}".'
+                        'VCS organization "{vcs_org}" on host "{vcs_host}" not found in'
+                            . ' source Pantheon organization "{source_org}".'
                             . ' Register the host first using: vcs:github-host:add {vcs_host}',
                         [
                             'vcs_org' => $vcs_org,
