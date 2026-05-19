@@ -35,6 +35,7 @@ class LinkCommand extends TerminusCommand implements RequestAwareInterface
      * @param string $destination_org Destination Pantheon organization name, label, or ID (where the VCS connection will be linked).
      * @option vcs-org VCS organization name (e.g., GitHub organization name). If not provided, you'll be prompted to select from available VCS organizations.
      * @option source-org Source Pantheon organization name, label, or ID that already has the VCS connection. If not provided and multiple organizations have the same VCS connection, you'll be prompted to select one.
+     * @option github-host Hostname of a GitHub Enterprise Server instance (e.g., ghes.example.com) to disambiguate VCS organizations across different hosts.
      *
      * @throws \Pantheon\Terminus\Exceptions\TerminusException
      *
@@ -52,11 +53,13 @@ class LinkCommand extends TerminusCommand implements RequestAwareInterface
         array $options = [
             'vcs-org' => null,
             'source-org' => null,
+            'github-host' => null,
         ]
     ) {
         $user = $this->session()->getUser();
         $vcs_org = $options['vcs-org'];
         $source_org = $options['source-org'];
+        $github_host = $options['github-host'] ?? null;
 
         // Get and validate destination organization
         $destination_pantheon_org = $this->getAndValidateOrganization($destination_org, 'destination');
@@ -66,7 +69,8 @@ class LinkCommand extends TerminusCommand implements RequestAwareInterface
             $user,
             $vcs_org,
             $source_org,
-            $destination_pantheon_org
+            $destination_pantheon_org,
+            $github_host
         );
 
         // Show confirmation
@@ -133,14 +137,25 @@ class LinkCommand extends TerminusCommand implements RequestAwareInterface
      * @return array [$source_organization, $vcs_installation]
      * @throws \Pantheon\Terminus\Exceptions\TerminusException
      */
-    protected function determineSourceAndVcsOrg($user, $vcs_org, $source_org, $destination_org)
+    protected function determineSourceAndVcsOrg($user, $vcs_org, $source_org, $destination_org, ?string $github_host = null)
     {
         // Case 1: Both VCS org and source org are provided
         if ($vcs_org && $source_org) {
             $source_pantheon_org = $this->getAndValidateOrganization($source_org, 'source');
-            $vcs_installation = $this->findVcsOrgInPantheonOrg($user, $source_pantheon_org, $vcs_org);
+            $vcs_installation = $this->findVcsOrgInPantheonOrg($user, $source_pantheon_org, $vcs_org, $github_host);
 
             if (!$vcs_installation) {
+                if ($github_host) {
+                    throw new TerminusException(
+                        'VCS organization "{vcs_org}" on GitHub host "{github_host}" not found in source Pantheon organization "{source_org}".'
+                            . ' Register the host first using: vcs:github-host:add {github_host}',
+                        [
+                            'vcs_org' => $vcs_org,
+                            'github_host' => $github_host,
+                            'source_org' => $source_pantheon_org->getLabel(),
+                        ]
+                    );
+                }
                 throw new TerminusException(
                     'VCS organization "{vcs_org}" not found in source Pantheon organization "{source_org}".',
                     [
@@ -155,7 +170,7 @@ class LinkCommand extends TerminusCommand implements RequestAwareInterface
 
         // Case 2: Only VCS org is provided - find which Pantheon org has it
         if ($vcs_org && !$source_org) {
-            return $this->findPantheonOrgWithVcsOrg($user, $vcs_org, $destination_org);
+            return $this->findPantheonOrgWithVcsOrg($user, $vcs_org, $destination_org, $github_host);
         }
 
         // Case 3: Only source org is provided - list VCS orgs and prompt
@@ -194,15 +209,22 @@ class LinkCommand extends TerminusCommand implements RequestAwareInterface
      * @param string $vcs_org_name
      * @return object|null The VCS installation object or null if not found
      */
-    protected function findVcsOrgInPantheonOrg($user, $pantheon_org, $vcs_org_name)
+    protected function findVcsOrgInPantheonOrg($user, $pantheon_org, $vcs_org_name, ?string $github_host = null)
     {
         $installations_resp = $this->getVcsClient()->getInstallations($pantheon_org->id, $user->id);
         $installations = $installations_resp['data'] ?? [];
 
         foreach ($installations as $installation) {
-            if ($installation->login_name === $vcs_org_name) {
-                return $installation;
+            if ($installation->login_name !== $vcs_org_name) {
+                continue;
             }
+            if ($github_host !== null) {
+                $inst_hostname = $installation->hostname ?? 'github.com';
+                if ($inst_hostname !== $github_host) {
+                    continue;
+                }
+            }
+            return $installation;
         }
 
         return null;
@@ -217,7 +239,7 @@ class LinkCommand extends TerminusCommand implements RequestAwareInterface
      * @return array [$source_organization, $vcs_installation]
      * @throws \Pantheon\Terminus\Exceptions\TerminusException
      */
-    protected function findPantheonOrgWithVcsOrg($user, $vcs_org_name, $destination_org)
+    protected function findPantheonOrgWithVcsOrg($user, $vcs_org_name, $destination_org, ?string $github_host = null)
     {
         $matching_orgs = [];
         $orgs = $user->getOrganizationMemberships()->all();
@@ -230,7 +252,7 @@ class LinkCommand extends TerminusCommand implements RequestAwareInterface
                 continue;
             }
 
-            $vcs_installation = $this->findVcsOrgInPantheonOrg($user, $org, $vcs_org_name);
+            $vcs_installation = $this->findVcsOrgInPantheonOrg($user, $org, $vcs_org_name, $github_host);
 
             if ($vcs_installation) {
                 $matching_orgs[] = [
@@ -307,11 +329,14 @@ class LinkCommand extends TerminusCommand implements RequestAwareInterface
         // Multiple VCS orgs - prompt user to select
         $vcs_choices = [];
         foreach ($installations as $idx => $installation) {
+            $hostname = $installation->hostname ?? 'github.com';
+            $host_suffix = ($hostname !== 'github.com') ? sprintf(' @ %s', $hostname) : '';
             $vcs_choices[$idx] = sprintf(
-                '%s (%s) - ID: %s',
+                '%s (%s) - ID: %s%s',
                 $installation->login_name,
                 $installation->alias,
-                $installation->installation_id
+                $installation->installation_id,
+                $host_suffix
             );
         }
 

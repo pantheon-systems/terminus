@@ -33,7 +33,8 @@ class ListCommand extends TerminusCommand implements RequestAwareInterface
      *   vcs_provider: VCS Provider
      *   type: Type
      *   login_name: Login name
-     * @default-table-fields id,vcs_provider,type,login_name
+     *   host: Host
+     * @default-table-fields id,vcs_provider,type,login_name,host
      *
      * @param string $organization Organization name, label, or ID.
      *
@@ -76,6 +77,7 @@ class ListCommand extends TerminusCommand implements RequestAwareInterface
                 'vcs_provider' => $installation->alias,
                 'type' => $installation->type,
                 'login_name' => $installation->login_name,
+                'host' => $installation->hostname ?? 'github.com',
             ];
         }
 

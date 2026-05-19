@@ -20,17 +20,24 @@ class Installation
     protected string $loginName;
 
     /**
+     * @var string|null
+     */
+    protected ?string $hostname;
+
+    /**
      * Constructor.
      *
      * @param string $installation_id
      * @param string $vendor
      * @param string $login_name
+     * @param string|null $hostname
      */
-    public function __construct(string $installation_id, string $vendor, string $login_name)
+    public function __construct(string $installation_id, string $vendor, string $login_name, ?string $hostname = null)
     {
         $this->installationId = $installation_id;
         $this->vendor = $vendor;
         $this->loginName = $login_name;
+        $this->hostname = $hostname;
     }
 
     /**
@@ -63,8 +70,23 @@ class Installation
         return $this->loginName;
     }
 
+    /**
+     * Return the hostname.
+     *
+     * @return string
+     */
+    public function getHostname(): string
+    {
+        return $this->hostname ?? 'github.com';
+    }
+
     public function __toString(): string
     {
-        return sprintf("%s: %s (%s)", $this->getVendor(), $this->getLoginName(), $this->getInstallationId());
+        $base = sprintf("%s: %s (%s)", $this->getVendor(), $this->getLoginName(), $this->getInstallationId());
+        $hostname = $this->getHostname();
+        if ($hostname !== 'github.com') {
+            $base .= sprintf(' @ %s', $hostname);
+        }
+        return $base;
     }
 }
