@@ -223,8 +223,7 @@ class Client implements ConfigAwareInterface
         string $site_type,
         string $callback_url,
         ?string $github_host = null
-    ): array
-    {
+    ): array {
         $json = [
             'user_uuid' => $user_uuid,
             'org_uuid' => $org_uuid,

@@ -143,8 +143,7 @@ class LinkCommand extends TerminusCommand implements RequestAwareInterface
         $source_org,
         $destination_org,
         ?string $github_host = null
-    )
-    {
+    ) {
         // Case 1: Both VCS org and source org are provided
         if ($vcs_org && $source_org) {
             $source_pantheon_org = $this->getAndValidateOrganization($source_org, 'source');
