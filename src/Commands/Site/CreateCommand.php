@@ -70,6 +70,7 @@ class CreateCommand extends SiteCommand implements RequestAwareInterface, SiteAw
      * @option create-repo Whether to create a repository in the VCS provider. Default is true.
      * @option repository-name Name of the repository to create in the VCS provider. Only applies if --vcs-provider is not Pantheon.
      * @option skip-clone-repo Do not clone the repository after creation. Default is false.
+     * @option vcs-host Hostname of a GitHub Enterprise Server instance (e.g., ghes.example.com). Only valid with --vcs-provider=github. Must be registered via vcs:github-host:add first.
      *
      * @usage <site> <label> <upstream> Creates a new Pantheon-hosted site named <site>, labeled <label>, using code from <upstream>.
      * @usage <site> <label> <upstream> --org=<org> Creates site associated with <organization>, with a Pantheon-hosted git repository.
@@ -92,10 +93,17 @@ class CreateCommand extends SiteCommand implements RequestAwareInterface, SiteAw
             'create-repo' => true,
             'repository-name' => null,
             'skip-clone-repo' => false,
+            'vcs-host' => null,
         ]
     ) {
         $vcs_provider = strtolower($options['vcs-provider']);
         $org_id = $options['org'];
+
+        if (!empty($options['vcs-host']) && $vcs_provider !== 'github') {
+            throw new TerminusException(
+                'The --vcs-host option is only valid with --vcs-provider=github.'
+            );
+        }
 
         // Validate VCS provider
         if (!in_array($vcs_provider, $this->vcs_providers)) {
@@ -482,7 +490,8 @@ class CreateCommand extends SiteCommand implements RequestAwareInterface, SiteAw
         // Store the process so we can stop it later.
         $this->serverProcess = $process;
 
-        $auth_links_resp = $vcs_client->getAuthLinks($pantheon_org->id, $user->id, $site_type, $url);
+        $github_host = $options['vcs-host'] ?? null;
+        $auth_links_resp = $vcs_client->getAuthLinks($pantheon_org->id, $user->id, $site_type, $url, $github_host);
         $auth_links = $auth_links_resp['data'] ?? null;
         $this->log()->debug('VCS Auth Links: {auth_links}', ['auth_links' => print_r($auth_links, true)]);
         $auth_url = null;
@@ -521,7 +530,8 @@ class CreateCommand extends SiteCommand implements RequestAwareInterface, SiteAw
                 $installations[$installation->installation_id] = new Installation(
                     $installation->installation_id,
                     $installation->alias,
-                    $installation->login_name
+                    $installation->login_name,
+                    $installation->hostname ?? null
                 );
                 $instKey = strtolower($installation->login_name);
                 $installations_map[$instKey] = $installation->installation_id;
@@ -548,7 +558,16 @@ class CreateCommand extends SiteCommand implements RequestAwareInterface, SiteAw
         //   - If it matches an existing installation, use that; otherwise, assume the option was NOT provided
         // If vcs_org is NOT provided, present the user with a list of existing installations and the option for a new one.
         if ($vcs_org) {
-            if (isset($installations_map[$vcs_org])) {
+            if ($github_host) {
+                // Filter by both login name and hostname
+                foreach ($installations as $id => $inst) {
+                    if (strtolower($inst->getLoginName()) === $vcs_org && $inst->getHostname() === $github_host) {
+                        $installation_id = $id;
+                        $installation_human_name = $vcs_org;
+                        break;
+                    }
+                }
+            } elseif (isset($installations_map[$vcs_org])) {
                 $installation_id = $installations_map[$vcs_org];
                 $installation_human_name = $vcs_org;
             }
@@ -567,11 +586,14 @@ class CreateCommand extends SiteCommand implements RequestAwareInterface, SiteAw
                 // Prompt user to choose from existing or add new
                 $choices = [];
                 foreach ($installations as $id => $inst) {
+                    $hostname = $inst->getHostname();
+                    $host_suffix = ($hostname !== 'github.com') ? sprintf(' @ %s', $hostname) : '';
                     $choices[$inst->getLoginName()] = sprintf(
-                        "%s: %s (%s)",
+                        "%s: %s (%s)%s",
                         $inst->getVendor(),
                         $inst->getLoginName(),
-                        $id
+                        $id,
+                        $host_suffix
                     );
                 }
                 $choices[self::ADD_NEW_ORG_TEXT] = 'new';

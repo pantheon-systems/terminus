@@ -217,16 +217,27 @@ class Client implements ConfigAwareInterface
     /**
      * Get auth links.
      */
-    public function getAuthLinks(string $org_uuid, string $user_uuid, string $site_type, string $callback_url): array
-    {
+    public function getAuthLinks(
+        string $org_uuid,
+        string $user_uuid,
+        string $site_type,
+        string $callback_url,
+        ?string $github_host = null
+    ): array {
+        $json = [
+            'user_uuid' => $user_uuid,
+            'org_uuid' => $org_uuid,
+            'site_type' => $site_type,
+            'redirect_uri' => $callback_url,
+        ];
+
+        if ($github_host !== null) {
+            $json['github_host'] = $github_host;
+        }
+
         $request_options = [
             'method' => 'POST',
-            'json' => [
-                'user_uuid' => $user_uuid,
-                'org_uuid' => $org_uuid,
-                'site_type' => $site_type,
-                'redirect_uri' => $callback_url,
-            ],
+            'json' => $json,
         ];
 
         return $this->requestApi('installation/auth', $request_options, "X-Pantheon-Session");
