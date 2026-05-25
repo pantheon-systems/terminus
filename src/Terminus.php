@@ -454,6 +454,7 @@ EOD;
             'Pantheon\\Terminus\\Commands\\Secret\\Site\\ListCommand',
             'Pantheon\\Terminus\\Commands\\Secret\\Site\\LocalGenerateCommand',
             'Pantheon\\Terminus\\Commands\\Secret\\Site\\SetCommand',
+            'Pantheon\\Terminus\\Commands\\LockHandlingCommand',
             'Pantheon\\Terminus\\Commands\\SecretsHandlingCommand',
             'Pantheon\\Terminus\\Commands\\Self\\ClearCacheCommand',
             'Pantheon\\Terminus\\Commands\\Self\\ConfigDumpCommand',
