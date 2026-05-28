@@ -1,0 +1,4 @@
+---
+engines:
+  phpcs:
+    enabled: true
