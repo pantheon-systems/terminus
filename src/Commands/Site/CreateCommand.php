@@ -61,7 +61,7 @@ class CreateCommand extends SiteCommand implements RequestAwareInterface, SiteAw
      * @param string $site_name Site name (machine name)
      * @param string $label Site label (human-readable name)
      * @param string $upstream_id Upstream name or UUID (e.g., wordpress, drupal-composer-managed)
-     * @option org Organization name, label, or ID (required starting Q2 2026). Required if --vcs-provider=github is used.
+     * @option org Organization name, label, or ID (required).
      * @option region Specify the service region where the site should be created. See documentation for valid regions.
      * @option vcs-provider VCS provider for the site repository (e.g., github, pantheon). Default is pantheon.
      * @option vcs-org Name of the Github organization containing the repository. Required if --vcs-provider=github is used.
@@ -276,56 +276,46 @@ class CreateCommand extends SiteCommand implements RequestAwareInterface, SiteAw
 
         $org = null;
         $org_id = $options['org'];
-        if ($org_id !== null) {
-            try {
-                // It's better to get the membership first, then the organization
-                $membership = $user->getOrganizationMemberships()->get($org_id);
-                $org = $membership->getOrganization();
-                $workflow_options['organization_id'] = $org->id;
-                $this->log()->notice('Associating site with organization: {org_label} ({org_id})', [
-                    'org_label' => $org->get('profile')->name,
-                    'org_id' => $org->id,
-                ]);
-            } catch (TerminusNotFoundException $e) {
-                throw new TerminusException(
-                    'Organization "{org}" not found or you are not a member.',
-                    ['org' => $org_id]
-                );
-            } catch (\Exception $e) {
-                // Catch other potential errors during org fetching
-                throw new TerminusException(
-                    'Error retrieving organization "{org}": {message}',
-                    ['org' => $org_id, 'message' => $e->getMessage()]
-                );
-            }
-        } else {
-            $this->log()->warning(
-                'Starting in Q2 2026, all new sites will be required to belong to an organization. '
-                . 'Use the --org option to specify an organization when creating a site.'
+        if ($org_id === null) {
+            throw new TerminusException(
+                'Site creation requires an organization. Use the --org option to specify one. '
+                . 'Example: terminus site:create {site_name} {label} {upstream_id} --org=<org-name>',
+                compact('site_name', 'label', 'upstream_id')
+            );
+        }
+
+        try {
+            // It's better to get the membership first, then the organization
+            $membership = $user->getOrganizationMemberships()->get($org_id);
+            $org = $membership->getOrganization();
+            $workflow_options['organization_id'] = $org->id;
+            $this->log()->notice('Associating site with organization: {org_label} ({org_id})', [
+                'org_label' => $org->get('profile')->name,
+                'org_id' => $org->id,
+            ]);
+        } catch (TerminusNotFoundException $e) {
+            throw new TerminusException(
+                'Organization "{org}" not found or you are not a member.',
+                ['org' => $org_id]
+            );
+        } catch (\Exception $e) {
+            // Catch other potential errors during org fetching
+            throw new TerminusException(
+                'Error retrieving organization "{org}": {message}',
+                ['org' => $org_id, 'message' => $e->getMessage()]
             );
         }
 
         // Create the site record via Pantheon API
         $this->log()->notice('Submitting site creation request to Pantheon API...');
         $workflow = $this->sites()->create($workflow_options);
-        try {
-            $this->processWorkflow($workflow);
-        } catch (TerminusException $e) {
-            if (is_null($options['org']) && stripos($e->getMessage(), 'organization') !== false) {
-                throw new TerminusException(
-                    'Site creation requires an organization. Use the --org option to specify one. '
-                    . 'Example: terminus site:create {site_name} {label} {upstream_id} --org=<org-name>',
-                    compact('site_name', 'label', 'upstream_id')
-                );
-            }
-            throw $e;
-        }
+        $this->processWorkflow($workflow);
         $this->log()->notice('Pantheon site record created successfully.');
 
         // Deploy the upstream CMS code
         $site_id = $workflow->get('waiting_for_task')->site_id ?? null;
         if (!$site_id) {
-             throw new TerminusException('Could not get site ID from site creation workflow.');
+            throw new TerminusException('Could not get site ID from site creation workflow.');
         }
 
         if ($site = $this->getSiteById($site_id)) {
@@ -421,10 +411,10 @@ class CreateCommand extends SiteCommand implements RequestAwareInterface, SiteAw
                 );
             }
         } catch (TerminusNotFoundException $e) {
-             $this->log()->warning(
-                 'Dev environment not found immediately after site creation. It might still be provisioning.'
-             );
-             $this->log()->debug('TerminusNotFoundException: {message}', ['message' => $e->getMessage()]);
+            $this->log()->warning(
+                'Dev environment not found immediately after site creation. It might still be provisioning.'
+            );
+            $this->log()->debug('TerminusNotFoundException: {message}', ['message' => $e->getMessage()]);
         } catch (\Exception $e) {
             $this->log()->error(
                 'An error occurred while waiting for the site to wake: {message}',
@@ -626,7 +616,7 @@ class CreateCommand extends SiteCommand implements RequestAwareInterface, SiteAw
 
         // Ensure we have determined the installation ID and target org name
         if (is_null($installation_id)) {
-             throw new TerminusException('Could not determine GitHub installation.');
+            throw new TerminusException('Could not determine GitHub installation.');
         }
 
         $existing_installation = true;
