@@ -1,4 +1,6 @@
 ---
+exclude_paths:
+  - "tests/**"
 engines:
   phpcs:
     enabled: true
