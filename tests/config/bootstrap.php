@@ -114,8 +114,16 @@ if (!getenv('TERMINUS_TESTING_RUNTIME_ENV')) {
     if (0 === $listCode && !empty($listOutput)) {
         $multidevs = json_decode(implode('', $listOutput), true);
         if (is_array($multidevs)) {
-            $testEnvs = array_filter($multidevs, function ($env, $id) {
-                return str_starts_with($id, 'test-');
+            // Only treat test-* multidevs older than a day as orphaned. Newer
+            // ones may belong to other CI runs executing concurrently, and
+            // deleting those would break the in-flight run that created them.
+            $orphanCutoff = time() - 86400;
+            $testEnvs = array_filter($multidevs, function ($env, $id) use ($orphanCutoff) {
+                if (!str_starts_with($id, 'test-')) {
+                    return false;
+                }
+                $created = $env['created'] ?? null;
+                return is_numeric($created) && (int) $created < $orphanCutoff;
             }, ARRAY_FILTER_USE_BOTH);
             if (!empty($testEnvs)) {
                 $log->info(sprintf('Found %d orphaned test-* multidev(s), deleting...', count($testEnvs)));
