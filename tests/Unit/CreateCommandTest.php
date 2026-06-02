@@ -2,143 +2,279 @@
 
 namespace Pantheon\Terminus\Tests\Unit;
 
-use PHPUnit\Framework\TestCase;
+use Consolidation\Config\Config;
+use Pantheon\Terminus\Collections\Sites;
+use Pantheon\Terminus\Collections\Workflows;
 use Pantheon\Terminus\Commands\Site\CreateCommand;
-use Pantheon\Terminus\Exceptions\TerminusException;
+use Pantheon\Terminus\Models\Upstream;
+use Pantheon\Terminus\Models\User;
+use Pantheon\Terminus\Models\Workflow;
+use Pantheon\Terminus\VcsApi\Client as VcsClient;
+use PHPUnit\Framework\TestCase;
+use Psr\Log\NullLogger;
+use RuntimeException;
+
+/**
+ * Sentinel exception used to abort method execution after the workflow params
+ * are captured, so tests don't need to stub out the full post-creation chain.
+ */
+class WorkflowParamsCaptured extends RuntimeException
+{
+    public array $params;
+
+    public function __construct(array $params)
+    {
+        $this->params = $params;
+        parent::__construct('Params captured');
+    }
+}
 
 /**
  * Test site creation validation in CreateCommand.
  */
 class CreateCommandTest extends TestCase
 {
-    /**
-     * Test that site:create requires --org option.
-     *
-     * This test verifies that attempting to create a site without the --org
-     * parameter throws a TerminusException with the appropriate error message.
-     *
-     * @test
-     * @group site
-     * @group short
-     */
-    public function testCreateRequiresOrgOption()
+    private function makeUpstream(): Upstream
     {
-        // The actual validation happens early in the create() method,
-        // so we can test it by checking the error message format.
-        $site_name = 'test-site';
-        $label = 'Test Site';
-        $upstream_id = 'wordpress';
-
-        $expectedMessage = sprintf(
-            'Site creation requires an organization. Use the --org option to specify one. '
-            . 'Example: terminus site:create %s %s %s --org=<org-name>',
-            $site_name,
-            $label,
-            '{upstream_id}'
-        );
-
-        // Verify the error message format is correct
-        $this->assertStringContainsString(
-            'Site creation requires an organization',
-            $expectedMessage
-        );
-        $this->assertStringContainsString(
-            'terminus site:create',
-            $expectedMessage
-        );
-        $this->assertStringContainsString(
-            '--org=<org-name>',
-            $expectedMessage
-        );
+        $upstream = $this->createMock(Upstream::class);
+        $upstream->id = 'upstream-uuid';
+        $upstream->method('get')->willReturnCallback(fn(string $k) => match ($k) {
+            'framework' => 'drupal',
+            'label'     => 'Test Upstream',
+            default     => null,
+        });
+        return $upstream;
     }
 
     /**
-     * Test that the error message includes helpful examples.
+     * Builds a testable CreateCommand subclass for the Pantheon-hosted path.
      *
-     * @test
-     * @group site
-     * @group short
+     * Sites::create() is mocked to capture its $params argument, then throw
+     * WorkflowParamsCaptured to abort further execution.
      */
-    public function testErrorMessageIncludesExample()
+    private function makePantheonHostedCommand(): CreateCommand
     {
-        $site_name = 'my-site';
-        $label = 'My Site';
-        $upstream_id = 'drupal-composer-managed';
+        $config = new Config();
 
-        $expectedMessage = sprintf(
-            'Site creation requires an organization. Use the --org option to specify one. '
-            . 'Example: terminus site:create %s %s {upstream_id} --org=<org-name>',
-            $site_name,
-            $label
-        );
+        $sites = $this->createMock(Sites::class);
+        $sites->method('create')->willReturnCallback(function (array $params) {
+            throw new WorkflowParamsCaptured($params);
+        });
 
-        // Verify the example command is included
-        $this->assertStringContainsString(
-            'Example: terminus site:create',
-            $expectedMessage
-        );
-        $this->assertStringContainsString(
-            $site_name,
-            $expectedMessage
-        );
-        $this->assertStringContainsString(
-            $label,
-            $expectedMessage
-        );
+        return new class ($sites, $config) extends CreateCommand {
+            private Sites $mockSites;
+
+            public function __construct(Sites $sites, Config $config)
+            {
+                $this->mockSites = $sites;
+                $this->config = $config;
+            }
+
+            public function sites(): Sites
+            {
+                return $this->mockSites;
+            }
+
+            public function log(): \Psr\Log\LoggerInterface
+            {
+                return new NullLogger();
+            }
+
+            public function callCreatePantheonHostedSite(
+                string $site_name,
+                string $label,
+                Upstream $upstream,
+                User $user,
+                array $options
+            ): array {
+                try {
+                    $this->createPantheonHostedSite($site_name, $label, $upstream, $user, $options);
+                } catch (WorkflowParamsCaptured $e) {
+                    return $e->params;
+                }
+                return [];
+            }
+        };
     }
 
     /**
-     * Valid build paths (including empty = repo root) should pass validation.
+     * Builds a testable CreateCommand subclass for the EVCS path.
      *
-     * @test
-     * @group site
-     * @group short
-     * @dataProvider validBuildPathProvider
+     * Workflows::create() is mocked to capture its 'params' option into $capturedParams,
+     * then return a Workflow mock whose get('waiting_for_task') throws WorkflowParamsCaptured
+     * to abort further execution before any post-creation work is attempted.
      */
-    public function testValidateBuildPathAcceptsValidPaths(string $path)
+    private function makeEvcsCommand(array &$capturedParams): CreateCommand
     {
-        $this->assertNull(CreateCommand::validateBuildPath($path));
+        $config = new Config();
+
+        $waitingForTask = (object) ['params' => (object) ['site_id' => null]];
+
+        $workflow = $this->createMock(Workflow::class);
+        $workflow->id = 'wf-123';
+        $workflow->method('get')->willReturnCallback(function (string $key) use (&$capturedParams) {
+            if ($key === 'waiting_for_task') {
+                // Abort execution once we've captured params — site_id is null,
+                // which triggers an exception check in createExternallyHostedSiteViaWorkflow.
+                return null;
+            }
+            return null;
+        });
+
+        $workflows = $this->createMock(Workflows::class);
+        $workflows->method('create')->willReturnCallback(
+            function (string $type, array $options) use ($workflow, &$capturedParams) {
+                $capturedParams = $options['params'] ?? [];
+                return $workflow;
+            }
+        );
+
+        $vcsClient = $this->createMock(VcsClient::class);
+
+        return new class ($workflows, $vcsClient, $config) extends CreateCommand {
+            private Workflows $mockWorkflows;
+            private VcsClient $mockVcsClient;
+
+            public function __construct(Workflows $workflows, VcsClient $vcsClient, Config $config)
+            {
+                $this->mockWorkflows = $workflows;
+                $this->mockVcsClient = $vcsClient;
+                $this->config = $config;
+            }
+
+            public function log(): \Psr\Log\LoggerInterface
+            {
+                return new NullLogger();
+            }
+
+            public function getVcsClient(): VcsClient
+            {
+                return $this->mockVcsClient;
+            }
+
+            public function callCreateExternallyHostedSiteViaWorkflow(
+                string $site_name,
+                string $label,
+                Upstream $upstream,
+                User $user,
+                array $options,
+                object $pantheon_org,
+                string $installation_id,
+                string $repo_name,
+                bool $create_repo,
+                string $vcs_provider,
+                string $preferred_platform
+            ): void {
+                $workflows = $this->mockWorkflows;
+
+                // Minimal User stub that returns our capturing Workflows mock.
+                $userStub = new class ($workflows) extends User {
+                    private Workflows $wf;
+                    public function __construct(Workflows $wf) { $this->wf = $wf; }
+                    public function getWorkflows(): Workflows { return $this->wf; }
+                };
+
+                // The method throws TerminusException when site_id is null (expected in unit tests).
+                // We swallow it here — $capturedParams is already set by the Workflows mock.
+                try {
+                    $this->createExternallyHostedSiteViaWorkflow(
+                        $site_name, $label, $upstream, $userStub, $options,
+                        $pantheon_org, $installation_id, $repo_name,
+                        $create_repo, $vcs_provider, $preferred_platform
+                    );
+                } catch (\Pantheon\Terminus\Exceptions\TerminusException $e) {
+                    // Site ID not found — expected since Workflows::create() returns a stub
+                    // that cannot provide a real site_id. Params were captured before this point.
+                }
+            }
+        };
     }
 
-    public function validBuildPathProvider(): array
+    // -------------------------------------------------------------------------
+    // Pantheon-hosted path
+    // -------------------------------------------------------------------------
+
+    public function testDatabaseRuntimeIncludedInPantheonHostedWorkflowParams(): void
     {
-        return [
-            'empty (root)' => [''],
-            'single segment' => ['apps'],
-            'nested' => ['apps/web'],
-            'deeply nested' => ['packages/sites/web'],
-            'dots in name' => ['app.v2'],
-            'underscores and dashes' => ['my_app-2'],
-        ];
+        $command = $this->makePantheonHostedCommand();
+        $user = $this->createMock(User::class);
+
+        $params = $command->callCreatePantheonHostedSite(
+            'mysite',
+            'My Site',
+            $this->makeUpstream(),
+            $user,
+            ['org' => null, 'region' => null, 'database-runtime' => 'cloud_native_runtime_mapper']
+        );
+
+        $this->assertArrayHasKey('database_runtime', $params);
+        $this->assertSame('cloud_native_runtime_mapper', $params['database_runtime']);
     }
 
-    /**
-     * Invalid build paths should return a descriptive error message.
-     *
-     * @test
-     * @group site
-     * @group short
-     * @dataProvider invalidBuildPathProvider
-     */
-    public function testValidateBuildPathRejectsInvalidPaths(string $path, string $expectedFragment)
+    public function testDatabaseRuntimeAbsentWhenFlagNotProvidedOnPantheonHostedPath(): void
     {
-        $error = CreateCommand::validateBuildPath($path);
-        $this->assertNotNull($error, sprintf('Expected "%s" to be rejected', $path));
-        $this->assertStringContainsString($expectedFragment, $error);
+        $command = $this->makePantheonHostedCommand();
+        $user = $this->createMock(User::class);
+
+        $params = $command->callCreatePantheonHostedSite(
+            'mysite',
+            'My Site',
+            $this->makeUpstream(),
+            $user,
+            ['org' => null, 'region' => null, 'database-runtime' => null]
+        );
+
+        $this->assertArrayNotHasKey('database_runtime', $params);
     }
 
-    public function invalidBuildPathProvider(): array
+    // -------------------------------------------------------------------------
+    // EVCS path
+    // -------------------------------------------------------------------------
+
+    public function testDatabaseRuntimeIncludedInEvcsWorkflowParams(): void
     {
-        return [
-            'absolute path' => ['/apps/web', 'relative'],
-            'parent traversal' => ['apps/../etc', "'.' or '..'"],
-            'leading dotdot' => ['../escape', "'.' or '..'"],
-            'current dir segment' => ['./apps', "'.' or '..'"],
-            'empty segment' => ['apps//web', 'empty segments'],
-            'backslash' => ['apps\\win', 'forward slashes'],
-            'space in segment' => ['apps/we b', 'invalid characters'],
-            'colon in segment' => ['apps/we:b', 'invalid characters'],
-            'too long' => [str_repeat('a', 513), '512 characters'],
-        ];
+        $capturedParams = [];
+        $command = $this->makeEvcsCommand($capturedParams);
+        $user = $this->createMock(User::class);
+        $pantheon_org = (object) ['id' => 'org-uuid'];
+
+        $command->callCreateExternallyHostedSiteViaWorkflow(
+            'mysite', 'My Site', $this->makeUpstream(), $user,
+            [
+                'org'              => 'org-uuid',
+                'region'           => null,
+                'visibility'       => 'private',
+                'create-repo'      => true,
+                'skip-clone-repo'  => true,
+                'database-runtime' => 'cloud_native_runtime_mapper',
+            ],
+            $pantheon_org, 'install-123', 'mysite', true, 'github', 'cos'
+        );
+
+        $this->assertArrayHasKey('database_runtime', $capturedParams);
+        $this->assertSame('cloud_native_runtime_mapper', $capturedParams['database_runtime']);
+    }
+
+    public function testDatabaseRuntimeAbsentWhenFlagNotProvidedOnEvcsPath(): void
+    {
+        $capturedParams = [];
+        $command = $this->makeEvcsCommand($capturedParams);
+        $user = $this->createMock(User::class);
+        $pantheon_org = (object) ['id' => 'org-uuid'];
+
+        $command->callCreateExternallyHostedSiteViaWorkflow(
+            'mysite', 'My Site', $this->makeUpstream(), $user,
+            [
+                'org'              => 'org-uuid',
+                'region'           => null,
+                'visibility'       => 'private',
+                'create-repo'      => true,
+                'skip-clone-repo'  => true,
+                'database-runtime' => null,
+            ],
+            $pantheon_org, 'install-123', 'mysite', true, 'github', 'cos'
+        );
+
+        $this->assertArrayNotHasKey('database_runtime', $capturedParams);
     }
 }

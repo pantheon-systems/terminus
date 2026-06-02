@@ -74,6 +74,7 @@ class CreateCommand extends SiteCommand implements RequestAwareInterface, SiteAw
      * @option skip-clone-repo Do not clone the repository after creation. Default is false.
      * @option vcs-host Hostname of a GitHub Enterprise Server instance (e.g., ghes.example.com). Only valid with --vcs-provider=github. Must be registered via vcs:github-host:add first.
      * @option build-path Relative path within the repository to the buildable app (e.g., apps/web). For monorepos. Only valid with an external VCS provider. Defaults to the repository root.
+     * @option database-runtime Database runtime to use for the site (e.g., cloud_native_runtime_mapper). If omitted, the model default is used.
      *
      * @usage <site> <label> <upstream> Creates a new Pantheon-hosted site named <site>, labeled <label>, using code from <upstream>.
      * @usage <site> <label> <upstream> --org=<org> Creates site associated with <organization>, with a Pantheon-hosted git repository.
@@ -99,6 +100,7 @@ class CreateCommand extends SiteCommand implements RequestAwareInterface, SiteAw
             'vcs-host' => null,
             'build-path' => null,
             'vcs-token' => null,
+            'database-runtime' => null,
         ]
     ) {
         $vcs_provider = strtolower($options['vcs-provider']);
@@ -293,6 +295,10 @@ class CreateCommand extends SiteCommand implements RequestAwareInterface, SiteAw
         if ($region) {
             $workflow_options['preferred_zone'] = $region;
             $this->log()->notice('Attempting to create site in region: {region}', compact('region'));
+        }
+
+        if (!empty($options['database-runtime'])) {
+            $workflow_options['database_runtime'] = $options['database-runtime'];
         }
 
         $org = null;
@@ -750,6 +756,10 @@ class CreateCommand extends SiteCommand implements RequestAwareInterface, SiteAw
         if ($region) {
             $workflow_params['preferred_zone'] = $region;
             $this->log()->notice('Attempting to create site in region: {region}', compact('region'));
+        }
+
+        if (!empty($options['database-runtime'])) {
+            $workflow_params['database_runtime'] = $options['database-runtime'];
         }
 
         // Create the workflow
