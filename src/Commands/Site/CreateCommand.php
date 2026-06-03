@@ -942,7 +942,7 @@ class CreateCommand extends SiteCommand implements RequestAwareInterface, SiteAw
     /**
      * Validate a repo-relative build path used for monorepo deploys.
      *
-     * Mirrors the server-side validation in go-vcs-service (CheckBuildPath):
+     * Mirrors the server-side validation:
      * empty is allowed (means repo root); otherwise the path must be relative,
      * use forward slashes, contain only safe characters, and include no
      * parent-directory traversal.
