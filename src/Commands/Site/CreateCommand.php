@@ -71,6 +71,7 @@ class CreateCommand extends SiteCommand implements RequestAwareInterface, SiteAw
      * @option repository-name Name of the repository to create in the VCS provider. Only applies if --vcs-provider is not Pantheon.
      * @option skip-clone-repo Do not clone the repository after creation. Default is false.
      * @option vcs-host Hostname of a GitHub Enterprise Server instance (e.g., ghes.example.com). Only valid with --vcs-provider=github. Must be registered via vcs:github-host:add first.
+     * @option build-path Relative path within the repository to the buildable app (e.g., apps/web). For monorepos. Only valid with an external VCS provider. Defaults to the repository root.
      *
      * @usage <site> <label> <upstream> Creates a new Pantheon-hosted site named <site>, labeled <label>, using code from <upstream>.
      * @usage <site> <label> <upstream> --org=<org> Creates site associated with <organization>, with a Pantheon-hosted git repository.
@@ -94,6 +95,7 @@ class CreateCommand extends SiteCommand implements RequestAwareInterface, SiteAw
             'repository-name' => null,
             'skip-clone-repo' => false,
             'vcs-host' => null,
+            'build-path' => null,
         ]
     ) {
         $vcs_provider = strtolower($options['vcs-provider']);
@@ -136,6 +138,22 @@ class CreateCommand extends SiteCommand implements RequestAwareInterface, SiteAw
             if ($options['repository-name']) {
                 throw new TerminusException(
                     'The --repository-name option is not supported when using Pantheon as the VCS provider.'
+                );
+            }
+            if (!empty($options['build-path'])) {
+                throw new TerminusException(
+                    'The --build-path option is not supported when using Pantheon as the VCS provider.'
+                );
+            }
+        }
+
+        // Validate the build path format (relative subdir, no traversal).
+        if (!empty($options['build-path'])) {
+            $build_path_error = self::validateBuildPath($options['build-path']);
+            if ($build_path_error !== null) {
+                throw new TerminusException(
+                    'Invalid --build-path: {error}',
+                    ['error' => $build_path_error]
                 );
             }
         }
@@ -714,6 +732,12 @@ class CreateCommand extends SiteCommand implements RequestAwareInterface, SiteAw
             ],
         ];
 
+        // Forward the build path (monorepo subdir) to repository creation.
+        // Omit when empty so the backend treats it as the repo root.
+        if (!empty($options['build-path'])) {
+            $workflow_params['evcs']['build_path'] = $options['build-path'];
+        }
+
         // Add optional parameters
         if ($label) {
             $workflow_params['label'] = $label;
@@ -913,6 +937,45 @@ class CreateCommand extends SiteCommand implements RequestAwareInterface, SiteAw
                     compact('framework')
                 );
         }
+    }
+
+    /**
+     * Validate a repo-relative build path used for monorepo deploys.
+     *
+     * Mirrors the server-side validation in go-vcs-service (CheckBuildPath):
+     * empty is allowed (means repo root); otherwise the path must be relative,
+     * use forward slashes, contain only safe characters, and include no
+     * parent-directory traversal.
+     *
+     * @param string $build_path The path to validate.
+     * @return string|null Error message if invalid, or null if valid.
+     */
+    public static function validateBuildPath(string $build_path): ?string
+    {
+        if ($build_path === '') {
+            return null;
+        }
+        if (strlen($build_path) > 512) {
+            return 'build path must not exceed 512 characters';
+        }
+        if (strpos($build_path, '\\') !== false) {
+            return 'build path must use forward slashes';
+        }
+        if (strpos($build_path, '/') === 0) {
+            return 'build path must be a relative path (no leading slash)';
+        }
+        foreach (explode('/', $build_path) as $segment) {
+            if ($segment === '') {
+                return 'build path must not contain empty segments';
+            }
+            if ($segment === '.' || $segment === '..') {
+                return "build path must not contain '.' or '..' segments";
+            }
+            if (!preg_match('/^[A-Za-z0-9._-]+$/', $segment)) {
+                return sprintf('build path segment "%s" contains invalid characters', $segment);
+            }
+        }
+        return null;
     }
 
     /**
