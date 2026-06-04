@@ -395,7 +395,7 @@ class Request implements
 
         $auth_cookie_key = $config->get('auth_cookie_key');
         if ($auth_cookie_key) {
-            //$this->sensitive_data[] = 'Cookie';
+            $this->sensitive_data[] = 'Cookie';
             $headers = [
                 'Cookie' => "$auth_cookie_key={$this->session()->get('session')}",
             ];
@@ -403,7 +403,6 @@ class Request implements
                 $headers = array_merge($headers, $options['headers']);
             }
             $options['headers'] = $headers;
-
         }
 
         $method = isset($options['method']) ? strtoupper(
