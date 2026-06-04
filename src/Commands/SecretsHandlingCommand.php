@@ -25,12 +25,12 @@ class SecretsHandlingCommand implements
     use ContainerAwareTrait;
     use VcsClientAwareTrait;
 
-  /**
-   * @hook post-command secret:site:set
-   *
-   * @option $rebuild Trigger rebuild for application after setting secret (only applicable to Node sites)
-   * @default $rebuild false
-   */
+    /**
+     * @hook post-command secret:site:set
+     *
+     * @option $rebuild Trigger rebuild for application after setting secret (only applicable to Node sites)
+     * @default $rebuild false
+     */
     public function postCommand($result, CommandData $commandData)
     {
         if ($result instanceof CommandError) {

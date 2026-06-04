@@ -93,8 +93,8 @@ PHP;
                 ->get(LocalMachineHelper::class)
                 ->openUrl($url_to_open);
         } catch (\Exception $e) {
-             $this->log()->warning("Could not automatically open browser: " . $e->getMessage());
-             $this->log()->warning("Please open the URL manually: " . $url_to_open);
+            $this->log()->warning("Could not automatically open browser: " . $e->getMessage());
+            $this->log()->warning("Please open the URL manually: " . $url_to_open);
         }
 
         $minutes = (int) ($timeout / 60);
