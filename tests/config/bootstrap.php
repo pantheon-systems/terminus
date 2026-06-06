@@ -183,19 +183,49 @@ if (!getenv('TERMINUS_TESTING_RUNTIME_ENV')) {
     }
     // No sleep needed - if wake succeeded, site is ready; if failed, multidev:create will handle wake itself
 
+    // Create multidev with retry logic to handle transient failures
     $createMdCommand = sprintf('multidev:create %s.dev %s', $sitename, $multidev);
+    $maxAttempts = 3;
+    $output = [];
+    $code = 1;
 
-    exec(
-        sprintf('%s %s', TERMINUS_BIN_FILE, $createMdCommand),
-        $output,
-        $code
-    );
+    for ($attempt = 1; $attempt <= $maxAttempts; $attempt++) {
+        $log->info(sprintf('Creating multidev %s (attempt %d/%d)...', $multidev, $attempt, $maxAttempts));
+
+        exec(
+            sprintf('%s %s 2>&1', TERMINUS_BIN_FILE, $createMdCommand),
+            $output,
+            $code
+        );
+
+        if (0 === $code) {
+            $log->info(sprintf('Multidev %s created successfully', $multidev));
+            break;
+        }
+
+        $log->warning(
+            sprintf(
+                'Attempt %d/%d failed (exit code %d). Output: %s',
+                $attempt,
+                $maxAttempts,
+                $code,
+                implode("\n", $output)
+            )
+        );
+
+        if ($attempt < $maxAttempts) {
+            $log->info('Retrying immediately...');
+            $output = []; // Reset output array for next attempt
+        }
+    }
+
     if (0 !== $code) {
         /** @noinspection PhpUnhandledExceptionInspection */
         throw new Exception(
             sprintf(
-                'Command "%s" exited with non-zero code (%d). Output: %s',
-                $createMdCommand,
+                'Failed to create multidev %s after %d attempts. Last exit code: %d. Output: %s',
+                $multidev,
+                $maxAttempts,
                 $code,
                 implode("\n", $output)
             )
