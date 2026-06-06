@@ -115,7 +115,10 @@ if (!getenv('TERMINUS_TESTING_RUNTIME_ENV')) {
     $log->info(sprintf('Will create multidev: %s (run ID: %s)', $multidev, $runId));
 
     // Clean up orphaned test-* multidev environments before creating a new one.
+    // Only delete envs older than 24 hours to avoid trampling concurrent CI runs.
     $log->info('Checking for orphaned test-* multidev environments...');
+    $ageCutoff = getenv('TERMINUS_TEST_ORPHAN_AGE_HOURS') ?: 24;
+    $cutoffTimestamp = time() - ($ageCutoff * 3600);
     $listOutput = [];
     exec(
         sprintf('%s multidev:list %s --format=json', TERMINUS_BIN_FILE, $sitename),
@@ -125,28 +128,41 @@ if (!getenv('TERMINUS_TESTING_RUNTIME_ENV')) {
     if (0 === $listCode && !empty($listOutput)) {
         $multidevs = json_decode(implode('', $listOutput), true);
         if (is_array($multidevs)) {
-            // Only treat test-* multidevs older than a day as orphaned. Newer
-            // ones may belong to other CI runs executing concurrently, and
-            // deleting those would break the in-flight run that created them.
-            $orphanCutoff = time() - 86400;
-            $testEnvs = array_filter($multidevs, function ($env, $id) use ($orphanCutoff) {
-                if (!str_starts_with($id, 'test-')) {
+            // Filter for test multidevs matching our naming scheme (t + 10 chars)
+            // and older than the cutoff to avoid trampling concurrent CI runs
+            $testEnvs = array_filter($multidevs, function ($env, $id) use ($cutoffTimestamp) {
+                if (!str_starts_with($id, 't') || strlen($id) !== 11) {
                     return false;
                 }
-                $created = $env['created'] ?? null;
-                return is_numeric($created) && (int) $created < $orphanCutoff;
+                $created = $env['created'] ?? 0;
+                return is_numeric($created) && (int) $created < $cutoffTimestamp;
             }, ARRAY_FILTER_USE_BOTH);
             if (!empty($testEnvs)) {
-                $log->info(sprintf('Found %d orphaned test-* multidev(s), deleting...', count($testEnvs)));
+                $log->info(sprintf('Found %d orphaned test multidev(s), deleting...', count($testEnvs)));
                 foreach ($testEnvs as $id => $env) {
-                    $log->info(sprintf('Deleting orphaned multidev: %s', $id));
+                    $ageHours = round((time() - ($env['created'] ?? 0)) / 3600, 1);
+                    $log->info(sprintf('Deleting orphaned multidev: %s (age: %s hours)', $id, $ageHours));
                     exec(
                         sprintf('%s multidev:delete %s.%s --delete-branch --yes', TERMINUS_BIN_FILE, $sitename, $id),
                         $delOutput,
                         $delCode
                     );
                     if (0 !== $delCode) {
-                        $log->warning(sprintf('Failed to delete orphaned multidev %s (exit code %d)', $id, $delCode));
+                        $outputStr = implode(' ', $delOutput);
+                        // 404 errors are fine - env already deleted
+                        if (strpos($outputStr, 'was not found') !== false || strpos($outputStr, '404') !== false) {
+                            $log->info(sprintf('Multidev %s already deleted (404)', $id));
+                        } else {
+                            $log->warning(
+                                sprintf(
+                                    'Failed to delete orphaned multidev %s (exit code %d): %s',
+                                    $id,
+                                    $delCode,
+                                    $outputStr
+                                )
+                            );
+                        }
+                        // Don't throw - cleanup failure shouldn't block test execution
                     }
                 }
             }
