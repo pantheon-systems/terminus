@@ -236,6 +236,7 @@ if (!getenv('TERMINUS_TESTING_RUNTIME_ENV')) {
 
     register_shutdown_function(function () use ($sitename, $multidev, $log) {
         // Delete a testing runtime multidev environment.
+<<<<<<< HEAD
         // The platform occasionally returns a transient error for this command
         // (e.g. an erroneous "environment was not found" message), so retry a
         // few times before treating the failure as fatal.
@@ -277,6 +278,34 @@ if (!getenv('TERMINUS_TESTING_RUNTIME_ENV')) {
                 $code,
                 $maxAttempts
             ));
+=======
+        $log->info(sprintf('Cleaning up multidev: %s', $multidev));
+        $deleteMdCommand = sprintf('multidev:delete %s.%s --delete-branch --yes', $sitename, $multidev);
+        exec(
+            sprintf('%s %s 2>&1', TERMINUS_BIN_FILE, $deleteMdCommand),
+            $output,
+            $code
+        );
+
+        if (0 !== $code) {
+            $outputStr = implode(' ', $output);
+            // 404 errors are fine - env may have been manually deleted or never created
+            if (strpos($outputStr, 'was not found') !== false || strpos($outputStr, '404') !== false) {
+                $log->info(sprintf('Multidev %s not found during cleanup (already deleted)', $multidev));
+            } else {
+                $log->warning(
+                    sprintf(
+                        'Failed to delete multidev %s (exit code %d): %s',
+                        $multidev,
+                        $code,
+                        $outputStr
+                    )
+                );
+            }
+            // Don't throw - cleanup failure shouldn't break test reporting
+        } else {
+            $log->info(sprintf('Multidev %s deleted successfully', $multidev));
+>>>>>>> ae5d3fd2 (test: improve shutdown cleanup error handling and logging)
         }
     });
 }
