@@ -169,6 +169,20 @@ if (!getenv('TERMINUS_TESTING_RUNTIME_ENV')) {
         }
     }
 
+    // Wake the source environment before creating multidev to prevent "Failed to wake" errors
+    $log->info('Ensuring source environment is awake...');
+    exec(
+        sprintf('%s env:wake %s.dev --quiet 2>&1', TERMINUS_BIN_FILE, $sitename),
+        $wakeOutput,
+        $wakeCode
+    );
+    if (0 !== $wakeCode) {
+        $log->warning('Failed to wake dev environment, proceeding anyway (site may be waking)...');
+    } else {
+        $log->info('Source environment is awake');
+    }
+    // No sleep needed - if wake succeeded, site is ready; if failed, multidev:create will handle wake itself
+
     $createMdCommand = sprintf('multidev:create %s.dev %s', $sitename, $multidev);
 
     exec(
