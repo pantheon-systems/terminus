@@ -103,6 +103,17 @@ if (!getenv('TERMINUS_TESTING_RUNTIME_ENV')) {
     // Create a testing runtime multidev environment.
     $sitename = TerminusTestBase::getSiteName();
 
+    // Generate unique multidev name scoped to this CI run to prevent concurrent runs from interfering
+    $runId = getenv('GITHUB_RUN_ID');
+    if (!$runId) {
+        // Fallback for local runs: use username + timestamp
+        $username = getenv('USER') ?: 'local';
+        $runId = substr($username, 0, 5) . substr((string)time(), -5);
+    }
+    // Max multidev name length is 11 chars, prefix with 't' for 'test'
+    $multidev = 't' . substr($runId, -10, 10);
+    $log->info(sprintf('Will create multidev: %s (run ID: %s)', $multidev, $runId));
+
     // Clean up orphaned test-* multidev environments before creating a new one.
     $log->info('Checking for orphaned test-* multidev environments...');
     $listOutput = [];
@@ -142,7 +153,6 @@ if (!getenv('TERMINUS_TESTING_RUNTIME_ENV')) {
         }
     }
 
-    $multidev = sprintf('test-%s', substr(uniqid(), -6, 6));
     $createMdCommand = sprintf('multidev:create %s.dev %s', $sitename, $multidev);
 
     exec(
