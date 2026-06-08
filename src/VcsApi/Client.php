@@ -217,16 +217,27 @@ class Client implements ConfigAwareInterface
     /**
      * Get auth links.
      */
-    public function getAuthLinks(string $org_uuid, string $user_uuid, string $site_type, string $callback_url): array
-    {
+    public function getAuthLinks(
+        string $org_uuid,
+        string $user_uuid,
+        string $site_type,
+        string $callback_url,
+        ?string $github_host = null
+    ): array {
+        $json = [
+            'user_uuid' => $user_uuid,
+            'org_uuid' => $org_uuid,
+            'site_type' => $site_type,
+            'redirect_uri' => $callback_url,
+        ];
+
+        if ($github_host !== null) {
+            $json['github_host'] = $github_host;
+        }
+
         $request_options = [
             'method' => 'POST',
-            'json' => [
-                'user_uuid' => $user_uuid,
-                'org_uuid' => $org_uuid,
-                'site_type' => $site_type,
-                'redirect_uri' => $callback_url,
-            ],
+            'json' => $json,
         ];
 
         return $this->requestApi('installation/auth', $request_options, "X-Pantheon-Session");
@@ -273,6 +284,37 @@ class Client implements ConfigAwareInterface
         );
 
         return $this->requestApi($path, $request_options, "X-Pantheon-Session");
+    }
+
+    /**
+     * Get the GHES app manifest for provisioning.
+     *
+     * @throws \Pantheon\Terminus\Exceptions\TerminusException
+     */
+    public function getProvisionManifest(string $hostname): array
+    {
+        $request_options = [
+            'method' => 'GET',
+        ];
+
+        $path = 'provision/manifest?hostname=' . urlencode($hostname);
+
+        return $this->requestApi($path, $request_options, "X-Pantheon-Session");
+    }
+
+    /**
+     * Provision a GHES instance with app credentials.
+     *
+     * @throws \Pantheon\Terminus\Exceptions\TerminusException
+     */
+    public function provision(array $data): array
+    {
+        $request_options = [
+            'method' => 'POST',
+            'json' => $data,
+        ];
+
+        return $this->requestApi('provision', $request_options, "X-Pantheon-Session");
     }
 
     /**
@@ -357,7 +399,7 @@ class Client implements ConfigAwareInterface
         if ($config->get('host') && false !== strpos($config->get('host'), 'hermes.sandbox-')) {
             return str_replace('hermes', 'pantheonapi', $config->get('host'));
         }
-        if (!$host && strpos($config->get('host'), 'sandbox-') !== false) {
+        if ($config->get('host') && strpos($config->get('host'), 'sandbox-') !== false) {
             return $config->get('host');
         }
 

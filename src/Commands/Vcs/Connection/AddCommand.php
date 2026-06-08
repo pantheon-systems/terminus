@@ -41,6 +41,7 @@ class AddCommand extends TerminusCommand implements RequestAwareInterface
      *
      * @param string $organization Organization name, label, or ID.
      * @option vcs-provider VCS provider for the site repository (e.g., github, pantheon). Default (and only) is github.
+     * @option vcs-host Hostname of a GitHub Enterprise Server instance (e.g., ghes.example.com). Must be registered via vcs:github-host:add first.
      *
      * @throws \Pantheon\Terminus\Exceptions\TerminusException
      *
@@ -48,6 +49,7 @@ class AddCommand extends TerminusCommand implements RequestAwareInterface
      */
     public function connectionAdd(string $organization, array $options = [
         'vcs-provider' => 'github',
+        'vcs-host' => null,
     ])
     {
         $vcsProvider = $options['vcs-provider'] ?? 'github';
@@ -69,17 +71,19 @@ class AddCommand extends TerminusCommand implements RequestAwareInterface
         $this->connectGithub($organization, $options);
     }
 
-    public function connectGithub($organization)
+    public function connectGithub($organization, array $options = [])
     {
         list($url, $flag_file, $process) = $this->startTemporaryServer();
         // Store the process so we can stop it later.
         $this->serverProcess = $process;
 
+        $github_host = $options['vcs-host'] ?? null;
         $auth_links_resp = $this->getVcsClient()->getAuthLinks(
             $organization->id,
             $this->session()->getUser()->id,
             "cms-drupal",
-            $url
+            $url,
+            $github_host
         );
         $auth_links = $auth_links_resp['data'] ?? null;
         $this->log()->debug('VCS Auth Links: {auth_links}', ['auth_links' => print_r($auth_links, true)]);

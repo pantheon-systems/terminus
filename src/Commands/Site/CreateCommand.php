@@ -61,7 +61,7 @@ class CreateCommand extends SiteCommand implements RequestAwareInterface, SiteAw
      * @param string $site_name Site name (machine name)
      * @param string $label Site label (human-readable name)
      * @param string $upstream_id Upstream name or UUID (e.g., wordpress, drupal-composer-managed)
-     * @option org Organization name, label, or ID (required starting Q2 2026). Required if --vcs-provider=github is used.
+     * @option org Organization name, label, or ID (required).
      * @option region Specify the service region where the site should be created. See documentation for valid regions.
      * @option vcs-provider VCS provider for the site repository (e.g., github, pantheon). Default is pantheon.
      * @option vcs-org Name of the Github organization containing the repository. Required if --vcs-provider=github is used.
@@ -70,6 +70,7 @@ class CreateCommand extends SiteCommand implements RequestAwareInterface, SiteAw
      * @option create-repo Whether to create a repository in the VCS provider. Default is true.
      * @option repository-name Name of the repository to create in the VCS provider. Only applies if --vcs-provider is not Pantheon.
      * @option skip-clone-repo Do not clone the repository after creation. Default is false.
+     * @option vcs-host Hostname of a GitHub Enterprise Server instance (e.g., ghes.example.com). Only valid with --vcs-provider=github. Must be registered via vcs:github-host:add first.
      *
      * @usage <site> <label> <upstream> Creates a new Pantheon-hosted site named <site>, labeled <label>, using code from <upstream>.
      * @usage <site> <label> <upstream> --org=<org> Creates site associated with <organization>, with a Pantheon-hosted git repository.
@@ -92,10 +93,17 @@ class CreateCommand extends SiteCommand implements RequestAwareInterface, SiteAw
             'create-repo' => true,
             'repository-name' => null,
             'skip-clone-repo' => false,
+            'vcs-host' => null,
         ]
     ) {
         $vcs_provider = strtolower($options['vcs-provider']);
         $org_id = $options['org'];
+
+        if (!empty($options['vcs-host']) && $vcs_provider !== 'github') {
+            throw new TerminusException(
+                'The --vcs-host option is only valid with --vcs-provider=github.'
+            );
+        }
 
         // Validate VCS provider
         if (!in_array($vcs_provider, $this->vcs_providers)) {
@@ -268,56 +276,46 @@ class CreateCommand extends SiteCommand implements RequestAwareInterface, SiteAw
 
         $org = null;
         $org_id = $options['org'];
-        if ($org_id !== null) {
-            try {
-                // It's better to get the membership first, then the organization
-                $membership = $user->getOrganizationMemberships()->get($org_id);
-                $org = $membership->getOrganization();
-                $workflow_options['organization_id'] = $org->id;
-                $this->log()->notice('Associating site with organization: {org_label} ({org_id})', [
-                    'org_label' => $org->get('profile')->name,
-                    'org_id' => $org->id,
-                ]);
-            } catch (TerminusNotFoundException $e) {
-                throw new TerminusException(
-                    'Organization "{org}" not found or you are not a member.',
-                    ['org' => $org_id]
-                );
-            } catch (\Exception $e) {
-                // Catch other potential errors during org fetching
-                throw new TerminusException(
-                    'Error retrieving organization "{org}": {message}',
-                    ['org' => $org_id, 'message' => $e->getMessage()]
-                );
-            }
-        } else {
-            $this->log()->warning(
-                'Starting in Q2 2026, all new sites will be required to belong to an organization. '
-                . 'Use the --org option to specify an organization when creating a site.'
+        if ($org_id === null) {
+            throw new TerminusException(
+                'Site creation requires an organization. Use the --org option to specify one. '
+                . 'Example: terminus site:create {site_name} {label} {upstream_id} --org=<org-name>',
+                compact('site_name', 'label', 'upstream_id')
+            );
+        }
+
+        try {
+            // It's better to get the membership first, then the organization
+            $membership = $user->getOrganizationMemberships()->get($org_id);
+            $org = $membership->getOrganization();
+            $workflow_options['organization_id'] = $org->id;
+            $this->log()->notice('Associating site with organization: {org_label} ({org_id})', [
+                'org_label' => $org->get('profile')->name,
+                'org_id' => $org->id,
+            ]);
+        } catch (TerminusNotFoundException $e) {
+            throw new TerminusException(
+                'Organization "{org}" not found or you are not a member.',
+                ['org' => $org_id]
+            );
+        } catch (\Exception $e) {
+            // Catch other potential errors during org fetching
+            throw new TerminusException(
+                'Error retrieving organization "{org}": {message}',
+                ['org' => $org_id, 'message' => $e->getMessage()]
             );
         }
 
         // Create the site record via Pantheon API
         $this->log()->notice('Submitting site creation request to Pantheon API...');
         $workflow = $this->sites()->create($workflow_options);
-        try {
-            $this->processWorkflow($workflow);
-        } catch (TerminusException $e) {
-            if (is_null($options['org']) && stripos($e->getMessage(), 'organization') !== false) {
-                throw new TerminusException(
-                    'Site creation requires an organization. Use the --org option to specify one. '
-                    . 'Example: terminus site:create {site_name} {label} {upstream_id} --org=<org-name>',
-                    compact('site_name', 'label', 'upstream_id')
-                );
-            }
-            throw $e;
-        }
+        $this->processWorkflow($workflow);
         $this->log()->notice('Pantheon site record created successfully.');
 
         // Deploy the upstream CMS code
         $site_id = $workflow->get('waiting_for_task')->site_id ?? null;
         if (!$site_id) {
-             throw new TerminusException('Could not get site ID from site creation workflow.');
+            throw new TerminusException('Could not get site ID from site creation workflow.');
         }
 
         if ($site = $this->getSiteById($site_id)) {
@@ -413,10 +411,10 @@ class CreateCommand extends SiteCommand implements RequestAwareInterface, SiteAw
                 );
             }
         } catch (TerminusNotFoundException $e) {
-             $this->log()->warning(
-                 'Dev environment not found immediately after site creation. It might still be provisioning.'
-             );
-             $this->log()->debug('TerminusNotFoundException: {message}', ['message' => $e->getMessage()]);
+            $this->log()->warning(
+                'Dev environment not found immediately after site creation. It might still be provisioning.'
+            );
+            $this->log()->debug('TerminusNotFoundException: {message}', ['message' => $e->getMessage()]);
         } catch (\Exception $e) {
             $this->log()->error(
                 'An error occurred while waiting for the site to wake: {message}',
@@ -482,7 +480,8 @@ class CreateCommand extends SiteCommand implements RequestAwareInterface, SiteAw
         // Store the process so we can stop it later.
         $this->serverProcess = $process;
 
-        $auth_links_resp = $vcs_client->getAuthLinks($pantheon_org->id, $user->id, $site_type, $url);
+        $github_host = $options['vcs-host'] ?? null;
+        $auth_links_resp = $vcs_client->getAuthLinks($pantheon_org->id, $user->id, $site_type, $url, $github_host);
         $auth_links = $auth_links_resp['data'] ?? null;
         $this->log()->debug('VCS Auth Links: {auth_links}', ['auth_links' => print_r($auth_links, true)]);
         $auth_url = null;
@@ -521,7 +520,8 @@ class CreateCommand extends SiteCommand implements RequestAwareInterface, SiteAw
                 $installations[$installation->installation_id] = new Installation(
                     $installation->installation_id,
                     $installation->alias,
-                    $installation->login_name
+                    $installation->login_name,
+                    $installation->hostname ?? null
                 );
                 $instKey = strtolower($installation->login_name);
                 $installations_map[$instKey] = $installation->installation_id;
@@ -548,7 +548,16 @@ class CreateCommand extends SiteCommand implements RequestAwareInterface, SiteAw
         //   - If it matches an existing installation, use that; otherwise, assume the option was NOT provided
         // If vcs_org is NOT provided, present the user with a list of existing installations and the option for a new one.
         if ($vcs_org) {
-            if (isset($installations_map[$vcs_org])) {
+            if ($github_host) {
+                // Filter by both login name and hostname
+                foreach ($installations as $id => $inst) {
+                    if (strtolower($inst->getLoginName()) === $vcs_org && $inst->getHostname() === $github_host) {
+                        $installation_id = $id;
+                        $installation_human_name = $vcs_org;
+                        break;
+                    }
+                }
+            } elseif (isset($installations_map[$vcs_org])) {
                 $installation_id = $installations_map[$vcs_org];
                 $installation_human_name = $vcs_org;
             }
@@ -567,11 +576,14 @@ class CreateCommand extends SiteCommand implements RequestAwareInterface, SiteAw
                 // Prompt user to choose from existing or add new
                 $choices = [];
                 foreach ($installations as $id => $inst) {
+                    $hostname = $inst->getHostname();
+                    $host_suffix = ($hostname !== 'github.com') ? sprintf(' @ %s', $hostname) : '';
                     $choices[$inst->getLoginName()] = sprintf(
-                        "%s: %s (%s)",
+                        "%s: %s (%s)%s",
                         $inst->getVendor(),
                         $inst->getLoginName(),
-                        $id
+                        $id,
+                        $host_suffix
                     );
                 }
                 $choices[self::ADD_NEW_ORG_TEXT] = 'new';
@@ -604,7 +616,7 @@ class CreateCommand extends SiteCommand implements RequestAwareInterface, SiteAw
 
         // Ensure we have determined the installation ID and target org name
         if (is_null($installation_id)) {
-             throw new TerminusException('Could not determine GitHub installation.');
+            throw new TerminusException('Could not determine GitHub installation.');
         }
 
         $existing_installation = true;
