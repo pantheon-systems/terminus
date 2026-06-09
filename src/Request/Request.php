@@ -327,9 +327,6 @@ class Request implements
 
             $data = (array)$resp['data'];
             if (count($data) > 0) {
-                if (count($data) < $limit) {
-                    $finished = true;
-                }
                 $start = end($data)->id;
 
                 // If the last item of the results has previously been received,
@@ -365,6 +362,8 @@ class Request implements
      */
     public function request($path, array $options = []): RequestOperationResult
     {
+        $config = $this->getConfig();
+
         // Set headers.
         $parts = explode('/', $path);
         $part = array_pop($parts);
@@ -394,6 +393,18 @@ class Request implements
             unset($options['form_params']);
             $headers['Content-Type'] = 'application/json';
             $headers['Content-Length'] = strlen($body);
+        }
+
+        $auth_cookie_key = $config->get('auth_cookie_key');
+        if ($auth_cookie_key) {
+            $this->sensitive_data[] = 'Cookie';
+            $headers = [
+                'Cookie' => "$auth_cookie_key={$this->session()->get('session')}",
+            ];
+            if (isset($options['headers'])) {
+                $headers = array_merge($headers, $options['headers']);
+            }
+            $options['headers'] = $headers;
         }
 
         $method = isset($options['method']) ? strtoupper(

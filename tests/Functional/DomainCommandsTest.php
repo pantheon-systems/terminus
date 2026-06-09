@@ -16,6 +16,7 @@ class DomainCommandsTest extends TerminusTestBase
      * @covers \Pantheon\Terminus\Commands\Domain\ListCommand
      * @covers \Pantheon\Terminus\Commands\Domain\LookupCommand
      * @covers \Pantheon\Terminus\Commands\Domain\RemoveCommand
+     * @covers \Pantheon\Terminus\Commands\Domain\VerifyCommand
      * @covers \Pantheon\Terminus\Commands\Domain\Primary\AddCommand
      * @covers \Pantheon\Terminus\Commands\Domain\Primary\RemoveCommand
      *
@@ -37,6 +38,26 @@ class DomainCommandsTest extends TerminusTestBase
         $domainList = $this->terminusJsonResponse(sprintf('domain:list %s', $siteEnv));
         $domains = array_column($domainList, 'id');
         $this->assertContains($testDomain, $domains, 'Domain list should contain added domain');
+
+        // Verify domain ownership - expected to report not yet verified since no TXT record exists.
+        // The command should return TXT record details or a pending verification warning.
+        $verifyOutput = $this->terminusWithStderrRedirected(
+            sprintf('domain:verify %s %s', $siteEnv, $testDomain)
+        );
+        $this->assertNotEmpty($verifyOutput, 'domain:verify should produce output');
+        $this->assertStringContainsString(
+            'not been verified yet',
+            $verifyOutput,
+            'domain:verify should indicate the domain is not yet verified'
+        );
+        // If the API returns a TXT token, the output should include TXT record instructions.
+        if (str_contains($verifyOutput, 'TXT record')) {
+            $this->assertStringContainsString(
+                '_acme-challenge.' . $testDomain,
+                $verifyOutput,
+                'domain:verify should display the expected TXT record name'
+            );
+        }
 
         $lookUpResult = $this->terminusJsonResponse(sprintf('domain:lookup %s', $testDomain));
         $this->assertIsArray($lookUpResult);

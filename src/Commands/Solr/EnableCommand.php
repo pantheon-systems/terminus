@@ -27,9 +27,17 @@ class EnableCommand extends TerminusCommand implements SiteAwareInterface
      * @param string $site_id Site name
      *
      * @usage <site> Enables Solr add-on for <site>.
+     *
+     * @deprecated Use 'search:enable --flavor=solr' instead. This command will be removed in a future version.
      */
     public function enable($site_id)
     {
+        $this->log()->warning(
+            'The "solr:enable" command is deprecated. ' .
+            'Please use "search:enable --flavor=solr" instead. ' .
+            'This command will be removed in a future version of Terminus.'
+        );
+
         $site = $this->getSiteById($site_id);
         $workflow = $site->getSolr()->enable();
         $this->processWorkflow($workflow);

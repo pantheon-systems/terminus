@@ -34,7 +34,7 @@ These packages are required to take full advantage of Terminus.
 
 - [Composer 2](https://getcomposer.org) (Needed for the plugin manager component)
 
-- [PHP](https://www.php.net) (v7.4+)
+- [PHP](https://www.php.net) (v8.2+)
 
 - [Git](https://help.github.com/articles/set-up-git/) (May be needed for the plugin manager component)
 
