@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "3248a03842fe8cb04abdc3f773adca97",
+    "content-hash": "21c93101d2ae0aa1843c521354e7dd80",
     "packages": [
         {
             "name": "composer/semver",
@@ -4285,40 +4285,6 @@
             "time": "2025-08-01T08:46:24+00:00"
         },
         {
-            "name": "pcov/clobber",
-            "version": "v2.0.3",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/krakjoe/pcov-clobber.git",
-                "reference": "4c30759e912e6e5d5bf833fb3d77b5bd51709f05"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/krakjoe/pcov-clobber/zipball/4c30759e912e6e5d5bf833fb3d77b5bd51709f05",
-                "reference": "4c30759e912e6e5d5bf833fb3d77b5bd51709f05",
-                "shasum": ""
-            },
-            "require": {
-                "ext-pcov": "^1.0",
-                "nikic/php-parser": "^4.2"
-            },
-            "bin": [
-                "bin/pcov"
-            ],
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "pcov\\Clobber\\": "src/pcov/clobber"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "support": {
-                "issues": "https://github.com/krakjoe/pcov-clobber/issues",
-                "source": "https://github.com/krakjoe/pcov-clobber/tree/v2.0.3"
-            },
-            "time": "2019-10-29T05:03:37+00:00"
-        },
-        {
             "name": "phar-io/manifest",
             "version": "2.0.4",
             "source": {
@@ -4754,68 +4720,6 @@
                 }
             ],
             "time": "2020-10-26T13:16:10+00:00"
-        },
-        {
-            "name": "phpunit/phpcov",
-            "version": "8.2.1",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/sebastianbergmann/phpcov.git",
-                "reference": "8ec45dde34a84914a0ace355fbd6d7af2242c9a4"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpcov/zipball/8ec45dde34a84914a0ace355fbd6d7af2242c9a4",
-                "reference": "8ec45dde34a84914a0ace355fbd6d7af2242c9a4",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=7.3",
-                "phpunit/php-code-coverage": "^9.2",
-                "phpunit/php-file-iterator": "^3.0",
-                "phpunit/phpunit": "^9.3",
-                "sebastian/cli-parser": "^1.0",
-                "sebastian/diff": "^4.0",
-                "sebastian/version": "^3.0"
-            },
-            "bin": [
-                "phpcov"
-            ],
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "8.2-dev"
-                }
-            },
-            "autoload": {
-                "classmap": [
-                    "src/"
-                ]
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "BSD-3-Clause"
-            ],
-            "authors": [
-                {
-                    "name": "Sebastian Bergmann",
-                    "email": "sebastian@phpunit.de",
-                    "role": "lead"
-                }
-            ],
-            "description": "CLI frontend for php-code-coverage",
-            "homepage": "https://github.com/sebastianbergmann/phpcov",
-            "support": {
-                "issues": "https://github.com/sebastianbergmann/phpcov/issues",
-                "source": "https://github.com/sebastianbergmann/phpcov/tree/8.2.1"
-            },
-            "funding": [
-                {
-                    "url": "https://github.com/sebastianbergmann",
-                    "type": "github"
-                }
-            ],
-            "time": "2022-03-24T12:07:05+00:00"
         },
         {
             "name": "phpunit/phpunit",
@@ -7383,9 +7287,7 @@
         "php": ">=8.2",
         "ext-json": "*"
     },
-    "platform-dev": {
-        "ext-pcov": "*"
-    },
+    "platform-dev": {},
     "platform-overrides": {
         "php": "8.2.26"
     },

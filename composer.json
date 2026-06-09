@@ -32,13 +32,9 @@
     "twig/twig": "^3.3"
   },
   "require-dev": {
-    "ext-pcov": "*",
     "behat/behat": "^3.2.2",
     "erusev/parsedown": "^1.7",
     "friendsofphp/php-cs-fixer": "^3.17",
-    "pcov/clobber": "^2.0",
-    "phpunit/php-code-coverage": "^9.2",
-    "phpunit/phpcov": "^8.2",
     "phpunit/phpunit": "^9",
     "squizlabs/php_codesniffer": "^3.5",
     "wdalmut/php-deb-packager": "^0.0.14"
@@ -114,13 +110,13 @@
       "vendor/bin/phpunit --colors=always -c ./phpunit-unit.xml --do-not-cache-result --verbose"
     ],
     "test:short": [
-      "XDEBUG_MODE=coverage vendor/bin/phpunit --colors=always -c ./phpunit.xml --debug --group=short --do-not-cache-result --verbose --stop-on-failure"
+      "vendor/bin/phpunit --colors=always -c ./phpunit.xml --debug --group=short --do-not-cache-result --verbose --stop-on-failure"
     ],
     "test:long": [
-      "XDEBUG_MODE=coverage vendor/bin/phpunit --colors=always -c ./phpunit.xml --debug --group=long --do-not-cache-result --verbose"
+      "vendor/bin/phpunit --colors=always -c ./phpunit.xml --debug --group=long --do-not-cache-result --verbose"
     ],
     "test:functional": [
-      "XDEBUG_MODE=coverage vendor/bin/phpunit --colors=always -c ./phpunit.xml --debug --group=short,long --do-not-cache-result --verbose",
+      "vendor/bin/phpunit --colors=always -c ./phpunit.xml --debug --group=short,long --do-not-cache-result --verbose",
       "@coverage"
     ],
     "test:all": [
