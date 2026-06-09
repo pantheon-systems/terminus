@@ -18,53 +18,6 @@ use PHPUnit\Framework\TestCase;
 abstract class UnitTestCase extends TestCase
 {
     /**
-     * Create a mock object with optional method stubs.
-     *
-     * @param string $className The class to mock
-     * @param array<string, mixed> $methods Method name => return value pairs
-     * @return object The mock object
-     */
-    protected function createMockWithMethods(string $className, array $methods = []): object
-    {
-        $mock = $this->createMock($className);
-
-        foreach ($methods as $method => $returnValue) {
-            $mock->method($method)->willReturn($returnValue);
-        }
-
-        return $mock;
-    }
-
-    /**
-     * Get a private or protected property value from an object.
-     *
-     * @param object $object The object
-     * @param string $propertyName The property name
-     * @return mixed The property value
-     */
-    protected function getPrivateProperty(object $object, string $propertyName): mixed
-    {
-        $reflection = new \ReflectionClass($object);
-        $property = $reflection->getProperty($propertyName);
-
-        return $property->getValue($object);
-    }
-
-    /**
-     * Set a private or protected property value on an object.
-     *
-     * @param object $object The object
-     * @param string $propertyName The property name
-     * @param mixed $value The value to set
-     */
-    protected function setPrivateProperty(object $object, string $propertyName, mixed $value): void
-    {
-        $reflection = new \ReflectionClass($object);
-        $property = $reflection->getProperty($propertyName);
-        $property->setValue($object, $value);
-    }
-
-    /**
      * Call a private or protected method on an object.
      *
      * @param object $object The object
