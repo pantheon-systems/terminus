@@ -37,10 +37,82 @@ parameters:
 			path: src/Commands/Local/DockerizeCommand.php
 
 		-
+			message: '#^Call to an undefined method Pantheon\\Terminus\\Commands\\Org\\People\\AddCommand\:\:getSiteById\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Commands/Org/People/AddCommand.php
+
+		-
+			message: '#^Call to an undefined method Pantheon\\Terminus\\Commands\\Org\\People\\RemoveCommand\:\:getSiteById\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Commands/Org/People/RemoveCommand.php
+
+		-
+			message: '#^Call to an undefined method Pantheon\\Terminus\\Commands\\Org\\People\\RoleCommand\:\:getSiteById\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Commands/Org/People/RoleCommand.php
+
+		-
+			message: '#^Anonymous function has an unused use \$output\.$#'
+			identifier: closure.unusedUse
+			count: 1
+			path: src/Commands/Remote/SSHBaseCommand.php
+
+		-
+			message: '#^Anonymous function has an unused use \$stderr\.$#'
+			identifier: closure.unusedUse
+			count: 1
+			path: src/Commands/Remote/SSHBaseCommand.php
+
+		-
+			message: '#^Undefined variable\: \$output$#'
+			identifier: variable.undefined
+			count: 1
+			path: src/Commands/Remote/SSHBaseCommand.php
+
+		-
+			message: '#^Undefined variable\: \$stderr$#'
+			identifier: variable.undefined
+			count: 1
+			path: src/Commands/Remote/SSHBaseCommand.php
+
+		-
+			message: '#^Method Pantheon\\Terminus\\Commands\\Secret\\Site\\LocalGenerateCommand\:\:localGenerateSecrets\(\) should return Consolidation\\OutputFormatters\\StructuredData\\RowsOfFields but return statement is missing\.$#'
+			identifier: return.missing
+			count: 1
+			path: src/Commands/Secret/Site/LocalGenerateCommand.php
+
+		-
+			message: '#^Call to an undefined method Pantheon\\Terminus\\Commands\\SecretsHandlingCommand\:\:getConfig\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Commands/SecretsHandlingCommand.php
+
+		-
 			message: '#^Variable \$project on left side of \?\? always exists and is not nullable\.$#'
 			identifier: nullCoalesce.variable
 			count: 2
 			path: src/Commands/Self/Plugin/SearchCommand.php
+
+		-
+			message: '#^Call to function compact\(\) contains undefined variable \$upstream_id\.$#'
+			identifier: variable.undefined
+			count: 1
+			path: src/Commands/Site/CreateCommand.php
+
+		-
+			message: '#^Method Pantheon\\Terminus\\Commands\\Site\\CreateCommand\:\:handleGitLabNewInstallation\(\) invoked with 1 parameter, 2 required\.$#'
+			identifier: arguments.count
+			count: 1
+			path: src/Commands/Site/CreateCommand.php
+
+		-
+			message: '#^Variable \$helper might not be defined\.$#'
+			identifier: variable.undefined
+			count: 1
+			path: src/Commands/Site/CreateCommand.php
 
 		-
 			message: '#^Variable \$framework on left side of \?\? always exists and is not nullable\.$#'
@@ -57,12 +129,6 @@ parameters:
 		-
 			message: '#^Variable \$matches in empty\(\) always exists and is not falsy\.$#'
 			identifier: empty.variable
-			count: 1
-			path: src/Config/TerminusConfig.php
-
-		-
-			message: '#^Variable \$name on left side of \?\? always exists and is not nullable\.$#'
-			identifier: nullCoalesce.variable
 			count: 1
 			path: src/Config/TerminusConfig.php
 
@@ -88,30 +154,6 @@ parameters:
 			path: src/Helpers/CommandCoverageReport.php
 
 		-
-			message: '#^Instantiated class Pantheon\\Terminus\\Helpers\\Utility\\ReflectionClass not found\.$#'
-			identifier: class.notFound
-			count: 1
-			path: src/Helpers/Utility/DocBlock.php
-
-		-
-			message: '#^Instantiated class Pantheon\\Terminus\\Helpers\\Utility\\ReflectionFunction not found\.$#'
-			identifier: class.notFound
-			count: 1
-			path: src/Helpers/Utility/DocBlock.php
-
-		-
-			message: '#^Instantiated class Pantheon\\Terminus\\Helpers\\Utility\\ReflectionMethod not found\.$#'
-			identifier: class.notFound
-			count: 1
-			path: src/Helpers/Utility/DocBlock.php
-
-		-
-			message: '#^Instantiated class Pantheon\\Terminus\\Helpers\\Utility\\ReflectionProperty not found\.$#'
-			identifier: class.notFound
-			count: 1
-			path: src/Helpers/Utility/DocBlock.php
-
-		-
 			message: '#^Variable \$from_env_id might not be defined\.$#'
 			identifier: variable.undefined
 			count: 2
@@ -134,12 +176,6 @@ parameters:
 			identifier: return.missing
 			count: 1
 			path: src/Models/SSHKey.php
-
-		-
-			message: '#^Access to an undefined property Pantheon\\Terminus\\Models\\Site\:\:\$framework\.$#'
-			identifier: property.notFound
-			count: 1
-			path: src/Models/Site.php
 
 		-
 			message: '#^Class Pantheon\\Terminus\\Models\\WorkflowLogsCollection not found\.$#'
