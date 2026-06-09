@@ -79,7 +79,7 @@ jobs:
       HOMBEBREW_NO_AUTO_UPDATE: 1
     needs: [ checkout_build ]
     steps:
-      - name: Install SSH key is failing
+      - name: Install SSH key
         uses: webfactory/ssh-agent@a6f90b1f127823b31d4d4a8d96047790581349bd # v0.9.1
         with:
           ssh-private-key: ${{ secrets.TERMINUS_SITE_OWNER_SSH_PRIVATE_KEY }}
