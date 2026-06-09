@@ -24,7 +24,7 @@
     "consolidation/site-alias": "^4.0",
     "czproject/git-php": "^4.0",
     "guzzlehttp/guzzle": "^7.0",
-    "justinrainbow/json-schema": "^5.2",
+    "justinrainbow/json-schema": "^6.9",
     "league/container": "^4.2",
     "monolog/monolog": "^3.10",
     "psy/psysh": "^0.12.6",
