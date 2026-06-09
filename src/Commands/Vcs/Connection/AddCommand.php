@@ -44,7 +44,7 @@ class AddCommand extends TerminusCommand implements RequestAwareInterface
      * @param string $organization Organization name, label, or ID.
      * @option vcs-provider VCS provider (github or gitlab). Default is github.
      * @option vcs-host Hostname of a self-hosted instance (e.g., ghes.example.com or gitlab.example.com).
-     * @option vcs-token Personal access token for the VCS provider. Only applies to gitlab.
+     * @option vcs-token Access token for the VCS provider. Only applies to GitLab.
      *
      * @throws \Pantheon\Terminus\Exceptions\TerminusException
      *
