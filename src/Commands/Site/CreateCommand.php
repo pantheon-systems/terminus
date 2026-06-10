@@ -936,7 +936,7 @@ class CreateCommand extends SiteCommand implements RequestAwareInterface, SiteAw
      */
     protected function handleNewInstallation(
         string $vcs_provider,
-        string $auth_url,
+        ?string $auth_url,
         string $flag_file,
         array $options,
         $pantheon_org = null
