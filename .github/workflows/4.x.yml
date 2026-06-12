@@ -59,7 +59,6 @@ jobs:
       matrix:
         operating-system: [ 'macos-latest' ]
         php-versions: [ '8.2', '8.5' ]
-      max-parallel: 1
     env:
       TERMINUS_TOKEN: ${{ secrets.TERMINUS_TOKEN }}
       TERMINUS_SITE: ${{ vars.TERMINUS_SITE }}
