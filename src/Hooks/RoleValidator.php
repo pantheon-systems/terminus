@@ -13,7 +13,7 @@ class RoleValidator
 
     public const ROLE_SEPARATOR = '|';
 
-    public const SITE_ROLES = 'developer|team_member';
+    public const SITE_ROLES = 'developer|team_member|site_admin';
 
     /**
      * @hook validate *
