@@ -467,6 +467,7 @@ EOD;
             'Pantheon\\Terminus\\Commands\\Self\\Plugin\\SearchCommand',
             'Pantheon\\Terminus\\Commands\\Self\\Plugin\\UninstallCommand',
             'Pantheon\\Terminus\\Commands\\Self\\Plugin\\UpdateCommand',
+            'Pantheon\\Terminus\\Commands\\Site\\BuildPathCommand',
             'Pantheon\\Terminus\\Commands\\Site\\CreateCommand',
             'Pantheon\\Terminus\\Commands\\Site\\DeleteCommand',
             'Pantheon\\Terminus\\Commands\\Site\\InfoCommand',
