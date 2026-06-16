@@ -227,23 +227,17 @@ class LocalMachineHelper implements ConfigAwareInterface, ContainerAwareInterfac
      */
     public function openUrl(string $url): void
     {
-        $cmd = '';
-        switch (php_uname('s')) {
-            case 'Linux':
-                $cmd = 'xdg-open';
-                break;
-            case 'Darwin':
-                $cmd = 'open';
-                break;
-            case 'Windows NT':
-                $cmd = 'start';
-                break;
-        }
-        if (!$cmd) {
+        $cmd = match (php_uname('s')) {
+            'Linux' => 'xdg-open',
+            'Darwin' => 'open',
+            'Windows NT' => 'start',
+            default => null,
+        };
+
+        if ($cmd === null) {
             throw new TerminusException('Terminus is unable to open a browser on this OS.');
         }
-        $command = sprintf('%s %s', $cmd, $url);
 
-        $this->getProcess($command)->run();
+        $this->getProcess(sprintf('%s %s', $cmd, $url))->run();
     }
 }
