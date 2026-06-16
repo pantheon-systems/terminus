@@ -134,7 +134,7 @@ class AddCommand extends TerminusCommand implements RequestAwareInterface
         if (empty($token)) {
             $this->log()->notice(
                 'A GitLab Group Access Token (Premium/self-hosted) or Personal Access Token is required.'
-                    . ' The token must have the "api" scope.'
+                    . ' The token must have "api" and "write_repository" scopes.'
             );
 
             $helper = new QuestionHelper();
