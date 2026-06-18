@@ -298,7 +298,6 @@ class AliasesCommand extends TerminusCommand implements SiteAwareInterface
                         'custom_uri' => $custom_uri,
                     ];
                 }
-
             } catch (\Exception $e) {
                 $this->log()->warning(
                     "Could not fetch domains for site {site}: {error}",
