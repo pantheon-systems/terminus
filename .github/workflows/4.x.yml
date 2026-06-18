@@ -59,7 +59,6 @@ jobs:
       matrix:
         operating-system: [ 'macos-latest' ]
         php-versions: [ '8.2', '8.5' ]
-      max-parallel: 1
     env:
       TERMINUS_TOKEN: ${{ secrets.TERMINUS_TOKEN }}
       TERMINUS_SITE: ${{ vars.TERMINUS_SITE }}
@@ -87,18 +86,18 @@ jobs:
         if: runner.os == 'macOS'
         continue-on-error: true
       - name: Setup PHP with PECL extension
-        uses: shivammathur/setup-php@44454db4f0199b8b9685a5d763dc37cbf79108e1 # v2
+        uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # 2.37.2
         with:
           php-version: ${{ matrix.php-versions }}
-          extensions: gd, mbstring, zip, ssh2-1.4.1, pcov
-          coverage: pcov
+          extensions: gd, mbstring, zip, ssh2-1.4.1
+          coverage: none
           ini-values: error_reporting=E_ALL
       - name: Download repo content from artifact
-        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
           name: full-workspace
       - name: Download terminus.phar as artifact
-        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
           name: terminus-phar
       - name: Install Composer Dependencies
@@ -133,7 +132,7 @@ jobs:
     if: ${{ startsWith(github.ref, 'refs/tags/')  && github.repository == 'pantheon-systems/terminus' }}
     steps:
       - name: Download terminus.phar as artifact
-        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
           name: terminus-phar
       - name: Release
