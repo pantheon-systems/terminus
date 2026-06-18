@@ -112,8 +112,13 @@ class AliasesCommandTest extends TerminusTestBase
 EOF;
         $this->assertEquals($expected_drush_9_site_alias, $drush_9_site_alias_in_file);
 
-        // Test --custom-domains flag
-        $this->terminus(sprintf('drush:aliases --only=%s --custom-domains', $this->getSiteName()));
+        // Test --custom-domains flag.
+        // Regenerate aliases for the same site whose alias file is read below
+        // ($site_name, derived from the first alias above and used to build
+        // $drush_9_site_alias_file_path). Using $this->getSiteName() here would
+        // regenerate a potentially different site's file on multi-site accounts,
+        // leaving the file we read with stale wildcard-only content.
+        $this->terminus(sprintf('drush:aliases --only=%s --custom-domains', $site_name));
 
         // Re-read the Drush 9 site alias file to check for custom domain entries
         $drush_9_site_alias_with_custom_domains = trim(file_get_contents($drush_9_site_alias_file_path));
