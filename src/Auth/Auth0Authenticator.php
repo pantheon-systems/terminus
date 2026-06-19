@@ -15,6 +15,9 @@ class Auth0Authenticator
     private const AUTH0_DOMAINS = [
         'dashboard.pantheon.io' => 'pantheon.auth0.com',
     ];
+    private const GOOGLE_AUTH_DOMAIN = 'pantheon-prodmirror.us.auth0.com';
+    private const GOOGLE_AUTH_SPA_CLIENT_ID = 'eKOPHHW7lv1t7YuCiNk0BOpT2uIQLIBQ';
+    private const GOOGLE_AUTH_SRC = 'hermes-admin.sandbox-devx.sbx04.pantheon.io';
     private const USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) '
         . 'AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36';
 
@@ -98,6 +101,74 @@ class Auth0Authenticator
             'access_token' => $cookies['X-Pantheon-Access-Token'],
             'session' => $cookies['X-Pantheon-Session'],
         ];
+    }
+
+    /**
+     * Build an Auth0 authorize URL for Google OAuth with PKCE.
+     *
+     * @return array{url: string, code_verifier: string, state: string, client_id: string}
+     */
+    public function getGoogleAuthUrl(string $callbackUrl): array
+    {
+        $clientId = self::GOOGLE_AUTH_SPA_CLIENT_ID;
+        $auth0Base = 'https://' . self::GOOGLE_AUTH_DOMAIN;
+
+        $codeVerifier = rtrim(strtr(base64_encode(random_bytes(32)), '+/', '-_'), '=');
+        $codeChallenge = rtrim(strtr(base64_encode(hash('sha256', $codeVerifier, true)), '+/', '-_'), '=');
+        $state = http_build_query(['src' => self::GOOGLE_AUTH_SRC, 'nonce' => bin2hex(random_bytes(16))]);
+
+        $authUrl = $auth0Base . '/authorize?' . http_build_query([
+            'client_id' => $clientId,
+            'redirect_uri' => $callbackUrl,
+            'response_type' => 'code',
+            'connection' => 'google-oauth2',
+            'code_challenge' => $codeChallenge,
+            'code_challenge_method' => 'S256',
+            'scope' => 'openid profile email',
+            'state' => $state,
+        ]);
+
+        return [
+            'url' => $authUrl,
+            'code_verifier' => $codeVerifier,
+            'state' => $state,
+            'client_id' => $clientId,
+            'auth0_base' => $auth0Base,
+        ];
+    }
+
+    /**
+     * Exchange an authorization code for tokens using PKCE.
+     *
+     * @return array Auth0 token response (access_token, id_token, etc.)
+     */
+    public function exchangeCodeForTokens(
+        string $code,
+        string $codeVerifier,
+        string $redirectUri,
+        string $clientId,
+        ?string $auth0Base = null,
+    ): array {
+        $tokenUrl = ($auth0Base ?? $this->auth0Base) . '/oauth/token';
+        $response = $this->client->post($tokenUrl, [
+            'json' => [
+                'grant_type' => 'authorization_code',
+                'client_id' => $clientId,
+                'code_verifier' => $codeVerifier,
+                'code' => $code,
+                'redirect_uri' => $redirectUri,
+            ],
+        ]);
+
+        if ($response->getStatusCode() !== 200) {
+            $body = $response->getBody()->getContents();
+            throw new TerminusException(
+                'Token exchange failed ({status}): {body}',
+                ['status' => $response->getStatusCode(), 'body' => $body]
+            );
+        }
+
+        return json_decode($response->getBody()->getContents(), true);
     }
 
     private function collectTargetCookies(): array
