@@ -96,7 +96,7 @@ class LoginCommand extends TerminusCommand
         $authenticator = new Auth0Authenticator($hermesUrl);
         $result = $authenticator->login($email, $password);
 
-        $userId = $this->extractUserIdFromAccessToken($result['access_token']);
+        $userId = $this->extractUserIdFromSession($result['session']);
 
         $this->session()->setData([
             'session' => $result['session'],
@@ -108,22 +108,16 @@ class LoginCommand extends TerminusCommand
     }
 
     /**
-     * Decode the access token JWT and extract the Pantheon user ID.
+     * Extract the user ID from the session token (everything before the first ':').
      */
-    private function extractUserIdFromAccessToken(string $accessToken): string
+    private function extractUserIdFromSession(string $session): string
     {
-        $parts = explode('.', $accessToken);
-        if (count($parts) < 2) {
-            throw new TerminusException('Access token is not a valid JWT.');
+        $decoded = urldecode($session);
+        $colonPos = strpos($decoded, ':');
+        if ($colonPos === false) {
+            throw new TerminusException('Session token does not contain a user ID.');
         }
-
-        $payload = json_decode(base64_decode(strtr($parts[1], '-_', '+/')), true);
-        $userId = $payload['http://oidc.panth.io/pantheon']['user_id'] ?? null;
-        if (empty($userId)) {
-            throw new TerminusException('Access token does not contain a user ID.');
-        }
-
-        return $userId;
+        return substr($decoded, 0, $colonPos);
     }
 
     /**
