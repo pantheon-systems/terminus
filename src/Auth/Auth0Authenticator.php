@@ -17,7 +17,7 @@ class Auth0Authenticator
     ];
     private const GOOGLE_AUTH_DOMAIN = 'pantheon-prodmirror.us.auth0.com';
     private const GOOGLE_AUTH_SPA_CLIENT_ID = 'eKOPHHW7lv1t7YuCiNk0BOpT2uIQLIBQ';
-    private const GOOGLE_AUTH_SRC = 'hermes-admin.sandbox-devx.sbx04.pantheon.io';
+    private const GOOGLE_AUTH_SRC = 'api.live.pantheon.io';
     private const USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) '
         . 'AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36';
 
