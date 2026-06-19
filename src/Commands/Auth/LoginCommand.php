@@ -2,6 +2,7 @@
 
 namespace Pantheon\Terminus\Commands\Auth;
 
+use Pantheon\Terminus\Auth\Auth0Authenticator;
 use Pantheon\Terminus\Commands\TerminusCommand;
 use Pantheon\Terminus\Exceptions\TerminusException;
 use Pantheon\Terminus\Models\TerminusModel;
@@ -21,15 +22,22 @@ class LoginCommand extends TerminusCommand
      *
      * @option machine-token Grants access for a user and is saved for future logins
      * @option email Uses an existing machine token for this user
+     * @option password Log in with email and password via Auth0
      *
      * @usage --machine-token=<machine_token> Logs in a user granted the machine token <machine_token>.
      * @usage Logs in a user with a previously saved machine token.
      * @usage --email=<email> Logs in a user with a previously saved machine token belonging to <email>.
+     * @usage --password Logs in a user with email and password.
      *
      * @throws \Pantheon\Terminus\Exceptions\TerminusException
      */
-    public function logIn(array $options = ['machine-token' => null, 'email' => null,]): void
+    public function logIn(array $options = ['machine-token' => null, 'email' => null, 'password' => false,]): void
     {
+        if (!empty($options['password'])) {
+            $this->passwordLogIn($options['email'] ?? null);
+            return;
+        }
+
         $tokens = $this->session()->getTokens();
 
         if (isset($options['machine-token'])) {
@@ -69,6 +77,53 @@ class LoginCommand extends TerminusCommand
                     ['tokens' => implode("\n", $tokens->ids()), 'url' => $this->getMachineTokenCreationURL(),]
                 );
         }
+    }
+
+    /**
+     * Logs in via email and password through Auth0.
+     */
+    private function passwordLogIn(?string $email = null): void
+    {
+        $email = $email ?? $this->io()->ask('Email');
+        $password = $this->io()->askHidden('Password');
+
+        $hermesUrl = sprintf(
+            '%s://%s',
+            $this->config->get('dashboard_protocol'),
+            $this->config->get('dashboard_host'),
+        );
+
+        $authenticator = new Auth0Authenticator($hermesUrl);
+        $result = $authenticator->login($email, $password);
+
+        $userId = $this->extractUserIdFromAccessToken($result['access_token']);
+
+        $this->session()->setData([
+            'session' => $result['session'],
+            'expires_at' => time() + 86400,
+            'user_id' => $userId,
+        ]);
+
+        $this->log()->notice('Logged in via password.');
+    }
+
+    /**
+     * Decode the access token JWT and extract the Pantheon user ID.
+     */
+    private function extractUserIdFromAccessToken(string $accessToken): string
+    {
+        $parts = explode('.', $accessToken);
+        if (count($parts) < 2) {
+            throw new TerminusException('Access token is not a valid JWT.');
+        }
+
+        $payload = json_decode(base64_decode(strtr($parts[1], '-_', '+/')), true);
+        $userId = $payload['http://oidc.panth.io/pantheon']['user_id'] ?? null;
+        if (empty($userId)) {
+            throw new TerminusException('Access token does not contain a user ID.');
+        }
+
+        return $userId;
     }
 
     /**
