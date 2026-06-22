@@ -24,6 +24,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
 use Pantheon\Terminus\Traits\GithubInstallTrait;
+use Pantheon\Terminus\Traits\BuildPathTrait;
 
 /**
  * Creates a new site, potentially with an external Git repository.
@@ -35,6 +36,7 @@ class CreateCommand extends SiteCommand implements RequestAwareInterface, SiteAw
     use WorkflowProcessingTrait;
     use VcsClientAwareTrait;
     use GithubInstallTrait;
+    use BuildPathTrait;
 
     // Wait time for GitHub app installation to succeed.
     protected const AUTH_LINK_TIMEOUT = 600;
@@ -71,6 +73,7 @@ class CreateCommand extends SiteCommand implements RequestAwareInterface, SiteAw
      * @option repository-name Name of the repository to create in the VCS provider. Only applies if --vcs-provider is not Pantheon.
      * @option skip-clone-repo Do not clone the repository after creation. Default is false.
      * @option vcs-host Hostname of a GitHub Enterprise Server instance (e.g., ghes.example.com). Only valid with --vcs-provider=github. Must be registered via vcs:github-host:add first.
+     * @option build-path Relative path within the repository to the buildable app (e.g., apps/web). For monorepos. Only valid with an external VCS provider. Defaults to the repository root.
      *
      * @usage <site> <label> <upstream> Creates a new Pantheon-hosted site named <site>, labeled <label>, using code from <upstream>.
      * @usage <site> <label> <upstream> --org=<org> Creates site associated with <organization>, with a Pantheon-hosted git repository.
@@ -94,6 +97,7 @@ class CreateCommand extends SiteCommand implements RequestAwareInterface, SiteAw
             'repository-name' => null,
             'skip-clone-repo' => false,
             'vcs-host' => null,
+            'build-path' => null,
             'vcs-token' => null,
         ]
     ) {
@@ -137,6 +141,22 @@ class CreateCommand extends SiteCommand implements RequestAwareInterface, SiteAw
             if ($options['repository-name']) {
                 throw new TerminusException(
                     'The --repository-name option is not supported when using Pantheon as the VCS provider.'
+                );
+            }
+            if (!empty($options['build-path'])) {
+                throw new TerminusException(
+                    'The --build-path option is not supported when using Pantheon as the VCS provider.'
+                );
+            }
+        }
+
+        // Validate the build path format (relative subdir, no traversal).
+        if (!empty($options['build-path'])) {
+            $build_path_error = self::validateBuildPath($options['build-path']);
+            if ($build_path_error !== null) {
+                throw new TerminusException(
+                    'Invalid --build-path: {error}',
+                    ['error' => $build_path_error]
                 );
             }
         }
@@ -714,6 +734,12 @@ class CreateCommand extends SiteCommand implements RequestAwareInterface, SiteAw
                 'is_private' => strtolower($options['visibility']) === 'private',
             ],
         ];
+
+        // Forward the build path (monorepo subdir) to repository creation.
+        // Omit when empty so the backend treats it as the repo root.
+        if (!empty($options['build-path'])) {
+            $workflow_params['evcs']['build_path'] = $options['build-path'];
+        }
 
         // Add optional parameters
         if ($label) {

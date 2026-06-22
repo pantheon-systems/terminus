@@ -86,4 +86,59 @@ class CreateCommandTest extends TestCase
             $expectedMessage
         );
     }
+
+    /**
+     * Valid build paths (including empty = repo root) should pass validation.
+     *
+     * @test
+     * @group site
+     * @group short
+     * @dataProvider validBuildPathProvider
+     */
+    public function testValidateBuildPathAcceptsValidPaths(string $path)
+    {
+        $this->assertNull(CreateCommand::validateBuildPath($path));
+    }
+
+    public function validBuildPathProvider(): array
+    {
+        return [
+            'empty (root)' => [''],
+            'single segment' => ['apps'],
+            'nested' => ['apps/web'],
+            'deeply nested' => ['packages/sites/web'],
+            'dots in name' => ['app.v2'],
+            'underscores and dashes' => ['my_app-2'],
+        ];
+    }
+
+    /**
+     * Invalid build paths should return a descriptive error message.
+     *
+     * @test
+     * @group site
+     * @group short
+     * @dataProvider invalidBuildPathProvider
+     */
+    public function testValidateBuildPathRejectsInvalidPaths(string $path, string $expectedFragment)
+    {
+        $error = CreateCommand::validateBuildPath($path);
+        $this->assertNotNull($error, sprintf('Expected "%s" to be rejected', $path));
+        $this->assertStringContainsString($expectedFragment, $error);
+    }
+
+    public function invalidBuildPathProvider(): array
+    {
+        return [
+            'absolute path' => ['/apps/web', 'relative'],
+            'parent traversal' => ['apps/../etc', "'.' or '..'"],
+            'leading dotdot' => ['../escape', "'.' or '..'"],
+            'current dir segment' => ['./apps', "'.' or '..'"],
+            'empty segment' => ['apps//web', 'empty segments'],
+            'backslash' => ['apps\\win', 'forward slashes'],
+            'space in segment' => ['apps/we b', 'invalid characters'],
+            'colon in segment' => ['apps/we:b', 'invalid characters'],
+            'too long' => [str_repeat('a', 513), '512 characters'],
+        ];
+    }
 }
