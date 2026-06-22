@@ -1,7 +1,24 @@
 # Change Log
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org)
 
-## 4.2.3-dev
+## 4.3.2-dev
+
+## 4.3.1 - 2026-06-02
+
+### Changed
+
+- Make `--org` required for `site:create` (#2845)
+
+## 4.3.0 - 2026-05-26
+
+### Added
+
+- Add `vcs:github-host:add` command for GHES provisioning (#2838)
+- Add `--github-host` option to VCS commands for GHES support (#2840)
+
+### Changed
+
+- Update twig dependency (#2841)
 
 ## 4.2.2 - 2026-05-13
 

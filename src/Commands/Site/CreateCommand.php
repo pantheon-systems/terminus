@@ -24,6 +24,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
 use Pantheon\Terminus\Traits\GithubInstallTrait;
+use Pantheon\Terminus\Traits\BuildPathTrait;
 
 /**
  * Creates a new site, potentially with an external Git repository.
@@ -35,6 +36,7 @@ class CreateCommand extends SiteCommand implements RequestAwareInterface, SiteAw
     use WorkflowProcessingTrait;
     use VcsClientAwareTrait;
     use GithubInstallTrait;
+    use BuildPathTrait;
 
     // Wait time for GitHub app installation to succeed.
     protected const AUTH_LINK_TIMEOUT = 600;
@@ -61,7 +63,7 @@ class CreateCommand extends SiteCommand implements RequestAwareInterface, SiteAw
      * @param string $site_name Site name (machine name)
      * @param string $label Site label (human-readable name)
      * @param string $upstream_id Upstream name or UUID (e.g., wordpress, drupal-composer-managed)
-     * @option org Organization name, label, or ID (required starting Q2 2026). Required if --vcs-provider=github is used.
+     * @option org Organization name, label, or ID (required).
      * @option region Specify the service region where the site should be created. See documentation for valid regions.
      * @option vcs-provider VCS provider for the site repository (e.g., github, pantheon). Default is pantheon.
      * @option vcs-org Name of the Github organization containing the repository. Required if --vcs-provider=github is used.
@@ -71,6 +73,7 @@ class CreateCommand extends SiteCommand implements RequestAwareInterface, SiteAw
      * @option repository-name Name of the repository to create in the VCS provider. Only applies if --vcs-provider is not Pantheon.
      * @option skip-clone-repo Do not clone the repository after creation. Default is false.
      * @option vcs-host Hostname of a GitHub Enterprise Server instance (e.g., ghes.example.com). Only valid with --vcs-provider=github. Must be registered via vcs:github-host:add first.
+     * @option build-path Relative path within the repository to the buildable app (e.g., apps/web). For monorepos. Only valid with an external VCS provider. Defaults to the repository root.
      *
      * @usage <site> <label> <upstream> Creates a new Pantheon-hosted site named <site>, labeled <label>, using code from <upstream>.
      * @usage <site> <label> <upstream> --org=<org> Creates site associated with <organization>, with a Pantheon-hosted git repository.
@@ -94,14 +97,16 @@ class CreateCommand extends SiteCommand implements RequestAwareInterface, SiteAw
             'repository-name' => null,
             'skip-clone-repo' => false,
             'vcs-host' => null,
+            'build-path' => null,
+            'vcs-token' => null,
         ]
     ) {
         $vcs_provider = strtolower($options['vcs-provider']);
         $org_id = $options['org'];
 
-        if (!empty($options['vcs-host']) && $vcs_provider !== 'github') {
+        if (!empty($options['vcs-host']) && !in_array($vcs_provider, ['github', 'gitlab'])) {
             throw new TerminusException(
-                'The --vcs-host option is only valid with --vcs-provider=github.'
+                'The --vcs-host option is only valid with --vcs-provider=github or --vcs-provider=gitlab.'
             );
         }
 
@@ -136,6 +141,22 @@ class CreateCommand extends SiteCommand implements RequestAwareInterface, SiteAw
             if ($options['repository-name']) {
                 throw new TerminusException(
                     'The --repository-name option is not supported when using Pantheon as the VCS provider.'
+                );
+            }
+            if (!empty($options['build-path'])) {
+                throw new TerminusException(
+                    'The --build-path option is not supported when using Pantheon as the VCS provider.'
+                );
+            }
+        }
+
+        // Validate the build path format (relative subdir, no traversal).
+        if (!empty($options['build-path'])) {
+            $build_path_error = self::validateBuildPath($options['build-path']);
+            if ($build_path_error !== null) {
+                throw new TerminusException(
+                    'Invalid --build-path: {error}',
+                    ['error' => $build_path_error]
                 );
             }
         }
@@ -276,56 +297,46 @@ class CreateCommand extends SiteCommand implements RequestAwareInterface, SiteAw
 
         $org = null;
         $org_id = $options['org'];
-        if ($org_id !== null) {
-            try {
-                // It's better to get the membership first, then the organization
-                $membership = $user->getOrganizationMemberships()->get($org_id);
-                $org = $membership->getOrganization();
-                $workflow_options['organization_id'] = $org->id;
-                $this->log()->notice('Associating site with organization: {org_label} ({org_id})', [
-                    'org_label' => $org->get('profile')->name,
-                    'org_id' => $org->id,
-                ]);
-            } catch (TerminusNotFoundException $e) {
-                throw new TerminusException(
-                    'Organization "{org}" not found or you are not a member.',
-                    ['org' => $org_id]
-                );
-            } catch (\Exception $e) {
-                // Catch other potential errors during org fetching
-                throw new TerminusException(
-                    'Error retrieving organization "{org}": {message}',
-                    ['org' => $org_id, 'message' => $e->getMessage()]
-                );
-            }
-        } else {
-            $this->log()->warning(
-                'Starting in Q2 2026, all new sites will be required to belong to an organization. '
-                . 'Use the --org option to specify an organization when creating a site.'
+        if ($org_id === null) {
+            throw new TerminusException(
+                'Site creation requires an organization. Use the --org option to specify one. '
+                . 'Example: terminus site:create {site_name} {label} {upstream_id} --org=<org-name>',
+                compact('site_name', 'label', 'upstream_id')
+            );
+        }
+
+        try {
+            // It's better to get the membership first, then the organization
+            $membership = $user->getOrganizationMemberships()->get($org_id);
+            $org = $membership->getOrganization();
+            $workflow_options['organization_id'] = $org->id;
+            $this->log()->notice('Associating site with organization: {org_label} ({org_id})', [
+                'org_label' => $org->get('profile')->name,
+                'org_id' => $org->id,
+            ]);
+        } catch (TerminusNotFoundException $e) {
+            throw new TerminusException(
+                'Organization "{org}" not found or you are not a member.',
+                ['org' => $org_id]
+            );
+        } catch (\Exception $e) {
+            // Catch other potential errors during org fetching
+            throw new TerminusException(
+                'Error retrieving organization "{org}": {message}',
+                ['org' => $org_id, 'message' => $e->getMessage()]
             );
         }
 
         // Create the site record via Pantheon API
         $this->log()->notice('Submitting site creation request to Pantheon API...');
         $workflow = $this->sites()->create($workflow_options);
-        try {
-            $this->processWorkflow($workflow);
-        } catch (TerminusException $e) {
-            if (is_null($options['org']) && stripos($e->getMessage(), 'organization') !== false) {
-                throw new TerminusException(
-                    'Site creation requires an organization. Use the --org option to specify one. '
-                    . 'Example: terminus site:create {site_name} {label} {upstream_id} --org=<org-name>',
-                    compact('site_name', 'label', 'upstream_id')
-                );
-            }
-            throw $e;
-        }
+        $this->processWorkflow($workflow);
         $this->log()->notice('Pantheon site record created successfully.');
 
         // Deploy the upstream CMS code
         $site_id = $workflow->get('waiting_for_task')->site_id ?? null;
         if (!$site_id) {
-             throw new TerminusException('Could not get site ID from site creation workflow.');
+            throw new TerminusException('Could not get site ID from site creation workflow.');
         }
 
         if ($site = $this->getSiteById($site_id)) {
@@ -421,10 +432,10 @@ class CreateCommand extends SiteCommand implements RequestAwareInterface, SiteAw
                 );
             }
         } catch (TerminusNotFoundException $e) {
-             $this->log()->warning(
-                 'Dev environment not found immediately after site creation. It might still be provisioning.'
-             );
-             $this->log()->debug('TerminusNotFoundException: {message}', ['message' => $e->getMessage()]);
+            $this->log()->warning(
+                'Dev environment not found immediately after site creation. It might still be provisioning.'
+            );
+            $this->log()->debug('TerminusNotFoundException: {message}', ['message' => $e->getMessage()]);
         } catch (\Exception $e) {
             $this->log()->error(
                 'An error occurred while waiting for the site to wake: {message}',
@@ -626,14 +637,14 @@ class CreateCommand extends SiteCommand implements RequestAwareInterface, SiteAw
 
         // Ensure we have determined the installation ID and target org name
         if (is_null($installation_id)) {
-             throw new TerminusException('Could not determine GitHub installation.');
+            throw new TerminusException('Could not determine GitHub installation.');
         }
 
         $existing_installation = true;
 
         if ($installation_id === 'new') {
             $existing_installation = false;
-            $success = $this->handleNewInstallation($vcs_provider, $auth_url, $flag_file, $options);
+            $success = $this->handleNewInstallation($vcs_provider, $auth_url, $flag_file, $options, $pantheon_org);
             if (!$success) {
                 throw new TerminusException(
                     'Error authorizing with VCS service:'
@@ -723,6 +734,12 @@ class CreateCommand extends SiteCommand implements RequestAwareInterface, SiteAw
                 'is_private' => strtolower($options['visibility']) === 'private',
             ],
         ];
+
+        // Forward the build path (monorepo subdir) to repository creation.
+        // Omit when empty so the backend treats it as the repo root.
+        if (!empty($options['build-path'])) {
+            $workflow_params['evcs']['build_path'] = $options['build-path'];
+        }
 
         // Add optional parameters
         if ($label) {
@@ -945,30 +962,31 @@ class CreateCommand extends SiteCommand implements RequestAwareInterface, SiteAw
      */
     protected function handleNewInstallation(
         string $vcs_provider,
-        string $auth_url,
+        ?string $auth_url,
         string $flag_file,
-        array $options
+        array $options,
+        $pantheon_org = null
     ): bool {
         $this->log()->warning(
             "Important: Connecting this application grants all members of this"
                 . " Pantheon Workspace the ability to list and create repositories"
-                . " in the attached GitHub Organization, regardless of their"
-                . " individual GitHub permissions."
+                . " in the attached VCS Organization, regardless of their"
+                . " individual VCS permissions."
         );
         switch ($vcs_provider) {
             case 'github':
                 return $this->handleGithubNewInstallation($auth_url, $flag_file, self::AUTH_LINK_TIMEOUT);
 
             case 'gitlab':
-                return $this->handleGitLabNewInstallation($options);
+                return $this->handleGitLabNewInstallation($options, $pantheon_org);
         }
         return false;
     }
 
     /**
-     * Handle GitLab new installation.
+     * Handle GitLab new installation during site creation.
      */
-    protected function handleGitLabNewInstallation(string $site_uuid, array $options): bool
+    protected function handleGitLabNewInstallation(array $options, $pantheon_org = null): bool
     {
         $token = $options['vcs-token'] ?? null;
         if (empty($token) && !$this->input()->isInteractive()) {
@@ -978,8 +996,10 @@ class CreateCommand extends SiteCommand implements RequestAwareInterface, SiteAw
             );
         }
         if (empty($token)) {
-            // @TODO Write correct instructions.
-            $this->log()->notice('Get a GitLab access token. More details at https://docs.pantheon.io');
+            $this->log()->notice(
+                'A GitLab Group Access Token (Premium/self-hosted) or Personal Access Token is required.'
+                    . ' The token must have "api" and "write_repository" scopes.'
+            );
 
             $helper = new QuestionHelper();
             $question = new Question('Enter your GitLab token: ');
@@ -994,40 +1014,35 @@ class CreateCommand extends SiteCommand implements RequestAwareInterface, SiteAw
             $token = $helper->ask($this->input(), $this->output(), $question);
         }
 
-        $question = new Question("Please enter the GitLab group name to create the repositories\n");
+        $helper = $helper ?? new QuestionHelper();
+        $question = new Question('Enter the GitLab group name/path: ');
         $question->setValidator(function ($answer) {
-            if ($answer == null || '' == trim($answer)) {
+            if (empty(trim($answer ?? ''))) {
                 throw new TerminusException('Group name cannot be empty');
             }
-            return $answer;
+            return trim($answer);
         });
         $question->setMaxAttempts(3);
         $group_name = $helper->ask($this->input(), $this->output(), $question);
-        if (!$group_name) {
-            // Throw error because token cannot be empty.
-            throw new TerminusException('Group name cannot be empty');
-        }
-        $session = $this->session();
-        $user = $session->getUser();
+
+        $user = $this->session()->getUser();
 
         $post_data = [
             'token' => $token,
             'vendor' => 2,
             'installation_type' => 'cms-site',
             'platform_user' => $user->id,
-            // TODO: Backend should be updated to not need site_uuid here.
-            'site_uuid' => '',
+            'org_uuid' => $pantheon_org ? $pantheon_org->id : '',
             'vcs_organization' => $group_name,
-            // TODO: Cleanup in go-vcs-service to not need it.
-            'pantheon_session' => 'UNUSED',
         ];
-        $data = $this->getVcsClient()->installWithToken($post_data);
-        if (!$data['success']) {
-            throw new TerminusException(
-                "An error happened while authorizing: {error_message}",
-                ['error_message' => $data['data']]
-            );
+
+        $hostname = $options['vcs-host'] ?? null;
+        if (!empty($hostname)) {
+            $post_data['hostname'] = $hostname;
         }
+
+        $this->log()->notice('Registering GitLab connection...');
+        $this->getVcsClient()->installWithToken($post_data);
 
         return true;
     }

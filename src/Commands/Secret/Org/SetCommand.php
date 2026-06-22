@@ -22,7 +22,7 @@ class SetCommand extends SecretBaseCommand
      * @command secret:org:set
      * @aliases secret-org-set
      *
-     * @option string $type Secret type. Available options are env, runtime, composer, file and vcs.
+     * @option string $type Secret type. Available options are env, runtime and composer.
      * @option array $scope Secret scope. Available options are ic (integrated composer), user, and web.
      *   Multiple options should be specified in comma separated format. Ex: --scope=ic,web.
      * @option string $env Environment name

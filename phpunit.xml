@@ -5,11 +5,6 @@
             <directory suffix="Test.php">tests/Functional/</directory>
         </testsuite>
     </testsuites>
-    <coverage processUncoveredFiles="true" cacheDirectory="reports">
-        <include>
-            <directory suffix="Command.php">src/Commands</directory>
-        </include>
-    </coverage>
     <logging>
         <testdoxXml outputFile="reports/logfile.xml"/>
     </logging>
