@@ -1,7 +1,19 @@
 # Change Log
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org)
 
-## 4.3.2-dev
+## 4.3.2 - 2026-06-22
+
+### Added
+
+- GitLab support for `vcs:connection:add` and `site:create` (#2873)
+- Add `--custom-domains` flag to `drush:aliases` command (#2779)
+- Support for passing custom build path (#2851)
+
+### Fixed
+
+- Resolve `getConfig()` error in LockHandlingCommand hook (#2884)
+- Remove Node.js guard from `lock:info` (#2842)
+- Update secret set commands help texts (#2872)
 
 ## 4.3.1 - 2026-06-02
 
