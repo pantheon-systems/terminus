@@ -148,6 +148,10 @@ jobs:
     needs: [ release ]
     if: ${{ startsWith(github.ref, 'refs/tags/')  && github.repository == 'pantheon-systems/terminus' }}
     steps:
+      - name: Trust Homebrew tap
+        run: |
+          brew tap pantheon-systems/external
+          brew trust pantheon-systems/external
       - name: Bump Homebrew formula
         uses: dawidd6/action-homebrew-bump-formula@baf2b60c51fc1f8453c884b0c61052668a71bd1d # v3.11.0
         with:
