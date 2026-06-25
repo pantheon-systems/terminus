@@ -369,8 +369,25 @@ abstract class PluginBaseCommand extends TerminusCommand
             $this->runCommand("composer --working-dir=$path init --name=$package_name -n");
             $this->runCommand("composer --working-dir=$path config minimum-stability dev");
             $this->runCommand("composer --working-dir=$path config prefer-stable true");
-            $this->runCommand("composer --working-dir=$path config audit.block-insecure false");
         }
+        // Setting audit.block-insecure via the config command is not supported in all Composer
+        // versions (composer/composer#12611). Writing directly to the JSON is more reliable
+        // across the range of Composer versions terminus supports. Decode without associative
+        // mode to preserve the object/array distinction and avoid corrupting empty object keys
+        // such as "require": {} into JSON arrays.
+        $composerJsonPath = $path . '/composer.json';
+        $composerJson = json_decode(file_get_contents($composerJsonPath)) ?? new \stdClass();
+        if (!isset($composerJson->config)) {
+            $composerJson->config = new \stdClass();
+        }
+        if (!isset($composerJson->config->audit)) {
+            $composerJson->config->audit = new \stdClass();
+        }
+        $composerJson->config->audit->{'block-insecure'} = false;
+        file_put_contents(
+            $composerJsonPath,
+            json_encode($composerJson, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) . PHP_EOL
+        );
     }
 
     /**
