@@ -104,6 +104,25 @@ bin/terminus
 
 **Note:** Terminus installed this way cannot use `terminus update` to self-update versions.
 
+### Installing with nix
+To install terminus using the [nix package manager](https://nixos.org/download/#download-nix), you should install nix, clone this repository, navigate to the project root, and run either:
+```bash
+nix run
+```
+
+or, if you don't have [flakes](https://wiki.nixos.org/wiki/Flakes) enabled:
+```bash
+nix run --experimental-features 'nix-command flakes'
+```
+
+These commands will install and build terminus and make it available to run on your system.
+
+**Optional**: If you want to make terminus available as a global alias in you shell, simply run `nix build` (optionally, including the `--experimental-features` flag), and add the following to your `.bashrc`, or similar:
+```bash
+# Nix terminus alias
+alias terminus="/path/to/terminus/result/bin/terminus"
+```
+
 ## Updating
 ### Updating via the Terminus installer
 Run this in your Terminal client:
@@ -134,6 +153,19 @@ cd /install/location/terminus ; git pull
 - Update the Composer dependencies:
 ```bash
 composer update
+```
+
+### Updating with [nix](https://nixos.org/)
+To update with nix and use Terminus HEAD, you should update this repository and then merely run the project using nix.
+
+- Updte the repository:
+``` bash
+cd /install/location/terminus ; git pull
+```
+
+- Run using nix:
+```bash
+nix run
 ```
 
 **Optionally**, for ease of development we suggest aliasing, setting the PATH in the bash configuration file, or
