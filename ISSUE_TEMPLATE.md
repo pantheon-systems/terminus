@@ -10,9 +10,10 @@
 ( ) Manually
 
 ### PHP Version
-( ) 7.4x
-( ) 8.0
-( ) 8.1
+( ) 8.2
+( ) 8.3
+( ) 8.4
+( ) 8.5
 
 ### Terminus Version
 <!-- Please note which version of Terminus you are using. -->

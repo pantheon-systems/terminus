@@ -1,11 +1,156 @@
 # Change Log
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org)
 
-## 4.0.4-dev
+## 4.3.3-dev
+
+## 4.3.2 - 2026-06-23
+
+### Added
+
+- GitLab support for `vcs:connection:add` and `site:create` (#2873)
+- Add `--custom-domains` flag to `drush:aliases` command (#2779)
+- Support for passing custom build path (#2851)
+
+### Fixed
+
+- Resolve `getConfig()` error in LockHandlingCommand hook (#2884)
+- Remove Node.js guard from `lock:info` (#2842)
+- Update secret set commands help texts (#2872)
+
+## 4.3.1 - 2026-06-02
+
+### Changed
+
+- Make `--org` required for `site:create` (#2845)
+
+## 4.3.0 - 2026-05-26
+
+### Added
+
+- Add `vcs:github-host:add` command for GHES provisioning (#2838)
+- Add `--github-host` option to VCS commands for GHES support (#2840)
+
+### Changed
+
+- Update twig dependency (#2841)
+
+## 4.2.2 - 2026-05-13
+
+### Added
+
+- Add Object Cache and Search status rows to `site:info` output (#2812)
+- Expose `upstream` and `upstream_label` as optional fields in `site:list` and `org:site:list` (#2835)
+- Support Node.js dependency updates in `upstream:updates` commands (#2828)
+- Use server-side repo name validation for EVCS site creation (#2831)
+
+### Fixed
+
+- Fix PHP 8.2 deprecation warnings for dynamic property creation in Site model (#2813)
+
+## 4.2.1 - 2026-04-30
+
+### Fixed
+
+- Fix premature pagination stop in `org:site:list` when API returns short pages (#2829)
+- Only include `wp_replace_siteurl` if site is WordPress (#2825)
+- Warn when creating sites without `--org` and provide actionable error if creation fails due to missing org (#2786)
+
+## 4.2.0 - 2026-04-13
+
+### Added
+
+- Merge terminus-secrets-manager-plugin into core (#2764)
+- Merge terminus-repository-plugin into core (#2792)
+- Merge terminus-node-logs-plugin into core (#2791)
+- Add `node:builds:wait` command for STA site deployments (#2798)
+- Add `node:builds:rollback` command (#2803)
+- Add active column to builds list command (#2807)
+- Add deployed field to builds command (#2801)
+- Skip waiting for dev environment on Node.js site creation (#2810)
+- Allow node sites to use metrics command (#2806)
+
+### Fixed
+
+- Update check in env:wake for node sites (#2816)
+- Update Node.js site creation notice to reflect actual build trigger (#2819)
+
+### Changed
+
+- Update and pin GitHub Actions to latest versions (#2753)
+
+## 4.1.9 - 2026-04-09
+
+### Fixed
+
+- Fix SSH command output formatting when streaming (#2814)
+- Fix `env:wake` by removing X-Pantheon-Styx-Hostname header requirement (#2815)
+
+## 4.1.8 - 2026-03-30
+
+### Changed
+
+- Warn users when creating sites without --org, ahead of Q2 2026 requirement that all sites belong to an organization (#2786)
+
+## 4.1.7 - 2026-03-24
+
+### Fixed
+
+- Fix `domain:verify` to display DNS challenge details when unverified and poll for verification status (#2797)
+
+## 4.1.6 - 2026-03-18
+
+### Added
+
+- Add `search:enable` and `search:disable` commands for managing search indexing (#2783, #2784)
+  - Coming soon to WordPress - these commands are currently non-functional for WP sites until Elasticsearch platform compatibility is added
+- Add `domain:verify` command for domain ownership verification (#2790)
+
+### Deprecated
+
+- `solr:enable` and `solr:disable` commands are deprecated in favor of `search:enable` and `search:disable`
+
+### Fixed
+
+- Empty body should be object, not array (#2780)
+
+## 4.1.4 - 2026-02-02
+
+### Added
+
+- Add support for PHP 8.5 (#2769)
+
+### Fixed
+
+- Ensure plugins composer.json also disables audit block-insecure for plugin operations (#2772)
+
+## 4.1.3 - 2026-01-29
+
+### Added
+- Add timestamps to all logger output messages (#2745)
+
+### Fixed
+- Disable audit for plugins to resolve Composer security warnings blocking plugin installation (#2766)
+- Fix environment comparison to not rely on commit labels (#2761)
+- Handle cases where is_initialized doesn't return a value (#2760)
+- Consider a session active only if it's valid for more than 1 minute (#2758)
+
+## 4.1.1 - 2025-11-04
+
+### Added
+- Auto-detect URLs for db clone search-replace (#2738)
+
+### Fixed
+- Fix output of drush_version in `env:info` (#2736)
+
+## 4.1.0 - 2025-09-29
 
 ### Added
 
 - Add "PHP Runtime Generation" (php_runtime_generation) and "PHP Version" (php_version) to the `env:list` command (#2729, #2732)
+
+### Fixed
+
+- Fix workflow:wait timeout to use warnings instead of errors (#2724)
 
 ## 4.0.3 - 2025-09-11
 

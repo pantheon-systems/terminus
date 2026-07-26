@@ -88,6 +88,22 @@ class SiteTeamCommandsTest extends TerminusTestBase
     }
 
     /**
+     * @test
+     * @covers \Pantheon\Terminus\Commands\Site\Team\RoleCommand
+     *
+     * @group site-team
+     * @group long
+     */
+    public function testSiteTeamRoleCommandWithSiteAdmin(): void
+    {
+        [$stdout, $exitCode, $stderr] = self::callTerminus(
+            sprintf('site:team:role %s %s site_admin', $this->getSiteName(), $this->getUserEmail())
+        );
+
+        $this->assertEquals(0, $exitCode);
+    }
+
+    /**
      * Removes test site team member  if exists.
      */
     private function removeTestUser(): void

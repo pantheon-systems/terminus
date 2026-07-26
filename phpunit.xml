@@ -5,11 +5,6 @@
             <directory suffix="Test.php">tests/Functional/</directory>
         </testsuite>
     </testsuites>
-    <coverage processUncoveredFiles="true" cacheDirectory="reports">
-        <include>
-            <directory suffix="Command.php">src/Commands</directory>
-        </include>
-    </coverage>
     <logging>
         <testdoxXml outputFile="reports/logfile.xml"/>
     </logging>
@@ -25,5 +20,6 @@
         <server name="TERMINUS_VERIFY_HOST_CERT" value="${TERMINUS_VERIFY_HOST_CERT}" />
         <server name="TERMINUS_CACHE_DIR" value="${TERMINUS_CACHE_DIR}" />
         <server name="TERMINUS_DEBUG" value="${TERMINUS_DEBUG}" />
+        <server name="TERMINUS_SITE_NODE" value="${TERMINUS_SITE_NODE}" />
     </php>
 </phpunit>

@@ -13,7 +13,7 @@
   "minimum-stability": "stable",
   "prefer-stable": true,
   "require": {
-    "php": ">=7.4",
+    "php": ">=8.2",
     "ext-json": "*",
     "composer/semver": "^3",
     "consolidation/comments": "^1.0.2 || ^2",
@@ -26,19 +26,15 @@
     "guzzlehttp/guzzle": "^7.0",
     "justinrainbow/json-schema": "^5.2",
     "league/container": "^4.2",
-    "monolog/monolog": "^2.2",
+    "monolog/monolog": "^3.10",
     "psy/psysh": "^0.12.6",
     "rogervila/array-diff-multidimensional": "^2.0",
     "twig/twig": "^3.3"
   },
   "require-dev": {
-    "ext-pcov": "*",
     "behat/behat": "^3.2.2",
     "erusev/parsedown": "^1.7",
     "friendsofphp/php-cs-fixer": "^3.17",
-    "pcov/clobber": "^2.0",
-    "phpunit/php-code-coverage": "^9.2",
-    "phpunit/phpcov": "^8.2",
     "phpunit/phpunit": "^9",
     "squizlabs/php_codesniffer": "^3.5",
     "wdalmut/php-deb-packager": "^0.0.14"
@@ -110,14 +106,17 @@
     "test:behat": [
       "SHELL_INTERACTIVE=true TERMINUS_TEST_MODE=1 behat --colors --config tests/config/behat.yml --stop-on-failure --suite=default"
     ],
+    "test:unit": [
+      "vendor/bin/phpunit --colors=always -c ./phpunit-unit.xml --do-not-cache-result --verbose"
+    ],
     "test:short": [
-      "XDEBUG_MODE=coverage vendor/bin/phpunit --colors=always -c ./phpunit.xml --debug --group=short --do-not-cache-result --verbose --stop-on-failure"
+      "vendor/bin/phpunit --colors=always -c ./phpunit.xml --debug --group=short --do-not-cache-result --verbose --stop-on-failure"
     ],
     "test:long": [
-      "XDEBUG_MODE=coverage vendor/bin/phpunit --colors=always -c ./phpunit.xml --debug --group=long --do-not-cache-result --verbose"
+      "vendor/bin/phpunit --colors=always -c ./phpunit.xml --debug --group=long --do-not-cache-result --verbose"
     ],
     "test:functional": [
-      "XDEBUG_MODE=coverage vendor/bin/phpunit --colors=always -c ./phpunit.xml --debug --group=short,long --do-not-cache-result --verbose",
+      "vendor/bin/phpunit --colors=always -c ./phpunit.xml --debug --group=short,long --do-not-cache-result --verbose",
       "@coverage"
     ],
     "test:all": [
@@ -163,6 +162,9 @@
     },
     "allow-plugins": {
       "phpstan/extension-installer": true
+    },
+    "audit": {
+      "block-insecure": false
     }
   },
   "extra": {
