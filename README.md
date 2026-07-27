@@ -77,25 +77,32 @@ sudo ln -s ~/terminus/terminus /usr/local/bin/terminus
 
 ### Standalone Docker container
 
-Terminus can also be built and run as a Docker container, rather than relying on system version of PHP and other dependencies.
+As an alternative to the standalone PHAR above, Terminus is also published as a Docker image, so it can run without a local PHP environment or other system dependencies. The image runs as a non-root `terminus` user.
+
+Each tagged release is published to the [GitHub Container Registry](https://github.com/pantheon-systems/terminus/pkgs/container/terminus). Pull the tag you want — a specific version, a major version, or `latest`:
+
+```bash
+docker pull ghcr.io/pantheon-systems/terminus:latest
+```
+
+Terminus stores your machine token, configuration, and installed plugins in `~/.terminus`. Bind-mount your local `~/.terminus` directory into the container so that data is written to — and persists on — your local filesystem:
+
+```bash
+mkdir -p ~/.terminus
+docker run --rm -tv ~/.terminus:/home/terminus/.terminus ghcr.io/pantheon-systems/terminus:latest self:info
+```
+
+For convenience, add an alias to your shell. Plugins you install are written to your local `~/.terminus` and remain available on subsequent runs:
+
+```bash
+alias terminus="docker run --rm -tv ~/.terminus:/home/terminus/.terminus ghcr.io/pantheon-systems/terminus:latest"
+terminus auth:login --machine-token=<token>
+terminus self:plugin:install <Packagist project or local path>
+```
+
+Alternatively, build the image from a local checkout of this repository instead of pulling it:
 
 ```bash
 docker build . -t terminus
+docker run --rm -tv ~/.terminus:/home/terminus/.terminus terminus self:info
 ```
-
-In order to store configuration and install plugins, Terminus requires a persistent data directory. If you only plan to run Terminus via Docker, please run the following command to create a Docker data volume:
-
-```bash
-docker volume create terminus --ignore
-```
-
-The container can be run of 2 different ways:
-
-- Directly using `docker` (or `podman`, etc.):
-
-        docker run -tv terminus:/root/.terminus terminus:latest self:info
-
-- Alternatively implement an alias in your local environment:
-
-        alias terminus="docker run -tv ~/.terminus:/root/.terminus terminus:latest"
-        terminus self:info
