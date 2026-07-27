@@ -51,18 +51,7 @@ jobs:
           path: terminus.phar
           if-no-files-found: error
 
-  build_docker_image:
-    runs-on: ubuntu-latest
-    name: Build Docker image
-    steps:
-      - name: Checkout
-        uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3.6.0
-      - name: Build Docker image
-        run: docker build . -t terminus
-      - name: Run built Docker image
-        run: docker run terminus art
-
-  test_docker_plugin:
+  test_docker_image:
     runs-on: ubuntu-latest
     name: Test Docker image with a local plugin
     steps:
