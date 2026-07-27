@@ -52,6 +52,30 @@ docker build . -t terminus
 docker run --rm -tv ~/.terminus:/home/terminus/.terminus terminus self:info
 ```
 
+## Verifying the image locally
+
+The `test_docker_image` job in
+[`.github/workflows/4.x.yml`](../.github/workflows/4.x.yml) builds the image and
+confirms that a plugin installed from a local path — stored in a bind-mounted
+`~/.terminus` — is still available on a later run. To reproduce that check
+locally:
+
+```bash
+docker build . -t terminus
+git clone https://github.com/pantheon-systems/terminus-plugin-example.git /tmp/plugin-src
+
+# Install the plugin from the mounted local path.
+docker run --rm -v ~/.terminus:/home/terminus/.terminus -v /tmp/plugin-src:/plugin-src \
+  terminus self:plugin:install /plugin-src
+
+# Run it from a fresh container using the persisted ~/.terminus.
+docker run --rm -v ~/.terminus:/home/terminus/.terminus -v /tmp/plugin-src:/plugin-src \
+  terminus hello
+```
+
+The final command prints `Hello, World!`, confirming the image runs and the
+local `~/.terminus` setup persists installed plugins.
+
 ## How the images are built
 
 The [`Dockerfile`](../Dockerfile) uses a multi-stage build:
