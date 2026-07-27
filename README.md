@@ -84,4 +84,10 @@ mkdir -p ~/.terminus
 docker run --rm -tv ~/.terminus:/home/terminus/.terminus ghcr.io/pantheon-systems/terminus:latest self:info
 ```
 
-See [docs/docker.md](docs/docker.md) for image tags, aliases, plugins, and how the images are built.
+For convenience, add an alias to your shell:
+
+```bash
+alias terminus="docker run --rm -tv ~/.terminus:/home/terminus/.terminus ghcr.io/pantheon-systems/terminus:latest"
+```
+
+See [docs/docker.md](docs/docker.md) for image tags, plugins, and how the images are built.
