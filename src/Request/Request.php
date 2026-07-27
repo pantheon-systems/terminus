@@ -166,6 +166,16 @@ class Request implements
     }
 
     /**
+     * Wraps the global sleep() so tests can override retry delays.
+     *
+     * @param int $seconds
+     */
+    protected function sleep(int $seconds): void
+    {
+        sleep($seconds);
+    }
+
+    /**
      * Returns the Retry Decider middleware.
      *
      * @return callable
@@ -221,7 +231,7 @@ class Request implements
                 if ($retry !== $maxRetries) {
                     $logWarningOnRetry($exception->getMessage());
                     $logWarning(sprintf("Retrying in %s seconds.", $retryBackoff * ($retry + 1)));
-                    sleep($retryBackoff * ($retry + 1));
+                    $this->sleep($retryBackoff * ($retry + 1));
 
                     return true;
                 }
@@ -231,22 +241,47 @@ class Request implements
                     ['error' => $exception->getMessage()]
                 );
             } else {
-                if (preg_match('/[2,4]0\d/', $response->getStatusCode())) {
-                    // Do not retry on 20x or 40x responses.
+                $statusCode = $response->getStatusCode();
+
+                if (!RetryPolicy::isRetryableStatusCode($statusCode)) {
+                    // Non-retryable response. This includes:
+                    //   - 2xx success (nothing to retry) and 3xx redirects (Guzzle normally
+                    //     follows these itself; retrying one is meaningless).
+                    //   - 400, 404, 405, 406      - permanent client errors (bad request, not
+                    //                               found, method not allowed, not acceptable).
+                    //   - 401 Unauthorized        - Terminus refreshes the session proactively
+                    //                               before every command (Authorizer::ensureLogin(),
+                    //                               Session::isActive()); a 401 that still occurs
+                    //                               means the credentials are invalid/revoked, and
+                    //                               retrying the identical request cannot fix that.
+                    //   - 403 Forbidden           - permanent authorization denial, never retried.
+                    //   - 409 Conflict            - handled specially below (may throw
+                    //                               TerminusUnsupportedSiteException).
+                    //   - 410-431, 451            - permanent client errors (Gone, Payload Too
+                    //                               Large, Unprocessable Entity, Locked, legal
+                    //                               block, etc.) — retrying won't change them.
+                    //   - 501, 505-511            - permanent server-side/config failures.
+                    // See RetryPolicy::RETRYABLE_STATUS_CODES for the transient codes that ARE
+                    // retried below (408, 429, 500, 502, 503, 504).
                     return false;
                 }
 
                 if ($retry !== $maxRetries) {
-                    $logWarningOnRetry(
-                        sprintf('status code - %s', $response->getStatusCode())
-                    );
+                    $reason = RetryPolicy::isRateLimit($statusCode)
+                        ? 'rate limit exceeded (HTTP 429 Too Many Requests)'
+                        : sprintf('status code - %s', $statusCode);
+                    // Rate limits back off exponentially; other retryable codes keep the
+                    // existing linear backoff. See RetryPolicy::backoffSeconds().
+                    $delay = RetryPolicy::backoffSeconds($statusCode, $retryBackoff, $retry);
+
+                    $logWarningOnRetry($reason);
                     $this->logger->debug(
                         'Response body: {body}',
                         ['body' => $response->getBody()->getContents()]
                     );
 
-                    $logWarning(sprintf("Retrying in %s seconds.", $retryBackoff * ($retry + 1)));
-                    sleep($retryBackoff * ($retry + 1));
+                    $logWarning(sprintf("Retrying in %s seconds.", $delay));
+                    $this->sleep($delay);
 
                     return true;
                 }
