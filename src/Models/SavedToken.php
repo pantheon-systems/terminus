@@ -42,6 +42,7 @@ class SavedToken extends TerminusModel implements
      * Starts a session with this saved token
      *
      * @return User An object representing the now-logged-in user
+     * @throws TerminusException If the machine token is rejected
      */
     public function logIn()
     {
@@ -52,10 +53,18 @@ class SavedToken extends TerminusModel implements
             ],
             'method' => 'post',
         ];
-        $response = $this->request->request(
+        // Bypass Request::request()'s 401 refresh-and-retry: this call IS the
+        // refresh operation, so it must never trigger a nested refresh attempt.
+        $response = $this->request->requestWithoutRefreshHandling(
             'authorize/machine-token',
             $options
         );
+        if ($response->getStatusCode() !== 200) {
+            throw new TerminusException(
+                'Could not log in with the given machine token: {reason}',
+                ['reason' => $response->getStatusCodeReason()]
+            );
+        }
         $this->session()->setData((array)$response['data']);
         return $this->session->getUser();
     }

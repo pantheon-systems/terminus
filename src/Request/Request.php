@@ -249,11 +249,12 @@ class Request implements
                     //     follows these itself; retrying one is meaningless).
                     //   - 400, 404, 405, 406      - permanent client errors (bad request, not
                     //                               found, method not allowed, not acceptable).
-                    //   - 401 Unauthorized        - Terminus refreshes the session proactively
-                    //                               before every command (Authorizer::ensureLogin(),
-                    //                               Session::isActive()); a 401 that still occurs
-                    //                               means the credentials are invalid/revoked, and
-                    //                               retrying the identical request cannot fix that.
+                    //   - 401 Unauthorized        - Terminus refreshes the session proactively before
+                    //                               every command (Authorizer::ensureLogin()) and
+                    //                               reactively on a mid-command 401 (Request::request()'s
+                    //                               refresh-and-retry-once, see refreshSession()); a 401
+                    //                               that survives both means credentials are invalid or
+                    //                               revoked, and retrying again cannot fix that.
                     //   - 403 Forbidden           - permanent authorization denial, never retried.
                     //   - 409 Conflict            - handled specially below (may throw
                     //                               TerminusUnsupportedSiteException).
@@ -381,7 +382,8 @@ class Request implements
     }
 
     /**
-     * Simplified request method for Pantheon API.
+     * Simplified request method for Pantheon API. On a 401 Unauthorized response,
+     * attempts to refresh the session once and retries the request a single time.
      *
      * @param string $path API path (URL)
      * @param array $options Options for the request
@@ -394,6 +396,52 @@ class Request implements
      * @throws TerminusException
      */
     public function request($path, array $options = []): RequestOperationResult
+    {
+        $result = $this->requestWithoutRefreshHandling($path, $options);
+
+        if ($result->getStatusCode() === 401 && $this->refreshSession()) {
+            $result = $this->requestWithoutRefreshHandling($path, $options);
+        }
+
+        return $result;
+    }
+
+    /**
+     * Attempts to refresh the current session by re-authenticating with the saved
+     * machine token. Used to recover from a session that expired mid-command.
+     *
+     * @return bool True if the session was refreshed successfully.
+     */
+    private function refreshSession(): bool
+    {
+        try {
+            $this->session()->getAuthToken()->logIn();
+            return true;
+        } catch (\Throwable $e) {
+            $this->logger->warning(
+                'Session refresh failed after receiving a 401: {message}',
+                ['message' => $e->getMessage()]
+            );
+            return false;
+        }
+    }
+
+    /**
+     * Sends a request to the Pantheon API without any 401 refresh-and-retry handling.
+     * Used directly by SavedToken::logIn(), since that call IS the refresh operation
+     * and must never trigger a nested refresh attempt.
+     *
+     * @param string $path API path (URL)
+     * @param array $options Options for the request
+     *   string method      GET is default
+     *   array form_params  Fed into the body of the request
+     *
+     * @return RequestOperationResult
+     *
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @throws TerminusException
+     */
+    public function requestWithoutRefreshHandling($path, array $options = []): RequestOperationResult
     {
         $config = $this->getConfig();
 

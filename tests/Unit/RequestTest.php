@@ -3,7 +3,9 @@
 namespace Pantheon\Terminus\Tests\Unit;
 
 use PHPUnit\Framework\TestCase;
+use Pantheon\Terminus\Exceptions\TerminusException;
 use Pantheon\Terminus\Exceptions\TerminusUnsupportedSiteException;
+use Pantheon\Terminus\Models\SavedToken;
 use Pantheon\Terminus\Request\Request;
 use Pantheon\Terminus\Session\Session;
 use Consolidation\Config\Config;
@@ -20,7 +22,12 @@ use Symfony\Component\Console\Input\InputInterface;
 
 class RequestTest extends TestCase
 {
-    private function createRequest(): FastRequest
+    /**
+     * @param Session|null $session Defaults to a session whose getAuthToken() throws
+     *   (i.e. "no saved token to refresh with"), so 401 tests that don't care about
+     *   refresh behavior get a harmless, single-call-only default.
+     */
+    private function createRequest(?Session $session = null): FastRequest
     {
         $request = new FastRequest();
         $request->setConfig(new Config([
@@ -41,21 +48,53 @@ class RequestTest extends TestCase
         $container->add('input', $input);
         $request->setContainer($container);
 
-        $session = $this->createMock(Session::class);
-        $session->method('get')->willReturn('fake-session-token');
-        $request->setSession($session);
+        $request->setSession($session ?? $this->createSessionMockWithNoAuthToken(['fake-session-token']));
 
         return $request;
     }
 
     /**
-     * Wires up the given queue of responses/exceptions behind the same retry
-     * decider that production code uses, and attaches it to $request.
+     * Builds a Session mock whose get('session') returns each value in
+     * $sessionTokenSequence in order across successive calls, and whose
+     * getAuthToken() returns the given SavedToken (e.g. a mock whose logIn()
+     * either succeeds or throws).
      */
-    private function attachMockHandler(FastRequest $request, array $queue): MockHandler
+    private function createSessionMockWithAuthToken(array $sessionTokenSequence, SavedToken $authToken): Session
+    {
+        $session = $this->createMock(Session::class);
+        $session->method('get')->willReturnOnConsecutiveCalls(...$sessionTokenSequence);
+        $session->method('getAuthToken')->willReturn($authToken);
+        return $session;
+    }
+
+    /**
+     * Builds a Session mock whose get('session') returns each value in
+     * $sessionTokenSequence in order across successive calls, and whose
+     * getAuthToken() throws (i.e. no saved token available to refresh with).
+     */
+    private function createSessionMockWithNoAuthToken(array $sessionTokenSequence): Session
+    {
+        $session = $this->createMock(Session::class);
+        $session->method('get')->willReturnOnConsecutiveCalls(...$sessionTokenSequence);
+        $session->method('getAuthToken')->willThrowException(
+            new TerminusException('You are not logged in. Run `auth:login` to authenticate.')
+        );
+        return $session;
+    }
+
+    /**
+     * Wires up the given queue of responses/exceptions behind the same retry
+     * decider that production code uses, and attaches it to $request. If
+     * $history is given, every request sent through the client is recorded there.
+     */
+    private function attachMockHandler(FastRequest $request, array $queue, ?array &$history = null): MockHandler
     {
         $mockHandler = new MockHandler($queue);
         $stack = HandlerStack::create($mockHandler);
+
+        if ($history !== null) {
+            $stack->push(Middleware::history($history));
+        }
 
         $method = new \ReflectionMethod(Request::class, 'createRetryDecider');
         $method->setAccessible(true);
@@ -104,10 +143,76 @@ class RequestTest extends TestCase
         $this->assertSame(0, $mockHandler->count());
     }
 
-    public function testUnauthorizedIsNotRetried()
+    public function testUnauthorizedWithNoTokenToRefreshWithIsNotRetried()
     {
+        // Default createRequest() session has no saved token: getAuthToken() throws.
         $request = $this->createRequest();
         $mockHandler = $this->attachMockHandler($request, [new Response(401, [], '{}')]);
+
+        $result = $request->request('sites');
+
+        $this->assertSame(401, $result->getStatusCode());
+        $this->assertSame(0, $mockHandler->count());
+    }
+
+    public function testUnauthorizedWithFailedRefreshIsNotRetried()
+    {
+        $savedToken = $this->createMock(SavedToken::class);
+        $savedToken->method('logIn')->willThrowException(
+            new TerminusException('Could not log in with the given machine token.')
+        );
+        $session = $this->createSessionMockWithAuthToken(['fake-session-token'], $savedToken);
+
+        $request = $this->createRequest($session);
+        $mockHandler = $this->attachMockHandler($request, [new Response(401, [], '{}')]);
+
+        $result = $request->request('sites');
+
+        $this->assertSame(401, $result->getStatusCode());
+        $this->assertSame(0, $mockHandler->count());
+    }
+
+    public function testUnauthorizedRefreshesSessionAndRetriesOnce()
+    {
+        $savedToken = $this->createMock(SavedToken::class);
+        $savedToken->method('logIn')->willReturn(null);
+        $session = $this->createSessionMockWithAuthToken(
+            ['token-before-refresh', 'token-after-refresh'],
+            $savedToken
+        );
+
+        $request = $this->createRequest($session);
+        $history = [];
+        $mockHandler = $this->attachMockHandler($request, [
+            new Response(401, [], '{}'),
+            new Response(200, [], '{}'),
+        ], $history);
+
+        $result = $request->request('sites');
+
+        $this->assertSame(200, $result->getStatusCode());
+        $this->assertSame(0, $mockHandler->count());
+        $this->assertCount(2, $history);
+        $this->assertNotSame(
+            $history[0]['request']->getHeaderLine('Authorization'),
+            $history[1]['request']->getHeaderLine('Authorization')
+        );
+    }
+
+    public function testUnauthorizedRefreshSucceedsButRetryStillFailsIsNotRetriedAgain()
+    {
+        $savedToken = $this->createMock(SavedToken::class);
+        $savedToken->method('logIn')->willReturn(null);
+        $session = $this->createSessionMockWithAuthToken(
+            ['token-before-refresh', 'token-after-refresh'],
+            $savedToken
+        );
+
+        $request = $this->createRequest($session);
+        $mockHandler = $this->attachMockHandler($request, [
+            new Response(401, [], '{}'),
+            new Response(401, [], '{}'),
+        ]);
 
         $result = $request->request('sites');
 
