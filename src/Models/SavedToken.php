@@ -46,10 +46,16 @@ class SavedToken extends TerminusModel implements
      */
     public function logIn()
     {
+        // Pass the machine token to PantheonAPI. We include a
+        // marker field to indicate that this version of Terminus
+        // supports refreshing session tokens during command
+        // execution to avoid rejection once old Terminus versions
+        // are discontinued.
         $options = [
             'form_params' => [
                 'machine_token' => $this->get('token'),
                 'client' => 'terminus',
+                'is_short_ttl_capable' => true,
             ],
             'method' => 'post',
         ];
