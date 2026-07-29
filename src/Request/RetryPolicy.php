@@ -16,7 +16,7 @@ namespace Pantheon\Terminus\Request;
  */
 final class RetryPolicy
 {
-    public const RETRYABLE_STATUS_CODES = [408, 429, 500, 502, 503, 504];
+    public const RETRYABLE_STATUS_CODES = [429, 500, 502, 503, 504];
 
     public const RATE_LIMIT_STATUS_CODE = 429;
 

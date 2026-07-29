@@ -249,6 +249,9 @@ class Request implements
                     //     follows these itself; retrying one is meaningless).
                     //   - 400, 404, 405, 406      - permanent client errors (bad request, not
                     //                               found, method not allowed, not acceptable).
+                    //   - 408 Request Timeout     - historically has not been retried; some operations
+                    //                               might not be idempotent and therefore not safe
+                    //                               to blindly retry.
                     //   - 401 Unauthorized        - Terminus refreshes the session proactively before
                     //                               every command (Authorizer::ensureLogin()) and
                     //                               reactively on a mid-command 401 (Request::request()'s
@@ -263,7 +266,7 @@ class Request implements
                     //                               block, etc.) — retrying won't change them.
                     //   - 501, 505-511            - permanent server-side/config failures.
                     // See RetryPolicy::RETRYABLE_STATUS_CODES for the transient codes that ARE
-                    // retried below (408, 429, 500, 502, 503, 504).
+                    // retried below (429, 500, 502, 503, 504).
                     return false;
                 }
 
