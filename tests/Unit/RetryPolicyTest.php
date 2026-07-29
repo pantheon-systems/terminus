@@ -19,7 +19,6 @@ class RetryPolicyTest extends TestCase
     {
         return [
             // Retryable: transient conditions.
-            'request timeout' => [408, true],
             'rate limited' => [429, true],
             'internal server error' => [500, true],
             'bad gateway' => [502, true],
@@ -31,6 +30,9 @@ class RetryPolicyTest extends TestCase
             'im used' => [226, false],
             'multiple choices' => [300, false],
             'moved permanently' => [301, false],
+
+            // Not retryable: might not be idempotent
+            'request timeout' => [408, false],
 
             // Not retryable: permanent client errors.
             'bad request' => [400, false],
