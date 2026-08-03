@@ -166,6 +166,16 @@ class Request implements
     }
 
     /**
+     * Wraps the global sleep() so tests can override retry delays.
+     *
+     * @param int $seconds
+     */
+    protected function sleep(int $seconds): void
+    {
+        sleep($seconds);
+    }
+
+    /**
      * Returns the Retry Decider middleware.
      *
      * @return callable
@@ -221,7 +231,7 @@ class Request implements
                 if ($retry !== $maxRetries) {
                     $logWarningOnRetry($exception->getMessage());
                     $logWarning(sprintf("Retrying in %s seconds.", $retryBackoff * ($retry + 1)));
-                    sleep($retryBackoff * ($retry + 1));
+                    $this->sleep($retryBackoff * ($retry + 1));
 
                     return true;
                 }
@@ -231,22 +241,51 @@ class Request implements
                     ['error' => $exception->getMessage()]
                 );
             } else {
-                if (preg_match('/[2,4]0\d/', $response->getStatusCode())) {
-                    // Do not retry on 20x or 40x responses.
+                $statusCode = $response->getStatusCode();
+
+                if (!RetryPolicy::isRetryableStatusCode($statusCode)) {
+                    // Non-retryable response. This includes:
+                    //   - 2xx success (nothing to retry) and 3xx redirects (Guzzle normally
+                    //     follows these itself; retrying one is meaningless).
+                    //   - 400, 404, 405, 406      - permanent client errors (bad request, not
+                    //                               found, method not allowed, not acceptable).
+                    //   - 408 Request Timeout     - historically has not been retried; some operations
+                    //                               might not be idempotent and therefore not safe
+                    //                               to blindly retry.
+                    //   - 401 Unauthorized        - Terminus refreshes the session proactively before
+                    //                               every command (Authorizer::ensureLogin()) and
+                    //                               reactively on a mid-command 401 (Request::request()'s
+                    //                               refresh-and-retry-once, see refreshSession()); a 401
+                    //                               that survives both means credentials are invalid or
+                    //                               revoked, and retrying again cannot fix that.
+                    //   - 403 Forbidden           - permanent authorization denial, never retried.
+                    //   - 409 Conflict            - handled specially below (may throw
+                    //                               TerminusUnsupportedSiteException).
+                    //   - 410-431, 451            - permanent client errors (Gone, Payload Too
+                    //                               Large, Unprocessable Entity, Locked, legal
+                    //                               block, etc.) — retrying won't change them.
+                    //   - 501, 505-511            - permanent server-side/config failures.
+                    // See RetryPolicy::RETRYABLE_STATUS_CODES for the transient codes that ARE
+                    // retried below (429, 500, 502, 503, 504).
                     return false;
                 }
 
                 if ($retry !== $maxRetries) {
-                    $logWarningOnRetry(
-                        sprintf('status code - %s', $response->getStatusCode())
-                    );
+                    $reason = RetryPolicy::isRateLimit($statusCode)
+                        ? 'rate limit exceeded (HTTP 429 Too Many Requests)'
+                        : sprintf('status code - %s', $statusCode);
+                    // Rate limits back off exponentially; other retryable codes keep the
+                    // existing linear backoff. See RetryPolicy::backoffSeconds().
+                    $delay = RetryPolicy::backoffSeconds($statusCode, $retryBackoff, $retry);
+
+                    $logWarningOnRetry($reason);
                     $this->logger->debug(
                         'Response body: {body}',
                         ['body' => $response->getBody()->getContents()]
                     );
 
-                    $logWarning(sprintf("Retrying in %s seconds.", $retryBackoff * ($retry + 1)));
-                    sleep($retryBackoff * ($retry + 1));
+                    $logWarning(sprintf("Retrying in %s seconds.", $delay));
+                    $this->sleep($delay);
 
                     return true;
                 }
@@ -346,7 +385,8 @@ class Request implements
     }
 
     /**
-     * Simplified request method for Pantheon API.
+     * Simplified request method for Pantheon API. On a 401 Unauthorized response,
+     * attempts to refresh the session once and retries the request a single time.
      *
      * @param string $path API path (URL)
      * @param array $options Options for the request
@@ -359,6 +399,52 @@ class Request implements
      * @throws TerminusException
      */
     public function request($path, array $options = []): RequestOperationResult
+    {
+        $result = $this->requestWithoutRefreshHandling($path, $options);
+
+        if ($result->getStatusCode() === 401 && $this->refreshSession()) {
+            $result = $this->requestWithoutRefreshHandling($path, $options);
+        }
+
+        return $result;
+    }
+
+    /**
+     * Attempts to refresh the current session by re-authenticating with the saved
+     * machine token. Used to recover from a session that expired mid-command.
+     *
+     * @return bool True if the session was refreshed successfully.
+     */
+    private function refreshSession(): bool
+    {
+        try {
+            $this->session()->getAuthToken()->logIn();
+            return true;
+        } catch (\Throwable $e) {
+            $this->logger->warning(
+                'Session refresh failed after receiving a 401: {message}',
+                ['message' => $e->getMessage()]
+            );
+            return false;
+        }
+    }
+
+    /**
+     * Sends a request to the Pantheon API without any 401 refresh-and-retry handling.
+     * Used directly by SavedToken::logIn(), since that call IS the refresh operation
+     * and must never trigger a nested refresh attempt.
+     *
+     * @param string $path API path (URL)
+     * @param array $options Options for the request
+     *   string method      GET is default
+     *   array form_params  Fed into the body of the request
+     *
+     * @return RequestOperationResult
+     *
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @throws TerminusException
+     */
+    public function requestWithoutRefreshHandling($path, array $options = []): RequestOperationResult
     {
         $config = $this->getConfig();
 
