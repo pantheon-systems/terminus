@@ -23,7 +23,7 @@
     "consolidation/self-update": "^2.0.4",
     "consolidation/site-alias": "^4.0",
     "czproject/git-php": "^4.0",
-    "guzzlehttp/guzzle": "^7.0",
+    "guzzlehttp/guzzle": "^8.0",
     "justinrainbow/json-schema": "^5.2",
     "league/container": "^4.2",
     "monolog/monolog": "^3.10",
