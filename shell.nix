@@ -1,11 +1,11 @@
 # A simple shell.nix to facilitate development.
-# Use `nix-shell --arg dev true` to build and run terminus with dev dependencies.
-{ dev ? false, ... }:
+# Use `nix-shell --arg withDev true` to build and run terminus with dev dependencies.
+{ withDev ? false, ... }:
 
 let
   nixpkgs = fetchTarball "https://github.com/NixOS/nixpkgs/tarball/nixos-26.05";
   pkgs = import nixpkgs { config = {}; overlays = []; };
-  terminus = if dev == true then pkgs.callPackage ./nix/package-dev.nix { inherit pkgs; } else pkgs.callPackage ./nix/package.nix { inherit pkgs; };
+  terminus = if withDev == true then pkgs.callPackage ./nix/pkgs/terminus-dev/package.nix { inherit pkgs withDev; } else pkgs.callPackage ./nix/pkgs/terminus/package.nix { inherit pkgs withDev;  };
 in {
 
  shell = (pkgs.mkShellNoCC {

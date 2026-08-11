@@ -11,7 +11,7 @@
           phpPackages.box
           phpPackages.composer
           openssh
-          config.packages.terminus
+          config.packages.terminus 
         ];
       };
     };
