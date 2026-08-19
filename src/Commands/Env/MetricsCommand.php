@@ -71,7 +71,7 @@ class MetricsCommand extends TerminusCommand implements SiteAwareInterface
      *
      * @option period The time period for each data point (month|week|day)
      * @option datapoints How much data to return in total, or 'auto' to select
-     *   a resonable default based on the selected period.
+     *   a reasonable default based on the selected period.
      *
      * @return \Consolidation\OutputFormatters\StructuredData\RowsOfFieldsWithMetadata
      *
