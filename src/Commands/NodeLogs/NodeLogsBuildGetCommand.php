@@ -8,7 +8,7 @@ namespace Pantheon\Terminus\Commands\NodeLogs;
 class NodeLogsBuildGetCommand extends NodeLogsBaseCommand
 {
     /**
-     * Print the build log.
+     * Print the build log for Next.js sites.
      *
      * @authorize
      *
