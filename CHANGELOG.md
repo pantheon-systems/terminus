@@ -1,7 +1,19 @@
 # Change Log
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org)
 
-## 4.3.3-dev
+## 4.3.3 - 2026-08-20
+
+### Added
+
+- Add `rollbackable` column to `node:builds:list` to surface which builds are still eligible for rollback (#2903)
+- Add `site_admin` role (#2878, #2895)
+- Automatically refresh session tokens that expire during long-running command execution (#2900)
+
+### Fixed
+
+- Guard against null `labels` in `Commit::serialize()`, preventing `env:code-log` from crashing on eVCS sites (#2911)
+- Write `composer audit.block-insecure` directly to `composer.json` so plugin installs no longer fail when a pinned dependency has an open security advisory (#2891)
+- Fix documentation typos and clarify command help text (#2901, #2910)
 
 ## 4.3.2 - 2026-06-23
 
