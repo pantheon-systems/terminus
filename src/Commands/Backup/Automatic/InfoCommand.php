@@ -40,7 +40,7 @@ class InfoCommand extends TerminusCommand implements SiteAwareInterface
     public function getSchedule($site_env)
     {
         $schedule = $this->getEnv($site_env)->getBackups()->getBackupSchedule();
-        if (is_null($schedule['daily_backup_hour'])) {
+        if (empty($schedule['daily_backup_hour'])) {
             $this->log()->notice('Backups are not currently scheduled to be run.');
         }
         return new PropertyList($schedule);
