@@ -99,10 +99,7 @@ class SiteTeamCommandsTest extends TerminusTestBase
         $this->assertContains($this->getUserEmail(), $emails);
 
         $this->terminus(sprintf('site:team:remove %s %s', $this->getSiteName(), $this->getUserEmail()));
-        $this->assertNull(
-            $this->getTeamMemberRole($this->getUserEmail()),
-            'The user must no longer be a member of the site team.'
-        );
+        $this->assertNotTeamMember($this->getUserEmail());
     }
 
     /**
@@ -213,10 +210,7 @@ class SiteTeamCommandsTest extends TerminusTestBase
             sprintf('site:team:remove %s %s', $this->getSiteName(), $this->getUserEmail())
         );
 
-        $this->assertNull(
-            $this->getTeamMemberRole($this->getUserEmail()),
-            'The site_admin must no longer be a member of the site team.'
-        );
+        $this->assertNotTeamMember($this->getUserEmail());
         $this->assertAuditWorkflowLogged($workflowIdsBefore);
     }
 
@@ -254,10 +248,7 @@ class SiteTeamCommandsTest extends TerminusTestBase
         }
 
         $this->terminus(sprintf('site:team:remove %s %s', $this->getSiteName(), $this->getUserEmail()));
-        $this->assertNull(
-            $this->getTeamMemberRole($this->getUserEmail()),
-            'The user must not be a member of the site team.'
-        );
+        $this->assertNotTeamMember($this->getUserEmail());
     }
 
     /**
@@ -297,6 +288,25 @@ class SiteTeamCommandsTest extends TerminusTestBase
         $this->assertTerminusCommandResultEqualsInAttempts(
             fn () => $this->getTeamMemberRole($email),
             $role,
+            6,
+            5
+        );
+    }
+
+    /**
+     * Asserts the given user is not a member of the site team.
+     *
+     * The membership removal workflow can report completion before the change
+     * is visible to site:team:list, so this retries rather than reading once.
+     *
+     * @param string $email
+     *   The email address of the former team member.
+     */
+    private function assertNotTeamMember(string $email): void
+    {
+        $this->assertTerminusCommandResultEqualsInAttempts(
+            fn () => $this->getTeamMemberRole($email),
+            null,
             6,
             5
         );
