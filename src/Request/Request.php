@@ -524,6 +524,7 @@ class Request implements
         $statusCode = $response->getStatusCode();
         $headers = $response->getHeaders();
         $decoded_body = null;
+        $json_decode_failed = false;
 
         // Don't attempt to decode JSON if the body is empty.
         if (!empty($body)) {
@@ -535,9 +536,28 @@ class Request implements
                     JSON_THROW_ON_ERROR
                 );
             } catch (\JsonException $jsonException) {
-                $this->logger->debug('json_decode exception: {message}', [
-                    'message' => $jsonException->getMessage()
-                ]);
+                if ($statusCode >= 200 && $statusCode < 300) {
+                    // On 2xx responses, non-JSON is an API contract violation.
+                    // Substitute an empty object to prevent downstream fatals
+                    // from code that expects to access properties on the result.
+                    $this->logger->warning(
+                        'API returned non-JSON response body for {uri} (HTTP {status_code}). '
+                        . 'Content-Type: {content_type}. Body preview: {body_preview}',
+                        [
+                            'uri' => $uri,
+                            'status_code' => $statusCode,
+                            'content_type' => $response->getHeaderLine('Content-Type'),
+                            'body_preview' => substr($body, 0, 200),
+                        ]
+                    );
+                    $decoded_body = new \stdClass();
+                    $json_decode_failed = true;
+                } else {
+                    // For error responses, keep raw string — callers use it for error messages.
+                    $this->logger->debug('json_decode exception: {message}', [
+                        'message' => $jsonException->getMessage()
+                    ]);
+                }
             }
         }
 
@@ -553,12 +573,16 @@ class Request implements
             }
         }
 
-        return new RequestOperationResult([
+        $result = new RequestOperationResult([
             'data' => $decoded_body ?? $body,
             'headers' => $headers,
             'status_code' => $statusCode,
             'status_code_reason' => $response->getReasonPhrase(),
         ]);
+        if ($json_decode_failed) {
+            $result->setJsonDecodeFailed(true);
+        }
+        return $result;
     }
 
     /**
