@@ -3,6 +3,7 @@
 namespace Pantheon\Terminus\Commands\Site;
 
 use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
+use Consolidation\OutputFormatters\Transformations\ReorderFields;
 use Pantheon\Terminus\Commands\StructuredListTrait;
 
 class ListCommand extends SiteCommand
@@ -11,6 +12,20 @@ class ListCommand extends SiteCommand
 
     private const OPTION_OWNER_ME = 'me';
     private const OPTION_ORG_ALL = 'all';
+
+    private const FIELD_LABELS = [
+        'name' => 'Name',
+        'label' => 'Label',
+        'id' => 'ID',
+        'plan_name' => 'Plan',
+        'framework' => 'Framework',
+        'region' => 'Region',
+        'owner' => 'Owner',
+        'created' => 'Created',
+        'memberships' => 'Memberships',
+        'frozen' => 'Is Frozen?',
+        'last_frozen_at' => 'Date frozen',
+    ];
 
     /**
      * Displays the list of sites accessible to the currently logged-in user.
@@ -71,6 +86,8 @@ class ListCommand extends SiteCommand
         'upstream' => null,
     ])
     {
+        (new ReorderFields())->reorder($this->input()->getOption('fields'), self::FIELD_LABELS, []);
+
         $user = $this->session()->getUser();
         $this->sites()->fetch(
             [
