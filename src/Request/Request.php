@@ -155,6 +155,14 @@ class Request implements
                     'handler' => $stack,
                 ];
 
+            // Enable cURL debug output if --curl-debug option is set
+            if ($this->getContainer()->has('input')) {
+                $input = $this->getContainer()->get('input');
+                if ($input->hasOption('curl-debug') && $input->getOption('curl-debug')) {
+                    $params['debug'] = true;
+                }
+            }
+
             $host_cert = $config->get('host_cert');
             if ($host_cert !== null) {
                 $params[RequestOptions::CERT] = $host_cert;
