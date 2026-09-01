@@ -74,3 +74,20 @@ chmod +x terminus
 ./terminus self:update
 sudo ln -s ~/terminus/terminus /usr/local/bin/terminus
 ```
+
+### Standalone Docker container
+
+Terminus is also published as a Docker image, so it can run without a local PHP environment. Each tagged release is available from the GitHub Container Registry. Bind-mount your local `~/.terminus` so configuration and plugins persist:
+
+```bash
+mkdir -p ~/.terminus
+docker run --rm -tv ~/.terminus:/home/terminus/.terminus ghcr.io/pantheon-systems/terminus:latest self:info
+```
+
+For convenience, add an alias to your shell:
+
+```bash
+alias terminus="docker run --rm -tv ~/.terminus:/home/terminus/.terminus ghcr.io/pantheon-systems/terminus:latest"
+```
+
+See [docs/docker.md](docs/docker.md) for image tags, plugins, and how the images are built.
