@@ -365,12 +365,49 @@ abstract class PluginBaseCommand extends TerminusCommand
     protected function ensureComposerJsonExists($path, $package_name)
     {
         $this->ensureDirectoryExists($path);
-        if (!$this->getLocalMachine()->getFileSystem()->exists($path . '/composer.json')) {
+        $composer_json_path = $path . '/composer.json';
+        if (!$this->getLocalMachine()->getFileSystem()->exists($composer_json_path)) {
             $this->runCommand("composer --working-dir=$path init --name=$package_name -n");
             $this->runCommand("composer --working-dir=$path config minimum-stability dev");
             $this->runCommand("composer --working-dir=$path config prefer-stable true");
-            $this->runCommand("composer --working-dir=$path config audit.block-insecure false");
         }
+        // Re-applied even for a pre-existing composer.json, since older Terminus
+        // versions could have created one without this setting (see method docblock).
+        $this->disableComposerInsecurePackageAudit($composer_json_path);
+    }
+
+    /**
+     * Disables Composer's insecure-package audit block in the given composer.json.
+     *
+     * Composer's "config" command does not support setting "audit.block-insecure"
+     * (only "audit.abandoned" and "audit.ignore" are wired up as settable keys),
+     * even though it is a valid composer.json schema key that defaults to true.
+     * Attempting "composer config audit.block-insecure false" fails, so the
+     * setting has to be written into composer.json directly instead.
+     *
+     * @param string $composer_json_path Path to the composer.json file to update.
+     *
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
+     */
+    protected function disableComposerInsecurePackageAudit($composer_json_path)
+    {
+        $local_machine = $this->getLocalMachine();
+        // Decoded as objects (not associative arrays) so that empty JSON objects
+        // already in the file, e.g. "require": {}, don't get flattened into "[]"
+        // on re-encode, which Composer's schema validation rejects.
+        $composer_json = json_decode($local_machine->readFile($composer_json_path)) ?: new \stdClass();
+        if (!isset($composer_json->config)) {
+            $composer_json->config = new \stdClass();
+        }
+        if (!isset($composer_json->config->audit)) {
+            $composer_json->config->audit = new \stdClass();
+        }
+        $composer_json->config->audit->{'block-insecure'} = false;
+        $local_machine->writeFile(
+            $composer_json_path,
+            json_encode($composer_json, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) . "\n"
+        );
     }
 
     /**

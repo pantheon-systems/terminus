@@ -27,6 +27,8 @@ class BuildsListCommand extends SiteCommand implements SiteAwareInterface, Reque
      * The "active" field indicates whether the build is the one currently serving
      * traffic in the environment. After a rollback, the active build may differ
      * from the most recently deployed build.
+     * The "rollbackable" field indicates whether the build may still be rolled
+     * back (a deployed build within the rollback window).
      *
      * @authorize
      * @filter-output
@@ -41,6 +43,7 @@ class BuildsListCommand extends SiteCommand implements SiteAwareInterface, Reque
      *   commit: Commit
      *   deployed: Deployed
      *   active: Active
+     *   rollbackable: Rollbackable
      *   created: Created
      *   completed: Completed
      *

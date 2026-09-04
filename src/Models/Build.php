@@ -29,6 +29,7 @@ class Build extends TerminusModel
             'commit' => $data->commit ?? '',
             'deployed' => !empty($data->release_id) ? 'true' : 'false',
             'active' => !empty($data->active) ? 'true' : 'false',
+            'rollbackable' => !empty($data->rollbackable) ? 'true' : 'false',
             'created' => $data->created,
         ];
     }

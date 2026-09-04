@@ -102,6 +102,27 @@ class DrushSitesYmlEmitter implements AliasEmitterInterface
      */
     protected function getAliasFragment(array $replacements): string
     {
+        $fragments = [];
+
+        // If we have individual environments (custom domains enabled), render each one
+        if (isset($replacements['environments']) && !empty($replacements['environments'])) {
+            foreach ($replacements['environments'] as $env_data) {
+                $fragments[] = Template::process('fragment.site.yml.twig', $env_data);
+            }
+
+            // Add wildcard pattern at the end for multidev environments
+            $wildcard_data = [
+                'site_name' => $replacements['site_name'],
+                'env_name' => '*',
+                'env_label' => '${env-name}',
+                'site_id' => $replacements['site_id'],
+            ];
+            $fragments[] = Template::process('fragment.site.yml.twig', $wildcard_data);
+
+            return implode("\n", $fragments);
+        }
+
+        // Otherwise, use the wildcard pattern only (backward compatible)
         return Template::process('fragment.site.yml.twig', $replacements);
     }
 

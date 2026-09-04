@@ -29,7 +29,7 @@ trait VcsClientAwareTrait
             return $this->vcsClient;
         }
 
-        $polling_interval = $this->getConfig()->get('http_retry_delay_ms', 1000);
+        $polling_interval = $this->request()->getConfig()->get('http_retry_delay_ms', 1000);
 
         return $this->vcsClient = new Client($this->request(), $polling_interval);
     }

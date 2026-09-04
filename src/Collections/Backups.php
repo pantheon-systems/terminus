@@ -153,9 +153,9 @@ class Backups extends EnvironmentOwnedCollection
         $response      = $this->request->request($path);
         $response_data = (array)$response['data'];
         $data          = [
-            'daily_backup_hour' => null,
-            'expiry' => null,
-            'weekly_backup_day' => null,
+            'daily_backup_hour' => '',
+            'expiry' => '',
+            'weekly_backup_day' => '',
         ];
 
         $schedule_sample = array_shift($response_data);

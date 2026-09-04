@@ -151,6 +151,32 @@ class Client implements ConfigAwareInterface
     }
 
     /**
+     * Update the build path (monorepo subdirectory) for a given site.
+     *
+     * An empty build path resets the site to building from the repository root.
+     *
+     * @param string $site_id
+     * @param string $build_path
+     *
+     * @return array
+     *
+     * @throws \Pantheon\Terminus\Exceptions\TerminusException
+     */
+    public function updateBuildPath(string $site_id, string $build_path): array
+    {
+        $request_options = [
+            'method' => 'PATCH',
+            'json' => ['build_path' => $build_path],
+        ];
+
+        return $this->requestApi(
+            'site-details/' . $site_id . '/build-path',
+            $request_options,
+            "X-Pantheon-Session"
+        );
+    }
+
+    /**
      * Pushes GitHub VCS event to the VCS API.
      */
     public function githubVcs($data, string $site_id, string $event_name): array
