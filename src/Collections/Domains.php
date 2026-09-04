@@ -17,7 +17,7 @@ class Domains extends EnvironmentOwnedCollection
     /**
      * @var string
      */
-    protected $collected_class = Domain::class;
+    protected string $collected_class = Domain::class;
     /**
      * @var string
      */

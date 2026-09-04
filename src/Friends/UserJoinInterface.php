@@ -13,7 +13,7 @@ interface UserJoinInterface
     /**
      * @return string[]
      */
-    public function getReferences();
+    public function getReferences(): array;
 
     /**
      * @return User Returns a User-type object

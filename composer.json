@@ -35,6 +35,8 @@
     "behat/behat": "^3.2.2",
     "erusev/parsedown": "^1.7",
     "friendsofphp/php-cs-fixer": "^3.17",
+    "phpstan/phpstan": "^2.1",
+    "phpstan/phpstan-deprecation-rules": "^2.0",
     "phpunit/phpunit": "^9",
     "squizlabs/php_codesniffer": "^3.5",
     "wdalmut/php-deb-packager": "^0.0.14"
@@ -95,6 +97,12 @@
     "code:lint": [
       "@cs"
     ],
+    "phpstan": [
+      "vendor/bin/phpstan analyse --memory-limit=2G"
+    ],
+    "phpstan:baseline": [
+      "vendor/bin/phpstan analyse --memory-limit=2G --generate-baseline"
+    ],
     "code:new-command": [
       "rm -Rf ~/.terminus/cache/commands || true",
       "@update-class-lists",
@@ -107,7 +115,8 @@
       "SHELL_INTERACTIVE=true TERMINUS_TEST_MODE=1 behat --colors --config tests/config/behat.yml --stop-on-failure --suite=default"
     ],
     "test:unit": [
-      "vendor/bin/phpunit --colors=always -c ./phpunit-unit.xml --do-not-cache-result --verbose"
+      "vendor/bin/phpunit --colors=always -c tests/config/phpunit.unit.xml --verbose",
+      "@phpstan"
     ],
     "test:short": [
       "vendor/bin/phpunit --colors=always -c ./phpunit.xml --debug --group=short --do-not-cache-result --verbose --stop-on-failure"

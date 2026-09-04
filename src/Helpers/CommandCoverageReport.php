@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Pantheon\Terminus\Helpers;
 
 use Consolidation\AnnotatedCommand\AnnotatedCommandFactory;
@@ -31,7 +33,7 @@ class CommandCoverageReport implements ConfigAwareInterface, IOAwareInterface
     use ConfigAwareTrait;
     use IO;
 
-    public static $STATUS_ICON = [
+    public static array $STATUS_ICON = [
         '-1' => "❌",
         '0' => '✅',
         '1' => '💩',
@@ -42,9 +44,9 @@ class CommandCoverageReport implements ConfigAwareInterface, IOAwareInterface
     ];
 
     /**
-     * @var string
+     * @var array<string>
      */
-    public static $HELP_TEXT = [
+    public static array $HELP_TEXT = [
         "********************************************************************************",
         "* Once upon a time, terminus had unit tests and those unit tests passed.       *",
         "* Somewhere in it’s history those unit tests were disabled and no longer       *",
@@ -67,7 +69,7 @@ class CommandCoverageReport implements ConfigAwareInterface, IOAwareInterface
         $this->io = $io;
     }
 
-    public static function factory(?OutputInterface $output = null)
+    public static function factory(?OutputInterface $output = null): static
     {
         $input = new ArgvInput($_SERVER['argv']);
         $output = new ConsoleOutput();
@@ -157,7 +159,7 @@ class CommandCoverageReport implements ConfigAwareInterface, IOAwareInterface
      *
      * @return TerminusCommand[] An array of TerminusCommand instances
      */
-    public static function getCommands($path, $baseNamespace)
+    public static function getCommands(string $path, string $baseNamespace): array
     {
         $discovery = new CommandFileDiscovery();
         $discovery->setSearchPattern('*Command.php')->setSearchLocations([]);
@@ -167,7 +169,7 @@ class CommandCoverageReport implements ConfigAwareInterface, IOAwareInterface
     /**
      * @param string $file
      */
-    public static function getTestResults(string $file = "reports/logfile.xml")
+    public static function getTestResults(string $file = "reports/logfile.xml"): array
     {
         $toReturn = [];
         $json_string = json_encode(simplexml_load_file(
@@ -190,7 +192,7 @@ class CommandCoverageReport implements ConfigAwareInterface, IOAwareInterface
     /**
      * @return string
      */
-    public static function getRootDir()
+    public static function getRootDir(): string
     {
         return dirname(__FILE__, 3);
     }
@@ -231,7 +233,7 @@ class CommandCoverageReport implements ConfigAwareInterface, IOAwareInterface
      * @param string $doc_string The raw doc string from the PHP file
      * @return array
      */
-    public function parseDocString(string $doc_string)
+    public function parseDocString(string $doc_string): array
     {
         $exploded_docs = explode("\n", $doc_string);
         $lines         = array();

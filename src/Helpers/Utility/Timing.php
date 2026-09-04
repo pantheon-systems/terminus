@@ -1,15 +1,17 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Pantheon\Terminus\Helpers\Utility;
 
 class Timing
 {
-    private static $startTime;
+    private static ?\DateTime $startTime = null;
 
     /**
      * Generate start time and assign to static class variable
      */
-    public static function generateStartTime()
+    public static function generateStartTime(): void
     {
         self::$startTime = new \DateTime();
     }
@@ -17,11 +19,11 @@ class Timing
     /**
      * Get the start time
      *
-     * @return DateTime
+     * @return \DateTime
      */
-    public static function getStartTime()
+    public static function getStartTime(): \DateTime
     {
-        if (empty(self::$startTime)) { // If startTime is not set, generate it
+        if (self::$startTime === null) { // If startTime is not set, generate it
             self::generateStartTime();
         }
         return self::$startTime;

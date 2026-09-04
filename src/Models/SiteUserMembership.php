@@ -55,7 +55,7 @@ class SiteUserMembership extends TerminusModel implements
     /**
      * @inheritdoc
      */
-    public function serialize()
+    public function serialize(): array
     {
         $user = $this->getUser()->serialize();
         return $user + [

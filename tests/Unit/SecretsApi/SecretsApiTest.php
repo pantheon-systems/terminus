@@ -1,31 +1,27 @@
 <?php
 
-namespace Pantheon\Terminus\Tests\Unit;
+declare(strict_types=1);
 
-use PHPUnit\Framework\TestCase;
-use Pantheon\Terminus\SecretsApi\SecretsApi;
+namespace Pantheon\Terminus\Tests\Unit\SecretsApi;
+
+use Pantheon\Terminus\Config\TerminusConfig;
 use Pantheon\Terminus\Request\Request;
-use Consolidation\Config\Config;
+use Pantheon\Terminus\SecretsApi\SecretsApi;
+use Pantheon\Terminus\Tests\Unit\UnitTestCase;
 
-class SecretsApiTest extends TestCase
+class SecretsApiTest extends UnitTestCase
 {
-    private function invokeGetBaseURI(SecretsApi $api): string
-    {
-        $method = new \ReflectionMethod(SecretsApi::class, 'getBaseURI');
-        $method->setAccessible(true);
-        return $method->invoke($api);
-    }
-
     private function createSecretsApi(array $configValues): SecretsApi
     {
+        $config = (new TerminusConfig())->combine($configValues);
         $request = new Request();
-        $request->setConfig(new Config($configValues));
+        $request->setConfig($config);
         $api = new SecretsApi();
         $api->setRequest($request);
         return $api;
     }
 
-    public function testGetBaseURIWithPapiValues()
+    public function testGetBaseURIWithPapiValues(): void
     {
         $api = $this->createSecretsApi([
             'papi_protocol' => 'http',
@@ -38,11 +34,11 @@ class SecretsApiTest extends TestCase
 
         $this->assertEquals(
             'http://localhost:8080/customer-secrets/v1',
-            $this->invokeGetBaseURI($api)
+            $this->callPrivateMethod($api, 'getBaseURI')
         );
     }
 
-    public function testGetBaseURIWithProtocolAndPortFallback()
+    public function testGetBaseURIWithProtocolAndPortFallback(): void
     {
         $api = $this->createSecretsApi([
             'protocol' => 'http',
@@ -52,11 +48,11 @@ class SecretsApiTest extends TestCase
 
         $this->assertEquals(
             'http://my-api-host:9090/customer-secrets/v1',
-            $this->invokeGetBaseURI($api)
+            $this->callPrivateMethod($api, 'getBaseURI')
         );
     }
 
-    public function testGetBaseURIWithHermesSandboxHost()
+    public function testGetBaseURIWithHermesSandboxHost(): void
     {
         $api = $this->createSecretsApi([
             'protocol' => 'https',
@@ -66,11 +62,11 @@ class SecretsApiTest extends TestCase
 
         $this->assertEquals(
             'https://pantheonapi.sandbox-host.example.com:443/customer-secrets/v1',
-            $this->invokeGetBaseURI($api)
+            $this->callPrivateMethod($api, 'getBaseURI')
         );
     }
 
-    public function testGetBaseURIWithNonHermesSandboxHost()
+    public function testGetBaseURIWithNonHermesSandboxHost(): void
     {
         $api = $this->createSecretsApi([
             'protocol' => 'https',
@@ -80,11 +76,11 @@ class SecretsApiTest extends TestCase
 
         $this->assertEquals(
             'https://sandbox-host.example.com:443/customer-secrets/v1',
-            $this->invokeGetBaseURI($api)
+            $this->callPrivateMethod($api, 'getBaseURI')
         );
     }
 
-    public function testGetBaseURIWithDefaultHost()
+    public function testGetBaseURIWithDefaultHost(): void
     {
         $api = $this->createSecretsApi([
             'protocol' => 'https',
@@ -94,11 +90,11 @@ class SecretsApiTest extends TestCase
 
         $this->assertEquals(
             'https://terminus.pantheon.io:443/customer-secrets/v1',
-            $this->invokeGetBaseURI($api)
+            $this->callPrivateMethod($api, 'getBaseURI')
         );
     }
 
-    public function testGetBaseURIPapiHostTakesPrecedenceOverSandbox()
+    public function testGetBaseURIPapiHostTakesPrecedenceOverSandbox(): void
     {
         $api = $this->createSecretsApi([
             'protocol' => 'https',
@@ -109,7 +105,7 @@ class SecretsApiTest extends TestCase
 
         $this->assertEquals(
             'https://custom-papi-host.example.com:443/customer-secrets/v1',
-            $this->invokeGetBaseURI($api)
+            $this->callPrivateMethod($api, 'getBaseURI')
         );
     }
 }

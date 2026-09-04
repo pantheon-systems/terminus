@@ -44,7 +44,7 @@ class WorkflowOperation extends TerminusModel
      *
      * @return array
      */
-    public function serialize()
+    public function serialize(): array
     {
         $data = [
             'id' => $this->id,

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Pantheon\Terminus\Config;
 
 use Robo\Common\ConfigAwareTrait as RoboConfigTrait;
@@ -20,7 +22,7 @@ trait ConfigAwareTrait
      *
      * @return TerminusConfig
      */
-    public function getConfig()
+    public function getConfig(): TerminusConfig
     {
         return $this->__getConfig();
     }

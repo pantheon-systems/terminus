@@ -16,7 +16,7 @@ class Environments extends SiteOwnedCollection
     /**
      * @var string
      */
-    protected $collected_class = Environment::class;
+    protected string $collected_class = Environment::class;
     /**
      * @var string
      */
@@ -78,7 +78,7 @@ class Environments extends SiteOwnedCollection
      *
      * @return string[] $ids
      */
-    public function ids()
+    public function ids(): array
     {
         $ids = array_keys($this->all());
 
@@ -107,7 +107,7 @@ class Environments extends SiteOwnedCollection
      *
      * @return array
      */
-    public function serialize()
+    public function serialize(): array
     {
         $site_is_frozen = $this->getSite()->isFrozen();
         $models = [];

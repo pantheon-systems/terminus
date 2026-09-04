@@ -13,7 +13,7 @@ class UserSiteMemberships extends UserOwnedCollection
     /**
      * @var string
      */
-    protected $collected_class = UserSiteMembership::class;
+    protected string $collected_class = UserSiteMembership::class;
     /**
      * @var boolean
      */

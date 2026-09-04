@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Pantheon\Terminus\Config;
 
 /**
@@ -8,7 +10,7 @@ namespace Pantheon\Terminus\Config;
  */
 class EnvConfig extends TerminusConfig
 {
-    protected $source_name = 'Environment Variable';
+    protected string $source_name = 'Environment Variable';
 
     protected $defaults = [];
 

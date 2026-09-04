@@ -26,7 +26,7 @@ class Workflows extends APICollection implements SessionAwareInterface
     /**
      * @var string
      */
-    protected $collected_class = Workflow::class;
+    protected string $collected_class = Workflow::class;
     /**
      * @var TerminusModel
      */

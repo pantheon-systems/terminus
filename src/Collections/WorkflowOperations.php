@@ -14,5 +14,5 @@ class WorkflowOperations extends TerminusCollection
     /**
      * @var string
      */
-    protected $collected_class = WorkflowOperation::class;
+    protected string $collected_class = WorkflowOperation::class;
 }

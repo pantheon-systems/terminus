@@ -118,7 +118,7 @@ class Organization extends TerminusModel implements
     /**
      * @return string[]
      */
-    public function getReferences()
+    public function getReferences(): array
     {
         return $this->serialize();
     }
@@ -215,7 +215,7 @@ class Organization extends TerminusModel implements
      *         string name  The name of the organization
      *         string label The human-readable name of the organization
      */
-    public function serialize()
+    public function serialize(): array
     {
         return [
             'id' => $this->id,

@@ -8,7 +8,7 @@ use Pantheon\Terminus\Exceptions\TerminusUnsupportedSiteException;
 use Pantheon\Terminus\Models\SavedToken;
 use Pantheon\Terminus\Request\Request;
 use Pantheon\Terminus\Session\Session;
-use Consolidation\Config\Config;
+use Pantheon\Terminus\Config\TerminusConfig;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ConnectException;
 use GuzzleHttp\Handler\MockHandler;
@@ -30,7 +30,7 @@ class RequestTest extends TestCase
     private function createRequest(?Session $session = null): FastRequest
     {
         $request = new FastRequest();
-        $request->setConfig(new Config([
+        $request->setConfig(new TerminusConfig([
             'protocol' => 'https',
             'host' => 'example.com',
             'port' => '443',
@@ -97,14 +97,12 @@ class RequestTest extends TestCase
         }
 
         $method = new \ReflectionMethod(Request::class, 'createRetryDecider');
-        $method->setAccessible(true);
         $decider = $method->invoke($request);
         $stack->push(Middleware::retry($decider));
 
         $client = new Client(['handler' => $stack, 'http_errors' => false]);
 
         $clientProperty = new \ReflectionProperty(Request::class, 'client');
-        $clientProperty->setAccessible(true);
         $clientProperty->setValue($request, $client);
 
         return $mockHandler;

@@ -36,10 +36,10 @@ class ProcessProgressBar extends TerminusProgressBar
 
     /**
      * Runs the progress bar until completion.
-     * @param \Closure $callback Used for interactivity
+     * @param callable|null $callback Used for interactivity
      * @throws TerminusException
      */
-    public function cycle($callback = null)
+    public function cycle(?callable $callback = null)
     {
         $this->start();
         while ($this->process->isRunning()) {

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Pantheon\Terminus\Request;
 
 /**
@@ -9,20 +11,24 @@ namespace Pantheon\Terminus\Request;
 final class RequestOperationResult implements \ArrayAccess
 {
     /**
-     * @var
+     * @var mixed
      */
-    private $data;
+    private mixed $data = null;
+
     /**
      * @var array
      */
     private array $headers = [];
+
     /**
      * @var int
      */
     private int $status_code = -1;
 
-    private string $status_code_reason;
-
+    /**
+     * @var string
+     */
+    private string $status_code_reason = '';
 
     /**
      * RequestOperationResult constructor.
@@ -32,7 +38,8 @@ final class RequestOperationResult implements \ArrayAccess
         array $incoming = [
             'data' => null,
             'headers' => [],
-            'status_code' => -1
+            'status_code' => -1,
+            'status_code_reason' => '',
         ]
     ) {
         [
@@ -64,42 +71,70 @@ final class RequestOperationResult implements \ArrayAccess
     }
 
     /**
+     * Check if an offset exists.
+     *
      * @param mixed $offset
      * @return bool
      */
-    #[\ReturnTypeWillChange]
-    public function offsetExists($offset)
+    public function offsetExists(mixed $offset): bool
     {
-        return isset($this->{$offset});
+        return match ($offset) {
+            'data' => true,
+            'headers' => true,
+            'status_code' => true,
+            'status_code_reason' => true,
+            default => false,
+        };
     }
 
     /**
+     * Get value at offset.
+     *
      * @param mixed $offset
-     * @return mixed|null
+     * @return mixed
      */
-    #[\ReturnTypeWillChange]
-    public function offsetGet($offset)
+    public function offsetGet(mixed $offset): mixed
     {
-        return $this->{$offset} ?? null;
+        return match ($offset) {
+            'data' => $this->data,
+            'headers' => $this->headers,
+            'status_code' => $this->status_code,
+            'status_code_reason' => $this->status_code_reason,
+            default => null,
+        };
     }
 
     /**
+     * Set value at offset.
+     *
      * @param mixed $offset
      * @param mixed $value
      */
-    #[\ReturnTypeWillChange]
-    public function offsetSet($offset, $value)
+    public function offsetSet(mixed $offset, mixed $value): void
     {
-        $this->{$offset} = $value;
+        match ($offset) {
+            'data' => $this->data = $value,
+            'headers' => $this->headers = $value,
+            'status_code' => $this->status_code = $value,
+            'status_code_reason' => $this->status_code_reason = $value,
+            default => null,
+        };
     }
 
     /**
+     * Unset value at offset.
+     *
      * @param mixed $offset
      */
-    #[\ReturnTypeWillChange]
-    public function offsetUnset($offset)
+    public function offsetUnset(mixed $offset): void
     {
-        unset($this->{$offset});
+        match ($offset) {
+            'data' => $this->data = null,
+            'headers' => $this->headers = [],
+            'status_code' => $this->status_code = -1,
+            'status_code_reason' => $this->status_code_reason = '',
+            default => null,
+        };
     }
 
     /**
@@ -114,9 +149,9 @@ final class RequestOperationResult implements \ArrayAccess
     }
 
     /**
-     * @return null | string | array
+     * @return mixed
      */
-    public function getData()
+    public function getData(): mixed
     {
         return $this->data;
     }
@@ -124,7 +159,7 @@ final class RequestOperationResult implements \ArrayAccess
     /**
      * @param mixed $data
      */
-    public function setData($data = null): void
+    public function setData(mixed $data = null): void
     {
         $this->data = $data;
     }
@@ -168,6 +203,6 @@ final class RequestOperationResult implements \ArrayAccess
      */
     public function isError(): bool
     {
-        return !(bool) preg_match('/^2\d{2}$/', $this->getStatusCode());
+        return !((bool) preg_match('/^2\d{2}$/', (string) $this->getStatusCode()));
     }
 }

@@ -14,7 +14,7 @@ class SiteAuthorizations extends SiteOwnedCollection
     /**
      * @var string
      */
-    protected $collected_class = SiteAuthorization::class;
+    protected string $collected_class = SiteAuthorization::class;
     /**
      * @var string
      */

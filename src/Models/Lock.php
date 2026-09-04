@@ -55,7 +55,7 @@ class Lock extends TerminusModel implements EnvironmentInterface
     /**
      * @inheritdoc
      */
-    public function serialize()
+    public function serialize(): array
     {
         return [
             'locked' => $this->isLocked(),

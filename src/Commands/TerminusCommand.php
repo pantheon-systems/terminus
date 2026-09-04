@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Pantheon\Terminus\Commands;
 
 use League\Container\ContainerAwareInterface;
@@ -44,7 +46,7 @@ abstract class TerminusCommand implements
      *
      * @return LoggerInterface
      */
-    protected function log()
+    protected function log(): LoggerInterface
     {
         return $this->logger;
     }
@@ -52,7 +54,7 @@ abstract class TerminusCommand implements
     /**
      * Override Robo's IO function with our custom style.
      */
-    protected function io()
+    protected function io(): TerminusStyle
     {
         if (!$this->io) {
             $this->io = new TerminusStyle($this->input(), $this->output());
@@ -63,11 +65,11 @@ abstract class TerminusCommand implements
     /**
      * Confirm that the user wants to continue with the command.
      *
-     * @param $confirm_text
+     * @param string $confirm_text
      * @param array $replacements
-     * @return bool|string
+     * @return bool
      */
-    protected function confirm($confirm_text, $replacements = [])
+    protected function confirm(string $confirm_text, array $replacements = []): bool
     {
         $input = $this->input();
         if ($input->hasOption('yes') && $input->getOption('yes')) {
@@ -78,7 +80,7 @@ abstract class TerminusCommand implements
         foreach ($replacements as $key => $val) {
             $tr['{' . $key . '}'] = $val;
         }
-        $confirm_text = strtr($confirm_text ?? '', $tr);
+        $confirm_text = strtr($confirm_text, $tr);
         return $this->io()->confirm($confirm_text, false);
     }
 }

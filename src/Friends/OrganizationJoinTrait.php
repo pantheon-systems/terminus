@@ -18,7 +18,7 @@ trait OrganizationJoinTrait
     /**
      * @inheritdoc
      */
-    public function getReferences()
+    public function getReferences(): array
     {
         return array_merge(parent::getReferences(), $this->getOrganization()->getReferences());
     }

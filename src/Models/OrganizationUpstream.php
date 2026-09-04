@@ -14,7 +14,7 @@ class OrganizationUpstream extends TerminusModel
     /**
      * @return string[]
      */
-    public function getReferences()
+    public function getReferences(): array
     {
         return [$this->id, $this->get('label'), $this->get('machine_name'),];
     }
@@ -22,7 +22,7 @@ class OrganizationUpstream extends TerminusModel
     /**
      * @inheritdoc
      */
-    public function serialize()
+    public function serialize(): array
     {
         $data = (array)$this->attributes;
         $data['organization'] = $this->collection->getOrganization()->getLabel(
