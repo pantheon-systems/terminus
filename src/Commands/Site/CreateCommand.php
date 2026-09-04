@@ -353,7 +353,7 @@ class CreateCommand extends SiteCommand implements RequestAwareInterface, SiteAw
             // Output final success message
             $this->log()->notice('---');
             $this->log()->notice('Site "{site}" created successfully!', ['site' => $site->getName()]);
-            $dashboard_url = $this->buildDashboardUrl($site, $upstream, $org ? $org->id : null);
+            $dashboard_url = $site->dashboardUrl($org ? $org->id : null);
             $this->log()->notice('Pantheon Dashboard: {url}', ['url' => $dashboard_url]);
         } else {
             // This shouldn't happen if the create workflow succeeded and returned an ID, but good to handle.
@@ -850,7 +850,7 @@ class CreateCommand extends SiteCommand implements RequestAwareInterface, SiteAw
         if ($target_repo_url) {
             $this->log()->notice('Repository: {url}', ['url' => $target_repo_url]);
         }
-        $dashboard_url = $this->buildDashboardUrl($site, $upstream, $pantheon_org->id);
+        $dashboard_url = $site->dashboardUrl($pantheon_org->id);
         $this->log()->notice('Pantheon Dashboard: {url}', ['url' => $dashboard_url]);
         if ($clone_repo) {
             $this->log()->notice('Code repository cloned successfully to the current directory.');
@@ -1045,30 +1045,5 @@ class CreateCommand extends SiteCommand implements RequestAwareInterface, SiteAw
         $this->getVcsClient()->installWithToken($post_data);
 
         return true;
-    }
-
-    /**
-     * Builds the dashboard URL for a site.
-     *
-     * @param Site $site The site object
-     * @param Upstream $upstream The upstream object to determine framework
-     * @param string|null $org_id Organization ID
-     * @return string Dashboard URL
-     */
-    protected function buildDashboardUrl(Site $site, Upstream $upstream, ?string $org_id = null): string
-    {
-        $site_id = $site->id;
-
-        // Determine site type based on framework
-        $framework = $upstream->get('framework');
-        $site_type = ($framework === 'nodejs') ? 'node-site' : 'cms-site';
-
-        // If org_id is provided, use the new workspace URL format
-        if ($org_id) {
-            return sprintf('https://dashboard.pantheon.io/workspace/%s/%s/%s', $org_id, $site_type, $site_id);
-        }
-
-        // Fallback to default dashboard URL if no org
-        return $site->dashboardUrl();
     }
 }
