@@ -3,6 +3,7 @@
 namespace Pantheon\Terminus\Commands\Backup;
 
 use Pantheon\Terminus\Commands\TerminusCommand;
+use Pantheon\Terminus\Enums\BackupElement;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 
@@ -16,14 +17,11 @@ abstract class BackupCommand extends TerminusCommand implements SiteAwareInterfa
      * @param string $element
      * @return null|string
      */
-    protected function getElement($element)
+    protected function getElement(string $element): ?string
     {
-        if ($element === 'db') {
-            return 'database';
-        }
         if ($element === 'all') {
             return null;
         }
-        return $element;
+        return BackupElement::fromInput($element)?->value ?? $element;
     }
 }

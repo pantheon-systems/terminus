@@ -2,6 +2,7 @@
 
 namespace Pantheon\Terminus\Models;
 
+use Pantheon\Terminus\Enums\BackupElement;
 use Pantheon\Terminus\Friends\EnvironmentInterface;
 use Pantheon\Terminus\Friends\EnvironmentTrait;
 use Pantheon\Terminus\Exceptions\TerminusException;
@@ -151,28 +152,20 @@ class Backup extends TerminusModel implements EnvironmentInterface
      * @return Workflow
      * @throws TerminusException
      */
-    public function restore()
+    public function restore(): Workflow
     {
         $type = $this->get('type');
-        switch ($type) {
-            case 'code':
-                $wf_name = 'restore_code';
-                break;
-            case 'files':
-                $wf_name = 'restore_files';
-                break;
-            case 'database':
-                $wf_name = 'restore_database';
-                break;
-            default:
-                throw new TerminusException(
-                    'This backup has no archive to restore.'
-                );
-                break;
+        $element = BackupElement::tryFrom($type);
+
+        if ($element === null) {
+            throw new TerminusException(
+                'This backup has no archive to restore.'
+            );
         }
+
         $modified_id = str_replace("_$type", '', $this->id ?? '');
         $env = $this->getEnvironment();
-        $workflow = $env->getWorkflows()->create($wf_name, [
+        $workflow = $env->getWorkflows()->create($element->workflowName(), [
             'params' => [
                 'key' => "{$env->getSite()->id}/{$env->id}/{$modified_id}/{$this->get('filename')}",
                 'bucket' => $this->getBucket(),

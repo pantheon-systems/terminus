@@ -3,6 +3,7 @@
 namespace Pantheon\Terminus\Commands\Remote;
 
 use Pantheon\Terminus\Commands\TerminusCommand;
+use Pantheon\Terminus\Enums\ConnectionMode;
 use Pantheon\Terminus\Exceptions\TerminusProcessException;
 use Pantheon\Terminus\Helpers\LocalMachineHelper;
 use Pantheon\Terminus\Models\Environment;
@@ -216,7 +217,7 @@ abstract class SSHBaseCommand extends TerminusCommand implements SiteAwareInterf
      */
     protected function validateConnectionMode(string $mode)
     {
-        if ((!$this->getConfig()->get('hide_git_mode_warning')) && ($mode == 'git')) {
+        if ((!$this->getConfig()->get('hide_git_mode_warning')) && ($mode === ConnectionMode::Git->value)) {
             $this->log()->warning(
                 'This environment is in read-only Git mode. If you want to make changes to the codebase of this site '
                 . '(e.g. updating modules or plugins), you will need to toggle into read/write SFTP mode first.'
