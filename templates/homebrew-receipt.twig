@@ -18,6 +18,10 @@ class Terminus < Formula
         bin.install "terminus" => "terminus"
     end
 
+    def post_install
+        system bin/"terminus", "self:plugin:reload"
+    end
+
     test do
         system "true"
     end
