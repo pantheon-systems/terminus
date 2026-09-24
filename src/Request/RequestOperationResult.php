@@ -23,6 +23,10 @@ final class RequestOperationResult implements \ArrayAccess
 
     private string $status_code_reason;
 
+    /**
+     * @var bool
+     */
+    private bool $json_decode_failed = false;
 
     /**
      * RequestOperationResult constructor.
@@ -169,5 +173,23 @@ final class RequestOperationResult implements \ArrayAccess
     public function isError(): bool
     {
         return !(bool) preg_match('/^2\d{2}$/', $this->getStatusCode());
+    }
+
+    /**
+     * Whether the response body failed to decode as JSON.
+     *
+     * @return bool
+     */
+    public function isJsonDecodeFailed(): bool
+    {
+        return $this->json_decode_failed;
+    }
+
+    /**
+     * @param bool $failed
+     */
+    public function setJsonDecodeFailed(bool $failed): void
+    {
+        $this->json_decode_failed = $failed;
     }
 }
