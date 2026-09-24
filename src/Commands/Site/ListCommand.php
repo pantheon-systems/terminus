@@ -50,7 +50,7 @@ class ListCommand extends SiteCommand
      * @option owner Owner filter; "me" or user UUID
      * @option plan DEPRECATED Plan filter; filter by the plan's label
      * @option team Team-only filter
-     * @option string $upstream Upstream name to filter
+     * @option string $upstream Upstream UUID to filter
      *
      * @usage Displays the list of all sites accessible to the currently logged-in user.
      * @usage --name=<regex> Displays a list of accessible sites with a name that matches <regex>.
