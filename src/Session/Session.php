@@ -88,7 +88,7 @@ class Session implements
         $user = $this->getContainer()->get($nickname);
         if (!$user instanceof User) {
             throw new TerminusException(
-                "No User ID. Please ling via terminus auth:login"
+                "No user ID. Please login via terminus auth:login"
             );
         }
         return $user;
