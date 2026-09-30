@@ -14,7 +14,7 @@ class SavedTokensTest extends TestCase
 {
     private const EMAIL = 'someone@example.com';
 
-    private function createCollection(bool $existing, DataStoreInterface &$store = null): SavedTokens
+    private function createCollection(bool $existing): SavedTokens
     {
         $user = $this->createMock(User::class);
         $user->method('get')->with('email')->willReturn(self::EMAIL);
