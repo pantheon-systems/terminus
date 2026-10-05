@@ -22,6 +22,9 @@ class LoginCommand extends TerminusCommand
      * @option machine-token Grants access for a user and is saved for future logins
      * @option email Uses an existing machine token for this user
      *
+     * If a machine token is already saved for the same account, you will be asked to confirm before it is
+     * overwritten. In non-interactive mode, pass --yes to overwrite.
+     *
      * @usage --machine-token=<machine_token> Logs in a user granted the machine token <machine_token>.
      * @usage Logs in a user with a previously saved machine token.
      * @usage --email=<email> Logs in a user with a previously saved machine token belonging to <email>.
@@ -39,7 +42,13 @@ class LoginCommand extends TerminusCommand
                 return;
             } catch (\Exception $e) {
                 $this->log()->notice('Logging in via machine token.');
-                $tokens->create($options['machine-token']);
+                $tokens->create(
+                    $options['machine-token'],
+                    fn (string $email): bool => $this->confirm(
+                        'A machine token is already saved for {email}. Overwrite it?',
+                        ['email' => $email]
+                    )
+                );
             }
         }
 
