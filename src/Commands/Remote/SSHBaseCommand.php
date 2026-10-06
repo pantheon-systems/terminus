@@ -49,6 +49,7 @@ abstract class SSHBaseCommand extends TerminusCommand implements SiteAwareInterf
      */
     protected function prepareEnvironment($site_env)
     {
+        $this->requireSiteIsNotFrozen($site_env);
         $this->site = $this->getSiteById($site_env);
         $this->environment = $this->getEnv($site_env);
 
