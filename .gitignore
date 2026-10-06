@@ -3,6 +3,7 @@
 /builds
 /tools
 /tests/logs
+/result
 
 .DS_Store
 *.sw*
