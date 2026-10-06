@@ -85,6 +85,7 @@ class Sites extends APICollection implements SessionAwareInterface
         $defaultOptions = [
             'org_id' => null,
             'team_only' => false,
+            'concurrent' => true,
         ];
         $options = array_merge($defaultOptions, $options);
         $sites = &$this->models;
@@ -100,24 +101,76 @@ class Sites extends APICollection implements SessionAwareInterface
                 && $orgMembership->get('role') !== SiteOrganizationMembership::ROLE_UNPRIVILEGED
         );
 
-        /** @var \Pantheon\Terminus\Models\SiteOrganizationMembership $orgMembership */
-        foreach ($orgMemberships as $orgMembership) {
-            foreach ($orgMembership->getOrganization()->getSites() as $id => $site) {
-                if (!isset($sites[$id])) {
-                    $sites[$id] = $site;
-                    continue;
-                }
+        if ($options['concurrent']) {
+            // Build concurrent requests and org label map
+            $requests = [];
+            $orgLabels = [];
+            foreach ($orgMemberships as $orgMembership) {
+                $org = $orgMembership->getOrganization();
+                $org_id = $org->id;
+                $orgLabels[$org_id] = "{$org_id}: {$org->getName()}";
+                $requests[$org_id] = [
+                    'path' => "organizations/{$org_id}/memberships/sites",
+                    'options' => ['method' => 'get'],
+                ];
+            }
 
-                $sites[$id]->memberships[] = $site->memberships[0];
-                if (!isset($sites[$id]->tags)) {
-                    $sites[$id]->tags = $site->tags;
-                    continue;
-                }
+            // Execute all requests concurrently
+            if (!empty($requests)) {
+                $results = $this->request()->requestConcurrent($requests);
 
-                $sites[$id]->tags->models = array_merge(
-                    $sites[$id]->tags->models ?? [],
-                    $site->tags->models ?? [],
-                );
+                // Process results
+                foreach ($results as $org_id => $result) {
+                    if ($result['success']) {
+                        $org_site_data = (array)$result['result']->getData();
+                        $membership_label = $orgLabels[$org_id];
+
+                        foreach ($org_site_data as $site_data) {
+                            $site_id = $site_data->site->id ?? null;
+                            if (!$site_id) {
+                                continue;
+                            }
+
+                            if (!isset($sites[$site_id])) {
+                                $nickname = \uniqid(__FUNCTION__ . '-');
+                                $this->getContainer()->add($nickname, Site::class)
+                                    ->addArgument($site_data->site);
+                                $site = $this->getContainer()->get($nickname);
+                                $site->memberships = [$membership_label];
+                                $sites[$site_id] = $site;
+                            } else {
+                                $sites[$site_id]->memberships[] = $membership_label;
+                            }
+                        }
+                    } else {
+                        $this->logger->warning(
+                            'Failed to fetch sites for organization {org_id}: {error}',
+                            ['org_id' => $org_id, 'error' => $result['error']->getMessage()]
+                        );
+                    }
+                }
+            }
+        } else {
+            // Original sequential implementation (fallback)
+            /** @var \Pantheon\Terminus\Models\SiteOrganizationMembership $orgMembership */
+            foreach ($orgMemberships as $orgMembership) {
+                foreach ($orgMembership->getOrganization()->getSites() as $id => $site) {
+                    if (!isset($sites[$id])) {
+                        $sites[$id] = $site;
+                        continue;
+                    }
+
+                    $sites[$id]->memberships[] = $site->memberships[0];
+                    if (!isset($sites[$id]->tags)) {
+                        $sites[$id]->tags = $site->tags;
+                        continue;
+                    }
+
+                    $sites[$id]->tags->models = array_merge(
+                        $sites[$id]->tags->models ?? [],
+                        $site->tags->models ?? [],
+                    );
+                }
             }
         }
 
