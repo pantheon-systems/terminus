@@ -41,12 +41,14 @@ class ViewCommand extends TerminusCommand implements SiteAwareInterface
      */
     public function view($site_env = null, array $options = ['print' => false])
     {
+        $dashboard_url = $this->getDashboardUrl($site_env);
         if ($options['print']) {
-            return $this->getDashboardUrl($site_env);
+            return $dashboard_url;
         }
+        $this->log()->notice($dashboard_url);
         $this->getContainer()
             ->get(LocalMachineHelper::class)
-            ->openUrl($this->getDashboardUrl($site_env));
+            ->openUrl($dashboard_url);
 
         return null;
     }
