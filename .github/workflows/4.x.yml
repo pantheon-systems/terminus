@@ -51,6 +51,32 @@ jobs:
           path: terminus.phar
           if-no-files-found: error
 
+  test_docker_image:
+    runs-on: ubuntu-latest
+    name: Test Docker image with a local plugin
+    steps:
+      - name: Checkout
+        uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3.6.0
+      - name: Build Docker image
+        run: docker build . -t terminus
+      - name: Prepare a local plugin and a writable ~/.terminus mount
+        run: |
+          git clone --depth 1 https://github.com/pantheon-systems/terminus-plugin-example.git "${RUNNER_TEMP}/plugin-src"
+          mkdir -p "${RUNNER_TEMP}/terminus"
+          chmod 0777 "${RUNNER_TEMP}/terminus"
+      - name: Install the plugin from the mounted local file path
+        run: |
+          docker run --rm \
+            -v "${RUNNER_TEMP}/terminus":/home/terminus/.terminus \
+            -v "${RUNNER_TEMP}/plugin-src":/plugin-src \
+            terminus self:plugin:install /plugin-src
+      - name: Run the installed plugin from the persisted ~/.terminus
+        run: |
+          docker run --rm \
+            -v "${RUNNER_TEMP}/terminus":/home/terminus/.terminus \
+            -v "${RUNNER_TEMP}/plugin-src":/plugin-src \
+            terminus hello 2>&1 | tee /dev/stderr | grep -q 'Hello, World!'
+
   functional:
     runs-on: ${{ matrix.operating-system }}
     name: Functional testing matrix - PHP ${{ matrix.php-versions }} on ${{ matrix.operating-system }}
@@ -141,6 +167,52 @@ jobs:
           files: terminus.phar
         env:
           GITHUB_TOKEN: ${{ secrets.HOMEBREW_GITHUB_API_TOKEN }}
+
+  publish_docker_image:
+    runs-on: ubuntu-latest
+    name: Publish Docker image
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
+      attestations: write
+    needs: [ release ]
+    if: ${{ startsWith(github.ref, 'refs/tags/')  && github.repository == 'pantheon-systems/terminus' }}
+    env:
+      REGISTRY: ghcr.io
+      IMAGE_NAME: ${{ github.repository }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3.6.0
+      - name: Log in to the Container registry
+        uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1 # v3.3.0
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7 # v5.6.1
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=semver,pattern={{major}}
+      - name: Build and push Docker image
+        id: push
+        uses: docker/build-push-action@f2a1d5e99d037542a71f64918e516c093c6f3fc4 # v6.10.0
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+      - name: Generate artifact attestation
+        uses: actions/attest-build-provenance@0f67c3f4856b2e3261c31976d6725780e5e4c373 # v4.1.1
+        with:
+          subject-name: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          subject-digest: ${{ steps.push.outputs.digest }}
+          push-to-registry: true
 
   package_macos:
     runs-on: macos-latest
