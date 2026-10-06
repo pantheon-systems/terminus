@@ -52,6 +52,7 @@
   "autoload-dev": {
     "psr-4": {
       "Pantheon\\Terminus\\Tests\\Functional\\": "tests/Functional/",
+      "Pantheon\\Terminus\\Tests\\Unit\\": "tests/Unit/",
       "Pantheon\\Terminus\\FeatureTests\\": "tests/features/bootstrap/",
       "Pantheon\\Terminus\\Scripts\\": "scripts/"
     },
