@@ -17,6 +17,8 @@ use Pantheon\Terminus\Friends\LocalCopiesTrait;
 use Pantheon\Terminus\Friends\OrganizationsInterface;
 use Pantheon\Terminus\Friends\OrganizationsTrait;
 use Pantheon\Terminus\Helpers\Utility\SiteFramework;
+use Pantheon\Terminus\Session\SessionAwareInterface;
+use Pantheon\Terminus\Session\SessionAwareTrait;
 
 /**
  * Class Site
@@ -25,11 +27,13 @@ use Pantheon\Terminus\Helpers\Utility\SiteFramework;
  */
 class Site extends TerminusModel implements
     ContainerAwareInterface,
-    OrganizationsInterface
+    OrganizationsInterface,
+    SessionAwareInterface
 {
     use ContainerAwareTrait;
     use OrganizationsTrait;
     use LocalCopiesTrait;
+    use SessionAwareTrait;
 
     /**
      *
@@ -165,12 +169,49 @@ class Site extends TerminusModel implements
     /**
      * Provides Pantheon Dashboard URL for this site
      *
+     * @param string|null $org_id Organization ID to use as the workspace. If omitted, it will be resolved
+     *   from the site's owner organization, then its supporting organizations, then the current user.
+     *
      * @return string
      */
-    public function dashboardUrl()
+    public function dashboardUrl(?string $org_id = null)
     {
         $config = $this->getConfig();
-        return "{$config->get('dashboard_protocol')}://{$config->get('dashboard_host')}/sites/{$this->id}";
+        $workspace_id = $org_id ?? $this->getWorkspaceId();
+        $site_type = $this->isNodejs() ? 'node-site' : 'cms-site';
+        return "{$config->get('dashboard_protocol')}://{$config->get('dashboard_host')}"
+            . "/workspace/{$workspace_id}/{$site_type}/{$this->id}";
+    }
+
+    /**
+     * Determines the workspace (organization) ID to use in this site's Dashboard URL.
+     *
+     * Preference order: the site's owner organization, then a supporting organization, then the
+     * current user's own (personal) workspace -- each only if the current user has access to it.
+     *
+     * @return string
+     */
+    private function getWorkspaceId(): string
+    {
+        $user = $this->session()->getUser();
+        $accessible_org_ids = array_map(
+            fn ($membership) => $membership->getOrganization()->id,
+            $user->getOrganizationMemberships()->all()
+        );
+
+        $owner_org_id = $this->get('organization');
+        if (!empty($owner_org_id) && in_array($owner_org_id, $accessible_org_ids, true)) {
+            return $owner_org_id;
+        }
+
+        foreach ($this->getOrganizationMemberships()->all() as $membership) {
+            $supporting_org_id = $membership->getOrganization()->id;
+            if (in_array($supporting_org_id, $accessible_org_ids, true)) {
+                return $supporting_org_id;
+            }
+        }
+
+        return $user->id;
     }
 
     /**
