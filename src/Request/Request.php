@@ -601,10 +601,26 @@ class Request implements
     private function terminusCommand()
     {
         $input = $this->getContainer()->get('input');
+        $command = $input->getFirstArgument();
+        $arguments = $input->getArguments();
+        $options = $input->getOptions();
+
+        // The remote commands may carry credentials anywhere in their arguments
+        // and options, so include only the command name.
+        if ($this->isRemoteCommand($command)) {
+            return json_encode(['command' => $command, 'truncated' => false]);
+        }
+        // Never reveal the machine token, wherever it is used.
+        foreach (['machine-token', 'machine_token'] as $key) {
+            if (isset($options[$key])) {
+                $options[$key] = self::HIDDEN_VALUE_REPLACEMENT;
+            }
+        }
+
         $candidate = json_encode([
-            'command' => $input->getFirstArgument(),
-            'arguments' => $input->getArguments(),
-            'options' => $input->getOptions(),
+            'command' => $command,
+            'arguments' => $arguments,
+            'options' => $options,
             'truncated' => false,
         ]);
 
@@ -616,6 +632,19 @@ class Request implements
         }
 
         return $candidate;
+    }
+
+    /**
+     * Tells whether the named command is one of the remote:… commands (or an alias).
+     *
+     * @param string|null $command
+     *
+     * @return bool
+     */
+    private function isRemoteCommand($command)
+    {
+        return is_string($command)
+            && (strpos($command, 'remote:') === 0 || in_array($command, ['drush', 'wp'], true));
     }
 
     /**

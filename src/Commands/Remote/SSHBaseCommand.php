@@ -7,6 +7,7 @@ use Pantheon\Terminus\Exceptions\TerminusProcessException;
 use Pantheon\Terminus\Helpers\LocalMachineHelper;
 use Pantheon\Terminus\Models\Environment;
 use Pantheon\Terminus\Models\Site;
+use Pantheon\Terminus\Request\Request;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 use Pantheon\Terminus\Helpers\Utility\TraceId;
@@ -104,7 +105,7 @@ abstract class SSHBaseCommand extends TerminusCommand implements SiteAwareInterf
 
         do {
             // Send the combined command line via SSH
-            $ssh_data = $this->sendCommandViaSsh($command_line, $env_vars);
+            $ssh_data = $this->sendCommandViaSsh($command_line, $env_vars, $command_args);
 
             $command_summary = $this->getCommandSummary($command_args);
             // Log the command execution
@@ -173,7 +174,7 @@ abstract class SSHBaseCommand extends TerminusCommand implements SiteAwareInterf
      * @param string $command The command to be run on the platform
      * @param array $env_vars The environment variables to include in the SSH command
      */
-    protected function sendCommandViaSsh($command, array $env_vars = [])
+    protected function sendCommandViaSsh($command, array $env_vars = [], array $command_args = [])
     {
         // Convert env_vars array into a series of key=value strings
         $env_vars_string = '';
@@ -184,7 +185,10 @@ abstract class SSHBaseCommand extends TerminusCommand implements SiteAwareInterf
         // Construct the SSH command without environment variables in SSH options
         $ssh_command = $this->getConnectionString() . ' ' . $env_vars_string . escapeshellarg($command);
 
-        $this->logger->debug('shell command: {command}', ['command' => $ssh_command]);
+        // The arguments and option values may contain credentials, so log a redacted version.
+        $logged_command = $this->getConnectionString() . ' ' . $env_vars_string
+            . escapeshellarg($this->getCommandLine($command_args, $env_vars, true));
+        $this->logger->debug('shell command: {command}', ['command' => $logged_command]);
         if ($this->getConfig()->get('test_mode')) {
             return $this->divertForTestMode($ssh_command);
         }
@@ -329,13 +333,14 @@ abstract class SSHBaseCommand extends TerminusCommand implements SiteAwareInterf
      *
      * @param string[] $command_args
      * @param array $env_vars
+     * @param bool $redact Whether to redact sensitive values, for logging.
      *
      * @return array
      *   Elements are as follows:
      *     string command_line The command line string
      *     array env_vars The environment variables
      */
-    private function getCommandLine($command_args, $env_vars)
+    private function getCommandLine($command_args, $env_vars, $redact = false)
     {
         // Convert env_vars array into a series of key=value strings
         $env_vars_string = '';
@@ -343,14 +348,51 @@ abstract class SSHBaseCommand extends TerminusCommand implements SiteAwareInterf
             $env_vars_string .= sprintf('%s=%s ', $key, strtr($value, '-', '_'));
         }
 
+        if ($redact) {
+            $command_args = $this->redactArguments($command_args);
+        }
+
         // Construct the command line with environment variables and the command arguments
         $command_line =
             $env_vars_string
             . implode(" ", $this->escapeArguments(array_merge([$this->command], $command_args)));
 
-        $this->log()->debug('getCommandLine: {command_line}', ['command_line' => $command_line]);
+        if ($redact) {
+            return $command_line;
+        }
+        $this->log()->debug(
+            'getCommandLine: {command_line}',
+            ['command_line' => $this->getCommandLine($command_args, $env_vars, true)]
+        );
 
         return $command_line;
+    }
+
+    /**
+     * Redacts the values of all arguments after the first, and the values (but
+     * not the names) of any options, as they may contain sensitive information.
+     *
+     * @param string[] $command_args
+     *
+     * @return string[]
+     */
+    private function redactArguments($command_args)
+    {
+        $redacted = [];
+        foreach (array_values($command_args) as $i => $arg) {
+            $arg = (string)$arg;
+            if (strlen($arg) > 2 && $arg[0] === '-' && $arg[1] !== '-') {
+                // Short option, possibly with an attached value, e.g. -pSecret.
+                $redacted[] = substr($arg, 0, 2) . Request::HIDDEN_VALUE_REPLACEMENT;
+            } elseif (strlen($arg) > 1 && $arg[0] === '-' && ($pos = strpos($arg, '=')) !== false) {
+                $redacted[] = substr($arg, 0, $pos + 1) . Request::HIDDEN_VALUE_REPLACEMENT;
+            } elseif ($i === 0 || (strlen($arg) > 1 && $arg[0] === '-')) {
+                $redacted[] = $arg;
+            } else {
+                $redacted[] = Request::HIDDEN_VALUE_REPLACEMENT;
+            }
+        }
+        return $redacted;
     }
 
     /**
