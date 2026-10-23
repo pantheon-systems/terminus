@@ -601,10 +601,27 @@ class Request implements
     private function terminusCommand()
     {
         $input = $this->getContainer()->get('input');
+        $command = $input->getFirstArgument();
+        $arguments = $input->getArguments();
+        $options = $input->getOptions();
+
+        // The remote commands may carry credentials anywhere in their arguments
+        // and options, so include only the command name.
+        $canonical = $this->canonicalCommandName($command);
+        if ($this->isRemoteCommand($canonical)) {
+            return json_encode(['command' => $canonical, 'truncated' => false]);
+        }
+        // Never reveal the machine token, wherever it is used.
+        foreach (['machine-token', 'machine_token'] as $key) {
+            if (isset($options[$key])) {
+                $options[$key] = self::HIDDEN_VALUE_REPLACEMENT;
+            }
+        }
+
         $candidate = json_encode([
-            'command' => $input->getFirstArgument(),
-            'arguments' => $input->getArguments(),
-            'options' => $input->getOptions(),
+            'command' => $command,
+            'arguments' => $arguments,
+            'options' => $options,
             'truncated' => false,
         ]);
 
@@ -616,6 +633,39 @@ class Request implements
         }
 
         return $candidate;
+    }
+
+    /**
+     * Resolves an aliased or abbreviated command name (e.g. rem:drush) to its canonical name.
+     *
+     * @param string|null $command
+     *
+     * @return string|null
+     *   The canonical name, or the given name if it cannot be resolved.
+     */
+    private function canonicalCommandName($command)
+    {
+        if (!is_string($command) || !$this->getContainer()->has('application')) {
+            return $command;
+        }
+        try {
+            return $this->getContainer()->get('application')->find($command)->getName();
+        } catch (\Exception $e) {
+            return $command;
+        }
+    }
+
+    /**
+     * Tells whether the named command is one of the remote:… commands (or an alias).
+     *
+     * @param string|null $command
+     *
+     * @return bool
+     */
+    private function isRemoteCommand($command)
+    {
+        return is_string($command)
+            && (strpos($command, 'remote:') === 0 || in_array($command, ['drush', 'wp'], true));
     }
 
     /**
