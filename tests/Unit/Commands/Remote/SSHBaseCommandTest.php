@@ -51,4 +51,22 @@ class SSHBaseCommandTest extends TestCase
             'subcommand only' => [['cr'], 'drush cr'],
         ];
     }
+
+    public function testRedactedCommandLineOnlyKeepsAllowlistedEnvVars()
+    {
+        $line = $this->call('getCommandLine', [['cr'], ['TRACE_ID' => 'a-b', 'API_KEY' => 'CANARY'], true]);
+
+        $this->assertSame('TRACE_ID=a_b API_KEY=**HIDDEN** drush cr', $line);
+    }
+
+    public function testSetEnvOptionsOnlyKeepAllowlistedEnvVarsWhenRedacted()
+    {
+        $env = ['TRACE_ID' => 'abc', 'API_KEY' => 'CANARY'];
+
+        $this->assertSame(
+            '-o SetEnv="TRACE_ID=abc" -o SetEnv="API_KEY=**HIDDEN**" ',
+            $this->call('getSetEnvOptions', [$env, true])
+        );
+        $this->assertStringContainsString('API_KEY=CANARY', $this->call('getSetEnvOptions', [$env]));
+    }
 }
