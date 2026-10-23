@@ -18,6 +18,8 @@ use GuzzleHttp\Psr7\Request as Psr7Request;
 use GuzzleHttp\Psr7\Response;
 use League\Container\Container;
 use Psr\Log\NullLogger;
+use Symfony\Component\Console\Application;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 
 class RequestTest extends TestCase
@@ -326,5 +328,28 @@ class RequestTest extends TestCase
         $this->assertArrayNotHasKey('arguments', $header);
         $this->assertArrayNotHasKey('options', $header);
         $this->assertStringNotContainsString('secret-sql', json_encode($header));
+    }
+
+    public function testAbbreviatedRemoteCommandIsOmittedFromCommandHeader()
+    {
+        $request = $this->createRequest();
+        $input = $this->createMock(InputInterface::class);
+        $input->method('getFirstArgument')->willReturn('rem:drush');
+        $input->method('getArguments')->willReturn(['drush_command' => ['CANARY']]);
+        $input->method('getOptions')->willReturn([]);
+        $application = new Application();
+        $application->add(new Command('remote:drush'));
+        $container = new Container();
+        $container->add('input', $input);
+        $container->add('application', $application);
+        $request->setContainer($container);
+
+        $method = new \ReflectionMethod(Request::class, 'terminusCommand');
+        $method->setAccessible(true);
+        $header = json_decode($method->invoke($request), true);
+
+        $this->assertSame('remote:drush', $header['command']);
+        $this->assertArrayNotHasKey('arguments', $header);
+        $this->assertStringNotContainsString('CANARY', json_encode($header));
     }
 }

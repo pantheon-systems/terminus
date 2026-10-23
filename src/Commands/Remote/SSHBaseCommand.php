@@ -7,7 +7,6 @@ use Pantheon\Terminus\Exceptions\TerminusProcessException;
 use Pantheon\Terminus\Helpers\LocalMachineHelper;
 use Pantheon\Terminus\Models\Environment;
 use Pantheon\Terminus\Models\Site;
-use Pantheon\Terminus\Request\Request;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 use Pantheon\Terminus\Helpers\Utility\TraceId;
@@ -185,12 +184,12 @@ abstract class SSHBaseCommand extends TerminusCommand implements SiteAwareInterf
         // Construct the SSH command without environment variables in SSH options
         $ssh_command = $this->getConnectionString() . ' ' . $env_vars_string . escapeshellarg($command);
 
-        // The arguments and option values may contain credentials, so log a redacted version.
+        // The arguments may contain credentials, so log a redacted version.
         $logged_command = $this->getConnectionString() . ' ' . $env_vars_string
             . escapeshellarg($this->getCommandLine($command_args, $env_vars, true));
         $this->logger->debug('shell command: {command}', ['command' => $logged_command]);
         if ($this->getConfig()->get('test_mode')) {
-            return $this->divertForTestMode($ssh_command);
+            return $this->divertForTestMode($logged_command);
         }
 
         return $this->getContainer()->get(LocalMachineHelper::class)->execute(
@@ -291,23 +290,17 @@ abstract class SSHBaseCommand extends TerminusCommand implements SiteAwareInterf
     }
 
     /**
-     * Returns the first item of the $command_args that is not an option.
+     * Returns the subcommand, i.e. the first item of the $command_args, as a
+     * list. It is omitted if it is an option, as it might contain a value.
      *
      * @param array $command_args
      *
-     * @return string
+     * @return string[]
      */
     private function firstArguments($command_args)
     {
-        $result = '';
-        while (!empty($command_args)) {
-            $first = array_shift($command_args);
-            if (strlen($first) && $first[0] == '-') {
-                return $result;
-            }
-            $result .= " $first";
-        }
-        return $result;
+        $first = (string)reset($command_args);
+        return strlen($first) && $first[0] !== '-' ? [$first] : [];
     }
 
     /**
@@ -349,7 +342,9 @@ abstract class SSHBaseCommand extends TerminusCommand implements SiteAwareInterf
         }
 
         if ($redact) {
-            $command_args = $this->redactArguments($command_args);
+            // Arguments and options may contain credentials, so only the subcommand is kept.
+            return $env_vars_string . $this->getCommandSummary($command_args)
+                . $this->redactedArgumentsNote($command_args);
         }
 
         // Construct the command line with environment variables and the command arguments
@@ -357,9 +352,6 @@ abstract class SSHBaseCommand extends TerminusCommand implements SiteAwareInterf
             $env_vars_string
             . implode(" ", $this->escapeArguments(array_merge([$this->command], $command_args)));
 
-        if ($redact) {
-            return $command_line;
-        }
         $this->log()->debug(
             'getCommandLine: {command_line}',
             ['command_line' => $this->getCommandLine($command_args, $env_vars, true)]
@@ -369,30 +361,16 @@ abstract class SSHBaseCommand extends TerminusCommand implements SiteAwareInterf
     }
 
     /**
-     * Redacts the values of all arguments after the first, and the values (but
-     * not the names) of any options, as they may contain sensitive information.
+     * Returns a note counting the arguments omitted from a summary.
      *
      * @param string[] $command_args
      *
-     * @return string[]
+     * @return string
      */
-    private function redactArguments($command_args)
+    private function redactedArgumentsNote($command_args)
     {
-        $redacted = [];
-        foreach (array_values($command_args) as $i => $arg) {
-            $arg = (string)$arg;
-            if (strlen($arg) > 2 && $arg[0] === '-' && $arg[1] !== '-') {
-                // Short option, possibly with an attached value, e.g. -pSecret.
-                $redacted[] = substr($arg, 0, 2) . Request::HIDDEN_VALUE_REPLACEMENT;
-            } elseif (strlen($arg) > 1 && $arg[0] === '-' && ($pos = strpos($arg, '=')) !== false) {
-                $redacted[] = substr($arg, 0, $pos + 1) . Request::HIDDEN_VALUE_REPLACEMENT;
-            } elseif ($i === 0 || (strlen($arg) > 1 && $arg[0] === '-')) {
-                $redacted[] = $arg;
-            } else {
-                $redacted[] = Request::HIDDEN_VALUE_REPLACEMENT;
-            }
-        }
-        return $redacted;
+        $omitted = count($command_args) - count($this->firstArguments($command_args));
+        return $omitted > 0 ? " [+$omitted args redacted]" : '';
     }
 
     /**
@@ -406,7 +384,7 @@ abstract class SSHBaseCommand extends TerminusCommand implements SiteAwareInterf
      */
     private function getCommandSummary($command_args)
     {
-        return $this->command . $this->firstArguments($command_args);
+        return implode(' ', array_merge([$this->command], $this->firstArguments($command_args)));
     }
 
     /**

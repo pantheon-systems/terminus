@@ -607,8 +607,9 @@ class Request implements
 
         // The remote commands may carry credentials anywhere in their arguments
         // and options, so include only the command name.
-        if ($this->isRemoteCommand($command)) {
-            return json_encode(['command' => $command, 'truncated' => false]);
+        $canonical = $this->canonicalCommandName($command);
+        if ($this->isRemoteCommand($canonical)) {
+            return json_encode(['command' => $canonical, 'truncated' => false]);
         }
         // Never reveal the machine token, wherever it is used.
         foreach (['machine-token', 'machine_token'] as $key) {
@@ -632,6 +633,26 @@ class Request implements
         }
 
         return $candidate;
+    }
+
+    /**
+     * Resolves an aliased or abbreviated command name (e.g. rem:drush) to its canonical name.
+     *
+     * @param string|null $command
+     *
+     * @return string|null
+     *   The canonical name, or the given name if it cannot be resolved.
+     */
+    private function canonicalCommandName($command)
+    {
+        if (!is_string($command) || !$this->getContainer()->has('application')) {
+            return $command;
+        }
+        try {
+            return $this->getContainer()->get('application')->find($command)->getName();
+        } catch (\Exception $e) {
+            return $command;
+        }
     }
 
     /**
