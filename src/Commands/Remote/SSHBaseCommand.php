@@ -396,14 +396,8 @@ abstract class SSHBaseCommand extends TerminusCommand implements SiteAwareInterf
     private function getConnectionString()
     {
         $ssh = $this->environment->sshConnectionInfo();
+        // Do not pass -v to ssh in verbose mode: it prints the full, unredacted remote command.
         $command = $this->getConfig()->get('ssh_command');
-        if ($this->output()->isDebug()) {
-            $command .= ' -vvv';
-        } elseif ($this->output()->isVeryVerbose()) {
-            $command .= ' -vv';
-        } elseif ($this->output()->isVerbose()) {
-            $command .= ' -v';
-        }
         return vsprintf(
             '%s -T %s@%s -p %s -o "StrictHostKeyChecking=no" -o "AddressFamily inet"',
             [$command, $ssh['username'], $this->lookupHostViaAlternateNameserver($ssh['host']), $ssh['port']]
