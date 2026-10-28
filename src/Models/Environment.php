@@ -434,7 +434,7 @@ class Environment extends TerminusModel implements
      */
     public function dashboardUrl()
     {
-        return "{$this->getSite()->dashboardUrl()}#{$this->id}";
+        return "{$this->getSite()->dashboardUrl()}environment/{$this->id}/";
     }
 
     /**
