@@ -2,8 +2,10 @@
 
 namespace Pantheon\Terminus\Helpers\Utility;
 
+use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\ConsoleOutputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Output\StreamOutput;
 
 /**
  * Class ProgramStatus
@@ -30,6 +32,26 @@ class ProgramStatus
     protected $output;
 
     /**
+     * The running command's name, shown while it works.
+     *
+     * @var string|null
+     */
+    protected static $command = null;
+
+    /**
+     * Whether a done or error report has been sent since the last working
+     * or blocked one.
+     *
+     * @var bool
+     */
+    protected static $finished = false;
+
+    /**
+     * @var bool
+     */
+    protected static $enabled = true;
+
+    /**
      * ProgramStatus constructor.
      *
      * @param OutputInterface|null $output Where to write reports. Reports
@@ -42,7 +64,28 @@ class ProgramStatus
             // Write alongside the progress bar, which also uses stderr.
             $output = $output->getErrorOutput();
         }
-        $this->output = ($enabled && $output !== null && $output->isDecorated()) ? $output : null;
+        $this->output = ($enabled && $output !== null && $output->isDecorated() && self::isTerminal($output))
+            ? $output
+            : null;
+    }
+
+    /**
+     * Checks that a stream output is a terminal. Forced decoration (--ansi)
+     * makes redirected output decorated, but it is still not a terminal.
+     *
+     * @param OutputInterface $output
+     * @return bool
+     */
+    protected static function isTerminal(OutputInterface $output): bool
+    {
+        if (!$output instanceof StreamOutput) {
+            return true;
+        }
+        $stream = $output->getStream();
+        if (function_exists('stream_isatty')) {
+            return @stream_isatty($stream);
+        }
+        return function_exists('posix_isatty') && @posix_isatty($stream);
     }
 
     /**
@@ -77,6 +120,93 @@ class ProgramStatus
     }
 
     /**
+     * Reports that the command is waiting for the user to answer a prompt.
+     *
+     * @param string $message
+     */
+    public function blocked(string $message)
+    {
+        $this->report('blocked', ['kind' => 'question', 'msg' => $message]);
+    }
+
+    /**
+     * Reports that the command named in the input has started, and
+     * remembers it for the reports that follow.
+     *
+     * @param InputInterface $input
+     */
+    public function started(InputInterface $input)
+    {
+        $command = $input->getFirstArgument();
+        self::$command = empty($command) ? null : (string) $command;
+        self::$finished = false;
+        $this->resume();
+    }
+
+    /**
+     * Reports that the running command is working again, after a prompt.
+     */
+    public function resume()
+    {
+        if (self::$command !== null) {
+            $this->working(self::$command);
+        }
+    }
+
+    /**
+     * Reports how the command ended, unless a workflow already reported done
+     * or error. A failed command reports error. A successful one clears its
+     * working report, since there is nothing new for the user to look at.
+     *
+     * @param int $status_code
+     */
+    public function finished(int $status_code)
+    {
+        if (self::$finished || self::$command === null) {
+            return;
+        }
+        if ($status_code !== 0) {
+            $this->error(self::$command . ' failed.');
+            return;
+        }
+        $this->report('clear');
+    }
+
+    /**
+     * Reports blocked while the user answers a prompt, then working again.
+     *
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     * @param string $prompt
+     * @param callable $ask Asks the question and returns the answer.
+     * @return mixed The answer.
+     */
+    public static function whileAsking(InputInterface $input, OutputInterface $output, string $prompt, callable $ask)
+    {
+        if (!$input->isInteractive()) {
+            return $ask();
+        }
+        $status = new self($output, self::$enabled);
+        $status->blocked(strip_tags($prompt));
+        try {
+            return $ask();
+        } finally {
+            $status->resume();
+        }
+    }
+
+    /**
+     * Turns reporting from prompts on or off, from the program_status setting.
+     * Prompts are asked by helpers that have no access to config.
+     *
+     * @param bool $enabled
+     */
+    public static function setEnabled(bool $enabled)
+    {
+        self::$enabled = $enabled;
+    }
+
+    /**
      * Reports that the work finished successfully.
      *
      * @param string $message
@@ -104,6 +234,11 @@ class ProgramStatus
      */
     protected function report(string $state, array $pairs = [])
     {
+        if (in_array($state, ['done', 'error'], true)) {
+            self::$finished = true;
+        } elseif (in_array($state, ['working', 'blocked'], true)) {
+            self::$finished = false;
+        }
         if ($this->output === null) {
             return;
         }

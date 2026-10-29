@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file. This projec
 
 ### Added
 
-- Report workflow status to the terminal with the Program Status Protocol (OSC 7501); disable with `TERMINUS_PROGRAM_STATUS=0` (#2931)
+- Report command and workflow status to the terminal with the Program Status Protocol (OSC 7501), including prompts; disable with `TERMINUS_PROGRAM_STATUS=0` (#2931)
 
 ## 4.3.3 - 2026-08-20
 
