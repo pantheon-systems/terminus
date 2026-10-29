@@ -6,6 +6,7 @@ use Consolidation\OutputFormatters\StructuredData\AbstractStructuredList;
 use Consolidation\OutputFormatters\StructuredData\PropertyList;
 use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
 use Pantheon\Terminus\Collections\TerminusCollection;
+use Pantheon\Terminus\Helpers\OutputSanitizer;
 use Pantheon\Terminus\Models\TerminusModel;
 
 /**
@@ -21,6 +22,7 @@ trait StructuredListTrait
     public function getPropertyList(TerminusModel $model)
     {
         $list = new PropertyList($model->serialize());
+        $list = $this->addSanitizingRenderer($list);
         $list = $this->addBooleanRenderer($list);
         $list = $this->addDatetimeRenderer($list, $model::$date_attributes);
         return $list;
@@ -53,9 +55,26 @@ trait StructuredListTrait
         $model_name = $collection->getCollectedClass();
         $model = new $model_name();
         $date_attributes = $model::$date_attributes;
+        $table = $this->addSanitizingRenderer($table);
         $table = $this->addBooleanRenderer($table);
         $table = $this->addDatetimeRenderer($table, $date_attributes);
         return $table;
+    }
+
+    /**
+     * Adds a renderer function that sanitizes string values before output.
+     *
+     * @param AbstractStructuredList $list
+     * @return AbstractStructuredList
+     */
+    private function addSanitizingRenderer(AbstractStructuredList $list)
+    {
+        $list->addRendererFunction(
+            function ($key, $cell_data) {
+                return OutputSanitizer::sanitize($cell_data);
+            }
+        );
+        return $list;
     }
 
     /**
