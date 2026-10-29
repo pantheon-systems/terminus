@@ -3,6 +3,10 @@ All notable changes to this project will be documented in this file. This projec
 
 ## 4.3.4-dev
 
+### Changed
+
+- **Breaking for scripts and CI that rely on the default:** `backup:create` now keeps backups for 30 days by default (previously 365) and rejects `--keep-for` values above 180 days, below 1, or that are not whole numbers before contacting the API. The temporary backups created by `local:getLiveDB` and `local:getLiveFiles` also now default to 30 days (DEVX-8099)
+
 ## 4.3.3 - 2026-08-20
 
 ### Added
