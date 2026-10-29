@@ -28,12 +28,12 @@ pipeline:
 release:
   mechanism: "push tag <version> on the merged release commit on 4.x -> 'Release' job (softprops/action-gh-release) creates the GitHub release and uploads terminus.phar -> 'Package a Homebrew release' job (dawidd6/action-homebrew-bump-formula) opens a PR on pantheon-systems/homebrew-external bumping Formula/terminus.rb url+sha256"
   tag_scheme: "bare semver, no v prefix (4.3.3); pre-releases as 4.2.1-rc.1"
-  prerelease_flag: "not set by the workflow; set it by hand on -rc releases right after publishing (4.2.1-rc.1 was left unflagged, so it was 'latest' and offered by self:update)"
+  prerelease_flag: "not set by the workflow (4.2.0-rc.1 is flagged, 4.2.1-rc.1 is not). self:update skips -rc versions either way, because it filters on semver stability as well as the flag. An unflagged -rc can still be what releases/latest and the update notice report"   # inferred: whether 4.2.1-rc.1 was ever 'latest' isn't recorded
   never: "move or delete a published tag (Packagist and Composer caches key on it); publish a fixed patch instead"
   procedure: "the terminus-release skill in pantheon-skills (pantheon-engineering/skills/terminus-release); summary under 'How a change reaches production' below"
 
 consumers:                          # how a release reaches users; each picks it up on its own schedule
-  - {channel: "GitHub releases API 'latest'", pin: none, picked_up_by: "`terminus self:update` (stable releases only, skips prerelease-flagged) and the runtime update notice (cached 7 days, shown at most daily, tty only)"}
+  - {channel: "GitHub releases API 'latest'", pin: none, picked_up_by: "`terminus self:update` (consolidation/self-update: lists all releases, semver-sorted, skips any that are flagged prerelease or have a non-stable version such as -rc.1, unless --preview) and the runtime update notice (cached 7 days, shown at most daily, tty only)"}
   - {channel: "Homebrew tap pantheon-systems/external", pin: "Formula/terminus.rb url + sha256", picked_up_by: "`brew upgrade terminus` after the bump PR merges"}
   - {channel: "Packagist pantheon-systems/terminus", pin: "consumers' composer constraints", picked_up_by: "Packagist crawls the tag; no workflow step"}   # inferred: crawl/webhook
   - {channel: "Pantheon CI images", pin: "varies", picked_up_by: "docker-build-tools-ci downloads 4.1.3 then runs self:update at image build; docker-php-ci uses the archived terminus-installer"}
@@ -146,8 +146,8 @@ preflight:
 automation_blockers:
   - blocker: "the Homebrew bump job has failed on the last three releases, so every release needs a hand-made tap PR"
     clears_when: "the 'Package a Homebrew release' job opens the tap PR successfully on a release"
-  - blocker: "pre-release tags are published as full releases until someone flags them, so an -rc can briefly become 'latest' for self:update"
-    clears_when: "the release job sets prerelease for tags with a semver pre-release suffix"
+  - blocker: "pre-release tags are published as full releases until someone flags them. self:update is unaffected (it skips non-stable versions), but releases/latest and the update notice can report the -rc"
+    clears_when: "the release job sets prerelease for tags with a semver pre-release suffix (action-gh-release `prerelease: true`; GitHub never makes a pre-release 'latest')"
   - blocker: "the release starts from a human tag push with no check that the tagged commit is the approved, merged release commit on 4.x"
     clears_when: "the workflow verifies the tag is on 4.x and equals TERMINUS_VERSION before publishing"
 
@@ -256,7 +256,7 @@ Rollback has never been exercised.
 ## Suggested pipeline changes
 
 - Fix the `package_macos` Homebrew bump job, which has failed on 4.3.1, 4.3.2 and 4.3.3.
-- Set `prerelease: true` in the release job for tags with a semver pre-release suffix (`-rc.1` etc.). 4.2.1-rc.1 went out as a full release.
+- Set `prerelease: true` in the release job for tags with a semver pre-release suffix (`-rc.1` etc.). 4.2.1-rc.1 went out unflagged. `self:update` skipped it anyway (it filters on semver stability), but `releases/latest` and the update notice don't filter.
 - Fail the release job unless the tag is on `4.x` and equals `TERMINUS_VERSION` in `config/constants.yml`.
 - Put the changelog section into the GitHub release body automatically instead of pasting it by hand.
 - Make the build and test jobs required checks on `4.x` (today only the Wiz scanners are required).
