@@ -1,7 +1,16 @@
 # Change Log
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org)
 
-## 4.3.4-dev
+## 4.3.4 - 2026-10-29
+
+### Changed
+
+- Dashboard URLs (e.g. from `dashboard:view`) now use the site-redirect route, so multidev links resolve correctly (#2930)
+
+### Fixed
+
+- Do not include sensitive option values (e.g. `--machine-token`) or remote command arguments in the Terminus command header or very-verbose output (#2929)
+- Avoid a PHP deprecation warning in `backup:automatic:info` when no automatic backup schedule is set (#2913)
 
 ## 4.3.3 - 2026-08-20
 
