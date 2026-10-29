@@ -3,6 +3,10 @@ All notable changes to this project will be documented in this file. This projec
 
 ## 4.3.4-dev
 
+### Added
+
+- Experimental, off by default: report command and workflow status to the terminal with the Program Status Protocol (OSC 7501), including prompts; turn on with `TERMINUS_PROGRAM_STATUS=1` (#2931)
+
 ## 4.3.3 - 2026-08-20
 
 ### Added
