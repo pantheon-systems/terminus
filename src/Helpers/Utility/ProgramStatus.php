@@ -15,6 +15,9 @@ use Symfony\Component\Console\Output\StreamOutput;
  * is running, finished, or failed. Terminals that don't support it ignore the
  * sequence.
  *
+ * Experimental: off by default, turned on with TERMINUS_PROGRAM_STATUS=1.
+ *
+ * @experimental
  * @see https://www.superlogical.com/rex/docs/build/program-status
  *
  * @package Pantheon\Terminus\Helpers\Utility
@@ -49,7 +52,7 @@ class ProgramStatus
     /**
      * @var bool
      */
-    protected static $enabled = true;
+    protected static $enabled = false;
 
     /**
      * ProgramStatus constructor.
@@ -89,8 +92,8 @@ class ProgramStatus
     }
 
     /**
-     * Reads the program_status setting (TERMINUS_PROGRAM_STATUS), which
-     * defaults to on.
+     * Reads the program_status setting (TERMINUS_PROGRAM_STATUS). Reporting
+     * is experimental and off unless the setting turns it on.
      *
      * @param \Consolidation\Config\ConfigInterface|null $config
      * @return bool
@@ -98,10 +101,10 @@ class ProgramStatus
     public static function isEnabled($config): bool
     {
         if ($config === null) {
-            return true;
+            return false;
         }
-        $value = $config->get('program_status', true);
-        return filter_var($value, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE) ?? true;
+        $value = $config->get('program_status', false);
+        return filter_var($value, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE) ?? false;
     }
 
     /**

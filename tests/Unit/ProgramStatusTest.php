@@ -76,6 +76,7 @@ class ProgramStatusTest extends TestCase
 
     public function testWhileAskingReportsBlockedThenWorking()
     {
+        ProgramStatus::setEnabled(true);
         $terminal = new BufferedOutput(BufferedOutput::VERBOSITY_NORMAL, true);
         $input = new ArgvInput(['terminus', 'site:create']);
         (new ProgramStatus($terminal))->started($input);
@@ -90,6 +91,11 @@ class ProgramStatusTest extends TestCase
         );
 
         $input->setInteractive(false);
+        ProgramStatus::whileAsking($input, $terminal, 'Pick an org', fn () => 'org');
+        $this->assertSame('', $terminal->fetch());
+
+        $input->setInteractive(true);
+        ProgramStatus::setEnabled(false);
         ProgramStatus::whileAsking($input, $terminal, 'Pick an org', fn () => 'org');
         $this->assertSame('', $terminal->fetch());
     }
@@ -159,8 +165,9 @@ class ProgramStatusTest extends TestCase
 
     public function testIsEnabled()
     {
-        $this->assertTrue(ProgramStatus::isEnabled(null));
-        $this->assertTrue(ProgramStatus::isEnabled(new Config([])));
+        $this->assertFalse(ProgramStatus::isEnabled(null));
+        $this->assertFalse(ProgramStatus::isEnabled(new Config([])));
+        $this->assertTrue(ProgramStatus::isEnabled(new Config(['program_status' => 'true'])));
         $this->assertTrue(ProgramStatus::isEnabled(new Config(['program_status' => '1'])));
         $this->assertFalse(ProgramStatus::isEnabled(new Config(['program_status' => '0'])));
         $this->assertFalse(ProgramStatus::isEnabled(new Config(['program_status' => 'false'])));

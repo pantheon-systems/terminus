@@ -12,8 +12,9 @@ use Symfony\Component\Console\Question\Question;
  * Class TerminusQuestionHelper
  *
  * A QuestionHelper that reports blocked to the terminal while the user
- * answers.
+ * answers. Experimental, see ProgramStatus.
  *
+ * @experimental
  * @package Pantheon\Terminus\Style
  */
 class TerminusQuestionHelper extends QuestionHelper
