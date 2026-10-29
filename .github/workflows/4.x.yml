@@ -141,6 +141,19 @@ jobs:
           files: terminus.phar
         env:
           GITHUB_TOKEN: ${{ secrets.HOMEBREW_GITHUB_API_TOKEN }}
+      - name: Notify documentation repo of new release
+        # Lets pantheon-systems/documentation refresh its Terminus commands/releases
+        # reference data the same day, instead of waiting for its weekly poll.
+        # Requires a DOCS_DISPATCH_TOKEN secret scoped to send repository_dispatch
+        # events to pantheon-systems/documentation; harmless no-op until that
+        # secret is added (curl logs the auth failure but doesn't fail the job).
+        continue-on-error: true
+        run: |
+          curl -sS -X POST \
+            -H "Authorization: token ${{ secrets.DOCS_DISPATCH_TOKEN }}" \
+            -H "Accept: application/vnd.github+json" \
+            https://api.github.com/repos/pantheon-systems/documentation/dispatches \
+            -d '{"event_type":"terminus-release","client_payload":{"tag":"${{ github.ref_name }}"}}'
 
   package_macos:
     runs-on: macos-latest
