@@ -74,3 +74,7 @@ chmod +x terminus
 ./terminus self:update
 sudo ln -s ~/terminus/terminus /usr/local/bin/terminus
 ```
+
+## Rollback
+
+Releasing and rolling back Terminus are documented in [DEPLOYMENT.md](DEPLOYMENT.md#rollback).
