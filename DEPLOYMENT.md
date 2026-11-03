@@ -10,17 +10,19 @@ other_paths_to_prod:
   - "re-running a tag's workflow run re-uploads terminus.phar to that release and opens another Homebrew bump PR"   # inferred
   - "editing a GitHub release (prerelease flag, delete, asset re-upload) changes what self:update and the update notice offer, with no workflow run"
   - "a manual PR to pantheon-systems/homebrew-external Formula/terminus.rb changes what brew users get"
+  # trap: the repo only allows squash merges and builds the squash body from the PR's commit messages. A "[skip ci]" in any PR commit lands in the release commit, skips the push run on 4.x and, by GitHub's push rules, almost certainly the tag run too, so nothing publishes. Remove it from the squash message (4.3.4 needed this). Recovery: `gh workflow run 4.x.yml --ref <tag>`   # inferred for the tag run: not observed
 
 pipeline:
   system: github-actions
   workflow: ".github/workflows/4.x.yml"   # workflow name "Terminus 4.x"; select it by file name, the name is ambiguous with 3x.yml
   jobs_in_order: [checkout_build, functional, release, package_macos]
-  typical_minutes: 45               # 4.3.0 ~40, 4.2.1 ~43, 4.2.2 ~63, 4.3.3 ~67 (tag push to Homebrew job end)
-  minutes_by_change:
-    checkout_build: 2               # lint, unit tests, `composer phar:build` (box)
-    functional: 30                  # macOS, PHP 8.2 and 8.5, against live Pantheon; the two legs have run one after the other
-    release: 1.5
-    package_macos: 1
+  typical_minutes: 35               # tag push to release published. Observed 4.3.4: 33.3 min (19:36:17Z -> 20:09:37Z). Earlier: 4.3.0 ~40, 4.2.1 ~43, 4.2.2 ~63, 4.3.3 ~67 incl. a ~40 min idle gap
+  minutes_by_change:                # observed on 4.3.4 (run 41704808859)
+    checkout_build: 1.5             # lint, unit tests, `composer phar:build` (box)
+    functional: 31.5                # macOS, PHP 8.2 (21.7 min) and 8.5 (31.3 min) ran in parallel on 4.3.4; earlier releases ran them one after the other (~30). The 8.5 leg sets the pace
+    release: 0.7                    # release public ~37 s after the job starts
+    package_macos: 0.75             # fails; see known_baseline_errors
+  watch_timeout_minutes: 75         # about double the observed run; an idle gap like 4.3.3's (~40 min) means investigate, not keep waiting
   watch: "Actions workflow 'Terminus 4.x' run for the tag ref: `gh run list -R pantheon-systems/terminus --workflow 4.x.yml --branch <tag>`; jobs 'Release' then 'Package a Homebrew release'"
   cancel_in_progress: true          # group ci-<ref>; a tag has its own ref, so branch pushes don't cancel a release run
   approval_gate: null               # no GitHub Environment; the human gate is CCB plus whoever pushes the tag
@@ -35,7 +37,7 @@ release:
 consumers:                          # how a release reaches users; each picks it up on its own schedule
   - {channel: "GitHub releases API 'latest'", pin: none, picked_up_by: "`terminus self:update` (consolidation/self-update: lists all releases, semver-sorted, skips any that are flagged prerelease or have a non-stable version such as -rc.1, unless --preview) and the runtime update notice (cached 7 days, shown at most daily, tty only)"}
   - {channel: "Homebrew tap pantheon-systems/external", pin: "Formula/terminus.rb url + sha256", picked_up_by: "`brew upgrade terminus` after the bump PR merges"}
-  - {channel: "Packagist pantheon-systems/terminus", pin: "consumers' composer constraints", picked_up_by: "Packagist crawls the tag; no workflow step"}   # inferred: crawl/webhook
+  - {channel: "Packagist pantheon-systems/terminus", pin: "consumers' composer constraints", picked_up_by: "Packagist picks up the tag on its own (no workflow step); 4.3.4 was listed within 2 min of the release"}   # inferred: webhook vs crawl
   - {channel: "Pantheon CI images", pin: "varies", picked_up_by: "docker-build-tools-ci downloads 4.1.3 then runs self:update at image build; docker-php-ci uses the archived terminus-installer"}
   - {channel: "docs.pantheon.io", pin: "supported-versions table and a release note", picked_up_by: "hand-written docs PR in pantheon-systems/documentation"}
 
@@ -72,7 +74,7 @@ deployed_when:                      # ALL must hold
   - "the tag's 'Release' job succeeded and `gh api repos/pantheon-systems/terminus/releases/latest --jq .tag_name` == <version> (not draft, not prerelease)"
   - "the release's terminus.phar asset downloads and `php terminus.phar --version` prints 'Terminus <version>'"
   - "a homebrew-external PR bumping Formula/terminus.rb to <version> is MERGED, and its sha256 == sha256 of the release asset"
-  - "Packagist lists <version> (https://repo.packagist.org/p2/pantheon-systems/terminus.json)"   # TODO(verify-on-deploy): how long Packagist takes after the tag
+  - "Packagist lists <version> (https://repo.packagist.org/p2/pantheon-systems/terminus.json)"   # observed: 4.3.4 listed within 2 min of the release
 
 health:
   soak_minutes: 0                   # no fleet to watch; health comes from smoke checks now and user reports over the following days
@@ -90,6 +92,10 @@ health:
       kind: command
       run: "shasum -a 256 /tmp/terminus.phar; gh api repos/pantheon-systems/homebrew-external/contents/Formula/terminus.rb -H 'Accept: application/vnd.github.raw' | grep -E 'url|sha256'"
       healthy: "formula url points at <version> and sha256 matches"
+    - name: self:update picks up the release
+      kind: command
+      run: "curl -sSL -o t.phar https://github.com/pantheon-systems/terminus/releases/download/<previous>/terminus.phar && HOME=$(mktemp -d) php t.phar self:update --yes && php t.phar --version && HOME=$(mktemp -d) php t.phar self:update"   # run in a scratch dir: it rewrites t.phar in place
+      healthy: "'Downloading Terminus ... <version>', then 'Terminus <version>', then 'No update available'"
     - name: packagist has the tag
       kind: command
       run: "curl -s https://repo.packagist.org/p2/pantheon-systems/terminus.json | python3 -c 'import json,sys;print(json.load(sys.stdin)[\"packages\"][\"pantheon-systems/terminus\"][0][\"version\"])'"
@@ -99,10 +105,10 @@ health:
       run: "new issues on github.com/pantheon-systems/terminus/issues since the release; support/Slack reports"   # TODO(owner): which Slack channel(s) get Terminus reports?
       healthy: "no new issue reporting a regression introduced in <version> in the first few days"
   known_baseline_errors:
-    - "'Package a Homebrew release' job has failed on every release since 4.3.1 (4.3.1, 4.3.2, 4.3.3); the formula was bumped by hand each time. Logs have expired, so the cause is unknown"
+    - "'Package a Homebrew release' job has failed on every release since 4.3.1 (4.3.1, 4.3.2, 4.3.3, 4.3.4), so the formula is bumped by hand each time. On 4.3.4 the pinned dawidd6/action-homebrew-bump-formula v3.11.0 crashed with `undefined method 'safe_system' for module Homebrew (NoMethodError)`. Past that, its token-scope check also fails with fine-grained PATs (homebrew-external#81). A red run with a green 'Release' job means the release went out"
   dashboards: []
   alerts: []
-  # inferred: every API request carries User-Agent 'Terminus/<version> (...)', so adoption and error rate per version could be measured server side; not investigated
+  # inferred: every API request carries User-Agent 'Terminus/<version> (...)', and pantheonapi access logs in Loki record userAgent and status (#terminus, 2026-06-25), so adoption and error rate per version could be queried. Not run for this contract, so not listed as a check
 
 rollback:
   options:
@@ -131,7 +137,7 @@ rollback:
   last_exercised: null
   capture_before_merge: "record the current latest release and formula before tagging: `gh api repos/pantheon-systems/terminus/releases/latest --jq .tag_name` and the url+sha256 lines of homebrew-external Formula/terminus.rb"
   who_can: ["@pantheon-systems/developer-experience (write on terminus for release edits)", "approvers on pantheon-systems/homebrew-external"]   # TODO(owner): who can approve and merge tap PRs?
-  verify: "releases/latest returns the previous version; the formula url/sha256 match the previous release; `self:update` on <version> reports no newer stable release"   # TODO(verify-on-deploy): self:update behaviour when the current version is newer than latest
+  verify: "releases/latest returns the previous version; the formula url/sha256 match the previous release. `self:update` on <version> then prints 'No update available' (consolidation/self-update: current >= latest stable), i.e. it does NOT downgrade"
 
 escalation:
   slack: null                       # TODO(owner): channel for Terminus release issues
@@ -145,17 +151,17 @@ preflight:
 
 automation_blockers:
   - blocker: "the Homebrew bump job has failed on the last three releases, so every release needs a hand-made tap PR"
-    clears_when: "the 'Package a Homebrew release' job opens the tap PR successfully on a release"
+    clears_when: "the 'Package a Homebrew release' job opens the tap PR successfully on a release (replace the dawidd6 action, e.g. with a sed of url/sha256 plus `gh pr create`, using a token that can open PRs on the tap)"
   - blocker: "pre-release tags are published as full releases until someone flags them. self:update is unaffected (it skips non-stable versions), but releases/latest and the update notice can report the -rc"
     clears_when: "the release job sets prerelease for tags with a semver pre-release suffix (action-gh-release `prerelease: true`; GitHub never makes a pre-release 'latest')"
   - blocker: "the release starts from a human tag push with no check that the tagged commit is the approved, merged release commit on 4.x"
     clears_when: "the workflow verifies the tag is on 4.x and equals TERMINUS_VERSION before publishing"
 
 verified:
-  at: null
-  by: null
-  change: null
-  running_digest: null              # for a tool: sha256 of the published terminus.phar
+  at: 2026-11-03T20:11:28Z
+  by: "deploy-contract skill pass 2 (agent), shadowing @namespacebrian (merge, tag push)"
+  change: "terminus#2935, tag 4.3.4 on e0234805, run 41704808859"
+  running_digest: "sha256:5dc7e4b231c731b4d241772d38a94296785827a0d144582b9c3da6b0aaac2388"   # terminus.phar on the 4.3.4 release
 ---
 
 # Deployment
@@ -170,11 +176,13 @@ Merging to `4.x` does not release anything. Between releases `4.x` carries the n
 2. **Release PR.** A branch `update_to_<version>` sets `TERMINUS_VERSION` in `config/constants.yml` and turns `## <version>-dev` into `## <version> - <date>` in `CHANGELOG.md`. It targets `4.x`.
 3. **CCB.** Terminus is `in-ccb`. A CCB ticket must be approved before the release PR merges and the tag is pushed.
 4. **Merge the release PR, then tag** the merge commit on `4.x` and push the tag (`git tag <version> && git push origin <version>`). Never create the release through the GitHub UI: the workflow creates it.
-5. **The tag push runs `.github/workflows/4.x.yml`** ("Terminus 4.x"), about 45 minutes in total:
-   - `checkout_build` (~2 min): lint, unit tests, builds `terminus.phar` with Box.
-   - `functional` (~30 min): PHP 8.2 and 8.5 on macOS, against live Pantheon.
-   - `release` (~1.5 min, tags only): creates the GitHub release and uploads `terminus.phar`. **The release is public from here.**
-   - `package_macos` (~1 min, tags only): opens a PR on `pantheon-systems/homebrew-external` bumping `Formula/terminus.rb`. This has failed on every release since 4.3.1. If it fails, bump the formula by hand: `url` to the new release asset and `sha256` to the asset's checksum (see that repo's `RELEASING.md`).
+5. **The tag push runs `.github/workflows/4.x.yml`** ("Terminus 4.x"). The 4.3.4 tag push took 33 minutes to a public release:
+   - `checkout_build` (~1.5 min): lint, unit tests, builds `terminus.phar` with Box.
+   - `functional` (~31 min): PHP 8.2 and 8.5 on macOS, against live Pantheon. The 8.5 leg is the slower one.
+   - `release` (under 1 min, tags only): creates the GitHub release and uploads `terminus.phar`. **The release is public from here.** Packagist lists it within about 2 minutes.
+   - `package_macos` (under 1 min, tags only): is meant to open a PR on `pantheon-systems/homebrew-external` bumping `Formula/terminus.rb`. It has failed on every release since 4.3.1, so the run ends red even though the release is out. Bump the formula by hand: `url` to the new release asset and `sha256` to the asset's checksum (see that repo's `RELEASING.md`).
+
+   The repo only allows squash merges, and the squash message includes every commit message in the PR. If any of them contains `[skip ci]`, delete it from the squash message before merging the release PR. Otherwise the tag run is very likely skipped too and nothing publishes. Recovery: `gh workflow run 4.x.yml -R pantheon-systems/terminus --ref <tag>`. [inferred]
 6. **After the release**: paste the changelog section into the GitHub release notes, merge the Homebrew PR, flag `-rc` releases as pre-release, open the docs PR in `pantheon-systems/documentation` (supported-versions table and a release note), and open a "back to `<next>`-dev" PR on `4.x`.
 
 The full step-by-step procedure is the `terminus-release` skill in `pantheon-skills` (`pantheon-engineering/skills/terminus-release`).
@@ -207,7 +215,16 @@ curl -s https://repo.packagist.org/p2/pantheon-systems/terminus.json \
 
 These checks were run against 4.3.3 on 2026-10-29 and all returned the expected data. The formula's sha256 matched the asset.
 
-TODO(verify-on-deploy): how long after the tag Packagist shows the new version.
+These checks were run again for the 4.3.4 release on 2026-11-03. Packagist listed 4.3.4 within 2 minutes of the release.
+
+To confirm `self:update` delivers the release, run it from a copy of the previous PHAR in a scratch directory. It rewrites that copy in place:
+
+```bash
+curl -sSL -o t.phar https://github.com/pantheon-systems/terminus/releases/download/<previous>/terminus.phar
+HOME=$(mktemp -d) php t.phar self:update --yes   # Downloading Terminus ... <version>
+php t.phar --version                            # Terminus <version>
+HOME=$(mktemp -d) php t.phar self:update        # No update available
+```
 
 ## How to confirm it's healthy
 
@@ -240,7 +257,7 @@ Terminus releases are normally fixed forward with a new patch release. Pull a re
    - Composer: pin the constraint to `<previous>`.
 4. Ship the fix as the next patch version.
 
-**Verify:** `releases/latest` returns the previous version and the formula points at it again. TODO(verify-on-deploy): what `self:update` says when the installed version is newer than the latest stable release.
+**Verify:** `releases/latest` returns the previous version and the formula points at it again. On the retracted version, `self:update` prints "No update available": it compares against the latest stable release and never downgrades.
 
 **What this doesn't restore:** PHARs already installed by users, CI images built in the meantime (`docker-build-tools-ci` runs `self:update` at build time), and Composer lock files that resolved the bad version. A release changes no server-side state.
 
