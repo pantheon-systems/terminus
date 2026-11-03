@@ -36,7 +36,7 @@ release:
 
 consumers:                          # how a release reaches users; each picks it up on its own schedule
   - {channel: "GitHub releases API 'latest'", pin: none, picked_up_by: "`terminus self:update` (consolidation/self-update: lists all releases, semver-sorted, skips any that are flagged prerelease or have a non-stable version such as -rc.1, unless --preview) and the runtime update notice (cached 7 days, shown at most daily, tty only)"}
-  - {channel: "Homebrew tap pantheon-systems/external", pin: "Formula/terminus.rb url + sha256", picked_up_by: "`brew upgrade terminus` after the bump PR merges"}
+  - {channel: "Homebrew tap pantheon-systems/external", pin: "Formula/terminus.rb url + sha256", picked_up_by: "`brew upgrade terminus` after the bump PR merges. The tap is TL3 and in-ccb, owned by developer-experience: a DevX member other than the author approves, and it merges through a merge queue. CI runs `brew audit`"}
   - {channel: "Packagist pantheon-systems/terminus", pin: "consumers' composer constraints", picked_up_by: "Packagist picks up the tag on its own (no workflow step); 4.3.4 was listed within 2 min of the release"}   # inferred: webhook vs crawl
   - {channel: "Pantheon CI images", pin: "varies", picked_up_by: "docker-build-tools-ci downloads 4.1.3 then runs self:update at image build; docker-php-ci uses the archived terminus-installer"}
   - {channel: "docs.pantheon.io", pin: "supported-versions table and a release note", picked_up_by: "hand-written docs PR in pantheon-systems/documentation"}
@@ -136,7 +136,7 @@ rollback:
   currently_blocked: null
   last_exercised: null
   capture_before_merge: "record the current latest release and formula before tagging: `gh api repos/pantheon-systems/terminus/releases/latest --jq .tag_name` and the url+sha256 lines of homebrew-external Formula/terminus.rb"
-  who_can: ["@pantheon-systems/developer-experience (write on terminus for release edits)", "approvers on pantheon-systems/homebrew-external"]   # TODO(owner): who can approve and merge tap PRs?
+  who_can: ["@pantheon-systems/developer-experience: write on terminus for release edits, and code owners of pantheon-systems/homebrew-external (TL3: 1 code-owner approval, strict up to date, merge queue). The author can't approve their own tap PR, so a revert needs a second DevX member"]
   verify: "releases/latest returns the previous version; the formula url/sha256 match the previous release. `self:update` on <version> then prints 'No update available' (consolidation/self-update: current >= latest stable), i.e. it does NOT downgrade"
 
 escalation:
@@ -151,7 +151,7 @@ preflight:
 
 automation_blockers:
   - blocker: "the Homebrew bump job has failed on the last three releases, so every release needs a hand-made tap PR"
-    clears_when: "the 'Package a Homebrew release' job opens the tap PR successfully on a release (replace the dawidd6 action, e.g. with a sed of url/sha256 plus `gh pr create`, using a token that can open PRs on the tap)"
+    clears_when: "the 'Package a Homebrew release' job opens the tap PR successfully on a release. terminus#2939 replaces the dawidd6 action with a script; its first real run is the next release"
   - blocker: "pre-release tags are published as full releases until someone flags them. self:update is unaffected (it skips non-stable versions), but releases/latest and the update notice can report the -rc"
     clears_when: "the release job sets prerelease for tags with a semver pre-release suffix (action-gh-release `prerelease: true`; GitHub never makes a pre-release 'latest')"
   - blocker: "the release starts from a human tag push with no check that the tagged commit is the approved, merged release commit on 4.x"
