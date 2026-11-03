@@ -142,21 +142,46 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.HOMEBREW_GITHUB_API_TOKEN }}
 
-  package_macos:
-    runs-on: macos-latest
+  package_homebrew:
+    runs-on: ubuntu-latest
     name: Package a Homebrew release
     needs: [ release ]
-    if: ${{ startsWith(github.ref, 'refs/tags/')  && github.repository == 'pantheon-systems/terminus' }}
+    # Pre-release tags (e.g. 4.2.1-rc.1) must not reach Homebrew users.
+    if: ${{ startsWith(github.ref, 'refs/tags/') && !contains(github.ref_name, '-') && github.repository == 'pantheon-systems/terminus' }}
     steps:
-      - name: Trust Homebrew tap
+      - name: Open Homebrew formula PR
+        env:
+          GH_TOKEN: ${{ secrets.HOMEBREW_GITHUB_API_TOKEN }}
+          VERSION: ${{ github.ref_name }}
+          TAP: pantheon-systems/homebrew-external
+          FORMULA: Formula/terminus.rb
         run: |
-          brew tap pantheon-systems/external
-          brew trust pantheon-systems/external
-      - name: Bump Homebrew formula
-        uses: dawidd6/action-homebrew-bump-formula@baf2b60c51fc1f8453c884b0c61052668a71bd1d # v3.11.0
-        with:
-          token: ${{secrets.HOMEBREW_GITHUB_API_TOKEN}}
-          tap: pantheon-systems/external
-          tag: ${{github.ref}}
-          revision: ${{github.sha}}
-          formula: terminus
+          set -euo pipefail
+          BRANCH="terminus-release-${VERSION}"
+          URL="https://github.com/pantheon-systems/terminus/releases/download/${VERSION}/terminus.phar"
+
+          # Hash the published asset, which is what Homebrew will download.
+          gh release download "$VERSION" -R pantheon-systems/terminus -p terminus.phar -O terminus.phar
+          SHA256=$(sha256sum terminus.phar | cut -d' ' -f1)
+
+          gh api "repos/${TAP}/contents/${FORMULA}" -H 'Accept: application/vnd.github.raw' > terminus.rb
+          FILE_SHA=$(gh api "repos/${TAP}/contents/${FORMULA}" --jq .sha)
+          sed -i -E \
+            -e "s|^(  url \").*(\")$|\1${URL}\2|" \
+            -e "s|^(  sha256 \").*(\")$|\1${SHA256}\2|" \
+            terminus.rb
+          grep -qF "url \"${URL}\"" terminus.rb
+          grep -qF "sha256 \"${SHA256}\"" terminus.rb
+
+          # Commit through the API so no git checkout or signing key is needed.
+          MAIN_SHA=$(gh api "repos/${TAP}/git/ref/heads/main" --jq .object.sha)
+          gh api "repos/${TAP}/git/refs" -f ref="refs/heads/${BRANCH}" -f sha="$MAIN_SHA" > /dev/null
+          gh api -X PUT "repos/${TAP}/contents/${FORMULA}" \
+            -f message="terminus ${VERSION}" \
+            -f content="$(base64 -w0 terminus.rb)" \
+            -f sha="$FILE_SHA" \
+            -f branch="$BRANCH" > /dev/null
+          gh api "repos/${TAP}/pulls" --jq .html_url \
+            -f base=main -f head="$BRANCH" \
+            -f title="terminus ${VERSION}" \
+            -f body="Formula bump for Terminus [${VERSION}](https://github.com/pantheon-systems/terminus/releases/tag/${VERSION}), opened by the terminus release workflow ([run](${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}))."
