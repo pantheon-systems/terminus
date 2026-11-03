@@ -10,7 +10,7 @@ other_paths_to_prod:
   - "re-running a tag's workflow run re-uploads terminus.phar to that release and opens another Homebrew bump PR"   # inferred
   - "editing a GitHub release (prerelease flag, delete, asset re-upload) changes what self:update and the update notice offer, with no workflow run"
   - "a manual PR to pantheon-systems/homebrew-external Formula/terminus.rb changes what brew users get"
-  # trap: the repo only allows squash merges and builds the squash body from the PR's commit messages. A "[skip ci]" in any PR commit lands in the release commit, skips the push run on 4.x and, by GitHub's push rules, almost certainly the tag run too, so nothing publishes. Remove it from the squash message (4.3.4 needed this). Recovery: `gh workflow run 4.x.yml --ref <tag>`   # inferred for the tag run: not observed
+  # trap: the repo only allows squash merges and builds the squash body from the PR's commit messages. A "[skip ci]" in any PR commit lands in the release commit, skips the push run on 4.x and, by GitHub's push rules, almost certainly the tag run too, so nothing publishes. Remove it from the squash message (4.3.4 needed this). Recovery: `gh workflow run 4.x.yml --ref <tag>`. By contrast, maintainers deliberately merge non-code PRs (docs, back-to-dev) with [skip ci] / [ci skip], because the push run on 4.x takes ~30 min and runs functional tests against production   # inferred for the tag run: not observed
 
 pipeline:
   system: github-actions
@@ -183,6 +183,8 @@ Merging to `4.x` does not release anything. Between releases `4.x` carries the n
    - `package_homebrew` (tags without a `-` only): hashes the published `terminus.phar` and opens a PR on `pantheon-systems/homebrew-external` that updates `url` and `sha256` in `Formula/terminus.rb`. A DevX member other than the author approves it, and it merges through the tap's merge queue. This script replaced a third-party action that failed on every release from 4.3.1 to 4.3.4 (terminus#2939), and it hasn't run on a real release yet. If it fails, bump the formula by hand, per that repo's `RELEASING.md`. TODO(verify-on-deploy): the job's duration, and that it opens the tap PR.
 
    The repo only allows squash merges, and the squash message includes every commit message in the PR. If any of them contains `[skip ci]`, delete it from the squash message before merging the release PR. Otherwise the tag run is very likely skipped too and nothing publishes. Recovery: `gh workflow run 4.x.yml -R pantheon-systems/terminus --ref <tag>`. [inferred]
+
+   Every other merge to `4.x` starts that same ~30-minute run, including functional tests against production. For merges that don't change code (docs, back-to-dev), maintainers add `[skip ci]` to the squash message on purpose, or cancel the run.
 6. **After the release**: paste the changelog section into the GitHub release notes, merge the Homebrew PR, flag `-rc` releases as pre-release, open the docs PR in `pantheon-systems/documentation` (supported-versions table and a release note), and open a "back to `<next>`-dev" PR on `4.x`.
 
 The full step-by-step procedure is the `terminus-release` skill in `pantheon-skills` (`pantheon-engineering/skills/terminus-release`).
