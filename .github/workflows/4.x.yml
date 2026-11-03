@@ -146,6 +146,8 @@ jobs:
     runs-on: ubuntu-latest
     name: Package a Homebrew release
     needs: [ release ]
+    # The script authenticates with HOMEBREW_GITHUB_API_TOKEN, not GITHUB_TOKEN.
+    permissions: {}
     # Pre-release tags (e.g. 4.2.1-rc.1) must not reach Homebrew users.
     if: ${{ startsWith(github.ref, 'refs/tags/') && !contains(github.ref_name, '-') && github.repository == 'pantheon-systems/terminus' }}
     steps:
