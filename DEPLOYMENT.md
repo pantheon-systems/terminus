@@ -10,25 +10,25 @@ other_paths_to_prod:
   - "re-running a tag's workflow run re-uploads terminus.phar to that release and opens another Homebrew bump PR"   # inferred
   - "editing a GitHub release (prerelease flag, delete, asset re-upload) changes what self:update and the update notice offer, with no workflow run"
   - "a manual PR to pantheon-systems/homebrew-external Formula/terminus.rb changes what brew users get"
-  # trap: the repo only allows squash merges and builds the squash body from the PR's commit messages. A "[skip ci]" in any PR commit lands in the release commit, skips the push run on 4.x and, by GitHub's push rules, almost certainly the tag run too, so nothing publishes. Remove it from the squash message (4.3.4 needed this). Recovery: `gh workflow run 4.x.yml --ref <tag>`   # inferred for the tag run: not observed
+  # trap: the repo only allows squash merges and builds the squash body from the PR's commit messages. A "[skip ci]" in any PR commit lands in the release commit, skips the push run on 4.x and, by GitHub's push rules, almost certainly the tag run too, so nothing publishes. Remove it from the squash message (4.3.4 needed this). Recovery: `gh workflow run 4.x.yml --ref <tag>`. By contrast, maintainers deliberately merge non-code PRs (docs, back-to-dev) with [skip ci] / [ci skip], because the push run on 4.x takes ~30 min and runs functional tests against production   # inferred for the tag run: not observed
 
 pipeline:
   system: github-actions
   workflow: ".github/workflows/4.x.yml"   # workflow name "Terminus 4.x"; select it by file name, the name is ambiguous with 3x.yml
-  jobs_in_order: [checkout_build, functional, release, package_macos]
+  jobs_in_order: [checkout_build, functional, release, package_homebrew]
   typical_minutes: 35               # tag push to release published. Observed 4.3.4: 33.3 min (19:36:17Z -> 20:09:37Z). Earlier: 4.3.0 ~40, 4.2.1 ~43, 4.2.2 ~63, 4.3.3 ~67 incl. a ~40 min idle gap
   minutes_by_change:                # observed on 4.3.4 (run 41704808859)
     checkout_build: 1.5             # lint, unit tests, `composer phar:build` (box)
     functional: 31.5                # macOS, PHP 8.2 (21.7 min) and 8.5 (31.3 min) ran in parallel on 4.3.4; earlier releases ran them one after the other (~30). The 8.5 leg sets the pace
     release: 0.7                    # release public ~37 s after the job starts
-    package_macos: 0.75             # fails; see known_baseline_errors
+    package_homebrew: null          # TODO(verify-on-deploy): new job from terminus#2939 (merged 2026-11-03, after `verified.at`); first run is the next release
   watch_timeout_minutes: 75         # about double the observed run; an idle gap like 4.3.3's (~40 min) means investigate, not keep waiting
   watch: "Actions workflow 'Terminus 4.x' run for the tag ref: `gh run list -R pantheon-systems/terminus --workflow 4.x.yml --branch <tag>`; jobs 'Release' then 'Package a Homebrew release'"
   cancel_in_progress: true          # group ci-<ref>; a tag has its own ref, so branch pushes don't cancel a release run
   approval_gate: null               # no GitHub Environment; the human gate is CCB plus whoever pushes the tag
 
 release:
-  mechanism: "push tag <version> on the merged release commit on 4.x -> 'Release' job (softprops/action-gh-release) creates the GitHub release and uploads terminus.phar -> 'Package a Homebrew release' job (dawidd6/action-homebrew-bump-formula) opens a PR on pantheon-systems/homebrew-external bumping Formula/terminus.rb url+sha256"
+  mechanism: "push tag <version> on the merged release commit on 4.x -> 'Release' job (softprops/action-gh-release) creates the GitHub release and uploads terminus.phar -> 'Package a Homebrew release' job (a script, since terminus#2939) hashes the published asset, commits url+sha256 to Formula/terminus.rb on branch terminus-release-<version> of pantheon-systems/homebrew-external through the contents API, and opens a PR there. It skips tags containing '-' (pre-releases), so -rc tags never reach Homebrew"   # inferred: the script hasn't run on a real release yet
   tag_scheme: "bare semver, no v prefix (4.3.3); pre-releases as 4.2.1-rc.1"
   prerelease_flag: "not set by the workflow (4.2.0-rc.1 is flagged, 4.2.1-rc.1 is not). self:update skips -rc versions either way, because it filters on semver stability as well as the flag. An unflagged -rc can still be what releases/latest and the update notice report"   # inferred: whether 4.2.1-rc.1 was ever 'latest' isn't recorded
   never: "move or delete a published tag (Packagist and Composer caches key on it); publish a fixed patch instead"
@@ -102,10 +102,10 @@ health:
       healthy: "== <version>"
     - name: user reports
       kind: delegate
-      run: "new issues on github.com/pantheon-systems/terminus/issues since the release; support/Slack reports"   # TODO(owner): which Slack channel(s) get Terminus reports?
+      run: "new issues on github.com/pantheon-systems/terminus/issues since the release; support reports and #ask-hosting"
       healthy: "no new issue reporting a regression introduced in <version> in the first few days"
   known_baseline_errors:
-    - "'Package a Homebrew release' job has failed on every release since 4.3.1 (4.3.1, 4.3.2, 4.3.3, 4.3.4), so the formula is bumped by hand each time. On 4.3.4 the pinned dawidd6/action-homebrew-bump-formula v3.11.0 crashed with `undefined method 'safe_system' for module Homebrew (NoMethodError)`. Past that, its token-scope check also fails with fine-grained PATs (homebrew-external#81). A red run with a green 'Release' job means the release went out"
+    - "'Package a Homebrew release' failed on every release from 4.3.1 to 4.3.4, and the formula was bumped by hand each time. On 4.3.4 the old dawidd6/action-homebrew-bump-formula v3.11.0 crashed with `undefined method 'safe_system' for module Homebrew (NoMethodError)`, and its token-scope check also fails with fine-grained PATs (homebrew-external#81). terminus#2939 replaced it with a script. Until a release proves the script, a red run with a green 'Release' job still means the release went out"
   dashboards: []
   alerts: []
   # inferred: every API request carries User-Agent 'Terminus/<version> (...)', and pantheonapi access logs in Loki record userAgent and status (#terminus, 2026-06-25), so adoption and error rate per version could be queried. Not run for this contract, so not listed as a check
@@ -140,7 +140,7 @@ rollback:
   verify: "releases/latest returns the previous version; the formula url/sha256 match the previous release. `self:update` on <version> then prints 'No update available' (consolidation/self-update: current >= latest stable), i.e. it does NOT downgrade"
 
 escalation:
-  slack: null                       # TODO(owner): channel for Terminus release issues
+  slack: "#ask-hosting"             # escalation channel for everything DevX owns; releases are announced in #terminus
   owner_team: developer-experience
   paged: false                      # inferred: no alerts exist
   issues: "https://github.com/pantheon-systems/terminus/issues"
@@ -150,8 +150,8 @@ preflight:
   - "php on PATH (to run the downloaded PHAR's --version)"
 
 automation_blockers:
-  - blocker: "the Homebrew bump job has failed on the last three releases, so every release needs a hand-made tap PR"
-    clears_when: "the 'Package a Homebrew release' job opens the tap PR successfully on a release. terminus#2939 replaces the dawidd6 action with a script; its first real run is the next release"
+  - blocker: "the Homebrew bump job failed on 4.3.1 to 4.3.4, so each release needed a hand-made tap PR. Its replacement (terminus#2939) has not run on a release yet; it may still lack access to the tap"
+    clears_when: "the 'Package a Homebrew release' job opens the tap PR on a real release"
   - blocker: "pre-release tags are published as full releases until someone flags them. self:update is unaffected (it skips non-stable versions), but releases/latest and the update notice can report the -rc"
     clears_when: "the release job sets prerelease for tags with a semver pre-release suffix (action-gh-release `prerelease: true`; GitHub never makes a pre-release 'latest')"
   - blocker: "the release starts from a human tag push with no check that the tagged commit is the approved, merged release commit on 4.x"
@@ -180,9 +180,11 @@ Merging to `4.x` does not release anything. Between releases `4.x` carries the n
    - `checkout_build` (~1.5 min): lint, unit tests, builds `terminus.phar` with Box.
    - `functional` (~31 min): PHP 8.2 and 8.5 on macOS, against live Pantheon. The 8.5 leg is the slower one.
    - `release` (under 1 min, tags only): creates the GitHub release and uploads `terminus.phar`. **The release is public from here.** Packagist lists it within about 2 minutes.
-   - `package_macos` (under 1 min, tags only): is meant to open a PR on `pantheon-systems/homebrew-external` bumping `Formula/terminus.rb`. It has failed on every release since 4.3.1, so the run ends red even though the release is out. Bump the formula by hand: `url` to the new release asset and `sha256` to the asset's checksum (see that repo's `RELEASING.md`).
+   - `package_homebrew` (tags without a `-` only): hashes the published `terminus.phar` and opens a PR on `pantheon-systems/homebrew-external` that updates `url` and `sha256` in `Formula/terminus.rb`. A DevX member other than the author approves it, and it merges through the tap's merge queue. This script replaced a third-party action that failed on every release from 4.3.1 to 4.3.4 (terminus#2939), and it hasn't run on a real release yet. If it fails, bump the formula by hand, per that repo's `RELEASING.md`. TODO(verify-on-deploy): the job's duration, and that it opens the tap PR.
 
    The repo only allows squash merges, and the squash message includes every commit message in the PR. If any of them contains `[skip ci]`, delete it from the squash message before merging the release PR. Otherwise the tag run is very likely skipped too and nothing publishes. Recovery: `gh workflow run 4.x.yml -R pantheon-systems/terminus --ref <tag>`. [inferred]
+
+   Every other merge to `4.x` starts that same ~30-minute run, including functional tests against production. For merges that don't change code (docs, back-to-dev), maintainers add `[skip ci]` to the squash message on purpose, or cancel the run.
 6. **After the release**: paste the changelog section into the GitHub release notes, merge the Homebrew PR, flag `-rc` releases as pre-release, open the docs PR in `pantheon-systems/documentation` (supported-versions table and a release note), and open a "back to `<next>`-dev" PR on `4.x`.
 
 The full step-by-step procedure is the `terminus-release` skill in `pantheon-skills` (`pantheon-engineering/skills/terminus-release`).
@@ -268,11 +270,11 @@ Rollback has never been exercised.
 - Owner: `developer-experience` (code owners `@pantheon-systems/developer-experience`).
 - Nobody is paged and there are no alerts.
 - Issues: https://github.com/pantheon-systems/terminus/issues
-- TODO(owner): the Slack channel for Terminus release problems.
+- Slack: `#ask-hosting`, the escalation channel for everything DevX owns. Releases are announced in `#terminus`.
 
 ## Suggested pipeline changes
 
-- Fix the `package_macos` Homebrew bump job, which has failed on 4.3.1, 4.3.2 and 4.3.3.
+- ~~Fix the Homebrew bump job~~: replaced in terminus#2939, still to be proven on a release.
 - Set `prerelease: true` in the release job for tags with a semver pre-release suffix (`-rc.1` etc.). 4.2.1-rc.1 went out unflagged. `self:update` skipped it anyway (it filters on semver stability), but `releases/latest` and the update notice don't filter.
 - Fail the release job unless the tag is on `4.x` and equals `TERMINUS_VERSION` in `config/constants.yml`.
 - Put the changelog section into the GitHub release body automatically instead of pasting it by hand.
