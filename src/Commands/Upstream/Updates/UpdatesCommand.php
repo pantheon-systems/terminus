@@ -92,4 +92,33 @@ abstract class UpdatesCommand extends TerminusCommand implements SiteAwareInterf
         }
         return $deps;
     }
+
+    /**
+     * Get the list of node dependency updates for a site environment
+     *
+     * @param \Pantheon\Terminus\Models\Environment $env
+     *
+     * @return array The list of updates
+     */
+    protected function getNodeUpdatesLog($env)
+    {
+        if (!$env->getSite()->isNodejs()) {
+            return [];
+        }
+        $updates = $env->getUpstreamStatus()->getNodeUpdates();
+        if (empty($updates)) {
+            return [];
+        }
+        $deps = [];
+        if (!empty($updates->added_dependencies)) {
+            $deps = array_merge($deps, $updates->added_dependencies);
+        }
+        if (!empty($updates->updated_dependencies)) {
+            $deps = array_merge($deps, $updates->updated_dependencies);
+        }
+        if (!empty($updates->removed_dependencies)) {
+            $deps = array_merge($deps, $updates->removed_dependencies);
+        }
+        return $deps;
+    }
 }

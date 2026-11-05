@@ -71,7 +71,7 @@ class MetricsCommand extends TerminusCommand implements SiteAwareInterface
      *
      * @option period The time period for each data point (month|week|day)
      * @option datapoints How much data to return in total, or 'auto' to select
-     *   a resonable default based on the selected period.
+     *   a reasonable default based on the selected period.
      *
      * @return \Consolidation\OutputFormatters\StructuredData\RowsOfFieldsWithMetadata
      *
@@ -85,11 +85,6 @@ class MetricsCommand extends TerminusCommand implements SiteAwareInterface
         ]
     ) {
         $site = $this->getSiteById($site_env);
-        if ($site->isNodejs()) {
-            throw new TerminusException(
-                'Metrics are not yet available for Node.js sites.'
-            );
-        }
         $env = $this->getOptionalEnv($site_env);
         if (null !== $env) {
             $metrics = $env->getEnvironmentMetrics()

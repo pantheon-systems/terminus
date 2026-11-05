@@ -28,17 +28,7 @@ class Authorizer implements ConfigAwareInterface, SessionAwareInterface
     public function ensureLogin()
     {
         if (!$this->session()->isActive()) {
-            $tokens_obj = $this->session()->getTokens();
-            if (count($tokens = $tokens_obj->all()) == 1) {
-                $token = array_shift($tokens);
-            } elseif (!empty($email = $this->getConfig()->get('user'))) {
-                $token = $tokens_obj->get($email);
-            } else {
-                throw new TerminusException(
-                    'You are not logged in. Run `auth:login` to authenticate or `help auth:login` for more info.'
-                );
-            }
-            $token->logIn();
+            $this->session()->getAuthToken()->logIn();
         }
     }
 }

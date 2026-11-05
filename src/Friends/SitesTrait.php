@@ -20,7 +20,9 @@ trait SitesTrait
         foreach ($this->getSiteMemberships()->all() as $membership) {
             /** @var \Pantheon\Terminus\Models\SiteOrganizationMembership|\Pantheon\Terminus\Models\SiteUserMembership $membership */
             $site = $membership->getSite();
-            $sites[$site->id] = $site;
+            if ($site && $site->id) {
+                $sites[$site->id] = $site;
+            }
         }
         return $sites;
     }

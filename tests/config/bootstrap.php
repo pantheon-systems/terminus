@@ -103,6 +103,45 @@ if (!getenv('TERMINUS_TESTING_RUNTIME_ENV')) {
     // Create a testing runtime multidev environment.
     $sitename = TerminusTestBase::getSiteName();
 
+    // Clean up orphaned test-* multidev environments before creating a new one.
+    $log->info('Checking for orphaned test-* multidev environments...');
+    $listOutput = [];
+    exec(
+        sprintf('%s multidev:list %s --format=json', TERMINUS_BIN_FILE, $sitename),
+        $listOutput,
+        $listCode
+    );
+    if (0 === $listCode && !empty($listOutput)) {
+        $multidevs = json_decode(implode('', $listOutput), true);
+        if (is_array($multidevs)) {
+            // Only treat test-* multidevs older than a day as orphaned. Newer
+            // ones may belong to other CI runs executing concurrently, and
+            // deleting those would break the in-flight run that created them.
+            $orphanCutoff = time() - 86400;
+            $testEnvs = array_filter($multidevs, function ($env, $id) use ($orphanCutoff) {
+                if (!str_starts_with($id, 'test-')) {
+                    return false;
+                }
+                $created = $env['created'] ?? null;
+                return is_numeric($created) && (int) $created < $orphanCutoff;
+            }, ARRAY_FILTER_USE_BOTH);
+            if (!empty($testEnvs)) {
+                $log->info(sprintf('Found %d orphaned test-* multidev(s), deleting...', count($testEnvs)));
+                foreach ($testEnvs as $id => $env) {
+                    $log->info(sprintf('Deleting orphaned multidev: %s', $id));
+                    exec(
+                        sprintf('%s multidev:delete %s.%s --delete-branch --yes', TERMINUS_BIN_FILE, $sitename, $id),
+                        $delOutput,
+                        $delCode
+                    );
+                    if (0 !== $delCode) {
+                        $log->warning(sprintf('Failed to delete orphaned multidev %s (exit code %d)', $id, $delCode));
+                    }
+                }
+            }
+        }
+    }
+
     $multidev = sprintf('test-%s', substr(uniqid(), -6, 6));
     $createMdCommand = sprintf('multidev:create %s.dev %s', $sitename, $multidev);
 
@@ -125,18 +164,49 @@ if (!getenv('TERMINUS_TESTING_RUNTIME_ENV')) {
 
     TerminusTestBase::setMdEnv($multidev);
 
-    register_shutdown_function(function () use ($sitename, $multidev) {
+    register_shutdown_function(function () use ($sitename, $multidev, $log) {
         // Delete a testing runtime multidev environment.
+        // The platform occasionally returns a transient error for this command
+        // (e.g. an erroneous "environment was not found" message), so retry a
+        // few times before treating the failure as fatal.
         $deleteMdCommand = sprintf('multidev:delete %s.%s --delete-branch --yes', $sitename, $multidev);
-        exec(
-            sprintf('%s %s', TERMINUS_BIN_FILE, $deleteMdCommand),
-            $output,
-            $code
-        );
+        $maxAttempts = 3;
+        $retryIntervalSeconds = 10;
+        $code = 0;
+
+        for ($attempt = 1; $attempt <= $maxAttempts; $attempt++) {
+            $output = [];
+            exec(
+                sprintf('%s %s', TERMINUS_BIN_FILE, $deleteMdCommand),
+                $output,
+                $code
+            );
+
+            if (0 === $code) {
+                break;
+            }
+
+            $log->warning(sprintf(
+                'Command "%s" exited with non-zero code (%d) on attempt %d of %d.',
+                $deleteMdCommand,
+                $code,
+                $attempt,
+                $maxAttempts
+            ));
+
+            if ($attempt < $maxAttempts) {
+                sleep($retryIntervalSeconds);
+            }
+        }
 
         if (0 !== $code) {
             /** @noinspection PhpUnhandledExceptionInspection */
-            throw new Exception(sprintf('Command "%s" exited with non-zero code (%d)', $deleteMdCommand, $code));
+            throw new Exception(sprintf(
+                'Command "%s" exited with non-zero code (%d) after %d attempts',
+                $deleteMdCommand,
+                $code,
+                $maxAttempts
+            ));
         }
     });
 }

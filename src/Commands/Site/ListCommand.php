@@ -34,6 +34,8 @@ class ListCommand extends SiteCommand
      *     memberships: Memberships
      *     frozen: Is Frozen?
      *     last_frozen_at: Date frozen
+     *     upstream: Upstream
+     *     upstream_label: Upstream Label
      * @default-fields name,id,plan_name,framework,region,owner,created,memberships,frozen
      *
      * @param array $options

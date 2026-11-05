@@ -166,6 +166,16 @@ class Request implements
     }
 
     /**
+     * Wraps the global sleep() so tests can override retry delays.
+     *
+     * @param int $seconds
+     */
+    protected function sleep(int $seconds): void
+    {
+        sleep($seconds);
+    }
+
+    /**
      * Returns the Retry Decider middleware.
      *
      * @return callable
@@ -221,7 +231,7 @@ class Request implements
                 if ($retry !== $maxRetries) {
                     $logWarningOnRetry($exception->getMessage());
                     $logWarning(sprintf("Retrying in %s seconds.", $retryBackoff * ($retry + 1)));
-                    sleep($retryBackoff * ($retry + 1));
+                    $this->sleep($retryBackoff * ($retry + 1));
 
                     return true;
                 }
@@ -231,22 +241,51 @@ class Request implements
                     ['error' => $exception->getMessage()]
                 );
             } else {
-                if (preg_match('/[2,4]0\d/', $response->getStatusCode())) {
-                    // Do not retry on 20x or 40x responses.
+                $statusCode = $response->getStatusCode();
+
+                if (!RetryPolicy::isRetryableStatusCode($statusCode)) {
+                    // Non-retryable response. This includes:
+                    //   - 2xx success (nothing to retry) and 3xx redirects (Guzzle normally
+                    //     follows these itself; retrying one is meaningless).
+                    //   - 400, 404, 405, 406      - permanent client errors (bad request, not
+                    //                               found, method not allowed, not acceptable).
+                    //   - 408 Request Timeout     - historically has not been retried; some operations
+                    //                               might not be idempotent and therefore not safe
+                    //                               to blindly retry.
+                    //   - 401 Unauthorized        - Terminus refreshes the session proactively before
+                    //                               every command (Authorizer::ensureLogin()) and
+                    //                               reactively on a mid-command 401 (Request::request()'s
+                    //                               refresh-and-retry-once, see refreshSession()); a 401
+                    //                               that survives both means credentials are invalid or
+                    //                               revoked, and retrying again cannot fix that.
+                    //   - 403 Forbidden           - permanent authorization denial, never retried.
+                    //   - 409 Conflict            - handled specially below (may throw
+                    //                               TerminusUnsupportedSiteException).
+                    //   - 410-431, 451            - permanent client errors (Gone, Payload Too
+                    //                               Large, Unprocessable Entity, Locked, legal
+                    //                               block, etc.) — retrying won't change them.
+                    //   - 501, 505-511            - permanent server-side/config failures.
+                    // See RetryPolicy::RETRYABLE_STATUS_CODES for the transient codes that ARE
+                    // retried below (429, 500, 502, 503, 504).
                     return false;
                 }
 
                 if ($retry !== $maxRetries) {
-                    $logWarningOnRetry(
-                        sprintf('status code - %s', $response->getStatusCode())
-                    );
+                    $reason = RetryPolicy::isRateLimit($statusCode)
+                        ? 'rate limit exceeded (HTTP 429 Too Many Requests)'
+                        : sprintf('status code - %s', $statusCode);
+                    // Rate limits back off exponentially; other retryable codes keep the
+                    // existing linear backoff. See RetryPolicy::backoffSeconds().
+                    $delay = RetryPolicy::backoffSeconds($statusCode, $retryBackoff, $retry);
+
+                    $logWarningOnRetry($reason);
                     $this->logger->debug(
                         'Response body: {body}',
                         ['body' => $response->getBody()->getContents()]
                     );
 
-                    $logWarning(sprintf("Retrying in %s seconds.", $retryBackoff * ($retry + 1)));
-                    sleep($retryBackoff * ($retry + 1));
+                    $logWarning(sprintf("Retrying in %s seconds.", $delay));
+                    $this->sleep($delay);
 
                     return true;
                 }
@@ -325,9 +364,6 @@ class Request implements
 
             $data = (array)$resp['data'];
             if (count($data) > 0) {
-                if (count($data) < $limit) {
-                    $finished = true;
-                }
                 $start = end($data)->id;
 
                 // If the last item of the results has previously been received,
@@ -349,7 +385,8 @@ class Request implements
     }
 
     /**
-     * Simplified request method for Pantheon API.
+     * Simplified request method for Pantheon API. On a 401 Unauthorized response,
+     * attempts to refresh the session once and retries the request a single time.
      *
      * @param string $path API path (URL)
      * @param array $options Options for the request
@@ -363,6 +400,54 @@ class Request implements
      */
     public function request($path, array $options = []): RequestOperationResult
     {
+        $result = $this->requestWithoutRefreshHandling($path, $options);
+
+        if ($result->getStatusCode() === 401 && $this->refreshSession()) {
+            $result = $this->requestWithoutRefreshHandling($path, $options);
+        }
+
+        return $result;
+    }
+
+    /**
+     * Attempts to refresh the current session by re-authenticating with the saved
+     * machine token. Used to recover from a session that expired mid-command.
+     *
+     * @return bool True if the session was refreshed successfully.
+     */
+    private function refreshSession(): bool
+    {
+        try {
+            $this->session()->getAuthToken()->logIn();
+            return true;
+        } catch (\Throwable $e) {
+            $this->logger->warning(
+                'Session refresh failed after receiving a 401: {message}',
+                ['message' => $e->getMessage()]
+            );
+            return false;
+        }
+    }
+
+    /**
+     * Sends a request to the Pantheon API without any 401 refresh-and-retry handling.
+     * Used directly by SavedToken::logIn(), since that call IS the refresh operation
+     * and must never trigger a nested refresh attempt.
+     *
+     * @param string $path API path (URL)
+     * @param array $options Options for the request
+     *   string method      GET is default
+     *   array form_params  Fed into the body of the request
+     *
+     * @return RequestOperationResult
+     *
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @throws TerminusException
+     */
+    public function requestWithoutRefreshHandling($path, array $options = []): RequestOperationResult
+    {
+        $config = $this->getConfig();
+
         // Set headers.
         $parts = explode('/', $path);
         $part = array_pop($parts);
@@ -392,6 +477,18 @@ class Request implements
             unset($options['form_params']);
             $headers['Content-Type'] = 'application/json';
             $headers['Content-Length'] = strlen($body);
+        }
+
+        $auth_cookie_key = $config->get('auth_cookie_key');
+        if ($auth_cookie_key) {
+            $this->sensitive_data[] = 'Cookie';
+            $headers = [
+                'Cookie' => "$auth_cookie_key={$this->session()->get('session')}",
+            ];
+            if (isset($options['headers'])) {
+                $headers = array_merge($headers, $options['headers']);
+            }
+            $options['headers'] = $headers;
         }
 
         $method = isset($options['method']) ? strtoupper(
@@ -504,10 +601,27 @@ class Request implements
     private function terminusCommand()
     {
         $input = $this->getContainer()->get('input');
+        $command = $input->getFirstArgument();
+        $arguments = $input->getArguments();
+        $options = $input->getOptions();
+
+        // The remote commands may carry credentials anywhere in their arguments
+        // and options, so include only the command name.
+        $canonical = $this->canonicalCommandName($command);
+        if ($this->isRemoteCommand($canonical)) {
+            return json_encode(['command' => $canonical, 'truncated' => false]);
+        }
+        // Never reveal the machine token, wherever it is used.
+        foreach (['machine-token', 'machine_token'] as $key) {
+            if (isset($options[$key])) {
+                $options[$key] = self::HIDDEN_VALUE_REPLACEMENT;
+            }
+        }
+
         $candidate = json_encode([
-            'command' => $input->getFirstArgument(),
-            'arguments' => $input->getArguments(),
-            'options' => $input->getOptions(),
+            'command' => $command,
+            'arguments' => $arguments,
+            'options' => $options,
             'truncated' => false,
         ]);
 
@@ -519,6 +633,39 @@ class Request implements
         }
 
         return $candidate;
+    }
+
+    /**
+     * Resolves an aliased or abbreviated command name (e.g. rem:drush) to its canonical name.
+     *
+     * @param string|null $command
+     *
+     * @return string|null
+     *   The canonical name, or the given name if it cannot be resolved.
+     */
+    private function canonicalCommandName($command)
+    {
+        if (!is_string($command) || !$this->getContainer()->has('application')) {
+            return $command;
+        }
+        try {
+            return $this->getContainer()->get('application')->find($command)->getName();
+        } catch (\Exception $e) {
+            return $command;
+        }
+    }
+
+    /**
+     * Tells whether the named command is one of the remote:… commands (or an alias).
+     *
+     * @param string|null $command
+     *
+     * @return bool
+     */
+    private function isRemoteCommand($command)
+    {
+        return is_string($command)
+            && (strpos($command, 'remote:') === 0 || in_array($command, ['drush', 'wp'], true));
     }
 
     /**

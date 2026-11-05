@@ -28,6 +28,11 @@ class UpstreamStatus extends TerminusModel implements EnvironmentInterface
      */
     protected $composerUpdates = null;
 
+    /**
+     * @var object|null
+     */
+    protected $nodeUpdates = null;
+
     public function __construct($attributes, array $options = [])
     {
         parent::__construct($attributes, $options);
@@ -43,8 +48,8 @@ class UpstreamStatus extends TerminusModel implements EnvironmentInterface
      */
     public function getStatus()
     {
-        return $this->hasUpdates() || $this->hasComposerUpdates(
-        ) ? 'outdated' : 'current';
+        return $this->hasUpdates() || $this->hasComposerUpdates() || $this->hasNodeUpdates()
+            ? 'outdated' : 'current';
     }
 
     /**
@@ -81,6 +86,22 @@ class UpstreamStatus extends TerminusModel implements EnvironmentInterface
     }
 
     /**
+     * Retrives node dependency updates
+     *
+     * @return object
+     */
+    public function getNodeUpdates()
+    {
+        if ($this->nodeUpdates === null) {
+            $env = $this->getEnvironment();
+            $this->nodeUpdates = $this->request()->request(
+                "sites/{$env->getSite()->id}/environments/{$env->id}/build/node-updates"
+            )['data'];
+        }
+        return $this->nodeUpdates;
+    }
+
+    /**
      * @return bool
      */
     public function hasCode()
@@ -99,6 +120,22 @@ class UpstreamStatus extends TerminusModel implements EnvironmentInterface
         return !empty($composerUpdates->added_dependencies) ||
             !empty($composerUpdates->updated_dependencies) ||
             !empty($composerUpdates->removed_dependencies);
+    }
+
+    /**
+     * Determines whether there are any node dependency updates to be applied.
+     *
+     * @return bool
+     */
+    public function hasNodeUpdates(): bool
+    {
+        if (!$this->getEnvironment()->getSite()->isNodejs()) {
+            return false;
+        }
+        $nodeUpdates = $this->getNodeUpdates();
+        return !empty($nodeUpdates->added_dependencies) ||
+            !empty($nodeUpdates->updated_dependencies) ||
+            !empty($nodeUpdates->removed_dependencies);
     }
 
     /**

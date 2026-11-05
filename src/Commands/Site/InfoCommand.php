@@ -40,6 +40,8 @@ class InfoCommand extends SiteCommand
      *     owner: Owner
      *     frozen: Is Frozen?
      *     last_frozen_at: Date Last Frozen
+     *     has_object_cache: Object Cache
+     *     search: Search
      * @return PropertyList
      *
      * @param string $site The name or UUID of a site to retrieve information on

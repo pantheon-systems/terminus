@@ -36,6 +36,7 @@ class AliasesCommand extends TerminusCommand implements SiteAwareInterface
      * @option string $type Type of aliases to create: 'php', 'yml' or 'all'.
      * @option string $base Base directory to write .yml aliases.
      * @option string $target Base name to use to generate path to alias files.
+     * @option boolean $custom-domains Use custom domains instead of platform domains for dev, test, and live environments. Uses primary domain if set, otherwise the first custom domain, falling back to platform domain if none configured.
      * @option boolean $db-url Obsolete option included to preserve backwards compatibility. No longer needed.
      *
      * @return string|null
@@ -53,6 +54,7 @@ class AliasesCommand extends TerminusCommand implements SiteAwareInterface
         'base' => '~/.drush',
         'db-url' => true,
         'target' => 'pantheon',
+        'custom-domains' => false,
     ])
     {
         // Be forgiving about the spelling of 'yaml'
@@ -68,6 +70,9 @@ class AliasesCommand extends TerminusCommand implements SiteAwareInterface
         $alias_replacements = $this->getSites($options);
 
         $this->log()->notice("{count} sites found.", ['count' => count($alias_replacements)]);
+
+        // Add with custom domains if requested
+        $alias_replacements = $this->addCustomDomains($alias_replacements, $options);
 
         // Write the alias files (only of the type requested)
         $emitters = $this->getAliasEmitters($options);
@@ -250,5 +255,139 @@ class AliasesCommand extends TerminusCommand implements SiteAwareInterface
     protected function shortenHomePath($message)
     {
         return str_replace($this->getConfig()->get('user_home') ?? '', '~', $message ?? '');
+    }
+
+    /**
+     * Enrich alias replacement data with custom domain URIs when requested.
+     *
+     * @param array $alias_replacements Associative array of site id => alias replacement data
+     * @param array $options Command options
+     * @return array Modified alias replacement data with custom URIs
+     */
+    protected function addCustomDomains($alias_replacements, $options)
+    {
+        // If custom domains feature is not enabled, return unchanged
+        if (empty($options['custom-domains'])) {
+            return $alias_replacements;
+        }
+
+        // Standard environments to generate explicit entries for
+        $standard_envs = ['dev', 'test', 'live'];
+
+        foreach ($alias_replacements as $site_name => &$site_data) {
+            try {
+                $site = $this->sites()->get($site_name);
+                $environments = $site->getEnvironments()->all();
+
+                // Build environments array only for dev, test, live
+                $site_data['environments'] = [];
+
+                foreach ($environments as $env) {
+                    // Only process standard environments
+                    if (!in_array($env->id, $standard_envs)) {
+                        continue;
+                    }
+
+                    $custom_uri = $this->selectBestUri($env);
+
+                    $site_data['environments'][$env->id] = [
+                        'site_name' => $site_data['site_name'],
+                        'env_name' => $env->id,
+                        'env_label' => $env->id,
+                        'site_id' => $site_data['site_id'],
+                        'custom_uri' => $custom_uri,
+                    ];
+                }
+            } catch (\Exception $e) {
+                $this->log()->warning(
+                    "Could not fetch domains for site {site}: {error}",
+                    [
+                        'site' => $site_name,
+                        'error' => $e->getMessage(),
+                    ]
+                );
+            }
+        }
+
+        return $alias_replacements;
+    }
+
+    /**
+     * Select the best URI for an environment.
+     *
+     * Priority:
+     * 1. Primary domain (if configured and not a platform domain)
+     * 2. First custom domain
+     * 3. Platform domain (fallback)
+     *
+     * @param \Pantheon\Terminus\Models\Environment $environment
+     * @return string The selected URI
+     */
+    protected function selectBestUri($environment)
+    {
+        try {
+            $domains = $environment->getDomains()->all();
+
+            // Check for primary domain first
+            foreach ($domains as $domain) {
+                if ($domain->get('primary') === true) {
+                    $domain_name = $domain->id;
+                    if (!$this->isPlatformDomain($domain_name)) {
+                        return $domain_name;
+                    }
+                }
+            }
+
+            // Look for first custom domain
+            foreach ($domains as $domain) {
+                $domain_name = $domain->id;
+                $domain_type = $domain->get('type');
+
+                if ($domain_type === 'custom' || !$this->isPlatformDomain($domain_name)) {
+                    return $domain_name;
+                }
+            }
+        } catch (\Exception $e) {
+            $this->log()->debug(
+                "Could not fetch domains for environment {env}: {error}",
+                [
+                    'env' => $environment->id,
+                    'error' => $e->getMessage(),
+                ]
+            );
+        }
+
+        // Fallback to platform domain
+        return $this->getPlatformDomain($environment);
+    }
+
+    /**
+     * Check if a domain is a Pantheon platform domain.
+     *
+     * @param string $domain
+     * @return bool
+     */
+    protected function isPlatformDomain($domain)
+    {
+        return (
+            strpos($domain, '.pantheonsite.io') !== false ||
+            strpos($domain, '.pantheon.io') !== false ||
+            strpos($domain, '.gotpantheon.com') !== false
+        );
+    }
+
+    /**
+     * Get the platform domain for an environment.
+     *
+     * @param \Pantheon\Terminus\Models\Environment $environment
+     * @return string
+     */
+    protected function getPlatformDomain($environment)
+    {
+        $site = $environment->getSite();
+        $env_label = $environment->id;
+        $site_name = $site->get('name');
+
+        return "{$env_label}-{$site_name}.pantheonsite.io";
     }
 }

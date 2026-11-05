@@ -16,7 +16,7 @@ class Commit extends TerminusModel
         return [
             'datetime' => $this->get('datetime'),
             'author' => $this->get('author'),
-            'labels' => implode(', ', $this->get('labels')),
+            'labels' => implode(', ', $this->get('labels') ?? []),
             'hash' => $this->get('hash'),
             'message' => substr(
                 strtr(

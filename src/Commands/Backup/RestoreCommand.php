@@ -23,7 +23,7 @@ class RestoreCommand extends SingleBackupCommand
      * @command backup:restore
      *
      * @param string $site_env Site & environment in the format `site-name.env`
-     * @option string $file [filename.tgz] Name of backup file on the plaform
+     * @option string $file [filename.tgz] Name of backup file on the platform
      * @option string $element [all|code|files|database|db] Backup element
      * @throws TerminusException
      *

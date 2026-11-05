@@ -173,13 +173,16 @@ class Environment extends TerminusModel implements
             'updatedb' => $options['updatedb'] ?? 0,
             'clear_cache' => $options['clear_cache'] ?? false,
         ];
-        if (!empty($options['from_url']) && !empty($options['to_url'])) {
-            $params['wp_replace_siteurl']['from_url'] = $options['from_url'];
-            $params['wp_replace_siteurl']['to_url'] = $options['to_url'];
-        } else {
-            // Automatically detect environment URLs for search-replace
-            $params['wp_replace_siteurl']['from_url'] = 'https://' . $from_env->domain();
-            $params['wp_replace_siteurl']['to_url'] = 'https://' . $this->domain();
+        // Only add wp_replace_siteurl for WordPress sites
+        if ($this->getSite()->getFramework()->isWordpressFramework()) {
+            if (!empty($options['from_url']) && !empty($options['to_url'])) {
+                $params['wp_replace_siteurl']['from_url'] = $options['from_url'];
+                $params['wp_replace_siteurl']['to_url'] = $options['to_url'];
+            } else {
+                // Automatically detect environment URLs for search-replace
+                $params['wp_replace_siteurl']['from_url'] = 'https://' . $from_env->domain();
+                $params['wp_replace_siteurl']['to_url'] = 'https://' . $this->domain();
+            }
         }
         return $this->getWorkflows()->create(
             'clone_database',
@@ -400,16 +403,25 @@ class Environment extends TerminusModel implements
      */
     public function countDeployableCommits()
     {
+        $env_commits = $this->getCommits()->all();
         $parent_environment = $this->getParentEnvironment();
         $number_of_commits = 0;
         if ($parent_environment instanceof Environment) {
             $parent_commits = $parent_environment->getCommits()->all();
             foreach ($parent_commits as $commit) {
-                $labels = $commit->get('labels');
-                $number_of_commits += (int)(
-                    !in_array($this->id, $labels)
-                    && in_array($parent_environment->id, $labels)
-                );
+                $hash = $commit->get('hash');
+                $found = false;
+                foreach ($env_commits as $env_commit) {
+                    if ($env_commit->get('hash') === $hash) {
+                        $found = true;
+                        break;
+                    }
+                }
+                if ($found) {
+                    // No need to continue checking commits.
+                    break;
+                }
+                $number_of_commits++;
             }
         }
         return $number_of_commits;
@@ -422,7 +434,7 @@ class Environment extends TerminusModel implements
      */
     public function dashboardUrl()
     {
-        return "{$this->getSite()->dashboardUrl()}#{$this->id}";
+        return "{$this->getSite()->dashboardUrl()}environment/{$this->id}/";
     }
 
     /**
@@ -880,7 +892,12 @@ class Environment extends TerminusModel implements
             return true;
         }
 
-        return $this->settings('is_initialized');
+        $initialized = $this->settings('is_initialized');
+        // Fail safe - if we can't confirm it's NOT initialized, assume it IS
+        if ($initialized === null) {
+            return true;
+        }
+        return $initialized;
     }
 
     /**
@@ -1066,8 +1083,8 @@ class Environment extends TerminusModel implements
 
         $wakeUrl = "https://{$domain->id}/pantheon_healthcheck";
         if ($this->getSite()->isNodejs()) {
-            // For Node.js sites, we use the root path for the health check.
-            $wakeUrl = "https://{$domain->id}";
+            // For Node.js sites, we use a different check.
+            $wakeUrl = "https://{$domain->id}/pantheon-platform/readycheck";
         }
 
         while ($attempt < $maxRetries && !$success) {
@@ -1081,7 +1098,6 @@ class Environment extends TerminusModel implements
                 if ($success) {
                     return [
                         'success' => true,
-                        'styx' => $response['headers']['X-Pantheon-Styx-Hostname'],
                         'response' => $response,
                         'target' => $domain->id,
                     ];

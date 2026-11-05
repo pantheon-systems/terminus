@@ -37,6 +37,8 @@ class ListCommand extends TerminusCommand implements SiteAwareInterface
      *     created: Created
      *     tags: Tags
      *     frozen: Is Frozen?
+     *     upstream: Upstream
+     *     upstream_label: Upstream Label
      * @default-fields name,id,plan_name,framework,owner,created,tags,frozen
      * @return RowsOfFields
      *

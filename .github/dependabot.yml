@@ -1,0 +1,29 @@
+# This file is managed by github-terraform. Manual changes will be overwritten.
+# To modify it, edit orgs/pantheon-systems/files/dependabot/custom/terminus.yml
+# in https://github.com/pantheon-systems/github-terraform
+version: 2
+updates:
+  - package-ecosystem: "composer"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    groups:
+      production-dependencies:
+        dependency-type: "production"
+        update-types:
+          - "minor"
+          - "patch"
+      development-dependencies:
+        dependency-type: "development"
+        update-types:
+          - "minor"
+          - "patch"
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    groups:
+      github-actions:
+        patterns:
+          - "*"

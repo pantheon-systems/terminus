@@ -44,13 +44,18 @@ class ApplyCommand extends UpdatesCommand
 
         $updates = $this->getUpstreamUpdatesLog($env);
         $composerUpdates = $this->getComposerUpdatesLog($env);
+        $nodeUpdates = $this->getNodeUpdatesLog($env);
 
         $count = count($updates);
         $composerCount = count($composerUpdates);
-        if ($count || $composerCount) {
+        $nodeCount = count($nodeUpdates);
+        if ($count || $composerCount || $nodeCount) {
             $prefix = sprintf("Applying %d upstream update(s)", $count);
             if ($composerCount) {
                 $prefix .= " and any composer update(s)";
+            }
+            if ($nodeCount) {
+                $prefix .= " and any node dependency update(s)";
             }
             $this->log()->notice(
                 '{prefix} to the {env} environment of {site_id}...',

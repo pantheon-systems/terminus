@@ -10,6 +10,7 @@ use Pantheon\Terminus\DataStore\DataStoreAwareInterface;
 use Pantheon\Terminus\DataStore\DataStoreAwareTrait;
 use Pantheon\Terminus\DataStore\DataStoreInterface;
 use Pantheon\Terminus\Exceptions\TerminusException;
+use Pantheon\Terminus\Models\SavedToken;
 use Pantheon\Terminus\Models\User;
 use Robo\Contract\ConfigAwareInterface;
 
@@ -117,9 +118,10 @@ class Session implements
      */
     public function isActive()
     {
+        // Consider a session expired if it is already about to expire (less than 1 minute).
         return (
             isset($this->data->session)
-            && ($this->data->expires_at >= time() || (bool)$this->config->get(
+            && ($this->data->expires_at >= (time() + 60) || (bool)$this->config->get(
                 'test_mode'
             ))
         );
@@ -134,6 +136,27 @@ class Session implements
     {
         $this->getDataStore()->set('session', $data);
         $this->data = (object)$data;
+    }
+
+    /**
+     * Selects the SavedToken to (re-)authenticate with: a single saved token, or
+     * the token matching the configured 'user' email.
+     *
+     * @return SavedToken
+     * @throws TerminusException If there is no unambiguous token to use.
+     */
+    public function getAuthToken(): SavedToken
+    {
+        $tokens_obj = $this->getTokens();
+        if (count($tokens = $tokens_obj->all()) == 1) {
+            return array_shift($tokens);
+        }
+        if (!empty($email = $this->getConfig()->get('user'))) {
+            return $tokens_obj->get($email);
+        }
+        throw new TerminusException(
+            'You are not logged in. Run `auth:login` to authenticate or `help auth:login` for more info.'
+        );
     }
 
     /**
