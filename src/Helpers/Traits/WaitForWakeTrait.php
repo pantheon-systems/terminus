@@ -21,7 +21,10 @@ trait WaitForWakeTrait
     public function waitForWake(Environment $env, LoggerInterface $logger)
     {
         $waits = 0;
+        $max_waits = $this->getConfig()->get('max_waits', 25);
+        $logger->debug('max_waits: {max_waits}', ['max_waits' => $max_waits]);
         do {
+            $logger->debug('wait #{waits}', ['waits' => $waits+1]);
             $woke = $env->wake();
             if (($woke['success'] ?? false) === true) {
                 break;
@@ -29,7 +32,7 @@ trait WaitForWakeTrait
             // if success is empty, then the site is still waking up.
             // Allow user to set the number of retries if the site is still waking up.
             // Default should be 25 times, once per second.
-            if ($waits > $this->getConfig()->get("wait_for_wake_repeat", 25)) {
+            if ($waits > $max_waits) {
                 $this->log()->error('{target} could not be reached, domain returned {status_code}.', [
                     'status_code' => $woke['response']['status_code'],
                 ]);
