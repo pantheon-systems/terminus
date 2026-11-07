@@ -20,6 +20,8 @@ TERMINUS_SSH_COMMAND: 'ssh'
 # Settings
 TERMINUS_TIMEOUT: 86400
 TERMINUS_PLUGINS_FALLBACK_COMPATIBILITY: '3.6.1'
+# Experimental: report command status to the terminal with OSC 7501 (Program Status Protocol). Set to true to turn on.
+TERMINUS_PROGRAM_STATUS: false
 
 # User Prompts
 TERMINUS_DASHBOARD_HOST:     'dashboard.pantheon.io'
