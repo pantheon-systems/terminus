@@ -32,9 +32,26 @@ class Backups extends EnvironmentOwnedCollection
     public function cancelBackupSchedule()
     {
         $path_root = $this->replaceUrlTokens('sites/{site_id}/environments/{environment_id}/backups/schedule');
-        $params = ['method' => 'delete',];
+
+        // Build concurrent delete requests for all 7 days
+        $requests = [];
         for ($day = 0; $day < 7; $day++) {
-            $this->request()->request("$path_root/$day", $params);
+            $requests["day_{$day}"] = [
+                'path' => "$path_root/$day",
+                'options' => ['method' => 'delete'],
+            ];
+        }
+
+        // Execute concurrently
+        $results = $this->request()->requestConcurrent($requests);
+
+        // Check for failures and log warnings
+        $failures = array_filter($results, fn($r) => !$r['success']);
+        if (!empty($failures)) {
+            $this->logger->warning(
+                'Some backup schedule cancellations failed: {count} out of {total}',
+                ['count' => count($failures), 'total' => count($results)]
+            );
         }
     }
 
