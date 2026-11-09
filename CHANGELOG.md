@@ -1,6 +1,8 @@
 # Change Log
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org)
 
+## 4.3.6-dev
+
 ## 4.3.5 - 2026-11-09
 
 ### Changed
