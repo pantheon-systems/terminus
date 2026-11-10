@@ -3,25 +3,31 @@
 namespace Pantheon\Terminus\Commands\Lock;
 
 use Pantheon\Terminus\Commands\TerminusCommand;
-use Pantheon\Terminus\Commands\WorkflowProcessingTrait;
-use Pantheon\Terminus\Site\SiteAwareInterface;
-use Pantheon\Terminus\Site\SiteAwareTrait;
+use Pantheon\Terminus\PublicApi\Client;
+use Pantheon\Terminus\PublicApi\PublicApiAwareInterface;
+use Pantheon\Terminus\PublicApi\SiteEnvResolver;
+use Pantheon\Terminus\PublicApi\WorkflowWaiter;
 
 /**
  * Class EnableCommand.
  *
+ * Uses the Public API v1: POST /sites/{siteId}/environments/{env}/lock.
+ *
  * @package Pantheon\Terminus\Commands\Lock
  */
-class EnableCommand extends TerminusCommand implements SiteAwareInterface
+class EnableCommand extends TerminusCommand implements PublicApiAwareInterface
 {
-    use SiteAwareTrait;
-    use WorkflowProcessingTrait;
+    private Client $publicApi;
+
+    public function setPublicApiClient(Client $client): void
+    {
+        $this->publicApi = $client;
+    }
 
     /**
      * Enables HTTP basic authentication on the environment.
      * Note: HTTP basic authentication username and password are stored in plaintext.
      *
-     * @authorize
      * @interact
      *
      * @command lock:enable
@@ -35,15 +41,26 @@ class EnableCommand extends TerminusCommand implements SiteAwareInterface
      */
     public function enable($site_env, $username, $password)
     {
-        $env = $this->getEnv($site_env);
+        $siteEnv = (new SiteEnvResolver($this->publicApi))->resolve($site_env);
 
-        $this->processWorkflow($env->getLock()->enable(['username' => $username, 'password' => $password,]));
+        $payload = $this->publicApi->post(
+            Client::path('/sites/%s/environments/%s/lock', $siteEnv->siteId, $siteEnv->envName),
+            [
+                'siteId' => $siteEnv->siteId,
+                'environment' => $siteEnv->envName,
+                'username' => $username,
+                'password' => $password,
+            ]
+        );
+        $waiter = new WorkflowWaiter(
+            $this->publicApi,
+            (int) $this->getConfig()->get('workflow_polling_delay_ms', WorkflowWaiter::DEFAULT_POLL_DELAY_MS)
+        );
+        $waiter->wait($siteEnv->siteId, (array) $payload);
+
         $this->log()->notice(
             '{site}.{env} has been locked.',
-            [
-                'site' => $this->getSiteById($site_env)->getName(),
-                'env' => $env->getName(),
-            ]
+            ['site' => $siteEnv->siteName, 'env' => $siteEnv->envName]
         );
     }
 }
