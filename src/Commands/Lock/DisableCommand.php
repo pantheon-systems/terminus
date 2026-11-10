@@ -3,24 +3,30 @@
 namespace Pantheon\Terminus\Commands\Lock;
 
 use Pantheon\Terminus\Commands\TerminusCommand;
-use Pantheon\Terminus\Commands\WorkflowProcessingTrait;
-use Pantheon\Terminus\Site\SiteAwareInterface;
-use Pantheon\Terminus\Site\SiteAwareTrait;
+use Pantheon\Terminus\PublicApi\Client;
+use Pantheon\Terminus\PublicApi\PublicApiAwareInterface;
+use Pantheon\Terminus\PublicApi\SiteEnvResolver;
+use Pantheon\Terminus\PublicApi\WorkflowWaiter;
 
 /**
  * Class DisableCommand.
  *
+ * Uses the Public API v1: DELETE /sites/{siteId}/environments/{env}/lock.
+ *
  * @package Pantheon\Terminus\Commands\Lock
  */
-class DisableCommand extends TerminusCommand implements SiteAwareInterface
+class DisableCommand extends TerminusCommand implements PublicApiAwareInterface
 {
-    use SiteAwareTrait;
-    use WorkflowProcessingTrait;
+    private Client $publicApi;
+
+    public function setPublicApiClient(Client $client): void
+    {
+        $this->publicApi = $client;
+    }
 
     /**
      * Disables HTTP basic authentication on the environment.
      *
-     * @authorize
      * @interact
      *
      * @command lock:disable
@@ -32,14 +38,20 @@ class DisableCommand extends TerminusCommand implements SiteAwareInterface
      */
     public function disable($site_env)
     {
-        $env = $this->getEnv($site_env);
-        $this->processWorkflow($env->getLock()->disable());
+        $siteEnv = (new SiteEnvResolver($this->publicApi))->resolve($site_env);
+
+        $payload = $this->publicApi->delete(
+            Client::path('/sites/%s/environments/%s/lock', $siteEnv->siteId, $siteEnv->envName)
+        );
+        $waiter = new WorkflowWaiter(
+            $this->publicApi,
+            (int) $this->getConfig()->get('workflow_polling_delay_ms', WorkflowWaiter::DEFAULT_POLL_DELAY_MS)
+        );
+        $waiter->wait($siteEnv->siteId, (array) $payload);
+
         $this->log()->notice(
             '{site}.{env} has been unlocked.',
-            [
-                'site' => $this->getSiteById($site_env)->getName(),
-                'env' => $env->getName(),
-            ]
+            ['site' => $siteEnv->siteName, 'env' => $siteEnv->envName]
         );
     }
 }
