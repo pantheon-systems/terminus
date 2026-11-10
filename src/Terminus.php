@@ -22,6 +22,8 @@ use Pantheon\Terminus\Plugins\PluginDiscovery;
 use Pantheon\Terminus\Plugins\PluginInfo;
 use Pantheon\Terminus\ProgressBars\ProcessProgressBar;
 use Pantheon\Terminus\ProgressBars\WorkflowProgressBar;
+use Pantheon\Terminus\PublicApi\ClientFactory as PublicApiClientFactory;
+use Pantheon\Terminus\PublicApi\PublicApiAwareInterface;
 use Pantheon\Terminus\Request\Request;
 use Pantheon\Terminus\Request\RequestAwareInterface;
 use Pantheon\Terminus\Session\Session;
@@ -215,6 +217,19 @@ EOD;
         $container->addShared('session', $session);
         $container->inflector(SessionAwareInterface::class)
             ->invokeMethod('setSession', ['session']);
+
+        // Public API v1 client. The bearer is the saved token (a personal access token), not the
+        // session. Built lazily so commands that never call v1 never read the token.
+        $container->addShared('publicApiClient', function () use ($container) {
+            return PublicApiClientFactory::create(
+                $this->getConfig(),
+                fn () => $container->get('session')->getAuthToken()->get('token'),
+                fn () => $container->get('request')->getDefaultHeaders(),
+                $container->get('logger')
+            );
+        });
+        $container->inflector(PublicApiAwareInterface::class)
+            ->invokeMethod('setPublicApiClient', ['publicApiClient']);
 
         // Saved tokens
         $token_store = new FileStore($this->getConfig()->get('tokens_dir'));

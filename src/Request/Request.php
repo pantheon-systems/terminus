@@ -562,11 +562,12 @@ class Request implements
     }
 
     /**
-     * Gives the default headers for requests.
+     * Gives the default headers for requests. Also used by PublicApi\Client, so both
+     * backends send the same User-Agent, trace ID and command headers.
      *
      * @return array
      */
-    private function getDefaultHeaders()
+    public function getDefaultHeaders()
     {
         return [
             'User-Agent' => $this->userAgent(),
