@@ -3,6 +3,7 @@
 namespace Pantheon\Terminus\Commands\Tag;
 
 use Consolidation\OutputFormatters\StructuredData\PropertyList;
+use Pantheon\Terminus\Helpers\OutputSanitizer;
 
 /**
  * Class ListCommand
@@ -36,6 +37,12 @@ class ListCommand extends TagCommand
                 ['org' => $org->getName(), 'site' => $site->getName(),]
             );
         }
-        return new PropertyList($tag_list);
+        $list = new PropertyList($tag_list);
+        $list->addRendererFunction(
+            function ($key, $cell_data) {
+                return OutputSanitizer::sanitize($cell_data);
+            }
+        );
+        return $list;
     }
 }
