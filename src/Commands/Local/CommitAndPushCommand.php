@@ -38,11 +38,11 @@ class CommitAndPushCommand extends TerminusCommand implements SiteAwareInterface
      * @param string $site Site
      *
      * @usage <site> Clone's a local copy into "$HOME/pantheon-local-copies"
-     *@return string
+     * @return void
      * @throws \Pantheon\Terminus\Exceptions\TerminusException
      *
      */
-    public function commitAndPushCommand($site): string
+    public function commitAndPushCommand($site): void
     {
         $siteData = $site;
         if (!$siteData instanceof Site) {
