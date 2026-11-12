@@ -19,6 +19,8 @@ use Pantheon\Terminus\Exceptions\TerminusUnsupportedSiteException;
 use Pantheon\Terminus\Helpers\LocalMachineHelper;
 use Pantheon\Terminus\Helpers\Utility\TraceId;
 use Pantheon\Terminus\Session\SessionAwareInterface;
+use Pantheon\Terminus\Style\TerminusStyle;
+use Symfony\Component\Console\Input\ArrayInput;
 use Pantheon\Terminus\Session\SessionAwareTrait;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -76,12 +78,22 @@ class Request implements
 
     public const UNSUPPORTED_SITE_EXCEPTION_MESSAGE = 'This is not supported for this site.';
 
+    public const NOTICES_HEADER = 'X-Pantheon-Notices';
+
     protected ClientInterface $client;
 
     /**
      * @var array Names of the values to strip from debug output
      */
     protected $sensitive_data = ['machine_token', 'Authorization', 'session',];
+
+    /**
+     * Tracks which API notice messages have already been displayed
+     * to avoid showing duplicates within a single command invocation.
+     *
+     * @var array<string, true>
+     */
+    private static array $displayedNotices = [];
 
     /**
      * Download file from target URL.
@@ -553,12 +565,75 @@ class Request implements
             }
         }
 
+        $this->processApiNotices($response);
+
         return new RequestOperationResult([
             'data' => $decoded_body ?? $body,
             'headers' => $headers,
             'status_code' => $statusCode,
             'status_code_reason' => $response->getReasonPhrase(),
         ]);
+    }
+
+    /**
+     * Processes API notices from the X-Pantheon-Notices response header.
+     *
+     * The header value is a JSON array of notice objects, each with:
+     *   - "message" (string, required): The message to display.
+     *   - "level" (string, optional): One of "info", "warning", or "alert".
+     *     Defaults to "info".
+     *
+     * Each unique message is displayed at most once per command invocation.
+     *
+     * @param ResponseInterface $response The HTTP response to check for notices
+     */
+    private function processApiNotices(ResponseInterface $response): void
+    {
+        $header = $response->getHeaderLine(self::NOTICES_HEADER);
+        if (empty($header)) {
+            return;
+        }
+
+        try {
+            $notices = json_decode($header, false, 512, JSON_THROW_ON_ERROR);
+        } catch (\JsonException $e) {
+            $this->logger->debug(
+                'Failed to parse {header} header: {error}',
+                ['header' => self::NOTICES_HEADER, 'error' => $e->getMessage()]
+            );
+            return;
+        }
+
+        if (!is_array($notices)) {
+            return;
+        }
+
+        foreach ($notices as $notice) {
+            if (!is_object($notice) || empty($notice->message)) {
+                continue;
+            }
+
+            $hash = md5($notice->message);
+            if (isset(self::$displayedNotices[$hash])) {
+                continue;
+            }
+            self::$displayedNotices[$hash] = true;
+
+            $level = $notice->level ?? 'info';
+            switch ($level) {
+                case 'warning':
+                    $this->logger->warning($notice->message);
+                    break;
+                case 'alert':
+                    $style = new TerminusStyle(new ArrayInput([]), $this->output());
+                    $style->warning($notice->message);
+                    break;
+                case 'info':
+                default:
+                    $this->logger->notice($notice->message);
+                    break;
+            }
+        }
     }
 
     /**
