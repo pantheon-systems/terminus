@@ -21,6 +21,10 @@ All notable changes to this project will be documented in this file. This projec
 - Do not include sensitive option values (e.g. `--machine-token`) or remote command arguments in the Terminus command header or very-verbose output (#2929)
 - Avoid a PHP deprecation warning in `backup:automatic:info` when no automatic backup schedule is set (#2913)
 
+### Added
+
+- Experimental, off by default: report command and workflow status to the terminal with the Program Status Protocol (OSC 7501), including prompts; turn on with `TERMINUS_PROGRAM_STATUS=1` (#2931)
+
 ## 4.3.3 - 2026-08-20
 
 ### Added

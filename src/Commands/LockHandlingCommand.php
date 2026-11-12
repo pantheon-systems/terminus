@@ -12,7 +12,7 @@ use Pantheon\Terminus\Site\SiteAwareTrait;
 use Pantheon\Terminus\VcsApi\VcsClientAwareTrait;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
-use Symfony\Component\Console\Style\SymfonyStyle;
+use Pantheon\Terminus\Style\TerminusStyle;
 
 class LockHandlingCommand implements
     SiteAwareInterface,
@@ -68,7 +68,7 @@ class LockHandlingCommand implements
         $rebuild = $input->getOption('rebuild') ?? false;
         $interactive = $input->isInteractive();
         if (!$rebuild && $interactive) {
-            $io = new SymfonyStyle($input, $output);
+            $io = new TerminusStyle($input, $output);
             $rebuild = $io->confirm("Do you want to rebuild the application?", false);
         }
 

@@ -8,7 +8,7 @@ use Pantheon\Terminus\VcsApi\VcsClientAwareTrait;
 use Pantheon\Terminus\Request\RequestAwareInterface;
 use Symfony\Component\Process\Process;
 use Pantheon\Terminus\Traits\GithubInstallTrait;
-use Symfony\Component\Console\Helper\QuestionHelper;
+use Pantheon\Terminus\Style\TerminusQuestionHelper;
 use Symfony\Component\Console\Question\Question;
 
 /**
@@ -137,7 +137,7 @@ class AddCommand extends TerminusCommand implements RequestAwareInterface
                     . ' The token must have "api" and "write_repository" scopes.'
             );
 
-            $helper = new QuestionHelper();
+            $helper = new TerminusQuestionHelper();
             $question = new Question('Enter your GitLab token: ');
             $question->setValidator(function ($answer) {
                 if (empty(trim($answer ?? ''))) {
@@ -150,7 +150,7 @@ class AddCommand extends TerminusCommand implements RequestAwareInterface
             $token = $helper->ask($this->input(), $this->output(), $question);
         }
 
-        $helper = $helper ?? new QuestionHelper();
+        $helper = $helper ?? new TerminusQuestionHelper();
         $question = new Question('Enter the GitLab group name/path: ');
         $question->setValidator(function ($answer) {
             if (empty(trim($answer ?? ''))) {
