@@ -18,6 +18,8 @@ use GuzzleHttp\Psr7\Request as Psr7Request;
 use GuzzleHttp\Psr7\Response;
 use League\Container\Container;
 use Psr\Log\NullLogger;
+use Symfony\Component\Console\Application;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 
 class RequestTest extends TestCase
@@ -279,5 +281,75 @@ class RequestTest extends TestCase
         $this->assertSame(0, $mockHandler->count());
         // Exponential backoff: base(3) * 2^(retry + 1).
         $this->assertSame([6, 12], $request->sleptSeconds);
+    }
+
+    private function terminusCommandHeader(?string $command, array $arguments, array $options): array
+    {
+        $request = $this->createRequest();
+        $input = $this->createMock(InputInterface::class);
+        $input->method('getFirstArgument')->willReturn($command);
+        $input->method('getArguments')->willReturn($arguments);
+        $input->method('getOptions')->willReturn($options);
+        $container = new Container();
+        $container->add('input', $input);
+        $request->setContainer($container);
+
+        $method = new \ReflectionMethod(Request::class, 'terminusCommand');
+        $method->setAccessible(true);
+        return json_decode($method->invoke($request), true);
+    }
+
+    public function testMachineTokenOptionIsRedactedInCommandHeader()
+    {
+        $header = $this->terminusCommandHeader(
+            'auth:login',
+            ['command' => 'auth:login'],
+            ['machine-token' => 'secret-token', 'email' => 'a@example.com']
+        );
+
+        $this->assertSame(Request::HIDDEN_VALUE_REPLACEMENT, $header['options']['machine-token']);
+        $this->assertSame('a@example.com', $header['options']['email']);
+        $this->assertStringNotContainsString('secret-token', json_encode($header));
+    }
+
+    public function testRemoteCommandArgumentsAndOptionsAreOmittedFromCommandHeader()
+    {
+        $header = $this->terminusCommandHeader(
+            'remote:drush',
+            [
+                'command' => 'remote:drush',
+                'site_env' => 'my-site.dev',
+                'drush_command' => ['sql:query', 'secret-sql'],
+            ],
+            ['retry' => '3', 'progress' => true]
+        );
+
+        $this->assertSame('remote:drush', $header['command']);
+        $this->assertArrayNotHasKey('arguments', $header);
+        $this->assertArrayNotHasKey('options', $header);
+        $this->assertStringNotContainsString('secret-sql', json_encode($header));
+    }
+
+    public function testAbbreviatedRemoteCommandIsOmittedFromCommandHeader()
+    {
+        $request = $this->createRequest();
+        $input = $this->createMock(InputInterface::class);
+        $input->method('getFirstArgument')->willReturn('rem:drush');
+        $input->method('getArguments')->willReturn(['drush_command' => ['CANARY']]);
+        $input->method('getOptions')->willReturn([]);
+        $application = new Application();
+        $application->add(new Command('remote:drush'));
+        $container = new Container();
+        $container->add('input', $input);
+        $container->add('application', $application);
+        $request->setContainer($container);
+
+        $method = new \ReflectionMethod(Request::class, 'terminusCommand');
+        $method->setAccessible(true);
+        $header = json_decode($method->invoke($request), true);
+
+        $this->assertSame('remote:drush', $header['command']);
+        $this->assertArrayNotHasKey('arguments', $header);
+        $this->assertStringNotContainsString('CANARY', json_encode($header));
     }
 }

@@ -165,12 +165,16 @@ class Site extends TerminusModel implements
     /**
      * Provides Pantheon Dashboard URL for this site
      *
+     * Uses the dashboard's site-redirect route, which looks up the site's
+     * workspace and type for us. The trailing slash is required, because
+     * Environment::dashboardUrl() appends to this URL.
+     *
      * @return string
      */
     public function dashboardUrl()
     {
         $config = $this->getConfig();
-        return "{$config->get('dashboard_protocol')}://{$config->get('dashboard_host')}/sites/{$this->id}";
+        return "{$config->get('dashboard_protocol')}://{$config->get('dashboard_host')}/site-redirect/{$this->id}/";
     }
 
     /**

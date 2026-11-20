@@ -92,12 +92,14 @@ class User extends TerminusModel implements
     /**
      * Provides Pantheon Dashboard URL for this user
      *
+     * The dashboard root sends the user to their current workspace.
+     *
      * @return string
      */
     public function dashboardUrl()
     {
         $config = $this->getConfig();
-        return "{$config->get('dashboard_protocol')}://{$config->get('dashboard_host')}/users/{$this->id}#sites";
+        return "{$config->get('dashboard_protocol')}://{$config->get('dashboard_host')}/";
     }
 
     /**

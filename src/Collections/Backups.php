@@ -48,7 +48,7 @@ class Backups extends EnvironmentOwnedCollection
      */
     public function create(array $arg_options = []): Workflow
     {
-        $default_options = ['element' => null, 'keep-for' => 365,];
+        $default_options = ['element' => null, 'keep-for' => Backup::DEFAULT_TTL,];
         $options = array_merge($default_options, $arg_options);
 
         $params = [

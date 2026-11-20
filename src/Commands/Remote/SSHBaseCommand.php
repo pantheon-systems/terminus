@@ -24,6 +24,11 @@ abstract class SSHBaseCommand extends TerminusCommand implements SiteAwareInterf
     use SiteAwareTrait;
 
     /**
+     * Environment variables whose values are safe to log; all others are redacted.
+     */
+    private const SAFE_ENV_VARS = ['TRACE_ID'];
+
+    /**
      * @var string Name of the command to be run as it will be used on server
      */
     protected $command = '';
@@ -104,7 +109,7 @@ abstract class SSHBaseCommand extends TerminusCommand implements SiteAwareInterf
 
         do {
             // Send the combined command line via SSH
-            $ssh_data = $this->sendCommandViaSsh($command_line, $env_vars);
+            $ssh_data = $this->sendCommandViaSsh($command_line, $env_vars, $command_args);
 
             $command_summary = $this->getCommandSummary($command_args);
             // Log the command execution
@@ -173,20 +178,20 @@ abstract class SSHBaseCommand extends TerminusCommand implements SiteAwareInterf
      * @param string $command The command to be run on the platform
      * @param array $env_vars The environment variables to include in the SSH command
      */
-    protected function sendCommandViaSsh($command, array $env_vars = [])
+    protected function sendCommandViaSsh($command, array $env_vars = [], array $command_args = [])
     {
         // Convert env_vars array into a series of key=value strings
-        $env_vars_string = '';
-        foreach ($env_vars as $key => $value) {
-            $env_vars_string .= sprintf('-o SetEnv="%s=%s" ', $key, $value);
-        }
+        $env_vars_string = $this->getSetEnvOptions($env_vars);
 
         // Construct the SSH command without environment variables in SSH options
         $ssh_command = $this->getConnectionString() . ' ' . $env_vars_string . escapeshellarg($command);
 
-        $this->logger->debug('shell command: {command}', ['command' => $ssh_command]);
+        // The arguments may contain credentials, so log a redacted version.
+        $logged_command = $this->getConnectionString() . ' ' . $this->getSetEnvOptions($env_vars, true)
+            . escapeshellarg($this->getCommandLine($command_args, $env_vars, true));
+        $this->logger->debug('shell command: {command}', ['command' => $logged_command]);
         if ($this->getConfig()->get('test_mode')) {
-            return $this->divertForTestMode($ssh_command);
+            return $this->divertForTestMode($logged_command);
         }
 
         return $this->getContainer()->get(LocalMachineHelper::class)->execute(
@@ -287,23 +292,52 @@ abstract class SSHBaseCommand extends TerminusCommand implements SiteAwareInterf
     }
 
     /**
-     * Returns the first item of the $command_args that is not an option.
+     * Builds the ssh -o SetEnv options for the environment variables.
      *
-     * @param array $command_args
+     * @param array $env_vars
+     * @param bool $redact Whether to redact values that are not known to be safe, for logging.
      *
      * @return string
      */
-    private function firstArguments($command_args)
+    private function getSetEnvOptions(array $env_vars, bool $redact = false)
     {
         $result = '';
-        while (!empty($command_args)) {
-            $first = array_shift($command_args);
-            if (strlen($first) && $first[0] == '-') {
-                return $result;
-            }
-            $result .= " $first";
+        foreach ($redact ? $this->redactEnvVars($env_vars) : $env_vars as $key => $value) {
+            $result .= sprintf('-o SetEnv="%s=%s" ', $key, $value);
         }
         return $result;
+    }
+
+    /**
+     * Redacts the values of all environment variables not in SAFE_ENV_VARS.
+     * Values are assumed secret until declared safe.
+     *
+     * @param array $env_vars
+     *
+     * @return array
+     */
+    private function redactEnvVars(array $env_vars)
+    {
+        foreach ($env_vars as $key => $value) {
+            if (!in_array($key, self::SAFE_ENV_VARS, true)) {
+                $env_vars[$key] = '**HIDDEN**';
+            }
+        }
+        return $env_vars;
+    }
+
+    /**
+     * Returns the subcommand, i.e. the first item of the $command_args, as a
+     * list. It is omitted if it is an option, as it might contain a value.
+     *
+     * @param array $command_args
+     *
+     * @return string[]
+     */
+    private function firstArguments($command_args)
+    {
+        $first = (string)reset($command_args);
+        return strlen($first) && $first[0] !== '-' ? [$first] : [];
     }
 
     /**
@@ -329,18 +363,25 @@ abstract class SSHBaseCommand extends TerminusCommand implements SiteAwareInterf
      *
      * @param string[] $command_args
      * @param array $env_vars
+     * @param bool $redact Whether to redact sensitive values, for logging.
      *
      * @return array
      *   Elements are as follows:
      *     string command_line The command line string
      *     array env_vars The environment variables
      */
-    private function getCommandLine($command_args, $env_vars)
+    private function getCommandLine($command_args, $env_vars, $redact = false)
     {
         // Convert env_vars array into a series of key=value strings
         $env_vars_string = '';
-        foreach ($env_vars as $key => $value) {
+        foreach ($redact ? $this->redactEnvVars($env_vars) : $env_vars as $key => $value) {
             $env_vars_string .= sprintf('%s=%s ', $key, strtr($value, '-', '_'));
+        }
+
+        if ($redact) {
+            // Arguments and options may contain credentials, so only the subcommand is kept.
+            return $env_vars_string . $this->getCommandSummary($command_args)
+                . $this->redactedArgumentsNote($command_args);
         }
 
         // Construct the command line with environment variables and the command arguments
@@ -348,9 +389,25 @@ abstract class SSHBaseCommand extends TerminusCommand implements SiteAwareInterf
             $env_vars_string
             . implode(" ", $this->escapeArguments(array_merge([$this->command], $command_args)));
 
-        $this->log()->debug('getCommandLine: {command_line}', ['command_line' => $command_line]);
+        $this->log()->debug(
+            'getCommandLine: {command_line}',
+            ['command_line' => $this->getCommandLine($command_args, $env_vars, true)]
+        );
 
         return $command_line;
+    }
+
+    /**
+     * Returns a note counting the arguments omitted from a summary.
+     *
+     * @param string[] $command_args
+     *
+     * @return string
+     */
+    private function redactedArgumentsNote($command_args)
+    {
+        $omitted = count($command_args) - count($this->firstArguments($command_args));
+        return $omitted > 0 ? " [+$omitted args redacted]" : '';
     }
 
     /**
@@ -364,7 +421,7 @@ abstract class SSHBaseCommand extends TerminusCommand implements SiteAwareInterf
      */
     private function getCommandSummary($command_args)
     {
-        return $this->command . $this->firstArguments($command_args);
+        return implode(' ', array_merge([$this->command], $this->firstArguments($command_args)));
     }
 
     /**
@@ -376,14 +433,8 @@ abstract class SSHBaseCommand extends TerminusCommand implements SiteAwareInterf
     private function getConnectionString()
     {
         $ssh = $this->environment->sshConnectionInfo();
+        // Do not pass -v to ssh in verbose mode: it prints the full, unredacted remote command.
         $command = $this->getConfig()->get('ssh_command');
-        if ($this->output()->isDebug()) {
-            $command .= ' -vvv';
-        } elseif ($this->output()->isVeryVerbose()) {
-            $command .= ' -vv';
-        } elseif ($this->output()->isVerbose()) {
-            $command .= ' -v';
-        }
         return vsprintf(
             '%s -T %s@%s -p %s -o "StrictHostKeyChecking=no" -o "AddressFamily inet"',
             [$command, $ssh['username'], $this->lookupHostViaAlternateNameserver($ssh['host']), $ssh['port']]
