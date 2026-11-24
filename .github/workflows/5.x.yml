@@ -1,0 +1,341 @@
+name: Terminus 5.x
+
+# Every push and PR gets lint, unit tests, PHPStan and a phar build. Functional tests (which use a shared test site
+# and are slow) run only post-merge on 5.x, nightly, on release PRs, and on manual dispatch: see the gate job.
+on:
+  push:
+  pull_request:
+    # Only release PRs get anything from this event (functional tests); the push event covers everything else.
+    branches: [ 5.x ]
+  # Scheduled runs only fire from the default branch, which is 4.x for now. Until 5.x is the default, the nightly
+  # comes from .github/workflows/5.x-nightly.yml on 4.x, which dispatches this workflow with nightly=true.
+  schedule:
+    - cron: '17 6 * * *'
+  workflow_dispatch:
+    inputs:
+      functional_tests_group:
+        description: Run arbitrary functional tests group by name, short, or all (short and long) tests (default)
+        required: true
+        default: all
+      nightly:
+        description: Treat as the nightly run (alerts Slack on failure)
+        type: boolean
+        default: false
+      tmate_enabled:
+        description: Enable tmate debugging
+        required: true
+        default: "0"
+
+# Cancel superseded runs of the same branch/PR. Runs on 5.x itself (post-merge pushes, nightly) each get their own
+# group so they're never cancelled; their functional job queues on its own group instead (see below).
+concurrency:
+  group: ${{ github.ref == 'refs/heads/5.x' && format('ci-5.x-{0}', github.run_id) || format('ci-{0}-{1}', github.event_name, github.head_ref || github.ref) }}
+  cancel-in-progress: true
+
+jobs:
+  gate:
+    name: Decide whether to run functional tests
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    outputs:
+      functional: ${{ steps.decide.outputs.functional }}
+      alert: ${{ steps.decide.outputs.alert }}
+    steps:
+      - id: decide
+        env:
+          EVENT: ${{ github.event_name }}
+          REF: ${{ github.ref }}
+          NIGHTLY: ${{ inputs.nightly }}
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          PR_BRANCH: ${{ github.head_ref }}
+          PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          PR_HEAD_REPO: ${{ github.event.pull_request.head.repo.full_name }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          functional=false
+          alert=false
+          case "$EVENT" in
+            push)
+              if [ "$REF" = refs/heads/5.x ]; then functional=true; alert=true; fi
+              ;;
+            schedule)
+              functional=true; alert=true
+              ;;
+            workflow_dispatch)
+              functional=true
+              if [ "$NIGHTLY" = true ]; then alert=true; fi
+              ;;
+            pull_request)
+              # A release PR (per the terminus-release process: branch update_to_<version>, title
+              # "Terminus <version> Release") that moves TERMINUS_VERSION off -dev. Forks get no secrets, so skip them.
+              if [ "$PR_HEAD_REPO" = "$GITHUB_REPOSITORY" ] && \
+                 { [[ "$PR_BRANCH" == update_to_* ]] || [[ "${PR_TITLE,,}" == *release* ]]; }; then
+                version_at() {
+                  gh api "repos/$GITHUB_REPOSITORY/contents/config/constants.yml?ref=$1" \
+                    -H 'Accept: application/vnd.github.raw' \
+                    | sed -n -E "s/^TERMINUS_VERSION: *['\"]?([^'\"]+)['\"]?.*/\1/p" || true
+                }
+                base_version=$(version_at "$PR_BASE_SHA")
+                head_version=$(version_at "$PR_HEAD_SHA")
+                echo "TERMINUS_VERSION: '$base_version' -> '$head_version'"
+                if [ -n "$head_version" ] && [ "$head_version" != "$base_version" ] && [[ "$head_version" != *-dev ]]; then
+                  functional=true
+                fi
+              fi
+              ;;
+          esac
+          echo "functional=$functional alert=$alert"
+          echo "functional=$functional" >> "$GITHUB_OUTPUT"
+          echo "alert=$alert" >> "$GITHUB_OUTPUT"
+
+  # Checkout in separate job because docker image is alpine based and checkout action doesn't work.
+  checkout_build:
+    needs: [ gate ]
+    # On pull_request events this only runs for release PRs; the push event already built every other branch.
+    if: ${{ github.event_name != 'pull_request' || needs.gate.outputs.functional == 'true' }}
+    runs-on: ubuntu-latest
+    container:
+      image: quay.io/pantheon-public/php-ci:v8.2
+    name: Checkout & build Phar
+    steps:
+      - name: Checkout
+        uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3.6.0
+      - name: Save repo content as artifact
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: full-workspace
+          path: ${{ github.workspace }}
+      - name: Full Composer Install
+        run: composer install
+      - name: Validate Code
+        run: composer code:lint
+      - name: Unit Tests & PHPStan
+        run: composer test:unit
+      - name: Phar Build
+        run: |
+          mkdir $HOME/box
+          composer require humbug/box --working-dir=$HOME/box
+          export PATH=~/box/vendor/bin:$PATH
+          composer phar:build
+      - name: Save terminus.phar as artifact
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: terminus-phar
+          path: terminus.phar
+          if-no-files-found: error
+
+  functional:
+    runs-on: ${{ matrix.operating-system }}
+    name: Functional testing matrix - PHP ${{ matrix.php-versions }} on ${{ matrix.operating-system }}
+    if: ${{ github.repository_owner == 'pantheon-systems' && needs.gate.outputs.functional == 'true' }}
+    # Every functional job uses the same test site, so run them one at a time across the repo, never cancelling one
+    # that's running. GitHub keeps only one job pending per group: a newer pending job cancels an older one (even the
+    # other PHP version of the same run). That's acceptable because these runs are rare (merges, nightly, releases).
+    concurrency:
+      group: terminus-5.x-functional
+      cancel-in-progress: false
+    # A hung job holds a multidev slot on the shared test site until it ends; the default is 6h.
+    timeout-minutes: 120
+    strategy:
+      # A cancelled job leaks its multidev, and one job's failure shouldn't hide the other PHP version's result.
+      fail-fast: false
+      matrix:
+        operating-system: [ 'macos-latest' ]
+        php-versions: [ '8.2', '8.5' ]
+    env:
+      TERMINUS_TOKEN: ${{ secrets.TERMINUS_TOKEN }}
+      TERMINUS_SITE: ${{ vars.TERMINUS_SITE }}
+      TERMINUS_SITE_WP: ${{ vars.TERMINUS_SITE_WP }}
+      TERMINUS_SITE_WP_NETWORK: ${{ vars.TERMINUS_SITE_WP_NETWORK }}
+      TERMINUS_ORG: ${{ vars.TERMINUS_ORG }}
+      TERMINUS_BASE_DIR: ${{ vars.TERMINUS_BASE_DIR }}
+      TERMINUS_PLUGINS_DIR: ${{ vars.TERMINUS_PLUGINS_DIR }}
+      TERMINUS_PLUGINS2_DIR: ${{ vars.TERMINUS_PLUGINS2_DIR }}
+      TERMINUS_DEPENDENCIES_BASE_DIR: ${{ vars.TERMINUS_DEPENDENCIES_BASE_DIR }}
+      TERMINUS_USER: ${{ secrets.TERMINUS_USER }}
+      TERMINUS_HOST: ${{ vars.TERMINUS_HOST }}
+      TERMINUS_PORT: ${{ vars.TERMINUS_PORT }}
+      TERMINUS_VERIFY_HOST_CERT: ${{ vars.TERMINUS_VERIFY_HOST_CERT }}
+      TERMINUS_SITE_NODE: ${{ vars.TERMINUS_SITE_NODE }}
+      HOMEBREW_NO_INSTALLED_DEPENDENTS_CHECK: 1
+      HOMBEBREW_NO_AUTO_UPDATE: 1
+      # short (the default for push, PR and schedule runs), all (short + long), or any other group name.
+      TEST_GROUP: ${{ inputs.functional_tests_group || 'short' }}
+    needs: [ gate, checkout_build ]
+    steps:
+      # Named here rather than in tests/config/bootstrap.php so the cleanup step at the end knows what to delete.
+      - name: Choose test multidev name
+        run: echo "TERMINUS_TEST_MULTIDEV_NAME=test-$(openssl rand -hex 3)" >> "$GITHUB_ENV"
+      - name: Install SSH key
+        uses: webfactory/ssh-agent@a6f90b1f127823b31d4d4a8d96047790581349bd # v0.9.1
+        with:
+          ssh-private-key: ${{ secrets.TERMINUS_SITE_OWNER_SSH_PRIVATE_KEY }}
+      - run: brew update && brew upgrade icu4c
+        if: runner.os == 'macOS'
+        continue-on-error: true
+      - name: Setup PHP with PECL extension
+        uses: shivammathur/setup-php@f5a207e3fa7ed0e8762c537092784175d225c284 # main (post-2.40.0); uses Homebrew API when core tap is missing
+        with:
+          php-version: ${{ matrix.php-versions }}
+          extensions: gd, mbstring, zip, ssh2-1.4.1
+          coverage: none
+          ini-values: error_reporting=E_ALL
+      - name: Download repo content from artifact
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: full-workspace
+      - name: Download terminus.phar as artifact
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: terminus-phar
+      - name: Install Composer Dependencies
+        run: composer install --no-interaction --prefer-dist
+      - name: Setup tmate session
+        if: ${{ github.event.inputs.tmate_enabled == 1 }}
+        uses: mxschmitt/action-tmate@c0afd6f790e3a5564914980036ebf83216678101 # v3.23
+      - name: Functional Tests (short)
+        if: ${{ env.TEST_GROUP == 'short' || env.TEST_GROUP == 'all' }}
+        run: composer test:short
+      - name: Functional Tests (long)
+        if: ${{ env.TEST_GROUP == 'all' }}
+        run: composer test:long
+      - name: Functional Tests (arbitrary group)
+        if: ${{ env.TEST_GROUP != 'short' && env.TEST_GROUP != 'all' }}
+        run: composer test:group -- "$TEST_GROUP"
+      - name: Finish sesssion
+        if: ${{ always() && github.event.inputs.tmate_enabled == 1 }}
+        run: |
+          while [ ! -f /tmp/finish ]
+          do
+            sleep 2
+          done
+          exit 0
+      # The bootstrap's shutdown function deletes the multidev when PHPUnit exits normally. It doesn't run when the
+      # job is cancelled (or the process is killed mid-create), so this step covers those cases. It never fails the job.
+      - name: Delete test multidev
+        if: ${{ always() }}
+        env:
+          JOB_STATUS: ${{ job.status }}
+        run: |
+          md="$TERMINUS_TEST_MULTIDEV_NAME"
+          if [ ! -f "$HOME/.terminus/testcache/phpunit_tests.log" ] || [ ! -f terminus.phar ]; then
+            echo "Functional tests never started, so there is no multidev to delete."
+            exit 0
+          fi
+          export TERMINUS_CACHE_DIR="$HOME/.terminus/testcache"
+          chmod +x terminus.phar
+          ./terminus.phar auth:login --machine-token="$TERMINUS_TOKEN" > /dev/null 2>&1 || true
+          # A create interrupted by cancellation still finishes on the platform (3-6 min seen), and can't be deleted
+          # until it does. So retry for up to 10 min, but only wait 2 min for a missing multidev to show up.
+          start=$(date +%s)
+          while :; do
+            elapsed=$(( $(date +%s) - start ))
+            if ./terminus.phar env:info "$TERMINUS_SITE.$md" > /dev/null 2>&1; then
+              ./terminus.phar multidev:delete "$TERMINUS_SITE.$md" --delete-branch --yes && exit 0
+              [ "$elapsed" -lt 600 ] || break
+              echo "Deleting $md failed; its create may still be finishing. Retrying in 30s."
+            elif [ "$JOB_STATUS" != "cancelled" ] || [ "$elapsed" -ge 120 ]; then
+              echo "$md does not exist; nothing to delete."
+              exit 0
+            else
+              echo "$md not found yet; a cancelled create may still be starting. Checking again in 30s."
+            fi
+            sleep 30
+          done
+          echo "::warning::Could not delete $md. The orphan sweep in tests/config/bootstrap.php removes test-* multidevs older than 6h."
+          exit 0
+
+  release:
+    runs-on: ubuntu-latest
+    name: Release
+    container:
+      image: quay.io/pantheon-public/php-ci:v8.2
+    # Tag pushes don't run functional tests: the tagged commit already passed them on its release PR and post-merge.
+    needs: [ checkout_build ]
+    if: ${{ startsWith(github.ref, 'refs/tags/')  && github.repository == 'pantheon-systems/terminus' }}
+    steps:
+      - name: Download terminus.phar as artifact
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: terminus-phar
+      - name: Release
+        uses: softprops/action-gh-release@de2c0eb89ae2a093876385947365aca7b0e5f844 # v1
+        with:
+          files: terminus.phar
+          # Tags with a "-" (4.2.1-rc.1, 5.0.0-alpha.1) are prereleases. GitHub never marks a prerelease as
+          # "latest", and self:update (src/Update/LatestRelease.php) and the documented install both read
+          # releases/latest, so this keeps them off the stable path. package_homebrew skips them already.
+          prerelease: ${{ contains(github.ref_name, '-') }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.HOMEBREW_GITHUB_API_TOKEN }}
+
+  package_homebrew:
+    runs-on: ubuntu-latest
+    name: Package a Homebrew release
+    needs: [ release ]
+    # The script authenticates with HOMEBREW_GITHUB_API_TOKEN, not GITHUB_TOKEN.
+    permissions: {}
+    # Pre-release tags (e.g. 4.2.1-rc.1) must not reach Homebrew users.
+    if: ${{ startsWith(github.ref, 'refs/tags/') && !contains(github.ref_name, '-') && github.repository == 'pantheon-systems/terminus' }}
+    steps:
+      - name: Open Homebrew formula PR
+        env:
+          GH_TOKEN: ${{ secrets.HOMEBREW_GITHUB_API_TOKEN }}
+          VERSION: ${{ github.ref_name }}
+          TAP: pantheon-systems/homebrew-external
+          FORMULA: Formula/terminus.rb
+        run: |
+          set -euo pipefail
+          BRANCH="terminus-release-${VERSION}"
+          URL="https://github.com/pantheon-systems/terminus/releases/download/${VERSION}/terminus.phar"
+
+          # Hash the published asset, which is what Homebrew will download.
+          gh release download "$VERSION" -R pantheon-systems/terminus -p terminus.phar -O terminus.phar
+          SHA256=$(sha256sum terminus.phar | cut -d' ' -f1)
+
+          gh api "repos/${TAP}/contents/${FORMULA}" -H 'Accept: application/vnd.github.raw' > terminus.rb
+          FILE_SHA=$(gh api "repos/${TAP}/contents/${FORMULA}" --jq .sha)
+          sed -i -E \
+            -e "s|^(  url \").*(\")$|\1${URL}\2|" \
+            -e "s|^(  sha256 \").*(\")$|\1${SHA256}\2|" \
+            terminus.rb
+          grep -qF "url \"${URL}\"" terminus.rb
+          grep -qF "sha256 \"${SHA256}\"" terminus.rb
+
+          # Commit through the API so no git checkout or signing key is needed.
+          MAIN_SHA=$(gh api "repos/${TAP}/git/ref/heads/main" --jq .object.sha)
+          gh api "repos/${TAP}/git/refs" -f ref="refs/heads/${BRANCH}" -f sha="$MAIN_SHA" > /dev/null
+          gh api -X PUT "repos/${TAP}/contents/${FORMULA}" \
+            -f message="terminus ${VERSION}" \
+            -f content="$(base64 -w0 terminus.rb)" \
+            -f sha="$FILE_SHA" \
+            -f branch="$BRANCH" > /dev/null
+          gh api "repos/${TAP}/pulls" --jq .html_url \
+            -f base=main -f head="$BRANCH" \
+            -f title="terminus ${VERSION}" \
+            -f body="Formula bump for Terminus [${VERSION}](https://github.com/pantheon-systems/terminus/releases/tag/${VERSION}), opened by the terminus release workflow ([run](${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}))."
+
+  alert_slack:
+    name: Alert Slack
+    needs: [ gate, checkout_build, functional ]
+    # Post-merge (push to 5.x) and nightly failures only; PR authors already see their own results.
+    if: ${{ always() && needs.gate.outputs.alert == 'true' && (needs.checkout_build.result == 'failure' || needs.functional.result == 'failure') }}
+    runs-on: ubuntu-latest
+    permissions: {}
+    env:
+      # An incoming webhook for #devx-automation-alerts.
+      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_DEVX_AUTOMATION_ALERTS }}
+    steps:
+      - name: Warn that the Slack webhook isn't configured
+        if: ${{ env.SLACK_WEBHOOK_URL == '' }}
+        run: echo "::warning::SLACK_WEBHOOK_DEVX_AUTOMATION_ALERTS is not set, so no Slack alert was sent."
+      - name: Post to #devx-automation-alerts
+        if: ${{ env.SLACK_WEBHOOK_URL != '' }}
+        uses: slackapi/slack-github-action@dcb1066f776dd043e64d0e8ba94ca15cc7e1875d # v4.0.0
+        with:
+          webhook: ${{ env.SLACK_WEBHOOK_URL }}
+          webhook-type: incoming-webhook
+          payload: |
+            text: ":x: Terminus 5.x CI failed (${{ github.event_name == 'push' && 'post-merge' || 'nightly' }}) at ${{ github.sha }}: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
