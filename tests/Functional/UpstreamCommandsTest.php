@@ -17,6 +17,7 @@ class UpstreamCommandsTest extends TerminusTestBase
      *
      * @group upstream
      * @group short
+     * @group readonly
      */
     public function testUpstreamListCommand()
     {
@@ -35,6 +36,7 @@ class UpstreamCommandsTest extends TerminusTestBase
      *
      * @group upstream
      * @group short
+     * @group readonly
      */
     public function testUpstreamInfoCommand()
     {
@@ -56,6 +58,7 @@ class UpstreamCommandsTest extends TerminusTestBase
      *
      * @group upstream
      * @group short
+     * @group readonly
      */
     public function testUpstreamUpdatesListStatus()
     {

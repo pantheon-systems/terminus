@@ -16,6 +16,7 @@ class AuthCommandsTest extends TerminusTestBase
      *
      * @group auth
      * @group short
+     * @group readonly
      */
     public function testAuthLogin()
     {
@@ -28,6 +29,7 @@ class AuthCommandsTest extends TerminusTestBase
      *
      * @group auth
      * @group short
+     * @group readonly
      *
      * @throws \JsonException
      */

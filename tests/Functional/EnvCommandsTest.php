@@ -174,6 +174,7 @@ class EnvCommandsTest extends TerminusTestBase
      *
      * @group env
      * @group short
+     * @group readonly
      */
     public function testCodelogCommand()
     {
@@ -283,6 +284,7 @@ class EnvCommandsTest extends TerminusTestBase
      *
      * @group env
      * @group short
+     * @group readonly
      */
     public function testInfoCommand()
     {
@@ -323,6 +325,7 @@ class EnvCommandsTest extends TerminusTestBase
      *
      * @group env
      * @group short
+     * @group readonly
      */
     public function testInfoCommandWithDrushVersion()
     {
@@ -346,6 +349,7 @@ class EnvCommandsTest extends TerminusTestBase
      *
      * @group env
      * @group short
+     * @group readonly
      */
     public function testMetricsEnvCommand()
     {
@@ -400,6 +404,7 @@ class EnvCommandsTest extends TerminusTestBase
      *
      * @group env
      * @group short
+     * @group readonly
      */
     public function testMetricsSiteCommand()
     {
@@ -454,6 +459,7 @@ class EnvCommandsTest extends TerminusTestBase
      *
      * @group env
      * @group short
+     * @group readonly
      */
     public function testListCommand()
     {
@@ -486,6 +492,7 @@ class EnvCommandsTest extends TerminusTestBase
      *
      * @group env
      * @group short
+     * @group readonly
      */
     public function testListCommandWithPHPRuntimeGeneration()
     {
@@ -513,6 +520,7 @@ class EnvCommandsTest extends TerminusTestBase
      *
      * @group env
      * @group short
+     * @group readonly
      */
     public function testListCommandWithPHPVersion()
     {
@@ -540,6 +548,7 @@ class EnvCommandsTest extends TerminusTestBase
      *
      * @group env
      * @group short
+     * @group readonly
      */
     public function testViewCommand()
     {

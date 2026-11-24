@@ -37,6 +37,7 @@ class SiteTeamCommandsTest extends TerminusTestBase
      *
      * @group site-team
      * @group short
+     * @group readonly
      */
     public function testSiteTeamListCommand(): void
     {
@@ -54,6 +55,7 @@ class SiteTeamCommandsTest extends TerminusTestBase
      *
      * @group site-team
      * @group short
+     * @group readonly
      */
     public function testSiteTeamRoleValidatorAcceptsSiteAdmin(): void
     {

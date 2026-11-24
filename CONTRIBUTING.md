@@ -86,7 +86,9 @@ This will take some time to complete and will produce a report at the end with a
 skipped tests. To run a specific test, find the test's group in the comments above the test and
 use the command specified in `composer.json` under `test:functional` with `--group=<the-group>`
 
-Tests are grouped by `short` and `long` tests. The `short` tests are those that can be run in about a minute or less and are run by on every push. The `long` tests are those that take longer to run and are only run on merge.
+Tests are grouped by `short` and `long` tests. The `short` tests are those that can be run in about a minute or less. The `long` tests take longer and only run when triggered manually (workflow dispatch).
+
+Some `short` tests are also in the `readonly` group (`composer test:readonly`). These only read from the platform, so they run against the test site's `dev` environment without creating a multidev. CI runs them on pushes to feature branches, on one PHP version. Pushes to `4.x`, tags and manual runs create a multidev and run the full `short` group on every PHP version. Only tag a test `readonly` if it changes nothing on the platform and passes against `dev`.
 
 Versioning
 ----------

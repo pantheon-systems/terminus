@@ -34,6 +34,7 @@ class AliasesCommandTest extends TerminusTestBase
      *
      * @group aliases
      * @group short
+     * @group readonly
      */
     public function testGetAliases()
     {

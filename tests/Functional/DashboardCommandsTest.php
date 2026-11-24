@@ -15,6 +15,7 @@ class DashboardCommandsTest extends TerminusTestBase
      *
      * @group dashboard
      * @group short
+     * @group readonly
      */
     public function testDashboardViewCommand()
     {

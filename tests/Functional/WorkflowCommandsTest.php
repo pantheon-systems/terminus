@@ -16,6 +16,7 @@ class WorkflowCommandsTest extends TerminusTestBase
      *
      * @group workflow
      * @group short
+     * @group readonly
      */
     public function testWorkflowListAndStatusCommand()
     {

@@ -24,7 +24,19 @@ jobs:
     container:
       image: quay.io/pantheon-public/php-ci:v8.2
     name: Checkout & build Phar
+    outputs:
+      # "full" creates a multidev and runs the whole short group on every PHP version. "readonly" runs only the
+      # read-only tests against the dev environment, on one PHP version, so feature-branch pushes stay fast.
+      functional_mode: ${{ steps.mode.outputs.functional_mode }}
     steps:
+      - name: Choose functional test mode
+        id: mode
+        run: |
+          if [ "$GITHUB_EVENT_NAME" = "workflow_dispatch" ] || [ "$GITHUB_REF" = "refs/heads/4.x" ] || [ "${GITHUB_REF#refs/tags/}" != "$GITHUB_REF" ]; then
+            echo "functional_mode=full" >> "$GITHUB_OUTPUT"
+          else
+            echo "functional_mode=readonly" >> "$GITHUB_OUTPUT"
+          fi
       - name: Checkout
         uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3.6.0
       - name: Save repo content as artifact
@@ -58,7 +70,7 @@ jobs:
     strategy:
       matrix:
         operating-system: [ 'macos-latest' ]
-        php-versions: [ '8.2', '8.5' ]
+        php-versions: ${{ fromJSON(needs.checkout_build.outputs.functional_mode == 'full' && '["8.2", "8.5"]' || '["8.5"]') }}
     env:
       TERMINUS_TOKEN: ${{ secrets.TERMINUS_TOKEN }}
       TERMINUS_SITE: ${{ vars.TERMINUS_SITE }}
@@ -74,6 +86,8 @@ jobs:
       TERMINUS_PORT: ${{ vars.TERMINUS_PORT }}
       TERMINUS_VERIFY_HOST_CERT: ${{ vars.TERMINUS_VERIFY_HOST_CERT }}
       TERMINUS_SITE_NODE: ${{ vars.TERMINUS_SITE_NODE }}
+      # When set, tests/config/bootstrap.php skips creating (and deleting) a multidev and tests use this environment.
+      TERMINUS_TESTING_RUNTIME_ENV: ${{ needs.checkout_build.outputs.functional_mode == 'readonly' && 'dev' || '' }}
       HOMEBREW_NO_INSTALLED_DEPENDENTS_CHECK: 1
       HOMBEBREW_NO_AUTO_UPDATE: 1
     needs: [ checkout_build ]
@@ -106,8 +120,11 @@ jobs:
         if: ${{ github.event.inputs.tmate_enabled == 1 }}
         uses: mxschmitt/action-tmate@c0afd6f790e3a5564914980036ebf83216678101 # v3.23
       - name: Functional Tests (short)
-        if: ${{ github.event_name == 'push' || github.event_name == 'schedule' || github.event.inputs.functional_tests_group == 'all' }}
+        if: ${{ needs.checkout_build.outputs.functional_mode == 'full' && (github.event_name == 'push' || github.event_name == 'schedule' || github.event.inputs.functional_tests_group == 'all') }}
         run: composer test:short
+      - name: Functional Tests (read-only, against dev)
+        if: ${{ needs.checkout_build.outputs.functional_mode == 'readonly' }}
+        run: composer test:readonly
       - name: Functional Tests (long)
         if: ${{ github.event_name == 'schedule' || github.event.inputs.functional_tests_group == 'all' }}
         run: composer test:long
