@@ -5,11 +5,11 @@ namespace Pantheon\Terminus\Tests\Unit\Request;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Psr7\Response;
 use League\Container\Container;
+use Pantheon\Terminus\Config\TerminusConfig;
 use Pantheon\Terminus\Request\Request;
 use Pantheon\Terminus\Session\Session;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
-use Robo\Config\Config;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\BufferedOutput;
 
@@ -46,7 +46,7 @@ class RequestApiNoticesTest extends TestCase
         $this->request->setOutput($this->output);
 
         // Set up config.
-        $config = new Config();
+        $config = new TerminusConfig();
         $config->set('protocol', 'https');
         $config->set('host', 'localhost');
         $config->set('port', '443');
