@@ -187,7 +187,12 @@ EOD;
             new InputOption('--yes', '-y', InputOption::VALUE_NONE, 'Answer all confirmations with "yes"')
         );
         $app->getDefinition()->addOption(
-            new InputOption('--curl-debug', null, InputOption::VALUE_NONE, 'Enable verbose cURL debug output for troubleshooting TLS and connection issues')
+            new InputOption(
+                '--curl-debug',
+                null,
+                InputOption::VALUE_NONE,
+                'Enable verbose cURL debug output for troubleshooting TLS and connection issues'
+            )
         );
     }
 
