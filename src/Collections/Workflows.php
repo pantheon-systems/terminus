@@ -123,6 +123,13 @@ class Workflows extends APICollection implements SessionAwareInterface
                 ['error' => $results->getStatusCodeReason()]
             );
         }
+        if (!is_object($results->getData()) || !isset($results->getData()->id)) {
+            throw new TerminusException(
+                'Workflow creation succeeded (HTTP {status_code}) but the response '
+                . 'was not a valid workflow object.',
+                ['status_code' => $results->getStatusCode()]
+            );
+        }
         $nickname = \uniqid(__CLASS__ . "-");
         $this->getContainer()->add($nickname, $this->collected_class)
             ->addArguments([

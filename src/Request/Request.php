@@ -21,6 +21,8 @@ use Pantheon\Terminus\Exceptions\TerminusUnsupportedSiteException;
 use Pantheon\Terminus\Helpers\LocalMachineHelper;
 use Pantheon\Terminus\Helpers\Utility\TraceId;
 use Pantheon\Terminus\Session\SessionAwareInterface;
+use Pantheon\Terminus\Style\TerminusStyle;
+use Symfony\Component\Console\Input\ArrayInput;
 use Pantheon\Terminus\Session\SessionAwareTrait;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -78,12 +80,22 @@ class Request implements
 
     public const UNSUPPORTED_SITE_EXCEPTION_MESSAGE = 'This is not supported for this site.';
 
+    public const NOTICES_HEADER = 'X-Pantheon-Notices';
+
     protected ClientInterface $client;
 
     /**
      * @var array Names of the values to strip from debug output
      */
     protected array $sensitive_data = ['machine_token', 'Authorization', 'session',];
+
+    /**
+     * Tracks which API notice messages have already been displayed
+     * to avoid showing duplicates within a single command invocation.
+     *
+     * @var array<string, true>
+     */
+    private static array $displayedNotices = [];
 
     /**
      * Download file from target URL.
@@ -534,6 +546,7 @@ class Request implements
         $statusCode = $response->getStatusCode();
         $headers = $response->getHeaders();
         $decoded_body = null;
+        $json_decode_failed = false;
 
         // Don't attempt to decode JSON if the body is empty.
         if (!empty($body)) {
@@ -545,9 +558,28 @@ class Request implements
                     JSON_THROW_ON_ERROR
                 );
             } catch (\JsonException $jsonException) {
-                $this->logger->debug('json_decode exception: {message}', [
-                    'message' => $jsonException->getMessage()
-                ]);
+                if ($statusCode >= 200 && $statusCode < 300) {
+                    // On 2xx responses, non-JSON is an API contract violation.
+                    // Substitute an empty object to prevent downstream fatals
+                    // from code that expects to access properties on the result.
+                    $this->logger->warning(
+                        'API returned non-JSON response body for {uri} (HTTP {status_code}). '
+                        . 'Content-Type: {content_type}. Body preview: {body_preview}',
+                        [
+                            'uri' => $uri,
+                            'status_code' => $statusCode,
+                            'content_type' => $response->getHeaderLine('Content-Type'),
+                            'body_preview' => substr($body, 0, 200),
+                        ]
+                    );
+                    $decoded_body = new \stdClass();
+                    $json_decode_failed = true;
+                } else {
+                    // For error responses, keep raw string — callers use it for error messages.
+                    $this->logger->debug('json_decode exception: {message}', [
+                        'message' => $jsonException->getMessage()
+                    ]);
+                }
             }
         }
 
@@ -563,12 +595,79 @@ class Request implements
             }
         }
 
-        return new RequestOperationResult([
+        $this->processApiNotices($response);
+
+        $result = new RequestOperationResult([
             'data' => $decoded_body ?? $body,
             'headers' => $headers,
             'status_code' => $statusCode,
             'status_code_reason' => $response->getReasonPhrase(),
         ]);
+        if ($json_decode_failed) {
+            $result->setJsonDecodeFailed(true);
+        }
+        return $result;
+    }
+
+    /**
+     * Processes API notices from the X-Pantheon-Notices response header.
+     *
+     * The header value is a JSON array of notice objects, each with:
+     *   - "message" (string, required): The message to display.
+     *   - "level" (string, optional): One of "info", "warning", or "alert".
+     *     Defaults to "info".
+     *
+     * Each unique message is displayed at most once per command invocation.
+     *
+     * @param ResponseInterface $response The HTTP response to check for notices
+     */
+    private function processApiNotices(ResponseInterface $response): void
+    {
+        $header = $response->getHeaderLine(self::NOTICES_HEADER);
+        if (empty($header)) {
+            return;
+        }
+
+        try {
+            $notices = json_decode($header, false, 512, JSON_THROW_ON_ERROR);
+        } catch (\JsonException $e) {
+            $this->logger->debug(
+                'Failed to parse {header} header: {error}',
+                ['header' => self::NOTICES_HEADER, 'error' => $e->getMessage()]
+            );
+            return;
+        }
+
+        if (!is_array($notices)) {
+            return;
+        }
+
+        foreach ($notices as $notice) {
+            if (!is_object($notice) || empty($notice->message)) {
+                continue;
+            }
+
+            $hash = md5($notice->message);
+            if (isset(self::$displayedNotices[$hash])) {
+                continue;
+            }
+            self::$displayedNotices[$hash] = true;
+
+            $level = $notice->level ?? 'info';
+            switch ($level) {
+                case 'warning':
+                    $this->logger->warning($notice->message);
+                    break;
+                case 'alert':
+                    $style = new TerminusStyle(new ArrayInput([]), $this->output());
+                    $style->warning($notice->message);
+                    break;
+                case 'info':
+                default:
+                    $this->logger->notice($notice->message);
+                    break;
+            }
+        }
     }
 
     /**
