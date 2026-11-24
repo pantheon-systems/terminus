@@ -114,10 +114,11 @@ if (!getenv('TERMINUS_TESTING_RUNTIME_ENV')) {
     if (0 === $listCode && !empty($listOutput)) {
         $multidevs = json_decode(implode('', $listOutput), true);
         if (is_array($multidevs)) {
-            // Only treat test-* multidevs older than a day as orphaned. Newer
+            // Only treat test-* multidevs older than 6 hours as orphaned. Newer
             // ones may belong to other CI runs executing concurrently, and
             // deleting those would break the in-flight run that created them.
-            $orphanCutoff = time() - 86400;
+            // CI jobs time out well before this (see timeout-minutes in the workflow).
+            $orphanCutoff = time() - 6 * 3600;
             $testEnvs = array_filter($multidevs, function ($env, $id) use ($orphanCutoff) {
                 if (!str_starts_with($id, 'test-')) {
                     return false;
@@ -129,24 +130,38 @@ if (!getenv('TERMINUS_TESTING_RUNTIME_ENV')) {
                 $log->info(sprintf('Found %d orphaned test-* multidev(s), deleting...', count($testEnvs)));
                 foreach ($testEnvs as $id => $env) {
                     $log->info(sprintf('Deleting orphaned multidev: %s', $id));
+                    $delOutput = [];
                     exec(
-                        sprintf('%s multidev:delete %s.%s --delete-branch --yes', TERMINUS_BIN_FILE, $sitename, $id),
+                        sprintf(
+                            '%s multidev:delete %s.%s --delete-branch --yes 2>&1',
+                            TERMINUS_BIN_FILE,
+                            $sitename,
+                            $id
+                        ),
                         $delOutput,
                         $delCode
                     );
                     if (0 !== $delCode) {
-                        $log->warning(sprintf('Failed to delete orphaned multidev %s (exit code %d)', $id, $delCode));
+                        $log->warning(sprintf(
+                            'Failed to delete orphaned multidev %s (exit code %d): %s',
+                            $id,
+                            $delCode,
+                            implode("\n", $delOutput)
+                        ));
                     }
                 }
             }
         }
     }
 
-    $multidev = sprintf('test-%s', substr(uniqid(), -6, 6));
+    // CI picks the name up front (TERMINUS_TEST_MULTIDEV_NAME) so a post-job cleanup step can delete the
+    // multidev even when this process is killed before the shutdown function below runs.
+    $multidev = getenv('TERMINUS_TEST_MULTIDEV_NAME') ?: sprintf('test-%s', substr(uniqid(), -6, 6));
     $createMdCommand = sprintf('multidev:create %s.dev %s', $sitename, $multidev);
 
+    // 2>&1: the platform's error message goes to stderr, and we want it in the exception below.
     exec(
-        sprintf('%s %s', TERMINUS_BIN_FILE, $createMdCommand),
+        sprintf('%s %s 2>&1', TERMINUS_BIN_FILE, $createMdCommand),
         $output,
         $code
     );
@@ -177,7 +192,7 @@ if (!getenv('TERMINUS_TESTING_RUNTIME_ENV')) {
         for ($attempt = 1; $attempt <= $maxAttempts; $attempt++) {
             $output = [];
             exec(
-                sprintf('%s %s', TERMINUS_BIN_FILE, $deleteMdCommand),
+                sprintf('%s %s 2>&1', TERMINUS_BIN_FILE, $deleteMdCommand),
                 $output,
                 $code
             );
@@ -187,11 +202,12 @@ if (!getenv('TERMINUS_TESTING_RUNTIME_ENV')) {
             }
 
             $log->warning(sprintf(
-                'Command "%s" exited with non-zero code (%d) on attempt %d of %d.',
+                'Command "%s" exited with non-zero code (%d) on attempt %d of %d. Output: %s',
                 $deleteMdCommand,
                 $code,
                 $attempt,
-                $maxAttempts
+                $maxAttempts,
+                implode("\n", $output)
             ));
 
             if ($attempt < $maxAttempts) {
@@ -202,10 +218,11 @@ if (!getenv('TERMINUS_TESTING_RUNTIME_ENV')) {
         if (0 !== $code) {
             /** @noinspection PhpUnhandledExceptionInspection */
             throw new Exception(sprintf(
-                'Command "%s" exited with non-zero code (%d) after %d attempts',
+                'Command "%s" exited with non-zero code (%d) after %d attempts. Output: %s',
                 $deleteMdCommand,
                 $code,
-                $maxAttempts
+                $maxAttempts,
+                implode("\n", $output)
             ));
         }
     });

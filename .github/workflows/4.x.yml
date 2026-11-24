@@ -55,7 +55,11 @@ jobs:
     runs-on: ${{ matrix.operating-system }}
     name: Functional testing matrix - PHP ${{ matrix.php-versions }} on ${{ matrix.operating-system }}
     if: ${{ github.repository_owner == 'pantheon-systems' }}
+    # A hung job holds a multidev slot on the shared test site until it ends; the default is 6h.
+    timeout-minutes: 120
     strategy:
+      # A cancelled job leaks its multidev, and one job's failure shouldn't hide the other PHP version's result.
+      fail-fast: false
       matrix:
         operating-system: [ 'macos-latest' ]
         php-versions: [ '8.2', '8.5' ]
@@ -78,6 +82,9 @@ jobs:
       HOMBEBREW_NO_AUTO_UPDATE: 1
     needs: [ checkout_build ]
     steps:
+      # Named here rather than in tests/config/bootstrap.php so the cleanup step at the end knows what to delete.
+      - name: Choose test multidev name
+        run: echo "TERMINUS_TEST_MULTIDEV_NAME=test-$(openssl rand -hex 3)" >> "$GITHUB_ENV"
       - name: Install SSH key
         uses: webfactory/ssh-agent@a6f90b1f127823b31d4d4a8d96047790581349bd # v0.9.1
         with:
@@ -121,6 +128,40 @@ jobs:
           do
             sleep 2
           done
+          exit 0
+      # The bootstrap's shutdown function deletes the multidev when PHPUnit exits normally. It doesn't run when the
+      # job is cancelled (or the process is killed mid-create), so this step covers those cases. It never fails the job.
+      - name: Delete test multidev
+        if: ${{ always() }}
+        env:
+          JOB_STATUS: ${{ job.status }}
+        run: |
+          md="$TERMINUS_TEST_MULTIDEV_NAME"
+          if [ ! -f "$HOME/.terminus/testcache/phpunit_tests.log" ] || [ ! -f terminus.phar ]; then
+            echo "Functional tests never started, so there is no multidev to delete."
+            exit 0
+          fi
+          export TERMINUS_CACHE_DIR="$HOME/.terminus/testcache"
+          chmod +x terminus.phar
+          ./terminus.phar auth:login --machine-token="$TERMINUS_TOKEN" > /dev/null 2>&1 || true
+          # A create interrupted by cancellation still finishes on the platform (3-6 min seen), and can't be deleted
+          # until it does. So retry for up to 10 min, but only wait 2 min for a missing multidev to show up.
+          start=$(date +%s)
+          while :; do
+            elapsed=$(( $(date +%s) - start ))
+            if ./terminus.phar env:info "$TERMINUS_SITE.$md" > /dev/null 2>&1; then
+              ./terminus.phar multidev:delete "$TERMINUS_SITE.$md" --delete-branch --yes && exit 0
+              [ "$elapsed" -lt 600 ] || break
+              echo "Deleting $md failed; its create may still be finishing. Retrying in 30s."
+            elif [ "$JOB_STATUS" != "cancelled" ] || [ "$elapsed" -ge 120 ]; then
+              echo "$md does not exist; nothing to delete."
+              exit 0
+            else
+              echo "$md not found yet; a cancelled create may still be starting. Checking again in 30s."
+            fi
+            sleep 30
+          done
+          echo "::warning::Could not delete $md. The orphan sweep in tests/config/bootstrap.php removes test-* multidevs older than 6h."
           exit 0
 
   release:
