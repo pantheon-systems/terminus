@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Pantheon\Terminus\Exceptions;
 
 /**
@@ -11,27 +13,27 @@ class TerminusException extends \Exception
     /**
      * @var array
      */
-    private $replacements;
+    private array $replacements;
 
     /**
      * @var null|string
      */
-    private $raw_message;
+    private ?string $raw_message;
 
     /**
      * Object constructor. Sets context array as replacements property.
      *
-     * @param string $message      Message to send when throwing the exception.
+     * @param string|array|null $message      Message to send when throwing the exception.
      * @param array  $replacements Context array to interpolate into message.
      * @param int    $code         The Exception code.
      */
     public function __construct(
-        $message = null,
+        string|array|null $message = null,
         array $replacements = [],
-        $code = 0
+        int $code = 0
     ) {
         $this->replacements = $replacements;
-        $this->raw_message = $message;
+        $this->raw_message = is_array($message) ? implode(PHP_EOL, $message) : $message;
 
         parent::__construct($this->interpolateString($message, $replacements), $code);
     }
@@ -41,7 +43,7 @@ class TerminusException extends \Exception
      *
      * @return string $this->replacements
      */
-    public function getRawMessage()
+    public function getRawMessage(): ?string
     {
         return $this->raw_message;
     }
@@ -51,7 +53,7 @@ class TerminusException extends \Exception
      *
      * @return array $this->replacements The replacement variables.
      */
-    public function getReplacements()
+    public function getReplacements(): array
     {
         return $this->replacements;
     }
@@ -63,7 +65,7 @@ class TerminusException extends \Exception
      * @param array  $replacements The values to replace into the message
      * @return string
      */
-    protected function interpolateString($message, $replacements)
+    protected function interpolateString(string|array|null $message, array $replacements): string
     {
         $tr = [];
         foreach ($replacements as $key => $val) {

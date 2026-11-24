@@ -19,7 +19,7 @@ class Upstream extends TerminusModel implements OrganizationInterface
     /**
      * @var string
      */
-    protected $url = 'upstreams/{id}';
+    protected string $url = 'upstreams/{id}';
 
     /**
      * @return Organization|null Returns a Organization-type object
@@ -32,7 +32,7 @@ class Upstream extends TerminusModel implements OrganizationInterface
     /**
      * @return string[]
      */
-    public function getReferences()
+    public function getReferences(): array
     {
         return [
             $this->id,
@@ -45,7 +45,7 @@ class Upstream extends TerminusModel implements OrganizationInterface
     /**
      * @inheritdoc
      */
-    public function serialize()
+    public function serialize(): array
     {
         $data = (array)$this->attributes;
         $data['organization'] = is_null(

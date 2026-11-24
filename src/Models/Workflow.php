@@ -32,7 +32,7 @@ class Workflow extends TerminusModel implements
     /**
      * @var array
      */
-    public static $date_attributes = ['started_at', 'finished_at',];
+    public static array $date_attributes = ['started_at', 'finished_at',];
 
     /**
      * @var TerminusModel
@@ -53,7 +53,7 @@ class Workflow extends TerminusModel implements
      * @return Workflow
      * @throws TerminusException
      */
-    public function __construct($attributes = null, array $options = [])
+    public function __construct(mixed $attributes = null, array $options = [])
     {
         parent::__construct($attributes, $options);
         if (isset($options['environment'])) {
@@ -88,7 +88,7 @@ class Workflow extends TerminusModel implements
      *
      * @return string
      */
-    public function getUrl()
+    public function getUrl(): string
     {
         if (!empty($this->url)) {
             return $this->url;
@@ -250,7 +250,7 @@ class Workflow extends TerminusModel implements
      *
      * @return array Associative array of data for output
      */
-    public function serialize()
+    public function serialize(): array
     {
         $user = 'Pantheon';
         if (isset($this->get('user')->email)) {

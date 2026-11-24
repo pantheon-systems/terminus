@@ -37,7 +37,7 @@ class SiteUpstream extends TerminusModel implements SiteInterface
     /**
      * @inheritdoc
      */
-    public function serialize()
+    public function serialize(): array
     {
         return [
             'url' => $this->get('url'),
@@ -49,7 +49,7 @@ class SiteUpstream extends TerminusModel implements SiteInterface
     /**
      * @inheritdoc
      */
-    protected function parseAttributes($data)
+    protected function parseAttributes(object $data): object
     {
         if (
             !property_exists($data, 'id') && property_exists(
@@ -65,7 +65,7 @@ class SiteUpstream extends TerminusModel implements SiteInterface
     /**
      * @return string[]
      */
-    public function getReferences()
+    public function getReferences(): array
     {
         return [
             $this->id,

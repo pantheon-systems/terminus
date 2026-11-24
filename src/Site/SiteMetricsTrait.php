@@ -133,7 +133,7 @@ trait SiteMetricsTrait
      * back inside a 'timeseries' element and then union in the metadata.
      * @return array
      */
-    public function serialize()
+    public function serialize(): array
     {
         $timeseries = parent::serialize();
         return (array) $this->metadata + ['timeseries' => $timeseries];

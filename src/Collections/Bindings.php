@@ -15,7 +15,7 @@ class Bindings extends EnvironmentOwnedCollection
     /**
      * @var string
      */
-    protected $collected_class = Binding::class;
+    protected string $collected_class = Binding::class;
     /**
      * @var string
      */

@@ -1,21 +1,20 @@
 <?php
 
-namespace Pantheon\Terminus\Tests\Unit;
+declare(strict_types=1);
 
-use Pantheon\Terminus\Commands\WorkflowProcessingTrait;
+namespace Pantheon\Terminus\Tests\Unit\Commands;
+
 use Pantheon\Terminus\Collections\Workflows;
+use Pantheon\Terminus\Commands\WorkflowProcessingTrait;
 use Pantheon\Terminus\Exceptions\TerminusException;
 use Pantheon\Terminus\Models\Site;
 use Pantheon\Terminus\Models\Workflow;
-use Pantheon\Terminus\ProgressBars\WorkflowProgressBar;
-use PHPUnit\Framework\TestCase;
+use Pantheon\Terminus\Tests\Unit\UnitTestCase;
 use Consolidation\Config\Config;
-use League\Container\Container;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
 
-class WorkflowProcessingTraitTest extends TestCase
+class WorkflowProcessingTraitTest extends UnitTestCase
 {
     private function createTraitUser(array $overrides = []): object
     {
@@ -196,15 +195,7 @@ class WorkflowProcessingTraitTest extends TestCase
             },
         ]);
 
-        // Should not throw — workflow found and processed successfully.
-        $user->callWaitForWorkflow(
-            time(),
-            $site,
-            'dev',
-            'Sync code on dev',
-            180,
-            0
-        );
+        $user->callWaitForWorkflow(time(), $site, 'dev', 'Sync code on dev', 180, 0);
 
         $this->assertTrue(true);
     }
@@ -238,15 +229,7 @@ class WorkflowProcessingTraitTest extends TestCase
             },
         ]);
 
-        // Empty description should default to "Sync code on multidev".
-        $user->callWaitForWorkflow(
-            time(),
-            $site,
-            'multidev',
-            '',
-            180,
-            0
-        );
+        $user->callWaitForWorkflow(time(), $site, 'multidev', '', 180, 0);
 
         $this->assertTrue(true);
     }
@@ -269,14 +252,7 @@ class WorkflowProcessingTraitTest extends TestCase
 
         $this->expectException(TerminusException::class);
         $this->expectExceptionMessageMatches('/Attempted/');
-        $user->callWaitForWorkflow(
-            time(),
-            $site,
-            'dev',
-            'Sync code on dev',
-            180,
-            3
-        );
+        $user->callWaitForWorkflow(time(), $site, 'dev', 'Sync code on dev', 180, 3);
     }
 
     public function testWaitForWorkflowTimeoutThrowsException(): void
@@ -297,14 +273,7 @@ class WorkflowProcessingTraitTest extends TestCase
 
         $this->expectException(TerminusException::class);
         $this->expectExceptionMessageMatches('/timed out/');
-        $user->callWaitForWorkflow(
-            time(),
-            $site,
-            'dev',
-            'Sync code on dev',
-            1,
-            0
-        );
+        $user->callWaitForWorkflow(time(), $site, 'dev', 'Sync code on dev', 1, 0);
     }
 
     public function testWaitForWorkflowSkipsOlderWorkflows(): void
@@ -334,16 +303,8 @@ class WorkflowProcessingTraitTest extends TestCase
             },
         ]);
 
-        // Old workflow should be skipped, then max_not_found_attempts hit.
         $this->expectException(TerminusException::class);
         $this->expectExceptionMessageMatches('/Attempted/');
-        $user->callWaitForWorkflow(
-            $start_time,
-            $site,
-            'dev',
-            'Sync code on dev',
-            180,
-            2
-        );
+        $user->callWaitForWorkflow($start_time, $site, 'dev', 'Sync code on dev', 180, 2);
     }
 }

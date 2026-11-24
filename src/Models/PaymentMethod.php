@@ -14,7 +14,7 @@ class PaymentMethod extends TerminusModel
     /**
      * @inheritdoc
      */
-    public function serialize()
+    public function serialize(): array
     {
         return ['id' => $this->id, 'label' => $this->get('label'),];
     }

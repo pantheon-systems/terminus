@@ -1,15 +1,17 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Pantheon\Terminus\Helpers\Utility;
 
 class TraceId
 {
-    private static $traceId;
+    private static ?string $traceId = null;
 
     /**
      * Generate UUID for use as distributed tracing ID and assign to static class variable
      */
-    public static function generateTraceId()
+    public static function generateTraceId(): void
     {
         self::$traceId = vsprintf('%s%s-%s-%s-%s-%s%s%s', str_split(bin2hex(random_bytes(16)), 4));
     }
@@ -19,10 +21,10 @@ class TraceId
      *
      * @return string
      */
-    public static function getTraceId()
+    public static function getTraceId(): string
     {
-        if (empty(self::$traceId)) { // If trace ID is not set, generate it
-            self::$traceId = self::generateTraceId();
+        if (self::$traceId === null) { // If trace ID is not set, generate it
+            self::generateTraceId();
         }
         return self::$traceId;
     }

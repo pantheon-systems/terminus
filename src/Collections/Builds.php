@@ -22,7 +22,7 @@ class Builds extends TerminusCollection
     /**
      * @var string
      */
-    protected $collected_class = Build::class;
+    protected string $collected_class = Build::class;
 
     /**
      * Fetches model data from API and instantiates its model instances
@@ -34,7 +34,7 @@ class Builds extends TerminusCollection
      *
      * @return \Pantheon\Terminus\Collections\Builds
      */
-    public function fetch(array $builds = []): Builds
+    public function fetch(array $builds = []): static
     {
         foreach ($builds as $id => $model_data) {
             if (!$id && !is_object($model_data)) {

@@ -15,7 +15,7 @@ class SSHKeys extends UserOwnedCollection
     /**
      * @var string
      */
-    protected $collected_class = SSHKey::class;
+    protected string $collected_class = SSHKey::class;
     /**
      * @var string
      */
@@ -64,9 +64,9 @@ class SSHKeys extends UserOwnedCollection
     /**
      * Fetches model data from API and instantiates its model instances
      *
-     * @return SSHKeys $this
+     * @return static $this
      */
-    public function fetch()
+    public function fetch(): static
     {
         if (!is_null($data = $this->getData())) {
             foreach ($data as $uuid => $ssh_key) {

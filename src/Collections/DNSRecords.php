@@ -18,5 +18,5 @@ class DNSRecords extends TerminusCollection implements DomainInterface
     /**
      * @var string
      */
-    protected $collected_class = DNSRecord::class;
+    protected string $collected_class = DNSRecord::class;
 }

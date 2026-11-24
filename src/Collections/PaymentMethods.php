@@ -19,7 +19,7 @@ class PaymentMethods extends UserOwnedCollection
     /**
      * @var string
      */
-    protected $collected_class = PaymentMethod::class;
+    protected string $collected_class = PaymentMethod::class;
 
     /**
      * @var string

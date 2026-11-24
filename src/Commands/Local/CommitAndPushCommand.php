@@ -66,5 +66,7 @@ class CommitAndPushCommand extends TerminusCommand implements SiteAwareInterface
         $repo->addAllChanges();
         $repo->commit('changes committed from terminus');
         $repo->push('origin');
+
+        return 'Changes committed and pushed successfully.';
     }
 }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Pantheon\Terminus\Helpers\AliasEmitters;
 
 use Pantheon\Terminus\Exceptions\TerminusException;
@@ -17,7 +19,7 @@ class Template
      * @param string $target_dir
      *   Absolute path of directory to write target file into.
      */
-    public static function copy($copyfrom, $target_dir)
+    public static function copy(string $copyfrom, string $target_dir): bool
     {
         $path = static::path($copyfrom);
 
@@ -33,7 +35,7 @@ class Template
      * @return string
      *   Template contents
      */
-    public static function load($filename)
+    public static function load(string $filename): string|false
     {
         $path = static::path($filename);
 
@@ -81,7 +83,7 @@ class Template
      * @return string
      *   The template file name.
      */
-    private static function path($filename)
+    private static function path(string $filename): string
     {
         return self::getTemplatesDir() . '/' . $filename;
     }

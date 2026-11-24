@@ -14,7 +14,7 @@ class SiteUserMemberships extends SiteOwnedCollection
     /**
      * @var string
      */
-    protected $collected_class = SiteUserMembership::class;
+    protected string $collected_class = SiteUserMembership::class;
 
     /**
      * @var boolean

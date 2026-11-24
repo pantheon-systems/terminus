@@ -2,7 +2,7 @@
 
 namespace Pantheon\Terminus\Tests\Unit;
 
-use Consolidation\Config\Config;
+use Pantheon\Terminus\Config\TerminusConfig;
 use Pantheon\Terminus\Models\User;
 use PHPUnit\Framework\TestCase;
 
@@ -11,7 +11,7 @@ class UserTest extends TestCase
     public function testDashboardUrlPointsAtDashboardRoot()
     {
         $user = new User((object)['id' => 'user-uuid-123']);
-        $user->setConfig(new Config([
+        $user->setConfig(new TerminusConfig([
             'dashboard_protocol' => 'https',
             'dashboard_host' => 'dashboard.pantheon.io',
         ]));
@@ -22,7 +22,7 @@ class UserTest extends TestCase
     public function testDashboardUrlUsesConfiguredProtocolAndHost()
     {
         $user = new User((object)['id' => 'user-uuid-123']);
-        $user->setConfig(new Config([
+        $user->setConfig(new TerminusConfig([
             'dashboard_protocol' => 'http',
             'dashboard_host' => 'dashboard.sandbox.example',
         ]));

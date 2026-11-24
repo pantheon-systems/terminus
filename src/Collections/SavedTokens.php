@@ -6,6 +6,7 @@ use Pantheon\Terminus\Config\ConfigAwareTrait;
 use Pantheon\Terminus\DataStore\DataStoreAwareInterface;
 use Pantheon\Terminus\DataStore\DataStoreAwareTrait;
 use Pantheon\Terminus\Models\SavedToken;
+use Pantheon\Terminus\Models\TerminusModel;
 use Robo\Contract\ConfigAwareInterface;
 
 /**
@@ -21,7 +22,7 @@ class SavedTokens extends TerminusCollection implements ConfigAwareInterface, Da
     /**
      * @var string
      */
-    protected $collected_class = SavedToken::class;
+    protected string $collected_class = SavedToken::class;
 
     /**
      * Adds a model to this collection
@@ -30,7 +31,7 @@ class SavedTokens extends TerminusCollection implements ConfigAwareInterface, Da
      * @param array $options Data to make properties of the new model
      * @return TerminusModel
      */
-    public function add($model_data, array $options = [])
+    public function add(object $model_data, array $options = []): TerminusModel
     {
         $model = parent::add($model_data, $options);
         $model->setDataStore($this->getDataStore());
@@ -74,7 +75,7 @@ class SavedTokens extends TerminusCollection implements ConfigAwareInterface, Da
     /**
      * @inheritdoc
      */
-    public function getData()
+    public function getData(): array
     {
         if (!empty(parent::getData())) {
             return parent::getData();

@@ -14,7 +14,7 @@ class OrganizationUpstreams extends OrganizationOwnedCollection
     /**
      * @var string
      */
-    protected $collected_class = OrganizationUpstream::class;
+    protected string $collected_class = OrganizationUpstream::class;
     /**
      * @var string
      */

@@ -1,19 +1,21 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Pantheon\Terminus\Helpers\AliasEmitters;
 
 use Symfony\Component\Yaml\Yaml;
 
 class DrushRcEditor
 {
-    protected $dir;
+    protected string $dir;
 
     /**
      * DrushRcEditor constructor
      *
      * @param string $dir
      */
-    public function __construct($dir)
+    public function __construct(string $dir)
     {
         $this->dir = $dir;
     }
@@ -23,7 +25,7 @@ class DrushRcEditor
      *
      * @return string[]
      */
-    public function getDrushConfig()
+    public function getDrushConfig(): array
     {
         $drushRCPath = $this->getDrushRCPath();
         // Load the drushrc.php file
@@ -41,7 +43,7 @@ class DrushRcEditor
      *
      * @return string
      */
-    public function getDrushRCPath()
+    public function getDrushRCPath(): string
     {
         return $this->dir . "/drushrc.php";
     }
@@ -49,7 +51,7 @@ class DrushRcEditor
     /**
      * Write a modified drushrc.php file back to disk.
      */
-    public function writeDrushConfig($drushRCText)
+    public function writeDrushConfig(string $drushRCText): int|false
     {
         $drushRCPath = $this->getDrushRCPath();
         return file_put_contents($drushRCPath, $drushRCText);

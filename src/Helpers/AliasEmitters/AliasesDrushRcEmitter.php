@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Pantheon\Terminus\Helpers\AliasEmitters;
 
 use Psr\Log\LoggerAwareInterface;
@@ -11,8 +13,8 @@ class AliasesDrushRcEmitter extends AliasesDrushRcBase implements
 {
     use LoggerAwareTrait;
 
-    protected $location;
-    protected $base_dir;
+    protected string $location;
+    protected string $base_dir;
 
     /**
      * AliasesDrushRcEmitter constructor.
@@ -20,7 +22,7 @@ class AliasesDrushRcEmitter extends AliasesDrushRcBase implements
      * @param string $location
      * @param string $base_dir
      */
-    public function __construct($location, $base_dir)
+    public function __construct(string $location, string $base_dir)
     {
         $this->location = $location;
         $this->base_dir = $base_dir;
@@ -29,7 +31,7 @@ class AliasesDrushRcEmitter extends AliasesDrushRcBase implements
     /**
      * {@inheritdoc}
      */
-    public function notificationMessage()
+    public function notificationMessage(): string
     {
         return 'Writing Drush 8 alias file to ' . $this->location;
     }
@@ -37,7 +39,7 @@ class AliasesDrushRcEmitter extends AliasesDrushRcBase implements
     /**
      * {@inheritdoc}
      */
-    public function write(array $alias_replacements)
+    public function write(array $alias_replacements): void
     {
         $alias_file_contents = $this->getAliasContents($alias_replacements);
 
@@ -69,9 +71,9 @@ class AliasesDrushRcEmitter extends AliasesDrushRcBase implements
      *
      * @return bool
      */
-    protected function filterForPantheon($line)
+    protected function filterForPantheon(string $line): bool
     {
-        if (strpos($line ?? '', '.drush/pantheon/drush8') !== false) {
+        if (strpos($line, '.drush/pantheon/drush8') !== false) {
             return false;
         }
         return true;

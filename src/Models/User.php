@@ -39,7 +39,7 @@ class User extends TerminusModel implements
     /**
      * @var string
      */
-    protected $url = 'users/{id}';
+    protected string $url = 'users/{id}';
 
     /**
      * @var \stdClass
@@ -187,7 +187,7 @@ class User extends TerminusModel implements
     /**
      * @return string[]
      */
-    public function getReferences()
+    public function getReferences(): array
     {
         return [$this->id, $this->getName(), $this->get('email'),];
     }
@@ -253,7 +253,7 @@ class User extends TerminusModel implements
      *
      * @return array $data associative array of data for output
      */
-    public function serialize()
+    public function serialize(): array
     {
         $profile = $this->getProfile();
         return [

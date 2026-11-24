@@ -14,7 +14,7 @@ class DNSRecord extends TerminusModel
     /**
      * @inheritdoc
      */
-    public function serialize()
+    public function serialize(): array
     {
         return [
             'domain' => $this->collection->getDomain()->id,

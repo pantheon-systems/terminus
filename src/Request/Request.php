@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Pantheon\Terminus\Request;
 
 use Exception;
@@ -19,6 +21,8 @@ use Pantheon\Terminus\Exceptions\TerminusUnsupportedSiteException;
 use Pantheon\Terminus\Helpers\LocalMachineHelper;
 use Pantheon\Terminus\Helpers\Utility\TraceId;
 use Pantheon\Terminus\Session\SessionAwareInterface;
+use Pantheon\Terminus\Style\TerminusStyle;
+use Symfony\Component\Console\Input\ArrayInput;
 use Pantheon\Terminus\Session\SessionAwareTrait;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -76,12 +80,22 @@ class Request implements
 
     public const UNSUPPORTED_SITE_EXCEPTION_MESSAGE = 'This is not supported for this site.';
 
+    public const NOTICES_HEADER = 'X-Pantheon-Notices';
+
     protected ClientInterface $client;
 
     /**
      * @var array Names of the values to strip from debug output
      */
-    protected $sensitive_data = ['machine_token', 'Authorization', 'session',];
+    protected array $sensitive_data = ['machine_token', 'Authorization', 'session',];
+
+    /**
+     * Tracks which API notice messages have already been displayed
+     * to avoid showing duplicates within a single command invocation.
+     *
+     * @var array<string, true>
+     */
+    private static array $displayedNotices = [];
 
     /**
      * Download file from target URL.
@@ -96,7 +110,7 @@ class Request implements
      * @throws \Psr\Container\ContainerExceptionInterface
      * @throws \Psr\Container\NotFoundExceptionInterface
      */
-    public function download($url, $target, bool $overwrite = false)
+    public function download(string $url, string $target, bool $overwrite = false): void
     {
         if (is_dir($target)) {
             if (substr($target, -1) == DIRECTORY_SEPARATOR) {
@@ -320,7 +334,7 @@ class Request implements
      *
      * @return string
      */
-    private function getBaseURI()
+    private function getBaseURI(): string
     {
         $config = $this->getConfig();
         return sprintf(
@@ -345,7 +359,7 @@ class Request implements
      * @throws GuzzleException
      * @throws TerminusException
      */
-    public function pagedRequest($path, array $options = [])
+    public function pagedRequest(string $path, array $options = []): array
     {
         $limit = $options['limit'] ?? self::PAGED_REQUEST_ENTRY_LIMIT;
 
@@ -553,6 +567,8 @@ class Request implements
             }
         }
 
+        $this->processApiNotices($response);
+
         return new RequestOperationResult([
             'data' => $decoded_body ?? $body,
             'headers' => $headers,
@@ -562,11 +578,72 @@ class Request implements
     }
 
     /**
+     * Processes API notices from the X-Pantheon-Notices response header.
+     *
+     * The header value is a JSON array of notice objects, each with:
+     *   - "message" (string, required): The message to display.
+     *   - "level" (string, optional): One of "info", "warning", or "alert".
+     *     Defaults to "info".
+     *
+     * Each unique message is displayed at most once per command invocation.
+     *
+     * @param ResponseInterface $response The HTTP response to check for notices
+     */
+    private function processApiNotices(ResponseInterface $response): void
+    {
+        $header = $response->getHeaderLine(self::NOTICES_HEADER);
+        if (empty($header)) {
+            return;
+        }
+
+        try {
+            $notices = json_decode($header, false, 512, JSON_THROW_ON_ERROR);
+        } catch (\JsonException $e) {
+            $this->logger->debug(
+                'Failed to parse {header} header: {error}',
+                ['header' => self::NOTICES_HEADER, 'error' => $e->getMessage()]
+            );
+            return;
+        }
+
+        if (!is_array($notices)) {
+            return;
+        }
+
+        foreach ($notices as $notice) {
+            if (!is_object($notice) || empty($notice->message)) {
+                continue;
+            }
+
+            $hash = md5($notice->message);
+            if (isset(self::$displayedNotices[$hash])) {
+                continue;
+            }
+            self::$displayedNotices[$hash] = true;
+
+            $level = $notice->level ?? 'info';
+            switch ($level) {
+                case 'warning':
+                    $this->logger->warning($notice->message);
+                    break;
+                case 'alert':
+                    $style = new TerminusStyle(new ArrayInput([]), $this->output());
+                    $style->warning($notice->message);
+                    break;
+                case 'info':
+                default:
+                    $this->logger->notice($notice->message);
+                    break;
+            }
+        }
+    }
+
+    /**
      * Gives the default headers for requests.
      *
      * @return array
      */
-    private function getDefaultHeaders()
+    private function getDefaultHeaders(): array
     {
         return [
             'User-Agent' => $this->userAgent(),
@@ -582,7 +659,7 @@ class Request implements
      *
      * @return string
      */
-    private function userAgent()
+    private function userAgent(): string
     {
         $config = $this->getConfig();
         return sprintf(
@@ -598,7 +675,7 @@ class Request implements
      *
      * @return string
      */
-    private function terminusCommand()
+    private function terminusCommand(): string
     {
         $input = $this->getContainer()->get('input');
         $command = $input->getFirstArgument();
@@ -671,7 +748,7 @@ class Request implements
     /**
      * Returns terminus execution environment variables as json.
      */
-    private function terminusEnvironment()
+    private function terminusEnvironment(): string
     {
         $values = [];
         foreach (self::ENVIRONMENT_VARIABLES as $var) {
@@ -688,7 +765,7 @@ class Request implements
      *
      * @return array
      */
-    private function stripSensitiveInfo($data = [])
+    private function stripSensitiveInfo(mixed $data = []): mixed
     {
         if (is_array($data)) {
             foreach ($this->sensitive_data as $key) {
