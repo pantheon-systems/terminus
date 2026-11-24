@@ -8,7 +8,7 @@ use Pantheon\Terminus\DataStore\DataStoreInterface;
 use Pantheon\Terminus\Exceptions\TerminusException;
 use Pantheon\Terminus\Models\SavedToken;
 use Pantheon\Terminus\Session\Session;
-use Consolidation\Config\Config;
+use Pantheon\Terminus\Config\TerminusConfig;
 
 class SessionTest extends TestCase
 {
@@ -18,7 +18,7 @@ class SessionTest extends TestCase
         $dataStore->method('get')->willReturn([]);
 
         $session = new Session($dataStore);
-        $session->setConfig(new Config($configValues));
+        $session->setConfig(new TerminusConfig($configValues));
         // SavedTokens::$tokens is public; Session::getTokens() uses it directly
         // if already set, so this avoids needing a real container/collection.
         $session->tokens = $tokens;

@@ -11,7 +11,7 @@ class Commit extends TerminusModel
 {
     public const PRETTY_NAME = 'commit';
 
-    public function serialize()
+    public function serialize(): array
     {
         return [
             'datetime' => $this->get('datetime'),

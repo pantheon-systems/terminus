@@ -1,16 +1,18 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Pantheon\Terminus\Helpers\AliasEmitters;
 
 use Symfony\Component\Filesystem\Filesystem;
 
 class DrushSitesYmlEmitter implements AliasEmitterInterface
 {
-    protected $base_dir;
-    protected $home;
-    protected $target_name;
+    protected string $base_dir;
+    protected string $home;
+    protected string $target_name;
 
-    public function __construct($base_dir, $home, $target_name = 'pantheon')
+    public function __construct(string $base_dir, string $home, string $target_name = 'pantheon')
     {
         $this->base_dir = $base_dir;
         $this->home = $home;
@@ -20,7 +22,7 @@ class DrushSitesYmlEmitter implements AliasEmitterInterface
     /**
      * {@inheritdoc}
      */
-    public function notificationMessage()
+    public function notificationMessage(): string
     {
         $pantheon_sites_dir = $this->pantheonSitesDir();
 
@@ -32,7 +34,7 @@ class DrushSitesYmlEmitter implements AliasEmitterInterface
      *
      * @throws \Pantheon\Terminus\Exceptions\TerminusException
      */
-    public function write(array $alias_replacements)
+    public function write(array $alias_replacements): void
     {
         $pantheon_sites_dir = $this->pantheonSitesDir();
 
@@ -57,7 +59,7 @@ class DrushSitesYmlEmitter implements AliasEmitterInterface
         }
         $drushConfigFiltered['drush']['paths']['alias-path'][] = '${env.home}/.drush/sites';
         $drushConfigFiltered['drush']['paths']['alias-path'][] =
-            str_replace($this->home ?? '', '${env.home}', $pantheon_sites_dir ?? '');
+            str_replace($this->home, '${env.home}', $pantheon_sites_dir);
         $drushConfigFiltered['drush']['paths']['include'][] = '${env.home}/.drush/pantheon';
         $drushYmlEditor->writeDrushConfig($drushConfigFiltered);
 
@@ -78,11 +80,11 @@ class DrushSitesYmlEmitter implements AliasEmitterInterface
      * @param string $line
      * @return bool
      */
-    protected function filterForSites($line)
+    protected function filterForSites(string $line): bool
     {
         if (
-            strpos($line ?? '', 'pantheon') !== false
-            || strpos($line ?? '', '/.drush/sites') !== false
+            strpos($line, 'pantheon') !== false
+            || strpos($line, '/.drush/sites') !== false
         ) {
             return false;
         }
@@ -98,7 +100,7 @@ class DrushSitesYmlEmitter implements AliasEmitterInterface
      *
      * @throws \Pantheon\Terminus\Exceptions\TerminusException
      */
-    protected function getAliasFragment(array $replacements)
+    protected function getAliasFragment(array $replacements): string
     {
         $fragments = [];
 
@@ -129,7 +131,7 @@ class DrushSitesYmlEmitter implements AliasEmitterInterface
      *
      * @return string
      */
-    protected function pantheonSitesDir()
+    protected function pantheonSitesDir(): string
     {
         return $this->base_dir . '/sites/' . $this->target_name;
     }

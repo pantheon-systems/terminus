@@ -14,7 +14,7 @@ class MachineTokens extends UserOwnedCollection
     /**
      * @var string
      */
-    protected $collected_class = MachineToken::class;
+    protected string $collected_class = MachineToken::class;
     /**
      * @var string
      */

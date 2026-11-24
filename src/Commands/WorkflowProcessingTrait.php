@@ -80,6 +80,7 @@ trait WorkflowProcessingTrait
         int $max_not_found_attempts = 0
     ) {
         $workflow = null;
+        $workflow_description = '';
         if (empty($expected_workflow_description)) {
             $expected_workflow_description = "Sync code on $env_name";
         }

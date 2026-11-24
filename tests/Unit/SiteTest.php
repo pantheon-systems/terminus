@@ -2,7 +2,7 @@
 
 namespace Pantheon\Terminus\Tests\Unit;
 
-use Consolidation\Config\Config;
+use Pantheon\Terminus\Config\TerminusConfig;
 use Pantheon\Terminus\Models\Site;
 use PHPUnit\Framework\TestCase;
 
@@ -11,7 +11,7 @@ class SiteTest extends TestCase
     public function testDashboardUrlUsesSiteRedirectRoute()
     {
         $site = new Site((object)['id' => 'site-uuid-123']);
-        $site->setConfig(new Config([
+        $site->setConfig(new TerminusConfig([
             'dashboard_protocol' => 'https',
             'dashboard_host' => 'dashboard.pantheon.io',
         ]));
@@ -25,7 +25,7 @@ class SiteTest extends TestCase
     public function testDashboardUrlUsesConfiguredProtocolAndHost()
     {
         $site = new Site((object)['id' => 'site-uuid-123']);
-        $site->setConfig(new Config([
+        $site->setConfig(new TerminusConfig([
             'dashboard_protocol' => 'http',
             'dashboard_host' => 'dashboard.sandbox.example',
         ]));

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Pantheon\Terminus\Collections;
 
 use League\Container\ContainerAwareInterface;
@@ -25,15 +27,15 @@ abstract class TerminusCollection implements ContainerAwareInterface, RequestAwa
     /**
      * @var array
      */
-    private $data = [];
+    private array $data = [];
     /**
      * @var string
      */
-    protected $collected_class = TerminusModel::class;
+    protected string $collected_class = TerminusModel::class;
     /**
-     * @var TerminusModel[]
+     * @var TerminusModel[]|null
      */
-    protected $models = null;
+    protected ?array $models = null;
 
     /**
      * Instantiates the collection, sets param members as properties
@@ -54,7 +56,7 @@ abstract class TerminusCollection implements ContainerAwareInterface, RequestAwa
      * @param array $options Data to make properties of the new model
      * @return TerminusModel
      */
-    public function add($model_data, array $options = [])
+    public function add(object $model_data, array $options = []): TerminusModel
     {
         if (is_string($model_data)) {
             throw new TerminusException($model_data);
@@ -63,7 +65,7 @@ abstract class TerminusCollection implements ContainerAwareInterface, RequestAwa
             ['id' => $model_data->id, 'collection' => $this],
             $options
         );
-        $nickname = \uniqid($model_data->id);
+        $nickname = \uniqid((string) $model_data->id);
 
         $this->getContainer()->add($nickname, $this->collected_class)
             ->addArguments([$model_data, $options]);
@@ -77,7 +79,7 @@ abstract class TerminusCollection implements ContainerAwareInterface, RequestAwa
      *
      * @return TerminusModel[]
      */
-    public function all()
+    public function all(): array
     {
         if (is_null($this->models)) {
             $this->models = [];
@@ -91,7 +93,7 @@ abstract class TerminusCollection implements ContainerAwareInterface, RequestAwa
      *
      * @return TerminusCollection $this
      */
-    public function fetch()
+    public function fetch(): static
     {
         foreach ($this->getData() as $id => $model_data) {
             if (!$id && !is_object($model_data)) {
@@ -139,7 +141,7 @@ abstract class TerminusCollection implements ContainerAwareInterface, RequestAwa
      *
      * @param callable $filter Filter function
      */
-    public function filter(callable $filter)
+    public function filter(callable $filter): static
     {
         $this->models = array_filter($this->all(), $filter);
         return $this;
@@ -152,7 +154,7 @@ abstract class TerminusCollection implements ContainerAwareInterface, RequestAwa
      * @param string $regex Non-delimited PHP regex to filter site names by
      * @return TerminusCollection
      */
-    public function filterByRegex($attribute, $regex = '(.*)')
+    public function filterByRegex(string $attribute, string $regex = '(.*)'): static
     {
         return $this->filter(function ($model) use ($attribute, $regex) {
             preg_match("~$regex~", $model->get($attribute), $matches);
@@ -196,7 +198,7 @@ abstract class TerminusCollection implements ContainerAwareInterface, RequestAwa
     /**
      * @return array Returns data array
      */
-    public function getData()
+    public function getData(): array
     {
         return $this->data;
     }
@@ -207,7 +209,7 @@ abstract class TerminusCollection implements ContainerAwareInterface, RequestAwa
      * @param string $id UUID of object to seek
      * @return boolean True if object is found, false if it is not
      */
-    public function has($id)
+    public function has(string $id): bool
     {
         return !is_null($models = $this->all()) && array_key_exists($id, $models);
     }
@@ -218,7 +220,7 @@ abstract class TerminusCollection implements ContainerAwareInterface, RequestAwa
      * @param array $ids Ids of object to seek
      * @return boolean True if object is found, false if it is not
      */
-    public function containsAny($ids)
+    public function containsAny(array $ids): bool
     {
         $ids = array_flip($ids);
         return !is_null($models = $this->all()) && !empty(array_intersect_key($ids, $models));
@@ -230,7 +232,7 @@ abstract class TerminusCollection implements ContainerAwareInterface, RequestAwa
      * @param array $ids Ids of object to seek
      * @return boolean True if object is found, false if it is not
      */
-    public function containsAll($ids)
+    public function containsAll(array $ids): bool
     {
         return !is_null($models = $this->all()) && empty(array_diff($ids, array_keys($models)));
     }
@@ -240,7 +242,7 @@ abstract class TerminusCollection implements ContainerAwareInterface, RequestAwa
      *
      * @return boolean False if object is found, True if it is not
      */
-    public function containsNone()
+    public function containsNone(): bool
     {
         return !is_null($models = $this->all()) && empty($models);
     }
@@ -250,7 +252,7 @@ abstract class TerminusCollection implements ContainerAwareInterface, RequestAwa
      *
      * @return string[] Array of all model IDs
      */
-    public function ids()
+    public function ids(): array
     {
         return array_keys($this->all());
     }
@@ -260,7 +262,7 @@ abstract class TerminusCollection implements ContainerAwareInterface, RequestAwa
      *
      * @return $this
      */
-    public function reset()
+    public function reset(): static
     {
         $this->models = null;
         return $this;
@@ -271,7 +273,7 @@ abstract class TerminusCollection implements ContainerAwareInterface, RequestAwa
      *
      * @return array
      */
-    public function serialize()
+    public function serialize(): array
     {
         $models = [];
         foreach ($this->all() as $id => $model) {
@@ -283,7 +285,7 @@ abstract class TerminusCollection implements ContainerAwareInterface, RequestAwa
     /**
      * @param array $data
      */
-    public function setData(array $data = [])
+    public function setData(array $data = []): void
     {
         $this->data = $data;
     }
@@ -293,7 +295,7 @@ abstract class TerminusCollection implements ContainerAwareInterface, RequestAwa
      * @param string $input
      * @return array
      */
-    public function splitString(string $input = "")
+    public function splitString(string $input = ""): array
     {
         /**
          * array_map to trim each item

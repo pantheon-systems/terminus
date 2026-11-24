@@ -26,7 +26,7 @@ class Sites extends APICollection implements SessionAwareInterface
     /**
      * @var string
      */
-    protected $collected_class = Site::class;
+    protected string $collected_class = Site::class;
 
     /**
      * @var array
@@ -78,9 +78,9 @@ class Sites extends APICollection implements SessionAwareInterface
      *     string  org_id    UUID of the organization to retrieve sites for
      *     boolean team_only True to only retrieve team sites
      *
-     * @return \Pantheon\Terminus\Collections\Sites
+     * @return static
      */
-    public function fetch(array $options = []): Sites
+    public function fetch(array $options = []): static
     {
         $defaultOptions = [
             'org_id' => null,

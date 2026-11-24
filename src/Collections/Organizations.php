@@ -14,7 +14,7 @@ class Organizations extends APICollection implements SessionAwareInterface
     /**
      * @var string
      */
-    protected $collected_class = Organization::class;
+    protected string $collected_class = Organization::class;
 
     /**
      * @var string
@@ -34,7 +34,7 @@ class Organizations extends APICollection implements SessionAwareInterface
     /**
      * @inheritdoc
      */
-    public function fetch(array $options = [])
+    public function fetch(array $options = []): static
     {
         $options['query']['paged'] = true;
         return parent::fetch($options);

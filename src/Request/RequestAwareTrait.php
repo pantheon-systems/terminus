@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Pantheon\Terminus\Request;
 
 /**
@@ -11,15 +13,14 @@ trait RequestAwareTrait
     /**
      * @var \Pantheon\Terminus\Request\Request
      */
-    protected $request;
+    protected Request $request;
 
     /**
      * Inject a pre-configured request object.
      *
      * @param \Pantheon\Terminus\Request\Request $request
-     * @return mixed
      */
-    public function setRequest(Request $request)
+    public function setRequest(Request $request): void
     {
         $this->request = $request;
     }
@@ -29,7 +30,7 @@ trait RequestAwareTrait
      *
      * @return \Pantheon\Terminus\Request\Request
      */
-    public function request()
+    public function request(): Request
     {
         return $this->request;
     }

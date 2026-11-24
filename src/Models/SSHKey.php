@@ -64,7 +64,7 @@ class SSHKey extends TerminusModel implements UserInterface
      *
      * @return array Associative array of data for output
      */
-    public function serialize()
+    public function serialize(): array
     {
         return [
             'id' => $this->id,

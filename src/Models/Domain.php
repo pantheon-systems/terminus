@@ -36,7 +36,7 @@ class Domain extends TerminusModel implements
     /**
      * @var string
      */
-    protected $url = 'sites/{site_id}/environments/{env_id}/domains/{id}';
+    protected string $url = 'sites/{site_id}/environments/{env_id}/domains/{id}';
 
     /**
      * Delete a domain from an environment
@@ -85,7 +85,7 @@ class Domain extends TerminusModel implements
      *
      * @return array $data associative array of data for output
      */
-    public function serialize()
+    public function serialize(): array
     {
         return [
             'id' => $this->id,

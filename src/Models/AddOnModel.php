@@ -16,7 +16,7 @@ abstract class AddOnModel extends TerminusModel implements SiteInterface
     /**
      * @inheritdoc
      */
-    public function __construct($attributes = null, array $options = [])
+    public function __construct(mixed $attributes = null, array $options = [])
     {
         parent::__construct($attributes, $options);
         $this->setSite($options['site']);

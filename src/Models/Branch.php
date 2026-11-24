@@ -34,7 +34,7 @@ class Branch extends TerminusModel implements SiteInterface
      *
      * @return array Associative array of data for output
      */
-    public function serialize()
+    public function serialize(): array
     {
         return ['id' => $this->id, 'sha' => $this->get('sha'),];
     }

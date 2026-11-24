@@ -11,7 +11,7 @@ class Metric extends TerminusModel
 {
     public const PRETTY_NAME = 'Metric';
 
-    public function serialize()
+    public function serialize(): array
     {
         return [
             'datetime' => $this->get('datetime'),

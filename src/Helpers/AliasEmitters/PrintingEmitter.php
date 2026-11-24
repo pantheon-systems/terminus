@@ -1,19 +1,21 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Pantheon\Terminus\Helpers\AliasEmitters;
 
 use Symfony\Component\Console\Output\OutputInterface;
 
 class PrintingEmitter extends AliasesDrushRcBase
 {
-    protected $output;
+    protected OutputInterface $output;
 
     /**
      * PrintingEmitter constructor
      *
      * @param OutputInterface $output
      */
-    public function __construct($output)
+    public function __construct(OutputInterface $output)
     {
         $this->output = $output;
     }
@@ -21,7 +23,7 @@ class PrintingEmitter extends AliasesDrushRcBase
     /**
      * {@inheritdoc}
      */
-    public function notificationMessage()
+    public function notificationMessage(): string
     {
         return 'Displaying Drush 8 alias file contents.';
     }
@@ -31,7 +33,7 @@ class PrintingEmitter extends AliasesDrushRcBase
      *
      * @throws \Pantheon\Terminus\Exceptions\TerminusException
      */
-    public function write(array $alias_replacements)
+    public function write(array $alias_replacements): void
     {
         $alias_file_contents = $this->getAliasContents($alias_replacements);
         $this->output->writeln($alias_file_contents);

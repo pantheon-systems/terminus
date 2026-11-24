@@ -47,7 +47,7 @@ class SiteOrganizationMembership extends TerminusModel implements
      *
      * @return PropertyList
      */
-    public function serialize()
+    public function serialize(): array
     {
         $organization = $this->getOrganization();
         $site = $this->getSite();

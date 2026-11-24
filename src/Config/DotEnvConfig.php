@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Pantheon\Terminus\Config;
 
 /**
@@ -11,14 +13,14 @@ class DotEnvConfig extends TerminusConfig
     /**
      * @var string
      */
-    protected $file;
+    protected string $file = '';
 
     protected $defaults = [];
 
     /**
      * DotEnvConfig constructor.
      */
-    public function __construct($dir)
+    public function __construct(string $dir)
     {
         parent::__construct();
 
@@ -48,7 +50,7 @@ class DotEnvConfig extends TerminusConfig
      * @param string[] $lines A list of lines
      * @return string[] An associative array
      */
-    protected function parse($lines)
+    protected function parse(array $lines): array
     {
         $info = [];
 
@@ -65,7 +67,7 @@ class DotEnvConfig extends TerminusConfig
      * trimQuotes returns the provided string without any wrapping
      * quotation characters.
      */
-    protected function trimQuotes($value)
+    protected function trimQuotes(string $value): string
     {
         if (!empty($value) && ($value[0] === $value[strlen($value) - 1])) {
             return trim($value, "'\"");

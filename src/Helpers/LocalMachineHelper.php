@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Pantheon\Terminus\Helpers;
 
 use League\Container\ContainerAwareInterface;
@@ -36,9 +38,10 @@ class LocalMachineHelper implements ConfigAwareInterface, ContainerAwareInterfac
      * Executes the given command on the local machine and return the exit code and output.
      *
      * @param string $cmd The command to execute
+     * @param callable|null $callback A callback function for process output
      * @return array The command output and exit_code
      */
-    public function exec($cmd, $callback = null)
+    public function exec(string $cmd, ?callable $callback = null): array
     {
         $process = $this->getProcess($cmd);
         $process->run($callback);
@@ -89,7 +92,7 @@ class LocalMachineHelper implements ConfigAwareInterface, ContainerAwareInterfac
      *
      * @return Filesystem
      */
-    public function getFilesystem()
+    public function getFilesystem(): Filesystem
     {
         return new Filesystem();
     }
@@ -99,7 +102,7 @@ class LocalMachineHelper implements ConfigAwareInterface, ContainerAwareInterfac
      *
      * @return Finder
      */
-    public function getFinder()
+    public function getFinder(): Finder
     {
         return new Finder();
     }
@@ -111,7 +114,7 @@ class LocalMachineHelper implements ConfigAwareInterface, ContainerAwareInterfac
      *
      * @return ProcessProgressBar
      */
-    public function getProgressBar(Process $process)
+    public function getProgressBar(Process $process): ProcessProgressBar
     {
         $nickname = \uniqid(__METHOD__ . "-");
         $this->getContainer()->add($nickname, ProcessProgressBar::class)
@@ -125,7 +128,7 @@ class LocalMachineHelper implements ConfigAwareInterface, ContainerAwareInterfac
      * @param string $filename Name of the file to read
      * @return string Content read from that file
      */
-    public function readFile($filename)
+    public function readFile(string $filename): string|false
     {
         return file_get_contents($this->fixFilename($filename));
     }
@@ -151,7 +154,7 @@ class LocalMachineHelper implements ConfigAwareInterface, ContainerAwareInterfac
      * @param string $filename Name of the file to write to
      * @param string $content Content to write to the file
      */
-    public function writeFile($filename, $content)
+    public function writeFile(string $filename, string $content): void
     {
         $this->getFilesystem()->dumpFile($this->fixFilename($filename), $content);
     }
@@ -162,10 +165,10 @@ class LocalMachineHelper implements ConfigAwareInterface, ContainerAwareInterfac
      * @param string $filename
      * @return string
      */
-    protected function fixFilename($filename)
+    protected function fixFilename(string $filename): string
     {
         $config = $this->getConfig();
-        return $config->fixDirectorySeparators(str_replace('~', $config->get('user_home') ?? '', $filename ?? ''));
+        return $config->fixDirectorySeparators(str_replace('~', $config->get('user_home') ?? '', $filename));
     }
 
     /**
@@ -174,7 +177,7 @@ class LocalMachineHelper implements ConfigAwareInterface, ContainerAwareInterfac
      * @param string $cmd The command to execute
      * @return Process
      */
-    protected function getProcess(string $cmd)
+    protected function getProcess(string $cmd): Process
     {
         $process = Process::fromShellCommandline($cmd);
         $config = $this->getConfig();
@@ -200,7 +203,7 @@ class LocalMachineHelper implements ConfigAwareInterface, ContainerAwareInterfac
         string $path,
         bool $overrideIfExists = false,
         string $branch = ''
-    ) {
+    ): void {
         if (is_dir($path . DIRECTORY_SEPARATOR . '.git')) {
             if (!$overrideIfExists) {
                 throw new TerminusAlreadyExistsException(sprintf('The repository already exists in %s', $path));
@@ -222,7 +225,7 @@ class LocalMachineHelper implements ConfigAwareInterface, ContainerAwareInterfac
      * @param $url The URL to be opened
      * @throws \Pantheon\Terminus\Exceptions\TerminusException
      */
-    public function openUrl($url)
+    public function openUrl(string $url): void
     {
         $cmd = '';
         switch (php_uname('s')) {

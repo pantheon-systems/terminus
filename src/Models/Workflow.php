@@ -24,9 +24,15 @@ class Workflow extends TerminusModel implements
     public const PRETTY_NAME = 'workflow';
 
     /**
+     * Hours after creation at which an unfinished workflow is considered
+     * stalled. Matches the Pantheon dashboard.
+     */
+    public const STALLED_AFTER_HOURS = 24;
+
+    /**
      * @var array
      */
-    public static $date_attributes = ['started_at', 'finished_at',];
+    public static array $date_attributes = ['started_at', 'finished_at',];
 
     /**
      * @var TerminusModel
@@ -47,7 +53,7 @@ class Workflow extends TerminusModel implements
      * @return Workflow
      * @throws TerminusException
      */
-    public function __construct($attributes = null, array $options = [])
+    public function __construct(mixed $attributes = null, array $options = [])
     {
         parent::__construct($attributes, $options);
         if (isset($options['environment'])) {
@@ -82,7 +88,7 @@ class Workflow extends TerminusModel implements
      *
      * @return string
      */
-    public function getUrl()
+    public function getUrl(): string
     {
         if (!empty($this->url)) {
             return $this->url;
@@ -216,6 +222,20 @@ class Workflow extends TerminusModel implements
     }
 
     /**
+     * Detects if the workflow is stalled: still unfinished more than
+     * STALLED_AFTER_HOURS after it was created.
+     *
+     * @return bool True if workflow has stalled
+     */
+    public function isStalled(): bool
+    {
+        $created_at = (int)$this->get('created_at');
+        return !$this->isFinished()
+            && $created_at > 0
+            && (time() - $created_at) > self::STALLED_AFTER_HOURS * 3600;
+    }
+
+    /**
      * Detects if the workflow was successful
      *
      * @return bool True if workflow succeeded
@@ -230,7 +250,7 @@ class Workflow extends TerminusModel implements
      *
      * @return array Associative array of data for output
      */
-    public function serialize()
+    public function serialize(): array
     {
         $user = 'Pantheon';
         if (isset($this->get('user')->email)) {
@@ -245,7 +265,7 @@ class Workflow extends TerminusModel implements
             'env' => $this->get('environment'),
             'workflow' => $this->get('description'),
             'user' => $user,
-            'status' => $this->getStatus(),
+            'status' => $this->isStalled() ? 'stalled' : $this->getStatus(),
             'time' => sprintf('%ds', $elapsed_time),
             'finished_at' => $this->get('finished_at') ?? null,
             'started_at' => $this->get('started_at'),

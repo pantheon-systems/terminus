@@ -20,9 +20,9 @@ class Build extends TerminusModel
      *
      * @return object $data
      */
-    protected function parseAttributes($data)
+    protected function parseAttributes(object $data): object
     {
-        return [
+        return (object) [
             'id' => $data->id,
             'status' => $data->status,
             'branch' => $data->environment->branch,

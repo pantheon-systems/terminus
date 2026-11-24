@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Pantheon\Terminus\Models;
 
 use Pantheon\Terminus\Collections\TerminusCollection;
@@ -25,27 +27,27 @@ abstract class TerminusModel implements
     /**
      * @var array
      */
-    public static $date_attributes = [];
+    public static array $date_attributes = [];
 
     /**
-     * @var string
+     * @var string|null
      */
-    public $id;
+    public ?string $id = null;
 
     /**
      * @var object
      */
-    protected $attributes;
+    protected object $attributes;
 
     /**
-     * @var TerminusCollection
+     * @var TerminusCollection|null
      */
-    protected $collection;
+    protected ?TerminusCollection $collection = null;
 
     /**
      * @var string The URL at which to fetch this model's information
      */
-    protected $url;
+    protected string $url = '';
 
     /**
      * Object constructor
@@ -53,18 +55,17 @@ abstract class TerminusModel implements
      * @param object $attributes Attributes of this model
      * @param array $options Options with which to configure this model
      */
-    public function __construct($attributes = null, array $options = [])
+    public function __construct(mixed $attributes = null, array $options = [])
     {
+        $this->attributes = (object)[];
         if (isset($options['collection'])) {
             $this->collection = $options['collection'];
         }
         if (is_object($attributes)) {
             $this->attributes = $this->parseAttributes($attributes);
             if (isset($this->attributes->id)) {
-                $this->id = $this->attributes->id;
+                $this->id = (string) $this->attributes->id;
             }
-        } else {
-            $this->attributes = (object)[];
         }
     }
 
@@ -75,7 +76,7 @@ abstract class TerminusModel implements
      *
      * @return TerminusModel $this
      */
-    public function fetch(array $args = [])
+    public function fetch(array $args = []): static
     {
         $options = array_merge(['options' => ['method' => 'get']], $args);
         $results = $this->request->request($this->getUrl(), $options);
@@ -93,7 +94,7 @@ abstract class TerminusModel implements
      *
      * @return mixed Value of the attribute, or null if not set.
      */
-    public function get($attribute)
+    public function get(string $attribute): mixed
     {
         return $this->has($attribute) ? $this->attributes->$attribute : null;
     }
@@ -103,7 +104,7 @@ abstract class TerminusModel implements
      *
      * @return array
      */
-    public function getReferences()
+    public function getReferences(): array
     {
         return [$this->id,];
     }
@@ -113,9 +114,9 @@ abstract class TerminusModel implements
      *
      * @return string
      */
-    public function getUrl()
+    public function getUrl(): string
     {
-        return str_replace('{id}', $this->id ?? '', $this->url ?? '');
+        return str_replace('{id}', $this->id ?? '', $this->url);
     }
 
     /**
@@ -125,7 +126,7 @@ abstract class TerminusModel implements
      *
      * @return boolean True if attribute exists, false otherwise
      */
-    public function has($attribute)
+    public function has(string $attribute): bool
     {
         return isset($this->attributes->$attribute);
     }
@@ -135,7 +136,7 @@ abstract class TerminusModel implements
      *
      * @return array Associative array of data for output
      */
-    public function serialize()
+    public function serialize(): array
     {
         return (array)$this->attributes;
     }
@@ -146,7 +147,7 @@ abstract class TerminusModel implements
      * @param string $attribute Name of the attribute key
      * @param mixed $value The value to assign to the attribute
      */
-    public function set($attribute, $value)
+    public function set(string $attribute, mixed $value): void
     {
         $this->attributes->$attribute = $value;
     }
@@ -156,7 +157,7 @@ abstract class TerminusModel implements
      *
      * @param string $attribute Name of the attribute key
      */
-    public function unsetAttribute($attribute)
+    public function unsetAttribute(string $attribute): void
     {
         unset($this->attributes->$attribute);
     }
@@ -168,7 +169,7 @@ abstract class TerminusModel implements
      *
      * @return object $data
      */
-    protected function parseAttributes($data)
+    protected function parseAttributes(object $data): object
     {
         return $data;
     }

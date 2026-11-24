@@ -13,7 +13,7 @@ class OrganizationUserMemberships extends OrganizationOwnedCollection
     /**
      * @var string
      */
-    protected $collected_class = OrganizationUserMembership::class;
+    protected string $collected_class = OrganizationUserMembership::class;
     /**
      * @var boolean
      */

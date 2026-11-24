@@ -5,6 +5,7 @@ namespace Pantheon\Terminus\Collections;
 use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
 use Pantheon\Terminus\Friends\OrganizationsInterface;
 use Pantheon\Terminus\Friends\OrganizationsTrait;
+use Pantheon\Terminus\Models\TerminusModel;
 use Pantheon\Terminus\Models\Upstream;
 
 /**
@@ -19,7 +20,7 @@ class Upstreams extends UserOwnedCollection implements OrganizationsInterface
     /**
      * @var string
      */
-    protected $collected_class = Upstream::class;
+    protected string $collected_class = Upstream::class;
     /**
      * @var string
      */
@@ -32,7 +33,7 @@ class Upstreams extends UserOwnedCollection implements OrganizationsInterface
      * @param array $options Data to make properties of the new model
      * @return TerminusModel
      */
-    public function add($model_data, array $options = [])
+    public function add(object $model_data, array $options = []): TerminusModel
     {
         $model = parent::add($model_data, $options);
         if (!empty($org_id = $model_data->organization_id)) {

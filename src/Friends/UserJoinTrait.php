@@ -18,7 +18,7 @@ trait UserJoinTrait
     /**
      * @inheritdoc
      */
-    public function getReferences()
+    public function getReferences(): array
     {
         return array_merge(parent::getReferences(), $this->getUser()->getReferences());
     }

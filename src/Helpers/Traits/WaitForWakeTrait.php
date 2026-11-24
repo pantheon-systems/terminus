@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Pantheon\Terminus\Helpers\Traits;
 
 use Pantheon\Terminus\Config\ConfigAwareTrait;
@@ -18,7 +20,7 @@ trait WaitForWakeTrait
      * @param LoggerInterface $logger
      * @throws TerminusException
      */
-    public function waitForWake(Environment $env, LoggerInterface $logger)
+    public function waitForWake(Environment $env, LoggerInterface $logger): void
     {
         $waits = 0;
         do {
