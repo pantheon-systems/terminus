@@ -2,7 +2,7 @@
 
 namespace Pantheon\Terminus\Tests\Unit\Commands\Lock;
 
-use Consolidation\Config\Config;
+use Pantheon\Terminus\Config\TerminusConfig;
 use Consolidation\OutputFormatters\StructuredData\PropertyList;
 use GuzzleHttp\Psr7\Response;
 use Pantheon\Terminus\Commands\Lock\DisableCommand;
@@ -40,7 +40,7 @@ class LockCommandsTest extends TestCase
                 $this->notices[] = strtr((string) $message, $replace);
             }
         };
-        $command->setConfig(new Config(['workflow_polling_delay_ms' => 1000]));
+        $command->setConfig(new TerminusConfig(['workflow_polling_delay_ms' => 1000]));
         $command->setLogger($this->logger);
         $command->setPublicApiClient($h->client);
         return $command;
