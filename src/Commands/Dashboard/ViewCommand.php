@@ -32,8 +32,8 @@ class ViewCommand extends TerminusCommand implements SiteAwareInterface
      *
      * @return string|null
      *
-     * @usage Opens browser to user's account on the Pantheon Dashboard.
-     * @usage --print Prints the URL for user's account on the Pantheon Dashboard.
+     * @usage Opens browser to your current workspace on the Pantheon Dashboard.
+     * @usage --print Prints the URL for your current workspace on the Pantheon Dashboard.
      * @usage <site> Opens browser to <site> on the Pantheon Dashboard.
      * @usage <site>.<env> Opens browser to <site>'s <env> environment on the Pantheon Dashboard.
      *

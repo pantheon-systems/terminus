@@ -1,7 +1,25 @@
 # Change Log
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org)
 
-## 4.3.4-dev
+## 4.3.6-dev
+
+## 4.3.5 - 2026-11-09
+
+### Changed
+
+- The Terminus account dashboard URL now points at the dashboard root (#2944)
+- **Breaking for scripts and CI that rely on the default:** `backup:create` now keeps backups for 30 days by default (previously 365) and rejects `--keep-for` values above 180 days, below 1, or that are not whole numbers before contacting the API. The temporary backups created by `local:getLiveDB` and `local:getLiveFiles` also now default to 30 days (#2934)
+
+## 4.3.4 - 2026-11-03
+
+### Changed
+
+- Dashboard URLs (e.g. from `dashboard:view`) now use the site-redirect route, so multidev links resolve correctly (#2930)
+
+### Fixed
+
+- Do not include sensitive option values (e.g. `--machine-token`) or remote command arguments in the Terminus command header or very-verbose output (#2929)
+- Avoid a PHP deprecation warning in `backup:automatic:info` when no automatic backup schedule is set (#2913)
 
 ## 4.3.3 - 2026-08-20
 
