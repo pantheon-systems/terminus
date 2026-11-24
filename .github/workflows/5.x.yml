@@ -130,11 +130,12 @@ jobs:
     runs-on: ${{ matrix.operating-system }}
     name: Functional testing matrix - PHP ${{ matrix.php-versions }} on ${{ matrix.operating-system }}
     if: ${{ github.repository_owner == 'pantheon-systems' && needs.gate.outputs.functional == 'true' }}
-    # Every functional job uses the same test site, so run them one at a time across the repo, never cancelling one
-    # that's running. GitHub keeps only one job pending per group: a newer pending job cancels an older one (even the
-    # other PHP version of the same run). That's acceptable because these runs are rare (merges, nightly, releases).
+    # Functional jobs use a shared test site, so queue them across runs, one per PHP version, never cancelling one
+    # that's running. GitHub keeps only one pending job per group and a newer one replaces it, so after back-to-back
+    # merges each PHP version still runs against the latest commit. With one group for both versions, the two jobs
+    # of a single run would replace each other, and the latest commit could end up tested on only one version.
     concurrency:
-      group: terminus-5.x-functional
+      group: terminus-5.x-functional-php${{ matrix.php-versions }}
       cancel-in-progress: false
     # A hung job holds a multidev slot on the shared test site until it ends; the default is 6h.
     timeout-minutes: 120
