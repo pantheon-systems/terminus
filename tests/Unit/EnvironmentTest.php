@@ -2,7 +2,7 @@
 
 namespace Pantheon\Terminus\Tests\Unit;
 
-use Consolidation\Config\Config;
+use Pantheon\Terminus\Config\TerminusConfig;
 use Pantheon\Terminus\Models\Environment;
 use Pantheon\Terminus\Models\Site;
 use PHPUnit\Framework\TestCase;
@@ -12,7 +12,7 @@ class EnvironmentTest extends TestCase
     private function createEnvironment(string $envId): Environment
     {
         $site = new Site((object)['id' => 'site-uuid-123']);
-        $site->setConfig(new Config([
+        $site->setConfig(new TerminusConfig([
             'dashboard_protocol' => 'https',
             'dashboard_host' => 'dashboard.pantheon.io',
         ]));
