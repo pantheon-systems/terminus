@@ -1,0 +1,24 @@
+name: Terminus 5.x nightly
+# Scheduled workflows only run from the default branch (4.x), so this dispatches the 5.x workflow on the 5.x branch
+# as its nightly run. It does nothing when it runs on 5.x (e.g. once 5.x is the default branch), where the schedule
+# in 5.x.yml takes over.
+on:
+  schedule:
+    - cron: '17 6 * * *'
+  workflow_dispatch:
+
+permissions:
+  actions: write
+
+jobs:
+  dispatch:
+    name: Dispatch the 5.x nightly
+    if: ${{ github.repository == 'pantheon-systems/terminus' && github.ref_name != '5.x' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Dispatch 5.x.yml on 5.x
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: >-
+          gh workflow run 5.x.yml -R "$GITHUB_REPOSITORY" --ref 5.x
+          -f functional_tests_group=short -f nightly=true -f tmate_enabled=0
