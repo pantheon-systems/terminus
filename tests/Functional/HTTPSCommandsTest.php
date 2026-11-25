@@ -15,6 +15,7 @@ class HTTPSCommandsTest extends TerminusTestBase
      *
      * @group https
      * @group short
+     * @group readonly
      */
     public function testHttpsInfoCommand()
     {

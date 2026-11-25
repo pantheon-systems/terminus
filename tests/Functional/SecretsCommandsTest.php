@@ -14,6 +14,7 @@ class SecretsCommandsTest extends TerminusTestBase
      *
      * @group secrets
      * @group short
+     * @group readonly
      */
     public function testSecretsCommandsExist()
     {
@@ -31,6 +32,7 @@ class SecretsCommandsTest extends TerminusTestBase
      *
      * @group secrets
      * @group short
+     * @group readonly
      */
     public function testSecretSiteSetHasExpectedOptions()
     {
@@ -45,6 +47,7 @@ class SecretsCommandsTest extends TerminusTestBase
      *
      * @group secrets
      * @group short
+     * @group readonly
      */
     public function testSecretOrgSetHasExpectedOptions()
     {

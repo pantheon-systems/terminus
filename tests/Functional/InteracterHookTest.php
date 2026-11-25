@@ -36,6 +36,7 @@ class InteracterHookTest extends TerminusTestBase
      *
      * @group interacter
      * @group short
+     * @group readonly
      */
     public function testInferTypeFromName()
     {
@@ -66,6 +67,7 @@ class InteracterHookTest extends TerminusTestBase
      *
      * @group interacter
      * @group short
+     * @group readonly
      */
     public function testGetRegionList()
     {

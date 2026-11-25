@@ -15,6 +15,7 @@ class PlanCommandsTest extends TerminusTestBase
      *
      * @group plan
      * @group short
+     * @group readonly
      */
     public function testPlanListCommand()
     {
@@ -39,6 +40,7 @@ class PlanCommandsTest extends TerminusTestBase
      *
      * @group plan
      * @group short
+     * @group readonly
      */
     public function testPlanInfoCommand()
     {

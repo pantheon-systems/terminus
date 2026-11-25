@@ -15,6 +15,7 @@ class BranchCommandsTest extends TerminusTestBase
      *
      * @group branch
      * @group short
+     * @group readonly
      */
     public function testBranchList()
     {

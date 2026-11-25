@@ -16,6 +16,7 @@ class NodeLogsCommandsTest extends TerminusTestBase
      *
      * @group node_logs
      * @group short
+     * @group readonly
      */
     public function testNodeLogsCommandsExist()
     {

@@ -20,6 +20,7 @@ class SiteCommandsTest extends TerminusTestBase
      *
      * @group site
      * @group short
+     * @group readonly
      */
     public function testSiteListCommand()
     {
@@ -38,6 +39,7 @@ class SiteCommandsTest extends TerminusTestBase
      *
      * @group site
      * @group short
+     * @group readonly
      */
     public function testSiteListCommandWithLabelField()
     {
@@ -56,6 +58,7 @@ class SiteCommandsTest extends TerminusTestBase
      *
      * @group site
      * @group short
+     * @group readonly
      */
     public function testSiteListCommandWithLabelFilter()
     {
@@ -79,6 +82,7 @@ class SiteCommandsTest extends TerminusTestBase
      *
      * @group site
      * @group short
+     * @group readonly
      */
     public function testSiteOrgListCommand()
     {
@@ -93,6 +97,7 @@ class SiteCommandsTest extends TerminusTestBase
      *
      * @group site
      * @group short
+     * @group readonly
      */
     public function testSiteListFilterOption()
     {
@@ -144,6 +149,7 @@ class SiteCommandsTest extends TerminusTestBase
      *
      * @group site
      * @group short
+     * @group readonly
      */
     public function testSiteInfoNoArgCommand()
     {
@@ -164,6 +170,7 @@ class SiteCommandsTest extends TerminusTestBase
      *
      * @group site
      * @group short
+     * @group readonly
      */
     public function testSiteInfoIncludesObjectCache()
     {
@@ -179,6 +186,7 @@ class SiteCommandsTest extends TerminusTestBase
      *
      * @group site
      * @group short
+     * @group readonly
      */
     public function testSiteInfoIncludesSearch()
     {

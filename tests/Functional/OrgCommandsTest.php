@@ -10,6 +10,7 @@ class OrgCommandsTest extends TerminusTestBase
      * @test
      * @group org
      * @group short
+     * @group readonly
      */
     public function testOrgInfoCommand()
     {
@@ -46,6 +47,7 @@ class OrgCommandsTest extends TerminusTestBase
      *
      * @group org
      * @group short
+     * @group readonly
      */
     public function testOrgListCommand()
     {
@@ -88,6 +90,7 @@ class OrgCommandsTest extends TerminusTestBase
      *
      * @group org
      * @group short
+     * @group readonly
      */
     public function testOrgPeopleListCommand()
     {
@@ -125,6 +128,7 @@ class OrgCommandsTest extends TerminusTestBase
      *
      * @group org
      * @group short
+     * @group readonly
      */
     public function testOrgSiteListCommand()
     {
@@ -159,6 +163,7 @@ class OrgCommandsTest extends TerminusTestBase
      *
      * @group org
      * @group short
+     * @group readonly
      */
     public function testOrgSiteListCommandWithLabelField()
     {
@@ -196,6 +201,7 @@ class OrgCommandsTest extends TerminusTestBase
      *
      * @group org
      * @group short
+     * @group readonly
      */
     public function testOrgSiteListCommandWithLabelFilter()
     {
@@ -238,6 +244,7 @@ class OrgCommandsTest extends TerminusTestBase
      *
      * @group org
      * @group short
+     * @group readonly
      */
     public function testOrgUpstreamList()
     {

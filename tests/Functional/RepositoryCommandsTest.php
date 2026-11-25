@@ -14,6 +14,7 @@ class RepositoryCommandsTest extends TerminusTestBase
      *
      * @group repository
      * @group short
+     * @group readonly
      */
     public function testRepositoryCommandsExist()
     {
@@ -33,6 +34,7 @@ class RepositoryCommandsTest extends TerminusTestBase
      *
      * @group repository
      * @group short
+     * @group readonly
      */
     public function testSiteCreateHasVcsOptions()
     {
