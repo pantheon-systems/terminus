@@ -74,7 +74,7 @@ class GetLiveDBCommand extends TerminusCommand implements
         );
 
         $dbBackupPath = sprintf(
-            '%s%s%s-db.tgz',
+            '%s%s%s-db.sql.gz',
             $this->getLocalCopiesDbDir(),
             DIRECTORY_SEPARATOR,
             $site->getName()
