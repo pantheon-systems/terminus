@@ -15,7 +15,7 @@ use Pantheon\Terminus\VcsApi\Installation;
 use Pantheon\Terminus\VcsApi\VcsClientAwareTrait;
 use Pantheon\Terminus\Commands\WorkflowProcessingTrait;
 use Pantheon\Terminus\Commands\Site\SiteCommand;
-use Symfony\Component\Console\Helper\QuestionHelper;
+use Pantheon\Terminus\Style\TerminusQuestionHelper;
 use Symfony\Component\Console\Question\ChoiceQuestion;
 use Symfony\Component\Console\Question\Question;
 use Consolidation\AnnotatedCommand\AnnotationData;
@@ -204,7 +204,7 @@ class CreateCommand extends SiteCommand implements RequestAwareInterface, SiteAw
             $upstream = $this->getValidatedUpstream($user, $upstream_id);
 
             if ($upstream->get('framework') === 'nodejs') {
-                $helper = new QuestionHelper();
+                $helper = new TerminusQuestionHelper();
                 $question = new ChoiceQuestion(
                     'Node.js sites cannot be created with Pantheon-hosted repositories. Please select a VCS provider:',
                     [
@@ -230,7 +230,7 @@ class CreateCommand extends SiteCommand implements RequestAwareInterface, SiteAw
                 $organizations[$organization->id] = $organization->getLabel();
             }
 
-            $helper = new QuestionHelper();
+            $helper = new TerminusQuestionHelper();
             $question = new ChoiceQuestion(
                 'Please specify the Pantheon organization:',
                 $organizations,
@@ -609,7 +609,7 @@ class CreateCommand extends SiteCommand implements RequestAwareInterface, SiteAw
                 }
                 $choices[self::ADD_NEW_ORG_TEXT] = 'new';
 
-                $helper = new QuestionHelper();
+                $helper = new TerminusQuestionHelper();
                 $question = new ChoiceQuestion(
                     'Which VCS organization should be used?',
                     array_keys($choices)
@@ -1001,7 +1001,7 @@ class CreateCommand extends SiteCommand implements RequestAwareInterface, SiteAw
                     . ' The token must have "api" and "write_repository" scopes.'
             );
 
-            $helper = new QuestionHelper();
+            $helper = new TerminusQuestionHelper();
             $question = new Question('Enter your GitLab token: ');
             $question->setValidator(function ($answer) {
                 if (empty(trim($answer ?? ''))) {
@@ -1014,7 +1014,7 @@ class CreateCommand extends SiteCommand implements RequestAwareInterface, SiteAw
             $token = $helper->ask($this->input(), $this->output(), $question);
         }
 
-        $helper = $helper ?? new QuestionHelper();
+        $helper = $helper ?? new TerminusQuestionHelper();
         $question = new Question('Enter the GitLab group name/path: ');
         $question->setValidator(function ($answer) {
             if (empty(trim($answer ?? ''))) {

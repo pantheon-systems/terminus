@@ -8,6 +8,7 @@ use Robo\Contract\ConfigAwareInterface;
 use Consolidation\AnnotatedCommand\AnnotationData;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Pantheon\Terminus\Style\TerminusStyle;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use League\Container\ContainerAwareInterface;
 use League\Container\ContainerAwareTrait;
@@ -71,7 +72,7 @@ class Interacter implements ConfigAwareInterface, ContainerAwareInterface, Sessi
             $interact_options_exclude = [];
         }
 
-        $io = new SymfonyStyle($input, $output);
+        $io = new TerminusStyle($input, $output);
         $container = $this->getContainer();
         $application = $container->get('application');
         $command = $application->find($command_name);

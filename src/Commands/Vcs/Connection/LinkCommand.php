@@ -6,7 +6,7 @@ use Pantheon\Terminus\Commands\TerminusCommand;
 use Pantheon\Terminus\Exceptions\TerminusException;
 use Pantheon\Terminus\VcsApi\VcsClientAwareTrait;
 use Pantheon\Terminus\Request\RequestAwareInterface;
-use Symfony\Component\Console\Helper\QuestionHelper;
+use Pantheon\Terminus\Style\TerminusQuestionHelper;
 use Symfony\Component\Console\Question\ChoiceQuestion;
 
 /**
@@ -291,7 +291,7 @@ class LinkCommand extends TerminusCommand implements RequestAwareInterface
             $org_choices[$idx] = $match['org']->getLabel() . ' (' . $match['org']->id . ')';
         }
 
-        $helper = new QuestionHelper();
+        $helper = new TerminusQuestionHelper();
         $question = new ChoiceQuestion(
             'Please select the source Pantheon organization:',
             $org_choices
@@ -346,7 +346,7 @@ class LinkCommand extends TerminusCommand implements RequestAwareInterface
             );
         }
 
-        $helper = new QuestionHelper();
+        $helper = new TerminusQuestionHelper();
         $question = new ChoiceQuestion(
             'Please select the VCS organization to link:',
             $vcs_choices
@@ -419,7 +419,7 @@ class LinkCommand extends TerminusCommand implements RequestAwareInterface
             $org_choices[$idx] = $org->getLabel() . ' (' . $org->id . ')';
         }
 
-        $helper = new QuestionHelper();
+        $helper = new TerminusQuestionHelper();
         $question = new ChoiceQuestion(
             'Please select the source Pantheon organization:',
             $org_choices

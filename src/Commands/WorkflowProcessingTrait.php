@@ -3,6 +3,7 @@
 namespace Pantheon\Terminus\Commands;
 
 use Pantheon\Terminus\Exceptions\TerminusException;
+use Pantheon\Terminus\Helpers\Utility\ProgramStatus;
 use Pantheon\Terminus\Models\Site;
 use Pantheon\Terminus\Models\Workflow;
 use Pantheon\Terminus\ProgressBars\WorkflowProgressBar;
@@ -38,9 +39,13 @@ trait WorkflowProcessingTrait
         } else {
             $end_time = 0;
         }
+        $program_status = new ProgramStatus($this->output(), ProgramStatus::isEnabled($this->getConfig()));
+        $description = str_replace('"', '', (string) $workflow->get('description'));
+        $program_status->working($description);
         do {
             $current_time = time();
             if ($end_time > 0 && $current_time >= $end_time) {
+                $program_status->error("Workflow timed out after $timeout seconds.");
                 throw new TerminusException(
                     'Workflow timed out after {timeout} seconds.',
                     ['timeout' => $timeout]
@@ -50,8 +55,10 @@ trait WorkflowProcessingTrait
             usleep($retry_interval * 1000);
         } while (!$workflow->isFinished());
         if (!$workflow->isSuccessful()) {
+            $program_status->error($workflow->getMessage());
             throw new TerminusException($workflow->getMessage());
         }
+        $program_status->done(($description === '' ? 'Workflow' : $description) . ' finished.');
         return $workflow;
     }
 

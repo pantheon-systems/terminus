@@ -3,7 +3,7 @@
 namespace Pantheon\Terminus\Commands;
 
 use Consolidation\AnnotatedCommand\CommandData;
-use Symfony\Component\Console\Style\SymfonyStyle;
+use Pantheon\Terminus\Style\TerminusStyle;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 use Consolidation\AnnotatedCommand\CommandError;
@@ -59,7 +59,7 @@ class SecretsHandlingCommand implements
         $rebuild = $input->getOption('rebuild') ?? false;
         $interactive = $input->isInteractive();
         if (!$rebuild && $interactive) {
-            $io = new SymfonyStyle($input, $output);
+            $io = new TerminusStyle($input, $output);
             // It is hard to know whether user does not want to rebuild or just did not provide the option.
             // Ask the user if they want to rebuild
             $rebuild = $io->confirm("Do you want to rebuild the application?", false);

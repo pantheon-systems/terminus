@@ -16,6 +16,7 @@ use Pantheon\Terminus\DataStore\DataStoreAwareTrait;
 use Pantheon\Terminus\DataStore\FileStore;
 use Pantheon\Terminus\Helpers\LocalMachineHelper;
 use Pantheon\Terminus\Helpers\Traits\CommandExecutorTrait;
+use Pantheon\Terminus\Helpers\Utility\ProgramStatus;
 use Pantheon\Terminus\Helpers\Utility\TraceId;
 use Pantheon\Terminus\Helpers\Utility\Timing;
 use Pantheon\Terminus\Plugins\PluginDiscovery;
@@ -557,7 +558,13 @@ EOD;
         if (!empty($cassette = $config->get('vcr_cassette')) && !empty($mode = $config->get('vcr_mode'))) {
             $this->startVCR(array_merge(compact('cassette'), compact('mode')));
         }
+        // Report working before the network calls a command makes, so the
+        // terminal shows activity before any workflow starts.
+        ProgramStatus::setEnabled(ProgramStatus::isEnabled($config));
+        $program_status = new ProgramStatus($output, ProgramStatus::isEnabled($config));
+        $program_status->started($input);
         $status_code = $this->runner->run($input, $output, $this->getApplication(), $this->commands);
+        $program_status->finished((int) $status_code);
         if (!empty($cassette) && !empty($mode)) {
             $this->stopVCR();
         }
