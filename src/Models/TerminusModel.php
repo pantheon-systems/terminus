@@ -9,6 +9,9 @@ use Pantheon\Terminus\Config\ConfigAwareTrait;
 use Pantheon\Terminus\Request\RequestAwareInterface;
 use Pantheon\Terminus\Request\RequestAwareTrait;
 use Robo\Contract\ConfigAwareInterface;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareTrait;
+use Psr\Log\LoggerInterface;
 
 /**
  * Class TerminusModel
@@ -17,10 +20,12 @@ use Robo\Contract\ConfigAwareInterface;
  */
 abstract class TerminusModel implements
     ConfigAwareInterface,
-    RequestAwareInterface
+    RequestAwareInterface,
+    LoggerAwareInterface
 {
     use ConfigAwareTrait;
     use RequestAwareTrait;
+    use LoggerAwareTrait;
 
     public const PRETTY_NAME = 'terminus model';
 
@@ -67,6 +72,16 @@ abstract class TerminusModel implements
                 $this->id = (string) $this->attributes->id;
             }
         }
+    }
+
+    /**
+     * Returns a logger object for use
+     *
+     * @return LoggerInterface
+     */
+    protected function log()
+    {
+        return $this->logger;
     }
 
     /**
